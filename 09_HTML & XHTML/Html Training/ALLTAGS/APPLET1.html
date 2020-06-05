@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+<TITLE>HTML Tag List: Source of the Java applet</TITLE>
+<META name="author" content="Rob Schl&uuml;ter">
+<META name="description" content="HTML Tag List: ">
+<LINK rel="stylesheet" type="text/css" href="htl.css">
+</HEAD><BODY bgcolor="#e0d0c0" text="#000000" link="#000080" vlink="#800080">
+<PRE>
+/*
+Applet      : APPLET1.class
+Author      : Rob Schluter
+Description : Example Java applet, used in HTML tag list.
+*/
+
+import java.awt.Graphics;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Color;
+
+public class APPLET1 extends java.applet.Applet implements Runnable {
+
+  Thread runner;
+  Font f = new Font("TimesRoman", Font.BOLD, 25);
+  FontMetrics fm = getFontMetrics(f);
+  String text;
+  int pos;
+
+  public void start() {
+    if (runner == null) {
+       runner = new Thread(this);
+       runner.start();
+    }
+  }
+
+  public void stop() {
+    if (runner != null); {
+       runner.stop();
+       runner = null;
+    }
+  }
+
+  public void init() {
+    text = getParameter("text");
+    if (text == null) {
+       text = "A Java example"; }
+  }
+
+  public void run() {
+    setBackground(new Color(0,0x80,0x80));
+    while (true) {
+      for (pos = 0;pos < text.length();pos++) {
+          repaint();
+          try { runner.sleep(100); }
+          catch (InterruptedException e) {}
+      }
+    }
+  }
+
+  public void update(Graphics g) {
+    paint(g);
+  }
+
+  public void paint(Graphics g) {
+    String t1,t2,t3;
+    g.setFont(f);
+
+    if (pos == 0) {
+       t1 = "";
+       t2 = text.substring(0,1);
+       t3 = text.substring(pos + 1);
+    } else {
+       t1 = text.substring(0,pos);
+       t2 = text.substring(pos,pos + 1);
+       t3 = text.substring(pos + 1);
+    }
+    g.setColor(Color.white);
+    g.drawString(t1, 15, 30);
+    g.setColor(Color.red);
+    g.drawString(t2, 15 + fm.stringWidth(t1), 30);
+    g.setColor(Color.white);
+    g.drawString(t3, 15 + fm.stringWidth(t1 + t2), 30);
+  }
+}
+</PRE>
+<P>
+Back to the <A href="TAG_APPLET.html">APPLET element</A>.
+<TABLE cellspacing="0" cellpadding="0" border="0" width="100%">
+ <TR><TD><IMG src="pixel.gif" height="1" width="1" alt="" vspace="2"></TD></TR>
+ <TR><TD bgcolor="#664400"><IMG src="pixel.gif" height="1" width="1" alt=""></TD></TR>
+ <TR><TD><IMG src="pixel.gif" height="1" width="1" alt="" vspace="2"></TD></TR>
+</TABLE>
+
+<A href="http://www.nedstat.nl/cgi-bin/viewstat?name=htmltaglist"><IMG src="http://www.nedstat.nl/cgi-bin/nedstat.gif?name=htmltaglist" border="0" alt="Statistics" width="16" height="16" hspace="5" align="right"></A>
+<CENTER>
+<SPAN class="copyright"> &nbsp; Copyright &copy; 1996 - 1999 Rob Schl&uuml;ter, &nbsp;
+<A href="mailto:schluter@knoware.nl">schluter@knoware.nl</A> &nbsp;
+(last updated 1998/01/13) &nbsp;
+</SPAN></CENTER>
+</BODY></HTML>

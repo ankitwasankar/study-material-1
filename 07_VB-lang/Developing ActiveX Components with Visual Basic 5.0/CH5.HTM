@@ -1,0 +1,1174 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 5 -- Aggregation and Polymorphism</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;5</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Aggregation and Polymorphism</FONT>
+</H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#BacktoBinding">
+Back to Binding</A>
+<LI><A HREF="#AnObjectasObject">
+An Object as Object</A>
+<LI><A HREF="#Aggregation">
+Aggregation</A>
+<LI><A HREF="#AnObjectImplements">
+An Object Implements</A>
+<UL>
+<LI><A HREF="#Tradeoffs">
+Trade-offs</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+Did you by any chance read the Introduction? I suppose that's
+an odd question to ask at the start of <A HREF="ch5.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch5.htm" >Chapter 5</A> but it occurred
+to me that if you haven't read the Introduction, this would surely
+seem to be one of the oddest technical books ever written. Where
+are the step-by-step tutorials? Where are the introductory descriptions
+of how to use class modules and how to create properties?
+<P>
+When I made the decision early on not to just rehash the Visual
+Basic manuals, I didn't realize what a luxury that would be. It's
+not just the time and effort saved in not having to re-phrase
+in my own words what the manuals and other VB books say. Rather,
+it's the luxury of being able to focus on what I know to be truly
+important. It's the chance to go beyond the bare syntax of the
+language to really delve into how and why VB programs work the
+way they do and how you can take full advantage of the language
+features to craft software that is efficient, elegant, and cool.
+<P>
+Which is why I can spend a whole chapter on the subject of <I>aggregation</I>
+and polymorphism. These subjects may be tucked into a few relatively
+obscure corners in the VB manuals, but make no mistake-these features
+can and will change the way you program in Visual Basic. Don't
+blame Microsoft for not giving them more space than they did;
+they have a lot more material to cover and don't have other language
+manuals to fall back on.
+<H2><A NAME="BacktoBinding"><FONT SIZE=5 COLOR=#FF0000>
+Back to Binding</FONT></A></H2>
+<P>
+In the last chapter you saw that Visual Basic objects are, in
+fact, COM objects. You learned that COM objects can have multiple
+interfaces. The methods and properties of a COM object are exposed
+by the object as a dual interface: one interface that can be called
+directly, the other a dispatch interface that contains in its
+dispatch table the list of methods and properties for the object.
+<P>
+The samples in <A HREF="ch3.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch3.htm" >Chapter 3</A>used early binding. All of the object
+references were declared as referencing the class type directly,
+so calls to methods and properties of the object went directly
+through the class interface. In <A HREF="ch4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch4.htm" >Chapter 4</A>you saw that this type
+of early binding is substantially faster than late binding. I
+mentioned briefly three reasons why you might use late binding:
+cases where the interface information is not available ahead of
+time, cases where an object may wish to dynamically change the
+properties and methods it exposes, and cases where you may wish
+for a single variable to handle multiple data types.
+<P>
+The first two situations are fairly obvious. If you don't have
+the interface information for an object at design time, you obviously
+have to use the IDispatch interface, since it is able to determine
+the methods and properties of the object at runtime. Keep in mind
+that while Visual Basic objects have dual interfaces, COM objects
+can be created by any application, and there is no requirement
+that a COM object use a dual interface. Many objects that you
+can use from Visual Basic only support the IDispatch interface-these
+are always late bound. An object that only uses IDispatch does
+have the flexibility to change its methods and properties at runtime,
+though it's not common practice and you can't do it with your
+Visual Basic objects.
+<P>
+The third situation is trickier. When and why would you want a
+single object variable to handle multiple data types?
+<P>
+Let's start with a simple application that manages a portfolio
+of loans. The Loan1 project shown in Figure 5.1 contains two list
+boxes. The top list box displays information about available loans,
+the bottom list box displays detailed information about the loan
+when you click on an entry in the upper list box.
+<P>
+<A HREF="f5-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f5-1.gif"><B>Figure 5.1 :</B> <I>Main form for the Loan1 application</I>.</A>
+<P>
+Each loan has a duration, amount available and interest rate.
+Listing 5.1 shows the clsBankLoan class. In addition to the AmountAvailable,
+Duration, and Interest properties, the class has a Payment function
+that returns the monthly payment on the loan, a Summary function
+that returns a brief description of the loan, and a SourceType
+function that returns a string describing the source of the loan.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.1:&nbsp;The clsBankLoan Class<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: Guide to the Perplexed
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Chapter 5
+
+
+Option Explicit
+
+' Amount of loan available
+Public AmountAvailable As Currency
+
+' Term of loan
+Public Duration As Integer
+
+' Interest
+Public Interest As Double
+
+
+' Calculate the loan payment
+Public Function Payment() As Currency
+   Dim factor As Double
+   Dim iper As Double
+   iper = Interest / 12
+   factor = iper * ((1 + iper) ^ Duration)
+   Payment = AmountAvailable * factor / (((1 + iper) ^ Duration) - 1)
+End Function
+
+' Obtain string description of loan
+Public Function Summary() As String
+   Summary = Format$(AmountAvailable, &quot;Currency&quot;) &amp; &quot;  &quot; &amp; Format$(Interest,_
+   &quot;Percent&quot;) &amp; &quot;  &quot; &amp; Duration &amp; &quot; months&quot;
+End Function
+
+Public Function SourceType() As String
+   SourceType = &quot;Bank Loan&quot;
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Listing 5.2 shows the main form for the sample application. The
+Form_Load function preloads an array of clsBankLoan objects. In
+a real application you might load this array from a database,
+or perhaps from an online service. The summary information for
+the objects is preloaded into the upper list box lstLoans. When
+you click on an entry in this list box, information about the
+loan is displayed in the lstInfo list box.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.2:&nbsp;Listing for Form LnSel1.frm<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: Guide to the Perplexed
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Chapter 5
+
+
+Option Explicit
+
+' Array of available loans
+Dim Loans() As clsBankLoan
+
+' Constant for test purposes
+Const LOANCOUNT = 100
+
+Private Sub Form_Load()
+   Dim loannum%
+   
+   ' Load a list of available loans
+   ' In a real application, you would retrieve
+   ' this information from a database, or perhaps
+   ' an online service
+   ' In this example, we create them randomly
+   ReDim Loans(LOANCOUNT)
+   For loannum = 1 To LOANCOUNT
+      Set Loans(loannum) = New clsBankLoan
+      With Loans(loannum)
+         .AmountAvailable = CLng(Rnd() * 200000)
+         .Duration = 12 * Int((Rnd * 30) + 1)
+         .Interest = (7 + Int((Rnd * 80) * 0.125)) / 100
+         lstLoans.AddItem .Summary
+      End With
+   Next loannum
+End Sub
+
+Private Sub lstLoans_Click()
+   Dim loannum%
+   loannum = lstLoans.ListIndex + 1
+   lstInfo.Clear
+   With Loans(loannum)
+      lstInfo.AddItem .SourceType
+      lstInfo.AddItem .Summary
+      lstInfo.AddItem &quot;Payment: &quot; &amp; Format$(.Payment, &quot;Currency&quot;)
+   End With
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+So far, this is a very straightforward and simple application.
+And if you were a mortgage broker handling bank loans, it could
+serve you well. But we're in an age of rapid changes, and you
+never know when the government may deregulate the mortgage industry
+and let security brokers into the business. Your business needs
+to upgrade its software to handle these new loans. What happens
+if, for example, a brokerage loan also needs to keep track of
+the margin requirement for the loan?
+<H2><A NAME="AnObjectasObject"><FONT SIZE=5 COLOR=#FF0000>
+An Object as Object</FONT></A></H2>
+<P>
+Listing 5.3 shows portions of a new class added to the loan application
+(see the sample program loan2.vbp on the CD that comes with this
+book) to handle the brokerage mortgages. Otherwise, the class
+is identical to the clsBankLoan class. You'll notice there is
+some duplication here, in that the clsSecurityLoan class has an
+exact copy of the Payment function that appears in the clsBankLoan
+class. This is somewhat wasteful, and shortly we'll take a look
+at a way to reduce that overhead.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.3:&nbsp;Modifications to the clsSecurityLoan<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Margin requirement
+Public Margin As Double
+
+' Obtain string description of loan
+Public Function Summary() As String
+   Summary = Format$(AmountAvailable, &quot;Currency&quot;) &amp; &quot;  &quot; &amp; Format$(Interest,_
+   &quot;Percent&quot;) &amp; &quot;  &quot; &amp; Duration &amp; &quot; months. Margin: &quot; &amp; Format$(Margin, &quot;Percent&quot;)
+End Function
+
+Public Function SourceType() As String
+   SourceType = &quot;Brokerage Loan&quot;
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The Loans() array in the frmLoan1 form was defined to reference
+the clsBankLoan object. Now we need this array to also support
+the clsSecurityLoan object. Any attempt to assign a clsSecurityLoan
+object to the Loans() array as it stands now would result in a
+type error. One solution, shown in Listing 5.4, solves this problem
+by changing the Loans() array to reference the Object type.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.4:&nbsp;Modifications to the frmLoan Form<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Array of available loans
+Dim Loans() As Object
+
+
+Private Sub Form_Load()
+   Dim loannum%
+   
+   ' Load a list of available loans
+   ' In a real application, you would retrieve
+   ' this information from a database, or perhaps
+   ' an online service
+   ' In this example, we create them randomly
+   ReDim Loans(LOANCOUNT)
+   For loannum = 1 To LOANCOUNT
+      Select Case Int(Rnd() * 2)
+         Case 0
+            Set Loans(loannum) = New clsBankLoan
+         Case 1
+            Set Loans(loannum) = New clsSecurityLoan
+            ' Margin only applies to this type
+            Loans(loannum).Margin = Rnd()
+      End Select
+      With Loans(loannum)
+         .AmountAvailable = CLng(Rnd() * 200000)
+         .Duration = 12 * Int((Rnd * 30) + 1)
+         .Interest = (7 + Int((Rnd * 80) * 0.125)) / 100
+         lstLoans.AddItem .Summary
+      End With
+   Next loannum
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Now here's an interesting observation. The <I>only</I> changes
+needed to implement this new type are changing the type in the
+Loans() array and loading the correct object type into the array.
+The Margin property is only set for the clsSecurityLoan type.
+<P>
+Consider for a moment what happens when the Summary function is
+called for an object in the Loans() array. Visual Basic correctly
+calls the correct function for the actual object being referenced.
+This is a demonstration of polymorphism, where the same function
+name can be used by two different objects. As you see here, it
+is more than a convenience to the programmer in terms of reducing
+the number of functions that need to be remembered. Polymorphism
+allows you to use the same code to reference different object
+types by the shared method or property name.
+<H2><A NAME="Aggregation"><FONT SIZE=5 COLOR=#FF0000>
+Aggregation</FONT></A></H2>
+<P>
+Your mortgage software business has really taken off, and along
+the way you've gained many new customers, some of whom have a
+clientele you perhaps weren't anticipating. Now you find you need
+to update your program to handle loans for clients who are, how
+can we put it, somewhat less than creditworthy? These loans require
+not only that you add a new type of object but that the object
+support a method that calculates a late penalty based on the value
+of the loan.
+<P>
+Before coding it might occur to you that this object will require
+yet another copy of the Payment method. Now, not only is this
+wasteful, but it opens the door to a maintenance nightmare. What
+happens if one day you find a bug in the payment code? (I realize
+this is unlikely in this simple example, but extrapolate this
+example to a real application with a dozen class methods substantially
+more complex, and you'll see this is a very real concern.) You
+could add a code module and create a global function to calculate
+payment values, but this is a step away from the encapsulation
+that object-oriented programming offers. More important, the problem
+will return, should you ever decide to deploy these classes as
+individual ActiveX code libraries (DLL servers), where each class
+will be implemented in its own DLL. Surely there must be a solution
+that follows an object-oriented methodology, right?
+<P>
+Right. The answer is aggregation, and it is demonstrated in Listing
+5.5. The new clsLoanShark class is based on clsBankLoan, which
+serves as our reference loan type. But instead of simply copying
+the method and property code from clsBankLoan, a private instance
+of clsBankLoan is actually created whenever a clsLoanShark object
+is created. In other words, a clsLoanShark object is an aggregate
+of new code with an object of type clsBankLoan (hence the term
+aggregation). In most cases, instead of handling methods and properties
+directly in the clsLoanShark object, they are delegated to the
+internal clsBankLoan object. For example: Instead of including
+the code for the Payment function in the class, it simply calls
+the Payment method of the LoanTemplate object, which is the variable
+name of the private clsBankLoan object.
+<P>
+Note that LoanTemplate is dimensioned with the New option. This
+is necessary because you actually need to create an instance of
+the object. Without the New option, the LoanTemplate variable
+remains empty (set to nothing), and you obviously cannot access
+methods and properties for an object that does not exist.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.5:&nbsp;clsLoanShark Class Object<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: Guide to the Perplexed
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Chapter 5
+
+
+Option Explicit
+
+' Internal class object used in aggregation
+Private LoanTemplate As New clsBankLoan
+
+
+Public Property Get AmountAvailable() As Currency
+   AmountAvailable = LoanTemplate.AmountAvailable
+End Property
+
+Public Property Let AmountAvailable(ByVal vNewValue As Currency)
+   LoanTemplate.AmountAvailable = vNewValue
+End Property
+
+Public Property Get Duration() As Integer
+   Duration = LoanTemplate.Duration
+End Property
+
+Public Property Let Duration(ByVal vNewValue As Integer)
+   LoanTemplate.Duration = vNewValue
+End Property
+
+Public Property Get Interest() As Double
+   Interest = LoanTemplate.Interest
+End Property
+
+Public Property Let Interest(ByVal vNewValue As Double)
+   If vNewValue &lt; 0.5 Then vNewValue = vNewValue + 0.5
+   LoanTemplate.Interest = vNewValue
+End Property
+
+Public Function Payment() As Currency
+   Payment = LoanTemplate.Payment
+End Function
+
+Public Function Summary() As String
+   Summary = LoanTemplate.Summary
+End Function
+
+Public Function SourceType() As String
+   SourceType = &quot;Loan Shark&quot;
+End Function
+
+Public Function LatePenalty() As String
+   Select Case AmountAvailable
+      Case 0 To 25000
+         LatePenalty = &quot;Broken Fingers&quot;
+      Case 25000 To 75000
+         LatePenalty = &quot;Broken arm&quot;
+      Case Else
+         LatePenalty = &quot;You don't want to know&quot;
+   End Select
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+You may be wondering why the AmountAvailable, Duration, and Interest
+properties are delegated to the LoanTemplate object. Wouldn't
+it be easier to simply declare these as public variables? Wouldn't
+that also improve performance by eliminating an extra function
+call?
+<P>
+It might be easier, but it wouldn't work. Remember, you are delegating
+the Payment function, and that function uses these three properties
+to calculate the monthly payments. This function operates on the
+values it finds within the LoanTemplate object, so you must delegate
+these properties to the internal object in order for the Payment
+function to work with the correct values.
+<P>
+The delegation need not be exact, however. You can add your own
+error checking to the property access functions as shown in the
+Property Let function for the Interest property. No self-respecting
+loan shark would accept under 50 percent interest, and this is
+reflected in the handling of this property.
+<P>
+The clsLoanShark object does not need to delegate all of its methods
+and properties to the LoanTemplate object. The SourceType method,
+for example, is handled directly within the class. This makes
+sense because the result from the LoanTemplate object would be
+Bank Loan, which is incorrect. Overriding the methods or properties
+of the delegated object is one of the reasons you might create
+a new class based on another. Another reason is the ability to
+add new methods or properties, as shown with the LatePenalty method,
+which does not exist in the clsBankLoan class.
+<P>
+Aggregation allows you to easily reuse code from the contained
+object. But does it have any disadvantages? Only one major one:
+each time you create a clsLoanShark object, you are in fact creating
+a new clsBankLoan object as well. This involves some additional
+overhead, and the impact on performance may be difficult to calculate.
+<P>
+The overhead of creating a contained object when the object is
+a class within your own application is negligible, but if the
+object is in an ActiveX server, the impact on the system may be
+substantial. This will be discussed further in the next chapter.
+A more significant issue comes into play if the contained object
+has code in its Initialization and Termination events. That code
+is executed any time an object is created and destroyed.
+<P>
+Now let's take a look at how the main program handles this new
+object. Figure 5.2 shows the program in action. Since we are following
+good object-oriented programming design here, it's not surprising
+that the changes needed to incorporate this class into the Loan3
+project are fairly simple. The Form_Load event (see Listing 5.6)
+is modified to load the new object type. Once again, this only
+simulates a real application that would load the loan information
+from a database or online service.
+<P>
+<A HREF="f5-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f5-2.gif"><B>Figure 5.2 :</B> <I>Main form for the Loan3 application</I>.</A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.6:&nbsp;Listing for LnSel3.frm<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: Guide to the Perplexed
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Chapter 5
+
+
+Option Explicit
+
+' Array of available loans
+Dim Loans() As Object
+
+' Constant for test purposes
+Const LOANCOUNT = 100
+
+Private Sub Form_Load()
+   Dim loannum%
+   
+   ' Load a list of available loans
+   ' In a real application, you would retrieve
+   ' this information from a database, or perhaps
+   ' an online service
+   ' In this example, we create them randomly
+   ReDim Loans(LOANCOUNT)
+   For loannum = 1 To LOANCOUNT
+      Select Case Int(Rnd() * 3)
+         Case 0
+            Set Loans(loannum) = New clsBankLoan
+         Case 1
+            Set Loans(loannum) = New clsSecurityLoan
+            ' Margin only applies to this type
+            Loans(loannum).Margin = Rnd()
+         Case Else
+            Set Loans(loannum) = New clsLoanShark
+      End Select
+      With Loans(loannum)
+         .AmountAvailable = CLng(Rnd() * 200000)
+         .Duration = 12 * Int((Rnd * 30) + 1)
+         .Interest = (7 + Int((Rnd * 80) * 0.125)) / 100
+         lstLoans.AddItem .Summary
+      End With
+   Next loannum
+End Sub
+
+Private Sub lstLoans_Click()
+   Dim loannum%
+   Dim LatePenaltyValue$
+   loannum = lstLoans.ListIndex + 1
+   lstInfo.Clear
+   With Loans(loannum)
+      lstInfo.AddItem .SourceType
+      lstInfo.AddItem .Summary
+      lstInfo.AddItem &quot;Payment: &quot; &amp; Format$(.Payment, &quot;Currency&quot;)
+      LatePenaltyValue = GetLatePenalty(Loans(loannum))
+      If LatePenaltyValue &lt;&gt; &quot;&quot; Then
+         lstInfo.AddItem &quot;Late payment penalty:&quot;
+         lstInfo.AddItem &quot;   &quot; &amp; .LatePenalty
+      End If
+   End With
+End Sub
+
+' Generic function to obtain LatePayment value
+Public Function GetLatePenalty(obj As Object) As String
+   On Error GoTo nofunction
+   GetLatePenalty = obj.LatePenalty
+   Exit Function
+nofunction:
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Perhaps the most interesting modification to the code is the handling
+of the LatePenalty method. Any attempt to call this function for
+the clsBankLoan or clsSecurityLoan object will result in an error,
+because those objects don't support that method. This means that
+you have two choices on how to handle this new method:
+<UL>
+<LI>Check to see if the object is of type clsLoanShark. If it
+is, call the LatePenalty method. You can test the type of an object
+by using the &quot;If Typeof &#133; Is&quot; statement or by checking
+using the TypeName function to obtain the name of the object.
+<LI>Try calling the LatePenalty method for every object, simply
+ignoring any errors that occur.
+</UL>
+<P>
+This sample takes the latter approach. The GetLatePenalty function
+handles the operation, simply returning an empty string if an
+error occurs. The nice thing about this approach is that it is
+generic-it will work correctly for any future objects that incorporate
+the LatePenalty function without requiring further modification
+to the main form code.
+<P>
+A third approach is to test for the presence of the method name
+directly. The apigid32.dll utility DLL provided with this book
+includes the function agIsValidName(), which lets you test whether
+a method or property name is supported by an object. It does this
+internally by obtaining the IDispatch interface for the object,
+then using the GetIdOfNames function of the IDispatch interface
+to see if the requested name has a valid identifier.
+<H2><A NAME="AnObjectImplements"><FONT SIZE=5 COLOR=#FF0000>
+An Object Implements</FONT></A></H2>
+<P>
+You've seen the power of the object data type in implementing
+both aggregation and polymorphism. Unfortunately, this data type
+has two major problems.
+<OL>
+<LI>Since an object variable can reference any object, it opens
+the door to new types of bugs. What happens to your program if
+you accidentally assign one of these variables to a form or control
+object? Or to another object that is not a loan? This type of
+bug cannot be detected at design time, only at runtime when the
+program attempts to access a property or method for the object
+that does not actually exist. This places an additional burden
+on the testing process. It's always better to let the compiler
+find these kinds of problems if possible.
+<LI>All access to these objects is late bound, which tends to
+degrade performance. This may not be noticeable in such a small
+sample program, but in a program handling millions of transactions
+the difference can be critical.
+</OL>
+<P>
+Visual Basic 5.0 adds a powerful new way of solving these problems.
+Think back for a moment to the interface discussion of Chapter
+4. An object can expose more than one interface. For example,
+our clsBankLoan object exposes at least three interfaces: IUnknown
+(because all objects support IUnknown), IDispatch (the automation
+interface used for late binding), and _clsBankLoan (the early-bound
+dual interface containing the methods and properties of the object.
+By convention, it is preceded by an _ to indicate that it is hidden).
+<P>
+These interfaces are shown in Figure 5.3. This figure also illustrates
+the standard schematic used by Microsoft to describe COM objects.
+Each circle indicates an interface to the object.
+<P>
+<A HREF="f5-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f5-3.gif"><B>Figure 5.3 :</B> <I>The interfaces for the clsBankLoan object</I>.</A>
+<P>
+In our earlier example we needed to use the object data type because
+it was the only way to have a variable reference more than one
+type of interface. 
+<P>
+But a second approach is possible. Instead of having a single
+object variable reference multiple interfaces, why not have each
+object implement a common interface?
+<P>
+If the clsLoanShark object could expose the clsBankLoan interface
+as well as its own, then instead of using an object data type
+variable, you could continue to use a clsBankLoan data type variable.
+This is illustrated in Figure 5.4.
+<P>
+<A HREF="f5-4.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f5-4.gif"><B>Figure 5.4 :</B> <I>The interfaces for the clsLoanShark object</I>.</A>
+<P>
+Visual Basic 5.0 makes it possible for one object to expose multiple
+interfaces by using the Implements statement, possibly the most
+important new feature in Visual Basic 5.0.
+<P>
+The Implements statement is used by adding the command:
+<BLOCKQUOTE>
+<PRE>
+Implements otherclassname
+</PRE>
+</BLOCKQUOTE>
+<P>
+to the beginning of a class. For example: if you have class2,
+which implements class1, and class 1 has a method mymethod(),
+class2 must contain code for the implemented method. The declaration
+for the code takes the form:
+<BLOCKQUOTE>
+<PRE>
+class1_mymethod()
+</PRE>
+</BLOCKQUOTE>
+<P>
+The class1 prefix indicates that the code implements the class1
+interface instead of the class2 interface. Class2 must implement
+all of the methods and properties of the class1 interface-that
+is fundamental to the way COM interfaces work. Remember, an interface
+is a contract, and if class2 is going to implement the class1
+interface, it must implement all of it.
+<P>
+Let's take a look at how this is accomplished using the various
+loan sample objects one step at a time in the Loan4 sample application.
+<P>
+First, the clsBankLoan object is shown in Listing 5.7.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.7:&nbsp;The clsBankLoan Object, Version 2<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: Guide to the Perplexed
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Chapter 5
+
+
+Option Explicit
+
+' Amount of loan available
+Public AmountAvailable As Currency
+
+' Term of loan
+Public Duration As Integer
+
+' Interest
+Public Interest As Double
+
+
+' Calculate the loan payment
+Public Function Payment() As Currency
+   Dim factor As Double
+   Dim iper As Double
+   iper = Interest / 12
+   factor = iper * ((1 + iper) ^ Duration)
+   Payment = AmountAvailable * factor / (((1 + iper) ^ Duration) - 1)
+End Function
+
+' Obtain string description of loan
+Public Function Summary() As String
+   Summary = Format$(AmountAvailable, &quot;Currency&quot;) &amp; &quot;  &quot; &amp; Format$(Interest,_
+   &quot;Percent&quot;) &amp; &quot;  &quot; &amp; Duration &amp; &quot; months&quot;
+End Function
+
+Public Function SourceType() As String
+   SourceType = &quot;Bank Loan&quot;
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Don't spend too much time looking for differences between this
+and Listing 5.1. There aren't any.
+<P>
+Most of the documentation that refers to the Implements statement
+emphasizes the creation of an <I>abstract class</I>-that is, a
+class that contains methods and properties that don't actually
+have any code attached. You see, a class that implements an interface
+only needs the method and property definitions-it doesn't actually
+need any of the code to define the interface. It will add its
+own code for implementing the interface methods and properties.
+<P>
+But you don't need to use an empty abstract class as the source
+for your interface definition. Having code in the source class
+does no harm whatsoever. Now, we could have created a generic
+loan class that could be implemented by all of the other loan
+objects. But, in this case, the clsBankLoan object is treated
+as the standard interface. This makes it possible to use aggregation
+(as you saw earlier) to use the code in the source class. This
+provides a form of inheritance, where an object can inherit both
+the definition and some of the code of the source class.
+<P>
+And inheritance, as you may recall from <A HREF="ch3.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch3.htm" >Chapter 3</A> is the third
+requirement of an object-oriented language!
+<P>
+Now, this type of inheritance is not true language inheritance
+according to the theoretical definition of the term. But it lets
+you accomplish most of the same tasks, and arguing the theory
+of whether VB is or is not a true object-oriented language accomplishes
+little from a practical point of view.
+<P>
+The Microsoft documentation tends to stress the use of abstract
+classes as sources for interface definitions. I can't really argue
+with them on this count, but I suspect that many programmers will
+find fully implemented classes much more valuable in general use.
+So be sure you take the time to learn both approaches. In fact,
+let's do so.
+<P>
+Listing 5.8 shows the clsSecurityLoan object revised to implement
+the clsBankLoan object. There are two issues to stress in this
+listing. 
+<P>
+First, because this object does not use aggregation, the methods
+and properties of the clsBankLoan object are never called by this
+class. It implements its own versions of the functions in each
+case (just as its predecessor did in the earlier examples). This
+means the object is only using the clsBankLoan class to define
+the methods and properties for the interface. The code in the
+clsBankLoan class is not used at all.
+<P>
+Next, note that all of the properties and methods are in fact
+implemented twice! This is because they appear on both of the
+object's interfaces. For example: The Interest property is part
+of both the clsBankLoan interface and the clsSecurityLoan interface.
+You will see shortly that this is not necessary.
+<P>
+Also note how the class implements all of the functions of the
+clsBankLoan interface.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.8:&nbsp;The clsSecurityLoan Object, Version 2<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: Guide to the Perplexed
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Chapter 5
+
+
+' Implements the clsBankLoan interface
+Implements clsBankLoan
+
+Option Explicit
+
+' Amount of loan available
+Public AmountAvailable As Currency
+
+' Term of loan
+Public Duration As Integer
+
+' Interest
+Public Interest As Double
+
+' Margin requirement
+Public Margin As Double
+
+
+' Calculate the loan payment
+Private Function Payment() As Currency
+   Dim factor As Double
+   Dim iper As Double
+   iper = Interest / 12
+   factor = iper * ((1 + iper) ^ Duration)
+   Payment = AmountAvailable * factor / (((1 + iper) ^ Duration) - 1)
+End Function
+
+' Obtain string description of loan
+Public Function Summary() As String
+   Summary = Format$(AmountAvailable, &quot;Currency&quot;) &amp; &quot;  &quot; &amp; Format$(Interest,_
+   &quot;Percent&quot;) &amp; &quot;  &quot; &amp; Duration &amp; &quot; months. Margin: &quot; &amp; Format$(Margin, &quot;Percent&quot;)
+End Function
+
+Public Function SourceType() As String
+   SourceType = &quot;Brokerage Loan&quot;
+End Function
+
+' The clsBankLoan Interface
+Private Property Let clsBankLoan_AmountAvailable(ByVal RHS As Currency)
+   AmountAvailable = RHS
+End Property
+
+Private Property Get clsBankLoan_AmountAvailable() As Currency
+   clsBankLoan_AmountAvailable = AmountAvailable
+End Property
+
+Private Property Let clsBankLoan_Duration(ByVal RHS As Integer)
+   Duration = RHS
+End Property
+
+Private Property Get clsBankLoan_Duration() As Integer
+   clsBankLoan_Duration = Duration
+End Property
+
+Private Property Let clsBankLoan_Interest(ByVal RHS As Double)
+   Interest = RHS
+End Property
+
+Private Property Get clsBankLoan_Interest() As Double
+   clsBankLoan_Interest = Interest
+End Property
+
+Private Function clsBankLoan_Payment() As Currency
+   clsBankLoan_Payment = Payment()
+End Function
+
+Private Function clsBankLoan_SourceType() As String
+   clsBankLoan_SourceType = SourceType()
+End Function
+
+Private Function clsBankLoan_Summary() As String
+   clsBankLoan_Summary = Summary()
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The clsLoanShark object uses aggregation as shown in Listing 5.9.
+This object acknowledges the fact that since clsBankLoan properties
+and methods are in reality only accessed through the clsBankLoan
+interface. Including them in the clsLoanShark interface is overkill.
+This also reduces the amount of code in the class. In fact, the
+only function in the clsLoanShark interface is the LatePenalty
+function, which is unique to this object!
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.9:&nbsp;The clsLoanShark Object, Version 2<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: Guide to the Perplexed
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Chapter 5
+
+
+Option Explicit
+
+' Implements the clsBankLoan interface
+Implements clsBankLoan
+
+' Internal class object used in aggregation
+Private LoanTemplate As New clsBankLoan
+
+
+Public Function LatePenalty() As String
+   Select Case LoanTemplate.AmountAvailable
+      Case 0 To 25000
+         LatePenalty = &quot;Broken Fingers&quot;
+      Case 25000 To 75000
+         LatePenalty = &quot;Broken arm&quot;
+      Case Else
+         LatePenalty = &quot;You don't want to know&quot;
+   End Select
+End Function
+
+Private Property Let clsBankLoan_AmountAvailable(ByVal RHS As Currency)
+   LoanTemplate.AmountAvailable = RHS
+End Property
+
+Private Property Get clsBankLoan_AmountAvailable() As Currency
+   clsBankLoan_AmountAvailable = LoanTemplate.AmountAvailable
+End Property
+
+Private Property Let clsBankLoan_Duration(ByVal RHS As Integer)
+   LoanTemplate.Duration = RHS
+End Property
+
+Private Property Get clsBankLoan_Duration() As Integer
+   clsBankLoan_Duration = LoanTemplate.Duration
+End Property
+
+Private Property Let clsBankLoan_Interest(ByVal RHS As Double)
+   If RHS &lt; 0.5 Then RHS = RHS + 0.5
+   LoanTemplate.Interest = RHS
+End Property
+
+Private Property Get clsBankLoan_Interest() As Double
+   clsBankLoan_Interest = LoanTemplate.Interest
+End Property
+
+Private Function clsBankLoan_Payment() As Currency
+   clsBankLoan_Payment = LoanTemplate.Payment
+End Function
+
+Private Function clsBankLoan_SourceType() As String
+   clsBankLoan_SourceType = &quot;Loan Shark&quot;
+End Function
+
+Private Function clsBankLoan_Summary() As String
+   clsBankLoan_Summary = LoanTemplate.Summary
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+All that remains is to take a look at the Loan4 program itself.
+Listing 5.10 shows the main form modified to take advantage of
+the fact that all of the objects implement the clsBankLoan interface.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 5.10:&nbsp;Listing for lnSel4.frm <BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: Guide to the Perplexed
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Chapter 5
+
+
+Option Explicit
+
+' Array of available loans
+Dim Loans() As clsBankLoan
+
+' Constant for test purposes
+Const LOANCOUNT = 100
+
+Private Sub Form_Load()
+   Dim loannum%
+   Dim secLoan As clsSecurityLoan
+   
+   ' Load a list of available loans
+   ' In a real application, you would retrieve
+   ' this information from a database, or perhaps
+   ' an online service
+   ' In this example, we create them randomly
+   ReDim Loans(LOANCOUNT)
+   For loannum = 1 To LOANCOUNT
+      Select Case Int(Rnd() * 3)
+         Case 0
+            Set Loans(loannum) = New clsBankLoan
+         Case 1
+            Set Loans(loannum) = New clsSecurityLoan
+            ' Margin only applies to this type
+            Set secLoan = Loans(loannum)
+            secLoan.Margin = Rnd()
+         Case Else
+            Set Loans(loannum) = New clsLoanShark
+      End Select
+      With Loans(loannum)
+         .AmountAvailable = CLng(Rnd() * 200000)
+         .Duration = 12 * Int((Rnd * 30) + 1)
+         .Interest = (7 + Int((Rnd * 80) * 0.125)) / 100
+         lstLoans.AddItem .Summary
+      End With
+   Next loannum
+End Sub
+
+Private Sub lstLoans_Click()
+   Dim loannum%
+   Dim LatePenaltyValue$
+   Dim LoanSharkObject As clsLoanShark
+   
+   loannum = lstLoans.ListIndex + 1
+   lstInfo.Clear
+   With Loans(loannum)
+      lstInfo.AddItem .SourceType
+      lstInfo.AddItem .Summary
+      lstInfo.AddItem &quot;Payment: &quot; &amp; Format$(.Payment, &quot;Currency&quot;)
+      ' LatePenaltyValue = GetLatePenalty(Loans(loannum))
+      ' This won't work now!
+      'If LatePenaltyValue &lt;&gt; &quot;&quot; Then
+      '   lstInfo.AddItem &quot;Late payment penalty:&quot;
+      '   lstInfo.AddItem &quot;   &quot; &amp; LatePenaltyValue
+      'End If
+      If TypeOf Loans(loannum) Is clsLoanShark Then
+         Set LoanSharkObject = Loans(loannum)
+         lstInfo.AddItem &quot;Late payment penalty:&quot;
+         lstInfo.AddItem &quot;   &quot; &amp; LoanSharkObject.LatePenalty
+      End If
+   End With
+End Sub
+
+
+
+' Generic function to obtain LatePayment value
+'Public Function GetLatePenalty(obj As Object) As String
+'   On Error GoTo nofunction
+'   GetLatePenalty = obj.LatePenalty
+'   Exit Function
+'nofunction:
+'End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The first and most important change to note is that the Loans()
+array is defined as clsBankLoan again. You can do this because
+every object has a clsBankLoan interface, which can be assigned
+to this array. The Form_Load event still creates the different
+types of objects, but as soon as the object is assigned to the
+Loans() array, Visual Basic performs a QueryInterface to obtain
+a pointer to the clsBankLoan interface for the object. This pointer
+can be placed into the array.
+<P>
+The clsSecurityLoan object requires special treatment, since the
+Form_Load function must also set its Margin property. The problem
+is that the Margin property is not part of the clsBankLoan interface.
+In order to set it, the program must create a temporary variable
+called secLoan, which can access the full clsSecurityLoan interface.
+Once this variable is assigned from the object, the Margin property
+can be set.
+<P>
+There is one other major change in this code. The previous technique
+for checking the LatePenalty doesn't work! (Go ahead and try commenting
+out the code and test it out for yourself if you wish.) The LatePenalty
+property will never be found! Now, this may be confusing. After
+all, the GetLatePenalty function accepts an object reference,
+which uses the IDispatch interface, which is late bound, right?
+And the IDispatch interface can safely be used to check whether
+the LatePenalty property is implemented, right? (That's what we
+did last time.)
+<P>
+The catch can be seen by taking a second look at Figure 5.4. Yes,
+the GetLatePenalty function does use the IDispatch interface for
+the clsLoanShark object, but which one? The clsLoanShark object
+has two IDispatch interfaces, one for the clsBankLoan interface,
+and one for the clsLoanShark interface (remember, in a dual interface
+you have both the direct interface and a corresponding IDispatch
+interface).
+<P>
+The GetLatePenalty function receives the IDispatch interface for
+the clsBankLoan interface, which never has a LatePenalty function,
+so this approach does not work. We must go back to checking the
+individual object type to see if it is one that we know supports
+the LatePenalty function.
+<P>
+How does Visual Basic decide which IDispatch interface to use
+in cases like these? It doesn't-so it always returns a pointer
+to the one most recently accessed. In this application, the previous
+access to the object is through the Loans() array, which uses
+the clsBankLoan interface. You should never assume that a particular
+interface will be chosen when passing an object with multiple
+interfaces to a function that takes a generic object parameter,
+unless you explicitly choose that interface by first assigning
+the object to a variable with the desired interface type.
+<P>
+Is there a way to avoid testing for individual object types and
+generically test for the LatePenalty property?
+<P>
+Yes. You could redefine the clsBankLoan interface to add a function
+that always returns a reference to the object's other IDispatch
+interface. If it was called MainInterface, it might be implemented
+something like this in the clsLoanShark class:
+<BLOCKQUOTE>
+<PRE>
+Public Function clsBankLoan_MainInterface() As Object
+       Dim myobj As clsLoanShark
+       Set myobj = Me
+       Set clsBankLoan_MainInterface = myobj
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+This is demonstrated in the Loan5 sample application. Here the
+lstLoans_Click function uses the following code to obtain the
+late penalty, if it exists:
+<BLOCKQUOTE>
+<PRE>
+LatePenaltyValue = GetLatePenalty(Loans(loannum).MainInterface)
+If LatePenaltyValue &lt;&gt; &quot;&quot; Then
+   lstInfo.AddItem &quot;Late payment penalty:&quot;
+   lstInfo.AddItem &quot;   &quot; &amp; LatePenaltyValue
+End If
+</PRE>
+</BLOCKQUOTE>
+<P>
+There's one catch with taking this approach: You had better decide
+on it ahead of time. As you will see if you look closely at the
+Loan5 example, adding a function to the clsBankLoan project required
+the addition of the MainInterface function to every class that
+implements this interface. This is not a big problem in this example,
+but what if you had created ActiveX components based on the interface?
+What if other projects used the same class? What if they were
+already in distribution? You run the risk of breaking all of those
+components because you have effectively violated the interface
+contract by changing it.
+<P>
+The COM object model used by Visual Basic and ActiveX provides
+many capabilities and advantages, but it demands something in
+return: that you take care in defining your objects ahead of time.
+There is no harm in adding and changing an interface while you
+are developing it, but once you release an object based on that
+interface to the outside world or to other developers or projects,
+you will have to live with that interface forever.
+<P>
+In taking one last look at these samples, you will see that the
+Loan4 project has one great advantage over the Loan3 project:
+all of the object method and property accesses are early bound.
+The Loan5 project maintains this advantage except in the LatePenalty
+test which is, in this case, late bound.
+<H3><A NAME="Tradeoffs">
+Trade-offs</A></H3>
+<P>
+This chapter demonstrates a variety of techniques for developing
+objects in Visual Basic. I've tried to illustrate some of the
+trade-offs involved in choosing a particular approach. You should
+be considering:
+<UL>
+<LI>The performance impact of early versus late binding.
+<LI>The code reusability and long-term reliability achieved by
+using aggregation and delegating to contained functions.
+<LI>The performance and resource cost entailed in the creation
+and destruction of contained objects when using aggregation.
+</UL>
+<P>
+All of these techniques are available to you as a VB programmer.
+But it's up to you to choose the ones most suitable to your own
+tasks.
+<P>
+So far, all of the objects that we've looked at have been implemented
+as classes within an application. Now that you understand a little
+bit (well, actually, a great deal) about how COM objects work,
+it's time to take the next step and look at other places where
+COM objects can live: in dynamic link libraries and even in other
+applications.
+<HR>
+
+<CENTER><P><A HREF="ch4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch4.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch6.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch6.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

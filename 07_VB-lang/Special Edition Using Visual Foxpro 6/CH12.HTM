@@ -1,0 +1,1537 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 12 - Organizing Components of an Application into a Project</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch11.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch13.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;12</H1>
+<H1>Organizing Components of an Application into a Project</H1>
+
+<UL>
+<LI><A HREF="#FindingyourWayAroundtheProjectManager">
+Finding your Way Around the Project Manager</A>
+<UL>
+<LI><A HREF="#UsingtheOutlineControl">
+Using the Outline Control</A>
+<LI><A HREF="#TypesofFilesIncludedintheProjectManager">
+Types of Files Included in the Project Manager</A>
+</UL>
+<LI><A HREF="#TakingAdvantageoftheProjectManagersFunctionality">
+Taking Advantage of the Project Manager's Functionality</A>
+<UL>
+<LI><A HREF="#CreatingFilesThroughtheProjectManager">
+Creating Files Through the Project Manager</A>
+<LI><A HREF="#AddingExistingFiles">
+Adding Existing Files</A>
+<LI><A HREF="#ModifyingFiles">
+Modifying Files</A>
+<LI><A HREF="#RunningProgramsandFormsandPreviewingReports">
+Running Programs and Forms and Previewing Reports</A>
+<LI><A HREF="#RemovingFiles">
+Removing Files</A>
+<LI><A HREF="#DraggingandDroppingProjectElements">
+Dragging and Dropping Project Elements</A>
+<LI><A HREF="#CollapsingandDockingtheProjectManager">
+Collapsing and Docking the Project Manager</A>
+<LI><A HREF="#TheProjectInformationDialogBox">
+The Project Information Dialog Box</A>
+</UL>
+<LI><A HREF="#BuildingVisualFoxProAPPEXEandCOMDLLFiles">
+Building Visual FoxPro .APP, .EXE, and COM .DLL Files</A>
+<UL>
+<LI><A HREF="#ANoteontheMainFile">
+A Note on the Main File</A>
+<LI><A HREF="#IncludingandExcludingFilesfromTTAPPTTsandTTEXETTs">
+Including and Excluding Files from <TT>.APP</TT>s
+and <TT>.EXE</TT>s
+</A>
+<LI><A HREF="#BuildingSetupDiskstoDistributeyourApplication">
+Building Setup Disks to Distribute your Application</A>
+<LI><A HREF="#SpecifyingFilestoInclude">
+Specifying Files to Include</A>
+<LI><A HREF="#SpecifyingComponentstoInclude">
+Specifying Components to Include</A>
+<LI><A HREF="#SpecifyingLocationofSetupImages">
+Specifying Location of Setup Images</A>
+<LI><A HREF="#SpecifyingSetupProgramInformation">
+Specifying Setup Program Information</A>
+<LI><A HREF="#SpecifyingtheApplicationsDirectoryandProgramGroup">
+Specifying the Application's Directory and Program Group</A>
+<LI><A HREF="#SpecifyingFileDirectories">
+Specifying File Directories</A>
+<LI><A HREF="#LaunchingtheSetupWizard">
+Launching the Setup Wizard</A>
+</UL>
+<LI><A HREF="#UsingVisualSourceSafeforVersionControlinTeamDevelopment">
+Using Visual SourceSafe for Version Control in Team Development
+</A>
+<UL>
+<LI><A HREF="#IntegratingVisualSourceSafewithyourVisualFoxProProject">
+Integrating Visual SourceSafe with your Visual FoxPro Project
+</A>
+<LI><A HREF="#CreatingaSourceControlProject">
+Creating a Source Control Project</A>
+<LI><A HREF="#ACloserLookatVisualSourceSafeTerminology">
+A Closer Look at Visual SourceSafe Terminology</A>
+</UL>
+<LI><A HREF="#AccessingtheProjectManagerasanObject">
+Accessing the Project Manager as an Object</A>
+<UL>
+<LI><A HREF="#TheProjectManagerObjectDesign">
+The Project Manager Object Design</A>
+<LI><A HREF="#AccessingProjectMethodsandProperties">
+Accessing Project Methods and Properties</A>
+<LI><A HREF="#ProjectPropertiesandMethods">
+Project Properties and Methods</A>
+<LI><A HREF="#FilePropertiesandMethods">
+File Properties and Methods</A>
+</UL>
+<LI><A HREF="#ProjectHooks">
+ProjectHooks</A>
+<UL>
+<LI><A HREF="#UsingTTProjectHookTTs">
+Using <TT>ProjectHook</TT>s
+</A>
+</UL>
+<LI><A HREF="#TheProjectManagerALastWord">
+The Project Manager: A Last Word</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="FindingyourWayAroundtheProjectManager"><FONT SIZE=5 COLOR=#FF0000>
+Finding your Way Around the Project Manager</FONT></A></H2>
+<P>
+The Project Manager is Visual FoxPro's tool for organizing all
+your application files-forms, reports, menus, programs, include
+files, graphics, and even data-into a single command center. Most
+programmers who have worked with FoxPro over the years have grown
+increasingly reliant on the Project Manager. There are many reasons
+for this growing relationship. First, many programmers have found
+that once an application grows beyond the three-program, two-form,
+one-report stage, its various parts become increasingly difficult
+to keep track of. The Project Manager enables access to all of
+an application's files through a single tool. Second, many Visual
+FoxPro programmers now release their applications as <TT>.EXE</TT>
+or <TT>.APP</TT> files, and the Project Manager makes creating
+those files a snap. Third, the Project Manager has grown in its
+functionality and usability, and now, with the release of Visual
+FoxPro 6, it is a fully exposed object, complete with development
+hooks to help automate source control and testing.
+<P>
+If you're a current FoxPro developer who hasn't taken full advantage
+of the Project Manager, there's no time like the present! And
+if you're new to FoxPro, you'll find the Project Manager a very
+valuable tool in your effort to keep track of your various application
+files.
+<P>
+In this section, you'll review each aspect of the Project Manager's
+interface.
+<H3><A NAME="UsingtheOutlineControl">
+Using the Outline Control</A></H3>
+<P>
+The <I>outline control</I> is the heart of the Project Manager.
+It's an easy to use, expandable hierarchy that's reminiscent of
+the Windows Explorer and File Manager tools. A plus sign icon
+indicates that there are hidden levels that can be uncovered with
+a click. Clicking a minus sign icon hides all the nested, subordinate
+levels.
+<P>
+Creating a new project in Visual FoxPro is easy. Just select New,
+Project from the system menu, or type <B>Create
+Project</B> in the Command window. When you are prompted for
+a filename, enter a name and press OK. The Project Manager will
+appear (see Figure 12.1).
+<P>
+<IMG SRC="f12-1.gif"><B>Figure 12.1 : </B><I>The Visual FoxPro Project Manager enables
+you to access all your application's files through one central
+tool</I>.</A>
+<P>
+You can create a project as a late step in your application design
+and add existing files at that point. But to really take advantage
+of this tool, you should use it <I>while </I>you code and design,
+not after. I like to create a project at the same time as I create
+directories, and even before I create a main program for the application.
+<H3><A NAME="TypesofFilesIncludedintheProjectManager">
+Types of Files Included in the Project Manager</A></H3>
+<P>
+The Project Manager window is reminiscent of the Properties window
+in the Form and Class Designers (and in the Data Environment of
+the Report Designer). Six different tabs are available, each of
+which shows a different subset of file types. The All tab, not
+surprisingly, shows all the project files. Let's take a moment
+to review each of the other tabs.
+<P>
+<B>The Data Tab&nbsp;&nbsp;</B>The Data tab includes all databases,
+free tables, and queries (see Figure 12.2). It might shock you
+to learn that you can include data files in a project. But Visual
+FoxPro enables you to do so, which makes it easy to keep track
+of and quickly access the data your application runs against.
+<P>
+<IMG SRC="f12-2.gif"><B>Figure 12.2 : </B><I>The Data tab includes all the data elements
+in your applications, including databases, free tables, and queries</I>.</A>
+<P>
+The Databases icon expands to show any databases in your project,
+but it doesn't stop there! The database icons each expand to differentiate
+among tables, local views, remote views, ODBC connections, and
+even stored procedures. Wherever possible, the Project Manager
+keeps expanding, showing more and more detail. So, for example,
+the Tables icon expands to show each table, and each table expands
+to show each field and index (see Figure 12.3).
+<P>
+<IMG SRC="f12-3.gif"><B>Figure 12.3 : </B><I>By expanding the icons on the Data tab,
+you can see each table in your application and even each field
+and index within tables</I>.</A>
+<P>
+Notice the small icon to the left of each table entry (a circle
+with a slash through it, known as the <I>Exclude icon</I>). This
+icon indicates that the file will not be included in any compiled
+<TT>.APP</TT>, <TT>.EXE</TT>, or <TT>.DLL</TT> created from the
+project. You'll learn more about compiling projects later in this
+chapter, but for now, keep in mind that there are some data or
+files you will probably distribute separate from your <TT>.EXE</TT>
+or <TT>.APP</TT>. Data files are a good example, and Visual FoxPro
+defaults to an exclude mode for these files. But you can also
+exclude other files or choose to include data files. Just choose
+Project, Exclude or Project, Include.
+<P>
+<B>The Documents Tab&nbsp;&nbsp;</B>The Documents tab includes
+all document-style files, namely, forms, reports, and labels (see
+Figure 12.4). Again, expanding any of these icons results in a
+listing of all files of that type.
+<P>
+<IMG SRC="f12-4.gif"><B>Figure 12.4 : </B><I>The Documents tab shows all forms, reports,
+and labels in your application</I>.</A>
+<P>
+<B>The Classes Tab</B>&nbsp;&nbsp;The Classes tab includes all
+class libraries (see Figure 12.5). Class libraries can be expanded
+to show all member classes.
+<P>
+<IMG SRC="f12-5.gif"><B>Figure 12.5 : </B><I>The Classes tab shows all class libraries
+in your application</I>.</A>
+<P>
+<B>The Code Tab</B>&nbsp;&nbsp;The Code tab shows all programs,
+API libraries, and applications (see Figure 12.6).
+<P>
+<IMG SRC="f12-6.gif"><B>Figure 12.6 : </B><I>The Code tab shows all programs, API libraries,
+and external applica-tions</I>.</A>
+<P>
+<B>The Other Tab</B>&nbsp;&nbsp;The Other tab shows all other
+types of Visual FoxPro files, such as menus, text files, or graphics
+files (see Figure 12.7).
+<P>
+<IMG SRC="f12-7.gif"><B>Figure 12.7 : </B><I>The Other tab shows all miscellaneous Visual
+FoxPro or external files</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Text files usually consist of Include files, but can also include programmer documentation and tips. And remember, you can choose to exclude such files before compiling a program file by selecting Project, Exclude.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="TakingAdvantageoftheProjectManagersFunctionality"><FONT SIZE=5 COLOR=#FF0000>
+Taking Advantage of the Project Manager's Functionality</FONT></A></H2>
+<P>
+If the Project Manager stopped there, it would still be useful;
+all the files you need are stored together in a nice hierarchical
+fashion, providing a self-documenting file management system.
+But the Project Manager also includes six buttons that are always
+present, no matter which tab or level of the hierarchy is selected,
+to enable you to modify, add, delete, or run files. These buttons
+will be enabled or disabled depending on what kind of file and
+level of hierarchy are selected. Here's a brief description of
+each:
+<UL>
+<LI>New-Adds a new file of the type
+currently selected.
+<LI>Add-Adds an existing file of the
+type currently selected to the project.
+<LI>Modify-Modifies the currently selected
+file.
+<LI>Run-Runs the currently selected
+file.
+<LI>Remove-Removes the currently selected
+file from the project, with an option to delete it from the disk.
+<LI>Build-Rebuilds the project, or
+builds an application, executable, or COM <TT>.DLL</TT> from the
+project.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Some programmers find these options so useful that they find themselves never, or rarely, typing commands such as <TT>MODIFY FORM</TT> or <TT>Do <I>Program File</I></TT>. Others mix and match techniques. Visual FoxPro lets you decide which approach works best for you and your team. 
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="CreatingFilesThroughtheProjectManager">
+Creating Files Through the Project Manager</A></H3>
+<P>
+You can create any type of Visual FoxPro application file right
+from the Project Manager. Let's take a look at creating a program
+file. Click on the Code category and expand it. Visual FoxPro's
+Project Manager enables you to differentiate among three different
+types of code: programs, API libraries, and external applications
+(see Figure 12.8). Highlight Programs and click the New button
+to create a new program. A new program, with a default name of
+<TT>Program1</TT>, will appear (see Figure 12.9). Don't worry
+about the title in the Code window; when you save this program,
+you will be prompted for a more sensible name.
+<P>
+<IMG SRC="f12-8.gif"><B>Figure 12.8 : </B><I>You can expand the Code icon-or any icon-to
+indicate exactly what kind of file you want to add or create</I>.</A>
+<P>
+<IMG SRC="f12-9.gif"><B>Figure 12.9 : </B><I>Creating a new program launches the Visual
+FoxPro Code window</I>.</A>
+<P>
+After you save the program, you can expand the Code, Programs
+outline branch to see it and any other programs you add to the
+project.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can expand or contract categories either by double-clicking the heading or by clicking the plus or minus icons.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The very first program you create or add to the project is listed in bold type (see Figure 12.10). This indicates that the program is the main point of entry into the application, and it will be the first program code that fires when you start an application or project that you've created. You can always decide to use a different main program later by clicking on the file to highlight it and then selecting Project, Set Main.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<IMG SRC="f12-10.gif"><B>Figure 12.10: </B><I>The main program, or starting point, of
+your application is listed in bold type</I>.</A>
+<P>
+Just as you use the New button to create a program file, you can
+use it to create a new form, menu, report, text file, or any other
+type of file. When you press the New button, Visual FoxPro looks
+at the file type selected and takes the appropriate behind-the-scenes
+action (Create Form, Modify Command, Create Report, and so on).
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can include descriptions for each file in the project by highlighting the file and choosing Project, Edit Description.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="AddingExistingFiles">
+Adding Existing Files</A></H3>
+<P>
+You can also include preexisting files in your project. Just highlight
+the type of file you want to add and click the Add button. You'll
+be prompted to select an existing file from a GetFile() dialog
+box.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Remember that you can include the same file in several projects. The Project Manager just points to the underlying file. This is an extremely helpful tool for maintaining and making good use of reusable code and class libraries. But there's a downside: Remember that any changes you make to a program file, for instance, are reflected in any other projects using the program.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+If you have decided to create a new project from a series of existing
+files and you're worried about having to add a hundred files in
+the manner demonstrated above, stop worrying! Just add the main
+file and when you rebuild the project (discussed below), Visual
+FoxPro will draw in any other called files. Of course, you might
+need to add a few references that Visual FoxPro could not pick
+up (such as any program that is called via macro-substitution,
+for instance), but you'll certainly get a running start.
+<H3><A NAME="ModifyingFiles">
+Modifying Files</A></H3>
+<P>
+The Modify button, like the Add button, provides access to the
+native editor of the element you have highlighted. A Code window
+is brought forward for programs, the Form Designer for forms,
+and the Menu Designer for menus.
+<P>
+Visual FoxPro even activates the appropriate editor when you select
+an OLE component. Figure 12.11 shows what happens if you highlight
+a bitmap file and click Modify. This feature demonstrates the
+remarkable strength of the Project Manager. As the quantity and
+variety of multimedia, hypertext help, and other features in your
+applications increase, you will certainly be thankful for the
+ability to modify these files from one central development tool.
+<P>
+<IMG SRC="f12-11.gif"><B>Figure 12.11: </B><I>Whenever possible, Visual FoxPro lets
+you modify an OLE component through the associated application</I>.</A>
+<H3><A NAME="RunningProgramsandFormsandPreviewingReports">
+Running Programs and Forms and Previewing Reports</A></H3>
+<P>
+When you highlight a project element and press Run, Visual FoxPro
+runs the program or form for you.
+<P>
+This button's caption changes to Preview when you select a report.
+Of course, a particular program, form, or report can depend on
+certain variables or settings that might not be present. In that
+case, you might experience runtime errors. But, often, this is
+an extremely useful feature.
+<P>
+This button's caption changes to Browse when you select a table
+or a field. Clicking Browse will activate a browse window so that
+you can look directly at the table.
+<H3><A NAME="RemovingFiles">
+Removing Files</A></H3>
+<P>
+If you've worked with other project managers, you've probably
+been frustrated by the two-step (or more) process required for
+cleaning up and maintaining projects. After removing the file
+from the project, you still have to delete the actual file from
+disk. Visual FoxPro lets you handle both of these tasks at once.
+Just select the file and click Remove, and you will see the dialog
+shown in Figure 12.12.
+<P>
+<IMG SRC="f12-12.gif"><B>Figure 12.12: </B><I>The Visual FoxPro Project Manager lets
+you remove a file from the project and even delete it from disk</I>.</A>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+While this procedure is very convenient, exercise caution! If there is any chance that the project might be associated with another project, choose to remove the file rather than deleting it entirely. (Of course, it's good practice to back up your files periodically, anyway.)</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The project files are actually special instances of <TT>.DBF</TT> and <TT>.FPT</TT> files. The Remove option deletes the element's particular record, but doesn't <TT>PACK</TT> the table. When you select Project, Clean Up Project, Visual FoxPro executes a <TT>PACK</TT> against the table.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="DraggingandDroppingProjectElements">
+Dragging and Dropping Project Elements</A></H3>
+<P>
+The Project Manager makes extensive use of drag-and-drop technology.
+With a little experimenting, you'll get a sense of just how powerful
+this feature will be in your development. For instance, you can
+drag and drop a control from one class library to make a copy
+of it in a second library. You can also drag a control from the
+Project Manager and drop it into the Form Designer to include
+an instance of it on a form.
+<H3><A NAME="CollapsingandDockingtheProjectManager">
+Collapsing and Docking the Project Manager</A></H3>
+<P>
+For all its usefulness, the Project Manager is a big bulky window
+to have sitting on your desktop throughout your development. You
+can resize the window to some degree, just as you can most Visual
+FoxPro tools, but that's probably not enough in all cases. Fortunately,
+there is an alternative.
+<P>
+Click the up-arrow button in the upper-right corner (below the
+Close button) and the Project Manager is minimized. Only the tops
+of the tabs remain visible. This doesn't mean you've lost any
+functionality, though. If you click a particular tab, the tab
+expands downward and all your functionality returns. Figure 12.13
+shows the Code tab dropped down. You can also continue to use
+the Project menu and right-click for certain shortcut options.
+<P>
+<IMG SRC="f12-13.gif"><B>Figure 12.13: </B><I>Even when the Project Manager is minimized,
+all its options are available to you</I>.</A>
+<P>
+In this collapsed state, the Project Manager is a toolbar. If
+you drag it to the top of the screen, it docks there like any
+other toolbar. Additionally, you can drag a tab off the collapsed
+Project Manager down onto the Visual FoxPro screen. These torn-off
+tabs enable you to see only the parts of the Project Manager that
+you need. Figure 12.14 shows the Classes tab torn off; the rest
+of the Project Manager sits docked at the top of the screen. If
+you click the pushpin in the top right corner of the tab, it will
+stay on top. Just click it again to toggle it off and enable other
+windows to be moved above it.
+<P>
+<IMG SRC="f12-14.gif"><B>Figure 12.14: </B><I>You can tear off one tab of the Project
+Manager and place it anywhere in your Visual FoxPro environment</I>.</A>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Torn-off tabs are particularly useful when you use the Form Designer. You can keep the Classes tab visible and active and drag classes into the Form Designer canvas.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="TheProjectInformationDialogBox">
+The Project Information Dialog Box</A></H3>
+<P>
+The Project Information dialog box can be brought up by choosing
+Project, Project Info. The dialog box includes three tabs.
+<P>
+The Project tab enables you to specify information on the developer
+or company (see Figure 12.15). This tab also includes a setting
+for the home directory of the project and several compilation
+options, such as whether debug information is included and whether
+the compiled code is compiled. The Project Class check box and
+text box enable you to specify a <TT>ProjectHook</TT> class (the
+new project hook functionality is covered later in this chapter).
+<P>
+<IMG SRC="f12-15.gif"><B>Figure 12.15: </B><I>The Project tab holds information on the
+developer or company</I>.</A>
+<P>
+The Files tab includes a complete listing of all files in the
+project, the dates they were last modified, whether they are included,
+and the code page for the file (see Figure 12.16).
+<P>
+<IMG SRC="f12-16.gif"><B>Figure 12.16: </B><I>The Files tab includes a quick reference
+list of all files in your project</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If the Included check box is blank, it is not included in any compiled <TT>.APP</TT>, <TT>.EXE</TT>, or <TT>.DLL</TT> files. If the check box is marked with an X, the file is included. If the check box is completely filled in, the file is the main file of the project. Remember, you can set the main file by highlighting the new main file in the Project Manager and choosing Project, Set Main.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The Servers tab includes information on any classes (whether defined
+in code or visually) that are marked as OLE Public (see Figure
+12.17). When you highlight a listed item, you see the library
+name and the name of the class. Also displayed is a description
+of the class name and a description of the library the selected
+class is based on. If you create your own help files and topic
+IDs, the filename and context ID are also shown. The public class's
+project name is displayed in the Project name box. The Instancing
+pull-down menu offers three choices:
+<P>
+<IMG SRC="f12-17.gif"><B>Figure 12.17: </B><I>You can access information on OLE public
+classes through the Servers tab</I>.</A>
+<UL>
+<LI><I>Single Use.</I> This option indicates that you can create
+an instance of the class within or outside of Visual FoxPro using
+OLE Automation. Each instance requested causes a separate copy
+of the OLE server to open.
+<LI><I>Not Creatable.</I> This indicates that you cannot create
+an instance of the server outside of Visual FoxPro.
+<LI><I>Multi-Use.</I> This indicates that each requested instance
+uses the same copy of the OLE server to act as the server.
+</UL>
+<H2><A NAME="BuildingVisualFoxProAPPEXEandCOMDLLFiles"><FONT SIZE=5 COLOR=#FF0000>
+Building Visual FoxPro .APP, .EXE, and COM .DLL Files</FONT></A></H2>
+<P>
+The Project Manager makes creating an application or executable
+file from your various program and document files a breeze. Just
+click the Build button on the right of the Project Manager. The
+dialog box shown in Figure 12.18 appears and enables you to choose
+from the following options:
+<P>
+<IMG SRC="f12-18.gif"><B>Figure 12.18: </B><I>The Project Manager lets you rebuild the
+project, build a Visual FoxPro .APP file, or build an .EXE</I>.</A>
+<UL>
+<LI><I>Rebuild Project.</I> This option scans through all the
+files in the project, compiling where necessary or directed, generating
+source code, and checking for errors.
+<LI><I>Build Application.</I> This option builds the project,
+but then bundles all the files marked for inclusion into an <TT>.APP</TT>
+file. Anyone who wants to use this <TT>.APP</TT> file must have
+his or her own copy of Visual FoxPro.
+<LI><I>Build Executable.</I> This option builds and bundles the
+project just as Build Application does, but in addition, it places
+the Visual FoxPro runtime loader and an executable file header
+at the beginning of the file.  Users can run the <TT>.EXE</TT>
+as long as they've loaded the runtime library and any other necessary
+<TT>.DLL</TT>s or <TT>.FLL</TT>s.
+<LI><I>Build COM DLL.</I> This option creates a Dynamic Link Library
+file that enables other applications to use your project as a
+server. You can learn more about Visual FoxPro's COM capabilities
+in Part V, &quot;COM.&quot;
+</UL>
+<P>
+During any of the processes listed above, Visual FoxPro recompiles
+or regenerates any files that have been modified since the last
+build. The Recompile All Files option will force a recompile of
+all the files.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro does a pretty good job of knowing which files have to be recompiled, and as a result, I usually let it take the wheel and decide for itself what to recompile. But now and then, a file does not recompile (usually due to some action I've taken, such as restoring a backup <TT>.PRG</TT> without the corresponding <TT>.FXP</TT>). So, every few compiles, and definitely before I send anything out the door, I execute a recompile with a Rebuild All. 
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Visual FoxPro always maintains a log of compilation errors in
+a file with the same base name as your project and an <TT>.ERR</TT>
+extension. You can (and should) view this file right after a recompile
+by clicking the Display Errors option.
+<P>
+If you want your application to run right after the build, select
+the Run After Build option.
+<H3><A NAME="ANoteontheMainFile">
+A Note on the Main File</A></H3>
+<P>
+As I discussed earlier in this chapter, the main file of your
+project is the file that gets called when a client runs your <TT>.APP</TT>
+or <TT>.EXE</TT>. It is easier to see in the list of Project Manager
+elements because it is always listed in bold. Although it can
+be a form, menu, or program, it is definitely best to make it
+a program. This program can be a very simple calling <TT>.PRG</TT>,
+but it will make your life much easier than starting with a form
+or menu. For instance, at its most simple, a main program might
+look something like this:
+<BLOCKQUOTE>
+<PRE>
+* setup code
+DO MainMnu.MPR          &amp;&amp; the menu code
+DO Form StartUp.scx     &amp;&amp; startup form
+READ EVENTS             &amp;&amp; VFP's internal event loop (kind(c)
+* cleanup code
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="IncludingandExcludingFilesfromTTAPPTTsandTTEXETTs">
+Including and Excluding Files from <TT>.APP</TT>s
+and <TT>.EXE</TT>s
+</A></H3>
+<P>
+Including and excluding files is sometimes a source of confusion,
+particularly for those new to Visual FoxPro. But it's really quite
+simple: Although you might want every file in your project to
+end up on clients' machines, you won't necessarily want them all
+to arrive there embedded in the <TT>.APP</TT> or <TT>.EXE</TT>.
+To begin with, anything included in the <TT>.APP</TT> or <TT>.EXE</TT>
+is read only, which means that some types of files should never
+be included.As a result, Visual FoxPro, by default, excludes databases,
+tables, <TT>.FLL</TT>s, <TT>.DLL</TT>s, and <TT>.APP</TT>s.
+<P>
+Wait a minute! It's easy to see why databases and tables shouldn't
+be included because you don't want them marked as read only, but
+why exclude <TT>.FLL</TT>s, <TT>.DLL</TT>s, and <TT>.APP</TT>s?
+Well, in those cases, the issues are more of a technical nature,
+and they have to do with the very nature of dynamic link libraries.
+Windows must be able to load a <TT>.DLL</TT> in to memory whenever
+it needs to, and if the files were embedded in your <TT>.APP</TT>
+or <TT>.EXE</TT>, that wouldn't be possible.
+<P>
+You'll have to make sure that you include any of these non-embedded
+files when you distribute your application. Fortunately, the Setup
+Wizard makes this easy to do.
+<P>
+You might also want to exclude Report Forms or other files that
+your clients might want to modify themselves. Even if your clients
+don't modify the reports you design for them, you might choose
+to deliver them separately as a part of your implementation strategy.
+Excluding reports will make your <TT>.APP</TT> or <TT>.EXE</TT>
+smaller, which means it will transmit more quickly. And, if you
+edit one report, you won't need to recompile and resend a large
+executable. Your decisions on which files to include will be based
+in part on your client base and the size and scope of your applications.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can also create projects, <TT>.APP</TT>s, and <TT>.EXE</TT>s right from code, although there are very few reasons to do so. The <TT>BUILD PROJECT</TT>, <TT>BUILD APP</TT>, and <TT>BUILD EXE</TT> commands will do in code what you've already done in the examples above. But beware of the <TT>BUILD PROJECT FROM</TT> command! <TT>Build Project <I>MyProj</I></TT> will rebuild the project, but <TT>Build Project <I>MyProj</I> from Main</TT> will overwrite the current project with a brand-new one, with <TT>Main.prg</TT> at its center. That is probably not the behavior you desire.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="BuildingSetupDiskstoDistributeyourApplication">
+Building Setup Disks to Distribute your Application</A></H3>
+<P>
+Creating setup disks is the final step in producing an application.
+But keep in mind that it is the first part of your product that
+your customers will see. And in this age of slick programs and
+rising user expectations, first impressions count.
+<P>
+Of course, programmers would rather put their time and energy
+into actual application development than slick setup procedures.
+And in fact, that should be the case. Fortunately, Visual FoxPro
+makes it easy to create professional setup programs without too
+much time or effort.
+<P>
+A slick interface is not the only reason to use Visual FoxPro's
+Setup Wizard. The simple fact of the matter is that a Visual FoxPro
+application is not a simple system to install. Gone are the days
+of batch files, a standalone <TT>.EXE</TT>, and a simple overlay
+file. These days, you need to install-and in many cases register
+with the operating system-the runtime modules, OLE files, <TT>.DLL</TT>s,
+and maybe even ODBC drivers.
+<P>
+At first glance, all of this might make you yearn for simple ZIP
+files and DOS paths. But then again, that would leave us with
+blue screens and modal forms. Visual FoxPro's power comes with
+a cost, but fortunately, Visual FoxPro comes with a powerful tool
+to assist you: the Setup Wizard.
+<H3><A NAME="SpecifyingFilestoInclude">
+Specifying Files to Include</A></H3>
+<P>
+Run the Setup Wizard after you build your <TT>.EXE</TT>. Then
+move the <TT>.EXE</TT> and any other files you want to distribute
+(reports, <TT>ReadMe.TXT</TT> files, and so on) to a separate
+subdirectory from the project. This subdirectory should include
+only the files you want to distribute and nothing more. To start
+the Setup Wizard, select Tools, Wizards, Setup, which brings forward
+the first page of the Setup Wizard (see Figure 12.19). This page
+requests one crucial piece of information: the directory location
+of the files you want to install. Press the ellipsis button to
+select a directory.
+<P>
+<IMG SRC="f12-19.gif"><B>Figure 12.19: </B><I>The first screen of the Setup Wizard requests
+the source directory for your setup files</I>.</A>
+<H3><A NAME="SpecifyingComponentstoInclude">
+Specifying Components to Include</A></H3>
+<P>
+The second page of the Setup Wizard enables you to specify the
+components that must be distributed along with your executable
+file (see Figure 12.20). You will most likely want to include
+the Visual FoxPro 6 runtime (unless you know for sure that your
+users already have a Visual FoxPro 6 application installed on
+their machines). The chances are good that you will also want
+to include one or more other components. If your application includes
+graphs, select the Microsoft Graph 8.0 runtime option. If you
+use ActiveX components, ODBC connections, or HTML help, select
+these options.
+<P>
+<IMG SRC="f12-20.gif"><B>Figure 12.20: </B><I>The second screen of the Setup Wizard
+enables you to specify the additional system components that .EXE
+users require</I>.</A>
+<P>
+Notice that any of the check boxes with an ellipsis will prompt
+you for additional information. For example, when you click the
+ActiveX Controls option, Visual FoxPro will search your Registry
+for any current ActiveX components and bring forward a modal dialog
+box from which you can select any and all applicable items (see
+Figure 12.21).
+<P>
+<IMG SRC="f12-21.gif"><B>Figure 12.21: </B><I>The ActiveX Controls option enables you
+to specify which ActiveX controls are included in your application</I>.</A>
+<H3><A NAME="SpecifyingLocationofSetupImages">
+Specifying Location of Setup Images</A></H3>
+<P>
+The third screen of the Setup Wizard enables you to choose the
+location for your installation images or directories and the type
+of installation images you would like to create (see Figure 12.22).
+<P>
+<IMG SRC="f12-22.gif"><B>Figure 12.22: </B><I>The third screen of the Setup Wizard requests
+a target directory for your setup files</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Creating setup files requires a file management decision, and maybe even an overall file management strategy. As I mentioned, you should not place the files you want to distribute in the same directory path as your actual project. In addition, you don't want to place the setup images in the same directory as the files. I keep a Setup Disk folder on my C:\ drive with a separate directory for each project. Each project folder, in turn, has two branches: Files and Distrib. You might find that some other approach works for you, but the important thing is to put at least a bit of thought into your strategy.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The type of installation image you want will depend on your distribution
+strategy. If you are distributing your application via several
+disks, choose the 1.44 Diskette option and Visual FoxPro will
+divide the files for you into several subdirectories, each representing
+one disk. This makes it easy to copy each directory directly to
+a disk. But, whenever possible, use the Websetup or NetSetup options.
+They each put all the setup files into one directory: Websetup
+compresses them a bit more tightly.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you plan to distribute your application via CD-ROM, the preferred approach is probably NetSetup. After the files have been created, write them onto your CDs.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="SpecifyingSetupProgramInformation">
+Specifying Setup Program Information</A></H3>
+<P>
+The fourth step in the Setup Wizard involves providing information
+that will be seen by the user during the setup (see Figure 12.23).
+This is a good place to include the application name, your company's
+name, and any copyright information. You can also choose to run
+a particular <TT>.EXE</TT> after the setup has completed on the
+client's machine. This might be a demo or a program that augments
+the setup functionality. In object-oriented terms, it is a hook
+process that runs after the main setup is complete.
+<P>
+<IMG SRC="f12-23.gif"><B>Figure 12.23: </B><I>The fourth screen of the Setup Wizard
+lets you provide information to users during the installation
+process</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you distribute your application via CD-ROM, you might consider writing a small program that sets the appropriate files back to a read/write setting. You could run this program right after setup by specifying it as the Post-setup executable.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="SpecifyingtheApplicationsDirectoryandProgramGroup">
+Specifying the Application's Directory and Program Group</A></H3>
+<P>
+The fifth step of the process enables you to specify a default
+application destination and Windows program group (see Figure
+12.24). You can also specify whether your customers can override
+your defaults. Your users will most likely have their own ideas
+on where application files should reside and from which branch
+of the Windows Start and Program menus they will call the program.
+You should make every attempt, during your programming as well
+as your setup disk creation, to permit them to do so. The boost
+in client relations will probably be well worth the additional
+programming cost. I know many computer users and very many IS
+professionals who raise their eyebrows at any application that
+insists on loading into a specified directory.
+<P>
+<IMG SRC="f12-24.gif"><B>Figure 12.24: </B><I>The fifth screen of the Setup Wizard lets
+you specify the default Windows group and application destination</I>.</A>
+<H3><A NAME="SpecifyingFileDirectories">
+Specifying File Directories</A></H3>
+<P>
+The sixth step in the process enables you to direct the ultimate
+destination of each of the files you are distributing (see Figure
+12.25). You can choose to place a file in the Application directory,
+the Windows directory, or the Windows\System directory. The PM
+Item check box lets you add multiple icons to the program group
+from the same setup disks. For example, you might want your program
+group to include not just the icon for the application itself,
+but an icon for the <TT>Readme</TT> file. In that case, just click
+the PM Item check box for the <TT>Readme.txt</TT> file. You then
+can specify a name and an icon (see Figure 12.26).
+<P>
+<IMG SRC="f12-25.gif"><B>Figure 12.25: </B><I>The sixth screen of the Setup Wizard lets
+you specify different target directories for files in your application</I>.</A>
+<P>
+<IMG SRC="f12-26.gif"><B>Figure 12.26: </B><I>The Icon option lets you specify names
+and icons for the various Project Manager items that you install</I>.</A>
+<H3><A NAME="LaunchingtheSetupWizard">
+Launching the Setup Wizard</A></H3>
+<P>
+The seventh and final step puts FoxPro to work creating your files
+(see Figure 12.27). But first, you can specify whether to create
+a Web executable. This is a nice way to enable installation of
+an application right from your Web site, rather than requiring
+your users to first download your setup files. This approach is
+very slick and avoids the problem of setup files cluttering your
+users' disks following a standard NetSetup or Websetup download.
+On the other hand, remember that setup speed will vary by Internet
+connection speeds.
+<P>
+<IMG SRC="f12-27.gif"><B>Figure 12.27: </B><I>The final screen puts the Setup Wizard
+in motion creating and compressing the necessary files</I>.</A>
+<P>
+This screen also enables you to create dependency (<TT>.DEP</TT>)
+files. Select this option if you are including new ActiveX files
+among your distribution files or if the version of the ActiveX
+file you are installing might be newer from the one already on
+the client computer. This will help ensure that the ActiveX component
+is installed and registered correctly.
+<P>
+Press Finish and Visual FoxPro will build your image files (see
+Figure 12.28). The wizard does this in four passes:
+<P>
+<IMG SRC="f12-28.gif"><B>Figure 12.28: </B><I>The Setup Wizard lets you know its progress
+during file creation</I>.</A>
+<UL>
+<LI>It checks your distribution tree for new
+or updated files.
+<LI>It updates its table of files.
+<LI>It compresses all new or changed files.
+<LI>It breaks these into separate setup files,
+and, in the case of a disk setup, creates separate directories
+for each required setup disk.
+</UL>
+<P>
+Don't be alarmed if the Setup Wizard takes a while to run. Remember,
+it's doing an awful lot behind the scenes.
+<H2><A NAME="UsingVisualSourceSafeforVersionControlinTeamDevelopment"><FONT SIZE=5 COLOR=#FF0000>
+Using Visual SourceSafe for Version Control in Team Development
+</FONT></A></H2>
+<P>
+One of the biggest headaches with a large product is managing
+the development and keeping track of changes to the source code.
+From one point of view, thorough object-oriented programming complicates
+this even further: If you have several objects designed to send
+messages back and forth to one another, and one of your programmers
+changes one object, the entire scheme can fall apart. Unless you've
+instituted a source control scheme, you might find it impossible
+to track down the rogue code (or the guilty programmer). Fortunately,
+Microsoft has a product that can be integrated quite tightly and
+smoothly with Visual FoxPro's development environment (and in
+particular the Project Manager).
+<H3><A NAME="IntegratingVisualSourceSafewithyourVisualFoxProProject">
+Integrating Visual SourceSafe with your Visual FoxPro Project
+</A></H3>
+<P>
+It's beyond the scope of this book to provide a complete discussion
+of source control tools, or even Visual SourceSafe itself. But
+source control is such an important part of team development that
+I hope to provide you with enough information to begin incorporating
+it into your projects. It can be quite comforting to have Visual
+SourceSafe looking over Visual FoxPro's shoulder during your development,
+helping to manage the process of team programming.
+<P>
+All you really need to do to get up and running is install VSS,
+with the server installation, on the server where the master files
+will be stored. Then install VSS for each client (that is, each
+programmer). After successful installations, Visual FoxPro 6 adds
+VSS to the source control options in the Tools, Options dialog
+box's Projects tab, as shown in Figure 12.29. From here, select
+Visual SourceSafe and set it as your default source control manager.
+<P>
+<IMG SRC="f12-29.gif"><B>Figure 12.29: </B><I>You can choose how tightly to integrate
+Visual FoxPro and Visual SourceSafe in your development environment</I>.</A>
+<P>
+The additional options shown in Figure 12.29 in the Source Control
+Options area are essential to your VFP/VSS configuration. With
+them, Visual FoxPro defines whether files should be automatically
+checked out on modification, included in source control on addition
+to your local project, or removed from source control on removal
+from your local project. You are also given the option to automatically
+add new projects to source control. Don't worry: Even if you don't
+choose to add this feature, you can always go back and add an
+existing project to Visual SourceSafe.
+<P>
+The Projects tab of the Options dialog box consists mainly of
+source control configuration items, but there are four other options.
+<P>
+Project Double-Click Action<I> </I>indicates what action should
+occur when you double-click a file inside the Project Manager.
+The default behavior is to modify the selected file, but you can
+change the setting so that the file runs on a double-click.
+<P>
+Prompt for Wizards<I> </I>indicates the action Visual FoxPro takes
+when you click the New button on the project. If this option is
+turned off, you proceed right to the appropriate editor for the
+file type. If this option is on, Visual FoxPro determines whether
+any wizards exist for the file type, and if so, gives you the
+choice of using them.
+<P>
+Display User-Defined Container Icons<I> </I>indicates whether
+or not the icons shown should be the default Visual FoxPro icons
+or user-defined and assigned icon files.
+<P>
+Project Class<I> </I>indicates a class to be used as the project
+hook. Project hooks are covered later in this chapter. Visual
+FoxPro 6
+<H3><A NAME="CreatingaSourceControlProject">
+Creating a Source Control Project</A></H3>
+<P>
+As long as you have chosen to automatically add projects to source
+control, any project you create will automatically be managed
+by VSS based on the options that you have set. But as I noted
+earlier, if you want to go back and add an existing project to
+source control, that's easy, too. Just open the project you want
+to add and choose Project, Add Project to Source Control. You
+will be prompted for a login (see Figure 12.30). If you have not
+yet added usernames and passwords through the server version of
+VSS, just enter a login name of <B>Guest</B>,
+keep the password blank, and click OK.
+<P>
+<IMG SRC="f12-30.gif"><B>Figure 12.30: </B><I>You can choose to include login security
+to Visual SourceSafe</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The Database text box in this dialog box has nothing to do with your Visual FoxPro databases or tables. Instead, it indicates the VSS database that will hold this project. The default setting is the Common database.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Figure 12.31 displays the Visual Sourcesafe dialog box for adding
+a project to source control. Click Create and then click OK. You
+will have the opportunity to enter a comment (see Figure 12.32).
+After entering a comment and clicking OK, you will be presented
+with a list of files from your project. Choose which of these
+should be kept under source control by clicking the check boxes
+to the left (see Figure 12.33).
+<P>
+<IMG SRC="f12-31.gif"><B>Figure 12.31: </B><I>It's easy to add a project to Visual SourceSafe
+control, even right within Visual FoxPro</I>.</A>
+<P>
+<IMG SRC="f12-32.gif"><B>Figure 12.32: </B><I>You can include comments on each project
+you add to Visual SourceSafe</I>.</A>
+<P>
+<IMG SRC="f12-33.gif"><B>Figure 12.33: </B><I>You can pick and choose which of your
+Visual FoxPro project files should be included under Visual SourceSafe
+version control</I>.</A>
+<P>
+That's all there is to it! When you return to your project, any
+files that are under source control are displayed with a lock
+icon beside them. Whenever you modify a file, it is checked out
+by Visual FoxPro and the lock turns into a check mark. Figure
+12.34 shows these icons in action.
+<P>
+<IMG SRC="f12-34.gif"><B>Figure 12.34: </B><I>Visual SourceSafe's lock and check mark
+icons provide visual clues to the status of your files</I>.</A>
+<P>
+Files you have checked out remain checked out until you either
+check them back in or undo the checkout. Either of these actions
+can be performed by right-clicking the file and selecting the
+relevant shortcut option. When you check in a file, you are offered
+the chance to enter comments on the file or files you are checking
+in (see Figure 12.35). Try to determine a convention, with your
+team where applicable, and take care to follow it. Your comments
+will probably include your name or initials, the date, and perhaps
+some form of tracking ID. You might also include a brief synopsis
+of the changes you have made. The Keep Checked Out box will check
+in your changes, making them available to other programmers, but
+will keep the file checked out under your name.
+<P>
+<IMG SRC="f12-35.gif"><B>Figure 12.35: </B><I>Many development teams encourage comments
+for each check-in (such as programmer name, a tracking ID, and
+a summary of changes made</I>).</A>
+<H3><A NAME="ACloserLookatVisualSourceSafeTerminology">A Closer Look at Visual SourceSafe Terminology</A></H3>
+<P>
+Because both Visual FoxPro and Visual SourceSafe have collections
+of files called &quot;projects,&quot; the terminology can get
+a bit confusing. In Visual SourceSafe, a <I>project</I> is a collection
+of files that you store under lock and key, checking them out
+in small bunches. These files are stored in Visual SourceSafe
+databases. Managing these files is accomplished through different
+combinations of the actions listed below. You'll find these options,
+and some lesser-used goodies, in several places in the Project
+Manager: the Project menu bar, the right-click shortcut menus,
+and even the Tools, Options menu:
+<UL>
+<LI><I>Checking Files Out</I>. The check-out command places a
+file into the working directory with read/write access. After
+a file is checked out, it cannot be checked out by another user
+(actually, VSS can be configured to enable multiple checkouts,
+but it is not recommended). As you've seen, you can check a file
+out through the Project Manager by modifying it or using the right-click
+shortcut menu. You can also start SourceSafe directly and check
+out a file to your local disk, and then switch to Visual FoxPro
+to work on it.
+<LI><I>Checking Files In</I>. When you have finished your changes,
+you will move the changes into the SourceSafe database, again
+through the right-click shortcut menu, the Projects menu, or directly
+through SourceSafe. VSS moves the file into its database and also
+copies the newly checked-in code down to the main project location.
+The file is once again made read-only in your personal programming
+area.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+As you work with Visual SourceSafe through the Project Manager, it tracks its actions through commented lines in the Command window. This is a useful feature because it keeps an instant log of your session.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<UL>
+<LI><I>Undoing a Checkout</I>. This command undoes any changes,
+releases the checkout, and <I>overwrites your local copy of the
+file</I> with the master copy of the file.
+<LI><I>Getting Latest Version</I>.  You can choose to copy the
+most recent version of a file in the VSS database by getting the
+latest version instead of checking it out. Again, the easiest
+way to do this is through the right-click shortcut menu.
+<LI><I>Tracking Versions</I>.  Show
+History, Show Differences, and the Source Control Properties represent
+different facets of version tracking in Visual SourceSafe. These
+options enable you to compare the master copy to any previous
+copies. Visual SourceSafe assigns a version number to each file,
+and this number is incremented on each check-in.
+<LI><I>Sharing and Branching</I>. Sharing
+enables VSS projects to access the same files. All actions that
+affect a shared file are automatically reflected in every project.
+Branching takes a shared file and breaks its link. You might want
+to do this to a shared file that has become specifically customized
+for one project.
+<LI><I>Pinning</I>. Pinning is similar
+to branching, in that it takes a file shared by many VSS projects
+and removes the shared link. In this case, rather than create
+a new branch, you are pinning a particular version of a file within
+the project you are working with. You cannot edit this file until
+you unpin it. You can access this option through the Show History
+interface (see Figure 12.36).
+</UL>
+<P>
+<IMG SRC="f12-36.gif"><B>Figure 12.36: </B> <I>The Show History screen enables you to pin
+a file, causing it to remain static in the project, even if it
+is changed in other projects</I>.</A>
+<UL>
+<LI><I>Rolling Back Changes</I>.  You
+can also choose to roll back to a particular version of a file
+through the Show History box. But beware: This feature deletes
+forever any changes that were made later than the version you
+restored.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Because Visual FoxPro 6 is so well-integrated with Visual SourceSafe, you might never need to enter VSS through its own icon. But there are some options in Visual SourceSafe that you cannot access through Visual FoxPro, so I suggest giving VSS a whirl when you're feeling adventurous. And, needless to say, the server version of VSS includes many features not available through VFP or the client copy of Visual SourceSafe.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="AccessingtheProjectManagerasanObject"><FONT SIZE=5 COLOR=#FF0000>
+Accessing the Project Manager as an Object</FONT></A></H2>
+<P>
+The discussion so far has focused on using the Project Manager
+as a visual development tool, enabling programmers to interactively
+run, edit, and check out files, and making it easier to create
+compiled applications and executable files. But there are many
+facets of the Project Manager above and beyond what I've discussed.
+After all, everything I've talked about so far has been useful
+and interesting, but it involves an awful lot of clicking, doesn't
+it? And, if you are working in an environment where you create
+large numbers of small applications, you probably don't want to
+dig in to your precious time by creating new project files every
+week. You want a template or some other way to speed the process.
+Finally, if you are a team leader or senior programmer working
+with a crew of less experienced VFP programmers, you might want
+some way to automate some of the Project Manager's functionality
+or protect against its misuse.
+<P>
+Fortunately, with Visual FoxPro 6, the Fox Team at Microsoft has
+greatly enhanced the Project Manager by exposing it as a full-fledged
+object.
+<H3><A NAME="TheProjectManagerObjectDesign">
+The Project Manager Object Design</A></H3>
+<P>
+You might never need to access the properties or methods of the
+Project Manager, and that's just fine. FoxPro programmers have
+done so for years and have still made great use of many facets
+of the Project Manager's functionality. But, you've also gotten
+used to jumping through hoops to make this tool even more useful,
+or to fill in the gaps between its functionality and your needs.
+<P>
+As of version 6, Visual FoxPro fills in many of those gaps by
+enabling direct access to the Project Manager as an object (more
+specifically, as an OLE object). Figure 12.37 shows the Project
+Manager as it appears in the debugger.
+<P>
+<IMG SRC="f12-37.gif"><B>Figure 12.37: </B><I>You can view the exposed properties of
+the Project Manager by referencing it in the debugger</I>.</A>
+<H3><A NAME="AccessingProjectMethodsandProperties">
+Accessing Project Methods and Properties</A></H3>
+<P>
+The Visual FoxPro application object (which can be referenced
+as <TT>_VFP</TT> or <TT>Application</TT>) now includes a new collection:
+<TT>Projects</TT>. It also includes a new object property, <TT>ActiveProject</TT>,
+which holds a reference to the current project.
+<P>
+To access a project, you can use the <TT>Count</TT> property or
+the <TT>Item</TT> method of the <TT>Applications.Projects</TT>
+collection. Or, you can use the <TT>Application.ActiveProject</TT>
+reference. The following two lines of code generate the same result
+as long as <TT>Darts.PJX</TT> is the only currently active project:
+<BLOCKQUOTE>
+<PRE>
+? Application.ActiveProject.Name
+? Application.Projects[1].Name
+</PRE>
+</BLOCKQUOTE>
+<P>
+If you have more than one project open, however, the <TT>Projects</TT>
+collection offers an advantage over the <TT>ActiveProject</TT>
+reference: It enables you to access all open projects as you would
+any other collection. For example, the following code is perfectly
+valid and will rebuild every open project:
+<BLOCKQUOTE>
+<PRE>
+FOR EACH oProject IN Application.Projects
+     OProject.BUILD()
+ENDFOR
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="ProjectPropertiesandMethods">
+Project Properties and Methods</A></H3>
+<P>
+Visual FoxPro's <TT>Project</TT> object includes over 25 properties,
+five methods, and two collections, all of which you can access
+programmatically just as you would with any other object. Some
+of the most useful properties include the following:
+<UL>
+<LI><TT>BuildDateTime</TT>-The date and time of the last build.
+<LI><TT>Name</TT>-The fully qualified path and name of the project
+(with a <TT>.PJX</TT> extension).
+<LI><TT>ProjectHook</TT>-A reference to the project's ProjectHook
+(more below).
+<LI><TT>ProjectHookClass</TT>-The <TT>ProjectHook</TT>'s class
+name (more below).
+<LI><TT>ProjectHookLibrary</TT>-The library holding the <TT>ProjectHookClass</TT>
+(more below).
+<LI><TT>Visible</TT>-Whether the Project Manager is displayed.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The <TT>Project</TT> object also includes a family of <TT>Version*</TT> properties that hold your company name, comments, copyright information, description, version number, product, and trademarks.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<TT>Project</TT> also includes among its methods the following
+useful processes:
+<UL>
+<LI><TT>Build</TT>-Executes a build, undertaking the same actions
+as if you had clicked the Build button itself. There are several
+parameters you can pass, the most important of which are the name
+of the new file (the first parameter) and the type of build (the
+second parameter: <TT>1</TT> is a project rebuild, <TT>2</TT>
+is an <TT>.APP</TT> build, <TT>3</TT> is an <TT>.EXE</TT> build,
+and <TT>4</TT> is a COM <TT>.DLL</TT> build.)
+<LI><TT>CleanUp</TT>-Removes deleted references from the project.
+<LI><TT>Close</TT>-Closes the project.
+<LI><TT>SetMain</TT>-Sets the main file for a project. Just include
+the main file's name (with extension) as the parameter. Note that
+passing the name of a file not in the project, or even just a
+fake filename, does not result in a runtime error. Instead, the
+method returns <TT>True</TT> if its attempt at setting a main
+file was successful, and <TT>False</TT> if it was not.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you have a <TT>Cleanup.PRG</TT> or similar environment-clearing program or a Visual FoxPro backup routine, consider including calls to any open projects' <TT>Cleanup</TT> methods.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The Project Manager uses a table to hold the information on its files (the table extension is <TT>.PJX</TT> and the associated memo field is held in a <TT>.PJT</TT> file). Many of us who worked with pre-Visual FoxPro 6 projects became somewhat used to opening these tables interactively to hack away-this was pretty much the only way to edit properties-or else we would open them in code to copy the projects to new locations, or create new projects from templates. With Visual FoxPro's new <TT>Project</TT> object model, there's no need to do this anymore (which is fine, because it never sat well with most of us to begin with). If your curiosity gets the best of you, you can still open project files as tables by executing a <TT>USE <I>ProjectName.pjx</I></TT> command, but exercise caution. A hosed project is no fun at all.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="FilePropertiesandMethods">
+File Properties and Methods</A></H3>
+<P>
+Your access to the Project Manager doesn't stop at the project
+itself! The <TT>Project</TT> object also includes two collections,
+<TT>Files</TT> and <TT>Servers</TT>. The <TT>Files</TT> collection
+holds one object for each file in the project. The <TT>Servers</TT>
+collection holds an object reference for every OLE Automation
+server in the project.
+<P>
+Most programmers will spend more time accessing <TT>Files</TT>
+properties than <TT>Servers</TT> properties. Here are some of
+the more useful <TT>Files</TT> properties:
+<UL>
+<LI><TT>Description</TT>-The description shown in the Project
+Manager.
+<LI><TT>Exclude</TT>-Whether the file is excluded from <TT>.APP</TT>,
+<TT>.EXE</TT>, and <TT>.DLL</TT> builds.
+<LI><TT>LastModified</TT>-The date and time of the last modification
+to the file.
+<LI><TT>Name</TT>-The fully-qualified name of the file.
+<LI><TT>Type</TT>-The type of file:
+</UL>
+<BLOCKQUOTE>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>B</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Label
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>d</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Database
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>D</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Table
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>K</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Form
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>L</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;API
+Library
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>M</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Menu
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>P</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Program
+file
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>Q</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Query
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>R</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Report
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>T</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Text
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>V</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Class
+library
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>X</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Other
+(including bitmaps)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>Z</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App
+</BLOCKQUOTE>
+<P>
+As with <TT>Project</TT> itself, the <TT>Files</TT> object includes
+a number of useful methods:
+<UL>
+<LI><TT>AddToSCC</TT>-Puts the file under source control.
+<LI><TT>CheckIn</TT>-Checks the file in.
+<LI><TT>CheckOut</TT>-Checks the file out.
+<LI><TT>GetLatestVersion</TT>-Gets the latest version of the file
+from the VSS (or other source control product) database.
+</UL>
+<P>
+With these exposed methods and properties, you can easily write
+quick utilities to rebuild projects (no more worrying about the
+steps you've missed). Below is some very basic code that gets
+the latest version of every file and recompiles the project. If
+you've ever struggled with a team recompile, you'll recognize
+the strengths of this approach.
+<BLOCKQUOTE>
+<PRE>
+* get the latest version of every file
+For each oFile in APPLICATION.ActiveProject.Files
+     oFile.GetLatestVersion()
+* Let's exclude all tables and databases
+IF UPPER(oFile.Type) = &quot;D&quot;
+oFile.Exclude = .T.
+ELSE
+oFile.Exclude = .F.
+ENDIF
+endfor
+
+* now, clean up the project. No need
+* to have deleted references clogging
+* everything up
+APPLICATION.ActiveProject.CleanUp()
+
+
+* Finally, build the project.
+APPLICATION.ActiveProject.Build(&quot;AutoBuild.APP&quot;,2)
+
+* And, always view the error log!
+MODI COMM AutoBuild.Err
+</PRE>
+</BLOCKQUOTE>
+<P>
+Of course, you can (and will definitely want to) go much further.
+You should check for errors from each method, for example, and
+you will want to determine which files are under source control
+before trying to get the latest version of them. But the point
+is, these exposed properties and methods can be extremely powerful
+tools for project management and version control.
+<H2><A NAME="ProjectHooks"><FONT SIZE=5 COLOR=#FF0000>
+ProjectHooks</FONT></A></H2>
+<P>
+Visual FoxPro 6 enables you to further extend the <TT>Project</TT>
+object model through the use of its new ProjectHooks. Simply put,
+a <TT><I>ProjectHook</I></TT><I>
+</I>is an object that includes several events that fire upon certain
+actions in the Project Manager. <TT>ProjectHook</TT>s are ActiveX
+objects, but again, Visual FoxPro 6 incorporates them so cleanly
+that you'll barely know the difference.
+<P>
+You can set a particular <TT>ProjectHook</TT> class for a given
+project in a couple of ways. You can open a project and select
+the Project page of the Project, Project Info menu option. Or
+you can set a ProjectHook default; refer to Figure 12.29 and recall
+that the Projects tab in the Options dialog (reached by choosing
+Tools, Options) includes an area to enter a <TT>ProjectHook</TT>
+class. If a <TT>ProjectHook</TT> class is entered here, it is
+used by any project that doesn't have its own <TT>ProjectHook</TT>
+class specified. Visual<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Actually, there's a third way to specify a project hook: by populating the exposed <TT>ProjectHookClass</TT> and <TT>ProjectHookLibrary</TT> properties on the <TT>Project</TT> object.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Project hooks do a pretty good job of taking care of themselves:
+they instantiate when the project is opened and are destroyed
+when the project is closed. The following <TT>ProjectHook</TT>
+events fire as you manipulate the project (whether interactively-the
+old-fashioned way-or via code):
+<UL>
+<LI><TT>AfterBuild</TT>-Occurs after a project build finishes.
+<LI><TT>BeforeBuild</TT>-Occurs before the build begins.
+<LI><TT>OLEDragOver</TT>-Occurs when a file is dragged over the
+project, but before it is dropped.
+<LI><TT>OLEDragDrop</TT>-Occurs when a file is dropped into the
+project.
+<LI><TT>QueryAddFile</TT>-Occurs just prior to a file being added
+to the project.
+<LI><TT>QueryModifyFile</TT>-Occurs just prior to a file in the
+project being modified.
+<LI><TT>QueryRemoveFile</TT>-Occurs just prior to a file in the
+project being removed.
+<LI><TT>QueryRunFile</TT>-Occurs just prior to a file in the project
+being run.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The <TT>Query*</TT> events of the <TT>ProjectHook</TT> can be used to prevent the specific action from occurring by including <TT>NODEFAULT</TT> in the method code.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro 6 offers several new clauses for the <TT>MODIFY PROJECT</TT> command. The <TT>NOPROJECTHOOK</TT> clause opens the project without the associated <TT>ProjectHook</TT> class.  <TT>NOSHOW</TT> opens both the Project Manager and the <TT>ProjectHook</TT>, but doesn't show the Project Manager window. This means that you can run your programs without even having the Project Manager visible.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="UsingTTProjectHookTTs">
+Using <TT>ProjectHook</TT>s
+</A></H3>
+<P>
+Of course, you can choose not to use <TT>ProjectHook</TT>s at
+all. But if you decide to give them a shot, you won't have to
+look far to find uses for them. For example, you could clean up
+the project just prior to a build by including a call to the <TT>Project</TT>
+object's <TT>Cleanup</TT> method in the <TT>ProjectHook</TT>'s
+<TT>QueryBeforeBuild</TT>. You could check that any file being
+added to the project conforms to naming conventions or filename
+length requirements by a check placed in the <TT>QueryBeforeAdd</TT>
+method. You could get the latest version of a file just prior
+to running it by calling a file object's <TT>GetLatestVersion</TT>
+method from the <TT>QueryBeforeRun</TT>. Or you could even utilize
+MAPI calls in the <TT>AfterBuild</TT> method to email your fellow
+programmers and inform them that the project has been freshly
+built (here's an even better idea: include the <TT>.ERR</TT> file
+if any errors occurred). <TT>ProjectHook</TT>s provide a tremendous
+degree of control over your projects and enable you to manipulate
+a project as you would almost any other object.
+<H2><A NAME="TheProjectManagerALastWord"><FONT SIZE=5 COLOR=#FF0000>
+The Project Manager: A Last Word</FONT></A></H2>
+<P>
+The Visual FoxPro 6 Project Manager offers programmers a remarkable
+degree of control over the development environment. Your use of
+the Project Manager will depend on your programming experience,
+your interest, and your needs. You might choose to use the Project
+Manager simply as a file maintenance tool. Or, you might use a
+series of <TT>ProjectHook</TT> events and <TT>Project</TT> and
+<TT>File</TT> PEM calls to manage source control behind the scenes.
+Or, like most of us, the Project Manager's role in your development
+will fall somewhere between these extremes.
+<P>
+The bottom line is that the Project Manager is available, flexible,
+powerful, and easy to learn. Your clients will probably never
+see the Project Manager in action, but they, like you, will benefit
+from its presence on your desktop.
+<HR>
+<CENTER>
+
+<A HREF="ch11.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch13.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

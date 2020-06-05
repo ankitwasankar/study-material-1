@@ -1,0 +1,1125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Visual Basic 6 Database How-To -- Appendix A -- SQL Reference</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="sams.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/sams.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"></H1>
+
+<H1 ALIGN="CENTER">Visual Basic 6 Database How-To</H1>
+<CENTER>
+<P><A HREF="ch13.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch13/ch13.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="apb.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/apb/apb.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1></H1>
+<H1 ALIGN="CENTER">- A -<BR>
+SQL Reference</H1>
+
+<UL>
+	<LI><A HREF="#Heading1">SQL Statement Classifications</A>
+	<LI><A HREF="#Heading2">Data Definition Language</A>
+	<UL>
+		<LI><A HREF="#Heading3">The CREATE Command</A>
+		<LI><A HREF="#Heading4">The ALTER Command</A>
+		<LI><A HREF="#Heading5">Using the CONSTRAINT Clause</A>
+		<LI><A HREF="#Heading6">The DROP Command</A>
+	</UL>
+	<LI><A HREF="#Heading7">Data Manipulation Language</A>
+	<UL>
+		<LI><A HREF="#Heading8">The SELECT Command</A>
+		<LI><A HREF="#Heading9">Joins</A>
+		<LI><A HREF="#Heading10">The INSERT Command</A>
+		<LI><A HREF="#Heading11">The UPDATE Command</A>
+		<LI><A HREF="#Heading12">The DELETE Command</A>
+		<LI><A HREF="#Heading13">Comments</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+<BR>
+With the use of commands, predicates, clauses, operators, aggregate functions, and
+joins, the Structured Query Language (SQL) can successfully compose a query that
+returns a specified range of fields.</P>
+<P>SQL is a language that ties in closely with the Microsoft Jet Engine and Data
+Access Object (DAO). By indicating relations between tables and other queries of
+a database, through SQL, records are temporarily created and passed back to the recordset
+object of the database object in Visual Basic.</P>
+<P>This appendix serves as a quick reference and introduction to SQL. Using this
+reference, you should be able to create your own SQL statements in Visual Basic to
+better exploit the power of the Microsoft Jet Engine and its components.</P>
+<P>
+<H2><A NAME="Heading1"></A>SQL Statement Classifications</H2>
+<P>SQL statements are broken into two distinct classifications, both of which are
+discussed in detail in this appendix. The first classification, the Data Definition
+Language (DDL), is used to create, modify, or remove the actual definitions in a
+particular database. The second classification, the Data Manipulation Language (DML),
+is used to create, modify, remove, or gather information that resides in the structure
+of the database. In other words, you would use DDL to create tables, fields, and
+indexes, and you would use DML to populate, alter, and retrieve the information that
+resides in the tables and field.</P>
+<P>Table A.1 lists the seven available SQL commands that are the basis of any SQL
+statement. These commands indicate what kind of query the SQL statement actually
+is. Table A.1 also indicates the classification of each command listed, either definition
+(DDL) or manipulation (DML). A SQL command is used together with other components
+of a SQL statement to create either an action query or a selection query. Action
+queries are those that begin with a SQL command other than <TT>SELECT</TT>. As you
+might guess, a query beginning with <TT>SELECT</TT> is a selection query.</P>
+<P>
+<H4>Table A.1. SQL commands.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>COMMAND</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Classification</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CREATE</TT></TD>
+		<TD ALIGN="LEFT">Definition</TD>
+		<TD ALIGN="LEFT">Create a table, a field, or an index.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ALTER</TT></TD>
+		<TD ALIGN="LEFT">Definition</TD>
+		<TD ALIGN="LEFT">Modify a table by adding a field or changing a field definition.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DROP</TT></TD>
+		<TD ALIGN="LEFT">Definition</TD>
+		<TD ALIGN="LEFT">Drop a table or an index.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>SELECT</TT></TD>
+		<TD ALIGN="LEFT">Manipulation</TD>
+		<TD ALIGN="LEFT">Query a database with given parameters.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>INSERT</TT></TD>
+		<TD ALIGN="LEFT">Manipulation</TD>
+		<TD ALIGN="LEFT">Insert multiple records with one operation.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>UPDATE</TT></TD>
+		<TD ALIGN="LEFT">Manipulation</TD>
+		<TD ALIGN="LEFT">Change information throughout a range with given parameters.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DELETE</TT></TD>
+		<TD ALIGN="LEFT">Manipulation</TD>
+		<TD ALIGN="LEFT">Remove records from the table.</TD>
+	</TR>
+</TABLE>
+</P>
+<P>When using queries, you will use various clauses that are implemented in the SQL
+statement. Table A.2 lists and describes the available clauses for SQL used by the
+Microsoft Jet Engine.</P>
+<P>
+<H4>Table A.2. SQL clauses.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CLAUSE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Descriptions</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FROM</TT></TD>
+		<TD ALIGN="LEFT">Specifies the table from which data is queried</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>WHERE</TT></TD>
+		<TD ALIGN="LEFT">Specifies the condition(s) for the query</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>GROUP BY</TT></TD>
+		<TD ALIGN="LEFT">Specifies the group(s) for the selected information</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>HAVING</TT></TD>
+		<TD ALIGN="LEFT">Specifies the condition(s) for each group in the query</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ORDER BY</TT></TD>
+		<TD ALIGN="LEFT">Specifies the order of the query</TD>
+	</TR>
+</TABLE>
+</P>
+<P>The first of these clauses, <TT>FROM</TT>, is used to indicate the table or query
+used to gather the information for the SQL statement. More than one table or query
+can be listed in the statement, using the <TT>FROM</TT> clause. When doing so, you
+are creating at least one join in your query. Joins are discussed later in this appendix.</P>
+<P>The second clause, <TT>WHERE</TT>, lists the condition or conditions that must
+be met for a record to be included in the query results. Each condition is evaluated
+using conditional operators. Multiple conditions are listed using logical operators.
+Table A.3 lists available conditional and logical operators.</P>
+<P>
+<H4>Table A.3. SQL operators.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OPERATOR</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>TYPE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Condition Is Met When</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AND</TT></TD>
+		<TD ALIGN="LEFT">Logical</TD>
+		<TD ALIGN="LEFT">Both expressions are true.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>OR</TT></TD>
+		<TD ALIGN="LEFT">Logical</TD>
+		<TD ALIGN="LEFT">Either expression is true.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>NOT</TT></TD>
+		<TD ALIGN="LEFT">Logical</TD>
+		<TD ALIGN="LEFT">The expression is false.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>&lt;</TT></TD>
+		<TD ALIGN="LEFT">Comparison</TD>
+		<TD ALIGN="LEFT">The first expression is less than the second expression.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>&lt;=</TT></TD>
+		<TD ALIGN="LEFT">Comparison</TD>
+		<TD ALIGN="LEFT">The first expression is less than or equal to the second expression.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>&gt;</TT></TD>
+		<TD ALIGN="LEFT">Comparison</TD>
+		<TD ALIGN="LEFT">The first expression is greater than the second expression.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>&gt;=</TT></TD>
+		<TD ALIGN="LEFT">Comparison</TD>
+		<TD ALIGN="LEFT">The first expression is greater than or equal to the second expression.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>=</TT></TD>
+		<TD ALIGN="LEFT">Comparison</TD>
+		<TD ALIGN="LEFT">The first expression is equal to the second expression.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>&lt;&gt;</TT></TD>
+		<TD ALIGN="LEFT">Comparison</TD>
+		<TD ALIGN="LEFT">The first expression is not equal to the second expression.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>BETWEEN</TT></TD>
+		<TD ALIGN="LEFT">Comparison</TD>
+		<TD ALIGN="LEFT">The value belongs to a specified set of values.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>LIKE</TT></TD>
+		<TD ALIGN="LEFT">Comparison</TD>
+		<TD ALIGN="LEFT">The value matches the pattern specified.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>IN</TT></TD>
+		<TD ALIGN="LEFT">Comparison</TD>
+		<TD ALIGN="LEFT">The record belongs to a particular group in a database.</TD>
+	</TR>
+</TABLE>
+</P>
+<P>The third SQL clause, <TT>GROUP</TT> <TT>BY</TT>, is used to group the query's
+result set. <TT>GROUP</TT> <TT>BY</TT> uses at least one field name from a table
+or query listed in the statement's <TT>FROM</TT> clause to evaluate the records and
+group like values. You can also use an aggregate function in a SQL statement to create
+summaries of the groups in the recordset. The list of available aggregate functions
+is shown in Table A.4.</P>
+<P>
+<H4>Table A.4. SQL aggregate functions.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AVG</TT></TD>
+		<TD ALIGN="LEFT">Returns the average value of a specified field</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>COUNT</TT></TD>
+		<TD ALIGN="LEFT">Returns the number of records in a query</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>SUM</TT></TD>
+		<TD ALIGN="LEFT">Returns the sum of the values in a specified field</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>MAX</TT></TD>
+		<TD ALIGN="LEFT">Returns the largest value in a specified field</TD>
+	</TR>
+</TABLE>
+</P>
+<P><TT>MIN</TT> Returns the smallest value in a specified field</P>
+<P>The fourth SQL clause, <TT>HAVING</TT>, specifies conditions (of the same syntax
+used for the <TT>WHERE</TT> clause) the groups must meet to be included in the resulting
+recordset.</P>
+<P>The last SQL clause, <TT>ORDER BY</TT>, uses field names to order the result set
+in a specified manner. More information on all the SQL commands and clauses is presented
+in detail throughout this appendix.</P>
+<P>
+<H2><A NAME="Heading2"></A>Data Definition Language</H2>
+<P>DDL statements are used to create, alter, or remove tables, fields, and indexes
+from a database. The three SQL commands used to do so are <TT>CREATE</TT>, <TT>DROP</TT>,
+and <TT>ALTER</TT>. All three are action queries.</P>
+<P>Action queries in Visual Basic can be initiated in one of two ways. The first
+method of invoking an action query is by using a <TT>QueryDef</TT> object. The second
+is by using the <TT>Execute</TT> method of the database object, as shown here:</P>
+<P>
+<PRE><TT>db.Execute sSQLStatement</TT>
+</PRE>
+<P>This assumes that <TT>db</TT> is a database object variable successfully set to
+a valid database, and <TT>sSQLStatement</TT> is a valid string variable containing
+a valid action SQL statement.</P>
+<P>
+<H3><A NAME="Heading3"></A>The CREATE Command</H3>
+<P>The <TT>CREATE</TT> command is used to create tables and indexes in a specified
+database. To create a table in a given database, use the <TT>CREATE TABLE</TT> statement
+with the syntax shown here:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>CREATE TABLE </TT>table<TT> (</TT>fld1 type<TT> [(</TT>sz<TT>)] [NOT NULL] [</TT>idx1<TT>] [, </TT>fld2<TT> </TT>type<TT> [(</TT>sz<TT>)]</TT>
+</PRE>
+	<PRE><TT>             [NOT NULL] [</TT>idx2<TT>] [, ...]] [, CONSTRAINT </TT>MFidx<TT> [, ...]])</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>In the preceding syntax, the table name succeeds the actual <TT>CREATE TABLE</TT>
+statement and is followed by a comma-delimited list of field definitions that are
+used to create the specified table. At least one field must be listed in parentheses
+as shown. Any valid database type can be used to indicate the type of field to be
+created, and a size (sz) can be specified for text and binary fields.</P>
+<P>The following example creates a new table in the <TT>db</TT> database with three
+fields:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;CREATE TABLE Customers (CustNum INTEGER, &quot; _</TT>
+</PRE>
+	<PRE><TT>         &amp; &quot;CustName TEXT (25), Address TEXT (30))&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The new table created is called Customers. It contains an integer field named
+<TT>CustNum</TT> and two text fields named <TT>CustName</TT> and <TT>Address</TT>.</P>
+<P>Using the <TT>NOT NULL</TT> optional parameter, you can specify that the field
+can never have a <TT>NULL</TT> value. If a <TT>NULL</TT> value is assigned to a field
+created with this option, a runtime error will occur. The following example is a
+more bulletproof table definition:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;CREATE TABLE Customers (CustNum INTEGER NOT NULL, &quot; _</TT>
+</PRE>
+	<PRE><TT>         &amp; &quot;CustName TEXT NOT NULL (25), Address TEXT (30))&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This version of the <TT>CREATE TABLE</TT> action query specifies that the <TT>Number</TT>
+and <TT>CustName</TT> field values cannot consist of any <TT>NULL</TT> values. The
+<TT>Address</TT> field, however, can.</P>
+<P>You can also use the <TT>CONSTRAINT</TT> clause in a <TT>CREATE TABLE</TT> statement
+to create an index either on an individual field or on multiple fields. The following
+example creates an index in a new table:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;CREATE TABLE Customers (&quot; _</TT>
+<TT>         &amp; &quot;CustNum INTEGER CONSTRAINT CustNumIndex PRIMARY, &quot; _</TT>
+</PRE>
+	<PRE><TT>         &amp; &quot;CustName TEXT (25), Address TEXT (30))&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example creates a table with three fields as shown before, but it also adds
+an index named <TT>CustNumIndex</TT> for the <TT>CustNum</TT> field.</P>
+<P>To create an index on multiple fields, you can also use the <TT>CONSTRAINT</TT>
+clause as shown in this example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;CREATE TABLE Customers (CustNum INTEGER, &quot; _</TT>
+<TT>         &amp; &quot;CustName TEXT (25), Address TEXT (30), &quot; _</TT>
+</PRE>
+	<PRE><TT>         &amp; &quot;CONSTRAINT CustIndex UNIQUE (CustNum, CustName))&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>Notice that the new index created by the <TT>CONSTRAINT</TT> clause, named <TT>CustIndex</TT>,
+is composed of both the <TT>CustNum</TT> and the <TT>CustName</TT> fields described
+in the SQL statement. The difference between creating an individual field index and
+creating a multiple field index with the <TT>CREATE TABLE</TT> statement is that,
+with the individual fields, you indicate the <TT>CONSTRAINT</TT> clause after the
+given field, without a comma. Creating indexes of multiple fields with the <TT>CONSTRAINT</TT>
+clause, you specify the index after the fields in the index are created, separated
+by a comma, listing the individual fields, as shown in the last example. More information
+on the <TT>CONSTRAINT</TT> clause can be found in the &quot;Using the <TT>CONSTRAINT</TT>
+Clause&quot; section, later in this appendix.</P>
+<P>You do not necessarily have to create indexes in the <TT>CREATE TABLE</TT> statement--you
+can also explicitly create indexes using the <TT>CREATE INDEX</TT> statement as shown
+in this example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;CREATE UNIQUE INDEX CustIndex ON Customers (CustNum, CustName)&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This statement leads to the same results as derived by the last <TT>CREATE TABLE</TT>
+statement.</P>
+<P>The syntax for the <TT>CREATE INDEX</TT> statement is as follows:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>CREATE [UNIQUE] INDEX </TT>idx <TT>ON </TT>table<TT> (</TT>fld1<TT> [ASC|DESC]</TT>
+<TT>       [, </TT>fld2<TT> [ASC|DESC], ...])</TT>
+</PRE>
+	<PRE><TT>       [WITH {PRIMARY | DISALLOW NULL | IGNORE NULL}]</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>When using the <TT>CREATE INDEX</TT> statement, specifying the <TT>UNIQUE</TT>
+option as shown in the preceding example, you are telling the Jet Engine that no
+two combinations, for the values of the fields listed, are to be allowed, thus creating
+a unique index on the fields. By default, indexes are created in ascending order
+(<TT>ASC</TT> keyword), but you can specify to list the order of the values of an
+index in descending order by using the <TT>DESC</TT> keyword after the corresponding
+field name.</P>
+<P>The last portion of the <TT>CREATE INDEX</TT> statement allows you to specify,
+in more detail, how an index is to be handled. You do this with the <TT>WITH</TT>
+clause of the <TT>CREATE INDEX</TT> statement. To create a primary key on the table
+indicated, use the <TT>WITH PRIMARY</TT> statement. This statement creates a unique
+index that is now the primary key. Only one primary key can exist per table; attempting
+to create an additional one will result in a runtime error.</P>
+<P>You can also prohibit the use of <TT>NULL</TT> values in an index, with the <TT>WITH
+DISALLOW NULL</TT> statement, or you can allow <TT>NULL</TT> values with the <TT>WITH
+IGNORE NULL</TT> statement.</P>
+<P>
+<H3><A NAME="Heading4"></A>The ALTER Command</H3>
+<P>The second command belonging to the SQL Data Definition Language is <TT>ALTER</TT>.
+You can use the <TT>ALTER TABLE</TT> statement to complete four distinct tasks:</P>
+
+<UL>
+	<LI>Add a new field to a table.
+	<P>
+	<LI>Delete a field from a table.
+	<P>
+	<LI>Add a new index to a table.
+</UL>
+
+
+<UL>
+	<LI>Delete an index from a table.
+</UL>
+
+<P>You can add or delete only one field or index with each <TT>ALTER TABLE</TT> statement.
+The syntax for<TT> ALTER TABLE</TT> is shown here:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>ALTER TABLE </TT>table<TT> {ADD {COLUMN </TT>fld type<TT>[(</TT>size<TT>)] [NOT NULL] [CONSTRAINT </TT>idx<TT>]</TT>
+</PRE>
+	<PRE><TT>            | CONSTRAINT </TT>MFidx<TT>} | DROP {COLUMN </TT>fld<TT> | CONSTRAINT </TT>indexname<TT>}}</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The following example creates a new field in an existing table named Customers:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;ALTER TABLE Customers ADD COLUMN PhoneNum TEXT (12)&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>Just as you can add a field to a table, you can delete one, as shown in this example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;ALTER TABLE Customers DROP PhoneNum&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>You can also specify new indexes just as you did with <TT>CREATE TABLE</TT>, except
+that you can add the index after the table is already created, as shown here:</P>
+<P>
+<PRE><TT>db.Execute &quot;ALTER TABLE Customers &quot; _</TT>
+</PRE>
+<PRE><TT>         &amp; &quot;ADD CONSTRAINT NameAndPhoneIndex (CustName, PhoneNum)&quot;</TT>
+</PRE>
+<P>Now you can delete that index with this final example:</P>
+<P>
+<PRE><TT>db.Execute &quot;ALTER TABLE Customers DROP CONSTRAINT NameAndPhoneIndex&quot;</TT>
+</PRE>
+<H3><A NAME="Heading5"></A>Using the CONSTRAINT Clause</H3>
+<P>So far you have seen the <TT>CONSTRAINT</TT> clause in both the <TT>CREATE</TT>
+and the <TT>ALTER</TT> SQL commands. Now take a closer look at this clause and discover
+how powerful it really is.</P>
+<P>In its simplest form, a constraint is an index. Not only does the <TT>CONSTRAINT</TT>
+clause allow you to create or remove indexes as shown in the <TT>CREATE</TT> and
+<TT>ALTER</TT> command sections, but it also allows you to create primary and foreign
+keys to define relations and enforce referential integrity.</P>
+<P>As shown earlier, by example, there are two versions of the <TT>CONSTRAINT</TT>
+statement, one for individual field indexes and one for multiple field indexes. The
+syntax for a single field index is shown here:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>CONSTRAINT </TT>name<TT> {PRIMARY KEY | UNIQUE | NOT NULL |</TT>
+<TT>         REFERENCES </TT>foreigntable
+</PRE>
+	<PRE><TT>              [(foreignfield1, foreignfield2)]}</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The syntax for a multiple field index <TT>CONSTRAINT</TT> is this:</P>
+<P><B><I>CONSTRAINT NAME</I></B></P>
+<P>
+<PRE><TT>         {PRIMARY KEY (</TT>primary1<TT>[, </TT>primary2<TT> [, ...]]) |</TT>
+<TT>          UNIQUE (</TT>unique1<TT>[, </TT>unique2<TT> [, ...]]) |</TT>
+<TT>          NOT NULL (</TT>notnull1<TT>[, </TT>notnull2<TT> [, ...]]) |</TT>
+<TT>          FOREIGN KEY (</TT>ref1<TT>[, </TT>ref2<TT> [, ...]])</TT>
+<TT>            REFERENCES </TT>foreigntable
+</PRE>
+<PRE><TT>                [(</TT>foreignfield1<TT> [, </TT>foreignfield2<TT> [, ...]])]}</TT>
+</PRE>
+<P>The name of the index to be created is specified directly after the <TT>CONSTRAINT</TT>
+keyword. In either version, you can create three types of indexes:</P>
+
+<UL>
+	<LI>A <TT>UNIQUE</TT> index. A unique index has no two fields, as indicated in the
+	<TT>CONSTRAINT</TT> clause, with the same values.
+	<P>
+	<LI>A <TT>PRIMARY KEY</TT> index. A primary key is, by definition, unique. This means
+	that all the fields included in the primary key definition must also be unique.
+</UL>
+
+
+<UL>
+	<LI>A <TT>FOREIGN KEY</TT> index. A foreign key is an index that uses another table
+	to create an index on the current one.
+</UL>
+
+<P>You can create a foreign key to create a relationship between multiple fields
+as in the following example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;ALTER TABLE Customers &quot; _</TT>
+<TT>         &amp; &quot;ADD CONSTRAINT NewIndex &quot; _</TT>
+</PRE>
+	<PRE><TT>         &amp; &quot;FOREIGN KEY (CustNum) REFERENCES Orders (CustNum)&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example creates a relation between the Customers table and the Orders table
+of the <TT>db</TT> database object. A new index is created, <TT>NewIndex</TT>, that
+links the two tables based on the <TT>CustNum</TT> field name.</P>
+<P>
+<H3><A NAME="Heading6"></A>The DROP Command</H3>
+<P>The <TT>DROP</TT> command comes in two flavors: <TT>DROP TABLE</TT> and <TT>DROP
+INDEX</TT>. As you might easily guess, the <TT>DROP TABLE</TT> statement removes
+an existing table from a database as shown here:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;DROP TABLE Customers&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The <TT>DROP INDEX</TT> statement works similarly to the <TT>DROP TABLE</TT> statement,
+except that it removes an index from a given table as shown in this example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>db.Execute &quot;DROP INDEX CustNumIndex ON Customers&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>For reference, the syntax of the <TT>DROP</TT> command is as follows:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>DROP {TABLE </TT>table<TT> | INDEX </TT>idx<TT> ON </TT>table<TT>}</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<H2><A NAME="Heading7"></A>Data Manipulation Language</H2>
+<P>DML commands create a mix of action and selection queries. The commands <TT>SELECT</TT>,
+<TT>INSERT</TT>, <TT>UPDATE</TT>, and <TT>DELETE</TT> are used to quickly and efficiently,
+through the use of the Jet Engine performance, manipulate the data residing in specified
+tables.</P>
+<P>
+<H3><A NAME="Heading8"></A>The SELECT Command</H3>
+<P>The <TT>SELECT</TT> command differs from all other SQL commands in that it is
+a part of a selection query rather than an action query. When you're using a selection
+query in a Visual Basic application, it is most commonly set in a recordset object
+of a given database. Assuming that <TT>rs</TT> is a valid recordset object and <TT>db</TT>
+is a database object already set to a valid database file, you can use the following
+statement to gather all the records in the Customers table of the <TT>db</TT> object:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Set rs = db.OpenRecordset(&quot;SELECT * FROM Customers&quot;)</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example uses the most generic and basic form of a <TT>SELECT</TT> statement.
+This section explains the various components of the <TT>SELECT</TT> statement and
+describes how the programmer can use each component to effectively sort and filter
+records according to his or her needs.</P>
+<P>The syntax for the <TT>SELECT</TT> statement is as follows:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT [</TT>predicate<TT>]</TT>
+<TT>       { * | </TT>table<TT>.* |</TT>
+<TT>         [</TT>table<TT>.]</TT>field1<TT> [AS </TT>alias1<TT>] [, [</TT>table<TT>.]</TT>field2<TT> [AS </TT>alias2<TT>] [, ...]]}</TT>
+<TT>FROM   </TT>tableexpression<TT> [, ...] [IN </TT>externaldatabase<TT>]</TT>
+<TT>[WHERE... ]</TT>
+<TT>[GROUP BY... ]</TT>
+<TT>[HAVING... ]</TT>
+</PRE>
+	<PRE><TT>[ORDER BY... ]</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>It is quite understandable to be overwhelmed by this declaration, but not all
+the clauses included in this syntax are necessarily used together--although they
+could be.</P>
+<P>Take the following <TT>SELECT</TT> statement, for example:</P>
+<P><B><I>SELECT DISTINCT CUSTNUM, CUSTNAME</I></B></P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>FROM Customers</TT>
+<TT>WHERE (CustNum &gt;= 100) AND (CustNum &lt;= 120)</TT>
+</PRE>
+	<PRE><TT>ORDER BY CustName;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This statement retrieves only the fields <TT>CustNum</TT> and <TT>CustName</TT>
+from the Customers table. The <TT>WHERE</TT> clause in this statement shows two conditions.
+The first condition says that the <TT>CustNum</TT> field values must be greater than
+or equal to 100. The second condition states that the <TT>CustNum</TT> field values
+must be less than or equal to 120. So far, you can see that the <TT>SELECT</TT> statement
+shown previously will return the <TT>CustNum</TT> and <TT>CustName</TT> for all records
+with a customer number between 100 and 120. The last part of this statement says
+to order the records returned by the query by the <TT>CustName</TT> field--in other
+words, in alphabetical order. You can also request the records to be returned in
+reverse alphabetical order by placing the <TT>DESC</TT> keyword after the <TT>ORDER
+BY CustName</TT> clause.</P>
+<P>You can use multiple conditions in a <TT>SELECT</TT> statement as shown in this
+statement. For a complete list of operators for conditions, both logical and comparison,
+see Table A.4 at the beginning of this section.</P>
+<P>It is important to note that the <TT>DISTINCT</TT> keyword following the <TT>SELECT</TT>
+command is called a predicate. This keyword indicates that only distinct (unique)
+combinations of fields will be returned. In this example, if you had three records
+in the Customers table with the same customer number and name, but with different
+addresses, only one record would be returned. If you were to add the <TT>Address</TT>
+field to the list of fields in the <TT>SELECT</TT> statement, you would receive three
+records for the same customer number and name because the combination (number, name,
+and address) is unique for each record returned.</P>
+<P>The <TT>DISTINCT</TT> keyword is not the only predicate available in a <TT>SELECT</TT>
+statement. Table A.5 lists the four available predicates for a <TT>SELECT</TT> statement.</P>
+<P>
+<H4>Table A.5. SELECT predicates.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>PREDICATE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ALL</TT></TD>
+		<TD ALIGN="LEFT">Returns all records, even duplicates</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DISTINCT</TT></TD>
+		<TD ALIGN="LEFT">Returns only unique records, based on fields specified in the statement</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DISTINCTROW</TT></TD>
+		<TD ALIGN="LEFT">Returns only unique records, based on all fields in the specified table(s), even
+			those not listed in the <TT>SELECT</TT> statement</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TOP</TT></TD>
+		<TD ALIGN="LEFT">Returns the first n records or the top p percentage of records of the selected recordset</TD>
+	</TR>
+</TABLE>
+</P>
+<P>The default predicate used in <TT>SELECT</TT> statements not indicating a predicate
+is <TT>ALL</TT>. <TT>ALL</TT> returns all records that meet the conditions of the
+selection query.</P>
+<P>The <TT>TOP</TT> predicate is used in conjunction with the <TT>ORDER BY</TT> clause
+of a <TT>SELECT</TT> statement. It can be used in one of two ways:</P>
+
+<UL>
+	<LI><TT>TOP </TT>n returns the first n records.
+</UL>
+
+
+<UL>
+	<LI><TT>TOP </TT>p<TT> PERCENT</TT> returns the top p percentage of the entire recordset.
+</UL>
+
+<P>Following is an example of the <TT>TOP</TT> predicate:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT TOP 10 PERCENT OrderNum, OrderPrice</TT>
+<TT>FROM Orders</TT>
+</PRE>
+	<PRE><TT>ORDER BY OrderPrice;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This statement would return the top 10% of records in the Orders table, based
+on the <TT>OrderPrice</TT> field. If you were to order the recordset returned by
+this statement by the <TT>OrderNum</TT> field, you would get the top 10% of records
+based on the <TT>OrderNum</TT>, which would probably not make a whole lot of sense.</P>
+<P>It is worth pointing out that if there are identical values for the <TT>ORDER
+BY</TT> field that is specified, there is a chance that more than the desired number
+of records will be returned. Assume, for instance, that I wanted to get the top 10
+parts based on quantity ordered. If there were 9 distinct quantity amounts that topped
+the list and 2 others that followed, with the same value, I would have 11 records
+in all when I only wanted 10. The same is true for the <TT>TOP </TT>p<TT> PERCENT</TT>
+format. If I wanted to retrieve the top 2% of part prices with my selection query,
+I would use the following statement:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT TOP 2 PERCENT PartName</TT>
+<TT>FROM Orders</TT>
+</PRE>
+	<PRE><TT>ORDER BY PartPrice;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example returns the names of the items priced in the top 2%. If I have numerous
+items all with the same price, they are considered one item, so I can very easily
+retrieve more records than I expected. It is also important to understand what you
+are asking for when using the <TT>TOP</TT> predicate. For instance, it might be easy
+to think that you are getting the top 10 customers based on moneys spent, but you
+must specifically state that you want the selection to be made on a field such as
+<TT>TotalMoneySpent</TT> as compared to <TT>TotalOrderPrice</TT>.</P>
+<P>You can also group records that are returned from a query by using the <TT>GROUP
+BY</TT> clause in a <TT>SELECT</TT> statement, as in the following example:</P>
+
+
+<BLOCKQUOTE>
+	<P>
+	<PRE><TT>SELECT PartName, Count(PartName)</TT>
+<TT>FROM Orders</TT>
+<TT>WHERE (PartPrice &gt; 10)</TT>
+</PRE>
+	<PRE><TT>GROUP BY PartName;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This <TT>SELECT</TT> statement gathers and groups all the records from the Orders
+table whose <TT>PartPrice</TT> field values are greater than 10. These records are
+then grouped by the <TT>PartNum</TT> field only, and a count of the number of each
+type of part sold is returned. In other words, the resulting recordset contains the
+distinct names of parts that cost over $10 and a count of the number of orders for
+each part.</P>
+<P>The function <TT>COUNT</TT>, in this example, is called an aggregate function.
+Other aggregate functions include <TT>AVG</TT>, <TT>SUM</TT>, <TT>MAX</TT>, and <TT>MIN</TT>.
+Table A.4 is a list of aggregate functions and their descriptions.</P>
+<P>Another example of using an aggregate function is shown here:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT PartName, SUM(PartPrice)</TT>
+<TT>FROM Orders</TT>
+<TT>WHERE (PartPrice &gt; 10)</TT>
+<TT>GROUP BY PartName</TT>
+</PRE>
+	<PRE><TT>HAVING (SUM(PartPrice) &gt; 1000) AND (PartName LIKE &quot;WIDGET*&quot;);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example introduces the <TT>HAVING</TT> clause. This clause acts very similarly
+to the <TT>WHERE</TT> clause, except that it tests the condition specified after
+the grouping has occurred, unlike the <TT>WHERE</TT> clause, which tests conditions
+of records to be included in the groups. The preceding <TT>SELECT</TT> statement
+gathers distinct part names and a sum of the total prices sold from the Orders table.
+The only condition for records to be included in this grouping is that the price
+of each part be greater than 10.</P>
+<P>After the groups have been created by the Jet Engine, only the groups with a total
+<TT>PartPrice</TT> summary of more than 1,000 are included. In addition to this condition,
+you can see the use of the <TT>LIKE</TT> keyword. You can use the <TT>LIKE</TT> keyword
+anywhere you can specify a condition. <TT>LIKE</TT> uses pattern matching to check
+whether a field should be included in a resulting recordset. In this example, only
+groups with a <TT>PartName</TT> field value beginning with the characters <TT>WIDGET</TT>
+will be included in the recordset.</P>
+<P>
+<H3><A NAME="Heading9"></A>Joins</H3>
+<P>Joins are a very commonly used function of a <TT>SELECT</TT> statement. Joins
+are used to create temporary relationships between tables when evaluating a selection
+query. Following is the syntax for using joins in a <TT>SELECT</TT> statement:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT ...</TT>
+</PRE>
+	<PRE><TT>FROM table1 [LEFT | RIGHT] JOIN table2 ON (table1.fld1 CompOp table2.fld2)</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><TT>CompOp</TT> is a comparison operator (refer to Table A.4). A join effects
+the <TT>FROM</TT> clause of a <TT>SELECT</TT> statement as shown in the preceding
+syntax declaration.</P>
+<P>Left and right joins mirror each other in definition. A left join (called a left
+outer join) includes all records from table1, even if no related records are found
+in table2. A right join (called a right outer join) includes all records from table2,
+even if no related records are found in table1. Take the following statement, for
+example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT Customers.*, Orders.*</TT>
+</PRE>
+	<PRE><TT>FROM Customers LEFT JOIN Orders ON (Customers.CustNum = Orders.CustNum);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example returns all fields from the Customers table and only the fields from
+the Orders table that have matching <TT>CustNum</TT> fields. In other words, the
+resulting recordset from this statement would include all the customers and information
+on orders for those customers that did order.</P>
+<P>To create a join that returns only records that are included in both tables (inner
+join), you do not have to use the <TT>JOIN</TT> clause at all, as shown in this example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT Customers.*, Orders.*</TT>
+<TT>FROM Customers, Orders</TT>
+</PRE>
+	<PRE><TT>WHERE (Customers.CustNum = Orders.CustNum);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This statement would return a shorter recordset than the earlier statement, given
+that there are customers who did not place orders. In this <TT>SELECT</TT> statement,
+only the customers who placed orders qualify to be returned in the recordset.</P>
+<P>Although it is unnecessary to do so, there is a SQL clause to specify inner joins,
+as shown in this example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT Customers.*, Orders.*</TT>
+</PRE>
+	<PRE><TT>FROM Customers INNER JOIN Orders ON (Customers.CustNum = Orders.CustNum);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This statement is the equivalent to the preceding one, and in many cases it is
+actually easier to read and comprehend at a glance.</P>
+<P>You might also care to specify more than one condition in any of your joins, as
+shown in this example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT Customers.*, Orders.*</TT>
+<TT>FROM Customers INNER JOIN Orders</TT>
+<TT>ON ((Customers.CustNum = Orders.CustNum)</TT>
+</PRE>
+	<PRE><TT>AND (Customers.Flag = Orders.Flag));</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>If you really want to go overboard, and many times you might find that you need
+to, you can nest joins within each other as shown in the following example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT Customers.*, Orders.*, Tax.*</TT>
+<TT>FROM Customers INNER JOIN</TT>
+<TT>  (Orders INNER JOIN Tax ON (Orders.State = Tax.State))</TT>
+</PRE>
+	<PRE><TT>     ON (Customers.CustNum = Orders.CustNum));</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This <TT>SELECT</TT> statement returns all the records in which there is a customer
+number from the Customers table and Orders table and a state in the Orders table
+and the Tax table.</P>
+<P>You can nest either a <TT>LEFT JOIN</TT> or a <TT>RIGHT JOIN</TT> inside an <TT>INNER
+JOIN</TT>; however, you cannot nest an <TT>INNER JOIN</TT> inside either a <TT>LEFT
+JOIN</TT> or a <TT>RIGHT JOIN</TT>.</P>
+<P>
+<H3><A NAME="Heading10"></A>The INSERT Command</H3>
+<P>The <TT>INSERT</TT> command is used in the <TT>INSERT INTO</TT> statement to create
+an append query, a type of action query. You can use this command to add single or
+multiple rows to a table. This is the syntax for adding a single row using the <TT>INSERT
+INTO</TT> statement:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>INSERT INTO </TT>table<TT> [(</TT>fld1<TT>[, </TT>fld2<TT>[, ...]])]</TT>
+</PRE>
+	<PRE><TT>VALUES (</TT>val1<TT>[, </TT>val2<TT>[, ...])</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>Using this syntax, you can add single rows to a table. You must specify each field
+and its value that you want to add. If you leave out a field and its corresponding
+value, a <TT>NULL</TT> value is automatically inserted into the field. The new records
+are appended to the end of the table. Following is an example of how to add a row
+onto a specific table:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>INSERT INTO Customers (CustNum, CustName)</TT>
+</PRE>
+	<PRE><TT>VALUES (1, &quot;Kimberly&quot;);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>If other fields are in the Customers table, they are assigned a <TT>NULL</TT>
+value.</P>
+<P>The syntax for adding multiple rows differs slightly:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>INSERT INTO </TT>table2<TT> [(</TT>fld1<TT>[, </TT>fld2<TT>[, ...]])]</TT>
+<TT>SELECT [</TT>table1<TT>.]</TT>fld1<TT>[, </TT>fld2<TT>[, ...]</TT>
+</PRE>
+	<PRE><TT>FROM ...</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This syntax takes a specified selection of records from table1 and inserts them
+into table2. The number of fields for both tables must be the same and in the correct
+order. The following example demonstrates the <TT>INSERT INTO</TT> statement:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>INSERT INTO Delivered (CustNum, DelPart, PriceCharged)</TT>
+<TT>SELECT CustNum, PartName, PartPrice</TT>
+<TT>FROM Orders</TT>
+</PRE>
+	<PRE><TT>WHERE (Delivered = True);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example inserts all the delivered orders from the Orders table into the corresponding
+fields of the Delivered table.</P>
+<P>The <TT>INSERT INTO</TT> statement appends records at the end of an existing table,
+but you can also use a similar statement and selection of records to create a new
+table, as in this example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT CustNum, PartName, PartPrice</TT>
+<TT>INTO DeliveredBackup</TT>
+<TT>FROM Orders</TT>
+</PRE>
+	<PRE><TT>WHERE (Delivered = True);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example creates a new table called DeliveredBackup, with the identical fields
+and properties of the fields listed in the <TT>SELECT</TT> clause from the Orders
+table. The new table would include all the records with the <TT>Delivered</TT> field
+value of <TT>True</TT>.</P>
+<P>
+<H3><A NAME="Heading11"></A>The UPDATE Command</H3>
+<P>The <TT>UPDATE</TT> command is used to set information in a current table to a
+new value. The syntax for the <TT>UPDATE</TT> command is as follows:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>UPDATE </TT>table
+<TT>SET value</TT>
+</PRE>
+	<PRE><TT>WHERE </TT>criteria</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P>The value of the <TT>SET</TT> clause in the <TT>UPDATE</TT> statement is an assignment
+expression that will alter the current value of the selected records of the table
+specified. Here is an example of the <TT>UPDATE</TT> statement:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>UPDATE Orders</TT>
+</PRE>
+	<PRE><TT>SET OrderTotal = (PartPrice * Quantity);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>If no <TT>WHERE</TT> clause is specified, as in this example, the <TT>UPDATE</TT>
+query makes the necessary changes to all the records in the specified table. In this
+example, the <TT>OrderTotal</TT> field is calculated based on the <TT>PartPrice</TT>
+and <TT>Quantity</TT> field values for the corresponding record.</P>
+<P>With a single SQL <TT>UPDATE</TT> query, it's possible to update multiple fields
+for each record, as shown in this next example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>UPDATE Orders</TT>
+<TT>SET OrderTotal = (PartPrice * Quantity),</TT>
+<TT>    Discount = (PartPrice * .05) * Quantity</TT>
+</PRE>
+	<PRE><TT>WHERE (OrderDate &lt; #1/1/1998#);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example gives a new value to both the <TT>OrderTotal</TT> field and the <TT>Discount</TT>
+field for all records whose <TT>OrderDate</TT> field value is before January 1, 1998.
+Notice the use of the number signs (<TT>#</TT>) before and after the date criteria
+in the <TT>WHERE</TT> clause. This is the correct notation for specifying dates in
+a condition.</P>
+<P>Notice that you cannot reverse <TT>UPDATE</TT> queries and must take care to ensure
+that the correct records are selected for the update. To check which fields are going
+to be updated before the execution of the <TT>UPDATE</TT> statement, create a selection
+query with the same criteria as the <TT>UPDATE</TT> query.</P>
+<P>
+<H3><A NAME="Heading12"></A>The DELETE Command</H3>
+<P>The <TT>DELETE</TT> command is used to perform bulk deletions of records within
+a specified table in one operation. You can specify conditions to select the records
+from a table to delete. When you use the <TT>DELETE</TT> command, entire records
+are deleted, not individual fields. The syntax for the <TT>DELETE</TT> command is
+shown here:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>DELETE </TT>table.<TT>*</TT>
+<TT>FROM </TT>table
+</PRE>
+	<PRE><TT>WHERE ...</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>Following is an example of a <TT>DELETE</TT> statement:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>DELETE *</TT>
+<TT>FROM Customers</TT>
+</PRE>
+	<PRE><TT>WHERE (LastOrderDate &lt;= #6/20/73#);</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This example deletes all the records in the Customers table in which the last
+order date was June 20, 1973, or earlier (You don't need their business anyway!).</P>
+<P>You can use the <TT>DELETE</TT> command to delete all the data in a particular
+table while maintaining the actual structure and definition of the table, as shown
+in this example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>DELETE * FROM Orders;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This command could obviously be very dangerous; therefore, use this form of the
+<TT>DELETE</TT> command with extreme caution.</P>
+<P>
+<H3><A NAME="Heading13"></A>Comments</H3>
+<P>SQL is a convenient, effective, and easy way to organize data for your applications.
+By using the commands described in this appendix, you can select, filter, order,
+and group records in any way you need. The SQL is much more involved than is described
+in this brief reference, but by knowing just these basic commands and functions,
+you can create just about any desired recordset from your raw data.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch13.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch13/ch13.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="apb.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/apb/apb.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A></P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

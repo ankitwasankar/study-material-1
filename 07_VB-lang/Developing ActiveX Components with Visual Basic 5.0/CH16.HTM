@@ -1,0 +1,1294 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 16 -- ActiveX Control Fundamentals</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;16</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>ActiveX Control Fundamentals</FONT>
+</H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#ThingsEveryProgrammerShouldKnowaboutActiveXControlsbeforeHeorSheWritesaSingleLineofCode">
+Things Every Programmer Should Know about ActiveX Controls
+before He or She Writes a Single Line of Code</A>
+<UL>
+<LI><A HREF="#ActiveXControlsArePlatformLimited">
+ActiveX Controls Are Platform-Limited</A>
+<LI><A HREF="#ActiveXControlContainersAreNotAlltheSame">
+ActiveX Control Containers Are Not All the Same</A>
+<LI><A HREF="#VBCreatedControlsDoHaveLimitations">
+VB-Created Controls Do Have Limitations</A>
+</UL>
+<LI><A HREF="#DesignTimeversusRuntimeversusDesignTimeversusRuntime">
+Design Time versus Runtime versus Design Time versus Runtime
+</A>
+<UL>
+<LI><A HREF="#AMatterofPerspective">
+A Matter of Perspective</A>
+<LI><A HREF="#ACacophonyofObjects">
+A Cacophony of Objects</A>
+</UL>
+<LI><A HREF="#TheSTRIKEThreeSTRIKEFourModelsforControlCreation">
+The <STRIKE>Three</STRIKE> Four Models for Control Creation
+</A>
+<UL>
+<LI><A HREF="#EnhanceanExistingControl">
+Enhance an Existing Control</A>
+<LI><A HREF="#BuildaControlfromConstituentControls">
+Build a Control from Constituent Controls</A>
+<LI><A HREF="#UserDrawnControls">
+User-Drawn Controls</A>
+<LI><A HREF="#CreateYourOwnWindow">
+Create Your Own Window</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+As is true with any technology, it is important to keep ActiveX
+controls in perspective. If you listen to Microsoft for any length
+of time you will quickly become convinced that ActiveX controls
+are not just the most important technology to hit Windows, the
+Internet, intranets, client-server development and so on, but
+that they will also bring on world peace, end hunger, eliminate
+political corruption, and lead to the rapid development of faster-than-light
+travel. If you listen to some other companies and pundits,<I>
+</I>you may come to discover that ActiveX controls are severely
+limited, inherently insecure, overly complex, poorly standardized
+and that they will lead to brain damage, World War III, and the
+ultimate hegemony of Microsoft as Bill Gates proceeds to buy up
+every software company in the world.
+<P>
+Ahem&#133;
+<P>
+There are days when I feel that the media organizations covering
+our industry are taking their cue from colleagues who cover political
+campaigns. The problem is that this type of coverage is not necessarily
+helpful to programmers who are trying to decide what technologies
+to deploy. I feel it<I> </I>is important that we start our discussion
+of ActiveX controls by trying to place some of the conflicting
+claims into perspective. One of the worst things that can happen
+to any programmer is to invest lots of time and effort on a technology
+only to hit a brick wall halfway through a project, discovering
+that it is not suitable for the task and never was.
+<P>
+Hopefully this chapter will help minimize the chances of<I> </I>hitting
+brick walls, or, at the very least, help you to see them approaching
+in the distance.
+<H2><A NAME="ThingsEveryProgrammerShouldKnowaboutActiveXControlsbeforeHeorSheWritesaSingleLineofCode"><FONT SIZE=5 COLOR=#FF0000>
+Things Every Programmer Should Know about ActiveX Controls
+before He or She Writes a Single Line of Code</FONT></A></H2>
+<P>
+What is an ActiveX control? Obviously that is the subject of forthcoming
+chapters, but the forthcoming chapters focus on the technical
+answer to this question. If you look at it from the highest level,
+an ActiveX control potentially supports the following characteristics:
+<OL>
+<LI>Everything that an in-process DLL server can do except:
+<UL>
+<LI>Expose public objects (other than the control itself)
+<LI>Support multithreading
+</UL>
+<LI>Be sited on a container. This means the control has its own
+independent user interface that is contained on the window of
+another application, be it a form in Visual Basic or a Web page
+on an Internet browser. The control is able to interact with the
+container application in a variety of different ways.
+<LI>Support design-time programming characteristics, including:
+<UL>
+<LI>Support for property pages
+<LI>The ability to store property values set at design time in
+a location specified by the container
+<LI>The ability to interact with the container's property browser
+if one exists
+</UL>
+</OL>
+<P>
+In other words: ActiveX controls = Code Components + User Interface
++ Container Features. We'll go into much more detail on these
+subjects later. The reason for mentioning them here is this: If
+your component does not need any of these three characteristics,
+there is a very good chance you should not implement an ActiveX
+control but should, instead, create a code component. ActiveX
+controls are more complex than code components. Why put in the
+extra work if you don't need to?
+<H3><A NAME="ActiveXControlsArePlatformLimited">
+ActiveX Controls Are Platform-Limited</A></H3>
+<P>
+At the time of publication of this book, ActiveX controls created
+with Visual Basic 5.0 were able to run on the following platforms:
+<UL>
+<LI>Windows 95 and later versions of Microsoft's &quot;lighter&quot;
+32-bit operating system
+<LI>Windows NT 3.51 with service pack #5 or later
+<LI>Windows NT 4.0 and later
+</UL>
+<P>
+That's it. What does this mean with regard to your choice of whether
+to adopt this technology? Here are some situations where ActiveX
+controls may prove ideal:
+<UL>
+<LI>You are creating applications that are targeted for these
+platforms. These applications may be in Visual Basic, Office 97,
+other containers that support ActiveX controls, or any other VBA-based
+application that supports ActiveX controls. Keep in mind that
+Microsoft is now licensing VBA to other companies and that ActiveX
+controls are being adopted by many software development tools.
+<LI>You are creating a Web site that is targeted towards those
+who are using these Microsoft platforms, or you are willing to
+accept lesser functionality for those who are not. Microsoft takes
+this approach on their own Web site.
+<LI>You are creating a Web site for a corporate intranet and your
+corporation has standardized on these platforms, or you are willing
+to accept lesser functionality for those who are on other platforms.
+</UL>
+<P>
+These situations also suggest other times where ActiveX controls
+may not be appropriate:
+<UL>
+<LI>Your application needs to support 16-bit platforms. In this
+case you have two choices. You can use Visual Basic 4.0 and use
+Visual C++ to create both 16- and 32-bit ActiveX controls. Or
+you can use Visual Basic 3.0 or 4.0, use 16-bit technology and
+just run your 16-bit applications on 32-bit Windows.
+<LI>You need to create a general purpose Web site that supports
+multiple platforms, including perhaps Apple, UNIX, Windows for
+Workgroups, and Windows NT users who have not upgraded to 3.51
+with service pack 5. For cases such as these, a generic version
+of Java (assuming such a thing exists) may be a better choice.
+</UL>
+<P>
+Occasionally one hears rumors coming out of Microsoft regarding
+support for ActiveX control technology on non-Windows platforms.
+With all due respect to Microsoft, I would suggest that you do
+not believe it until they ship it. For technical reasons, if they
+do end up supporting Visual Basic ActiveX controls on non-Microsoft
+platforms, I would expect that there may be some limitations including:
+<UL>
+<LI>They may require compilation in P-Code. Otherwise they would
+have to implement a full Intel native code emulation.
+<LI>They may not support use of API functions in a control, which
+as you will see is a very powerful technique for creating sophisticated
+controls.
+</UL>
+<P>
+It is possible that other vendors will support ActiveX controls
+on non-Windows platforms. Here, too, I would suggest that you
+do not believe it until they ship it.
+<P>
+I must stress, however, that when I question the support of ActiveX
+controls on non-Windows platforms, that is <I>not</I> the same
+thing as questioning the support of ActiveX controls on non-Microsoft
+containers. I fully expect many Windows versions of non-Microsoft
+products (including Web browsers) to support ActiveX controls
+very nicely. Unlike the case with different operating systems,
+there are no technical reasons why a Windows-based application
+or browser should not support ActiveX controls. Of course, there
+may be political and strategic issues-but I won't go any closer
+to that subject.
+<H3><A NAME="ActiveXControlContainersAreNotAlltheSame">
+ActiveX Control Containers Are Not All the Same</A></H3>
+<P>
+In the ideal world, every application that claimed to be a container
+for ActiveX controls would be able to handle every ActiveX control.
+In the ideal world, every ActiveX control would work perfectly
+in every application that is a container for ActiveX controls.
+<P>
+I suppose it will be no surprise to you if I inform you at this
+point that we don't live in an ideal world.
+<H4>A Brief History of ActiveX Controls</H4>
+<P>
+What I'm about to tell you now has little or nothing to do with
+today's ActiveX control technology, or developing controls in
+Visual Basic. Consider, if you will, a brief historical aside,
+the kind that comes from the deep-seated need of those who have
+gone through a traumatic experience to tell their tale. Traumatic
+experience? Yes, for you see, I am a survivor of the ordeal that
+component vendors went through in the switch from VBX to OCX technology
+during the transition from Visual Basic 3.0 to 4.0.
+<P>
+And an ordeal it was. Like the other software vendors who had
+contributed controls to be included with Visual Basic, we were
+given early notice of the new technology. We were given impossible
+schedules. And then things began to slip. I think when all was
+said and done, the transition took almost a year longer than was
+originally forecast.
+<P>
+The frustrating thing from our point of view was that we were
+trying to create controls based on a specification that was changing,
+using tools that were changing, to run on a container that was
+changing, for an operating system that was still unreleased. There
+was not a stable piece of code anywhere in sight.
+<P>
+It was not unusual for us to get multiple drops of software every
+week and very common for new drops to require some major recoding.
+<P>
+By ship date, I think it is safe to say that we were all frustrated
+and exhausted. Our controls worked fairly well on Visual Basic
+4.0, but those who tried to support other containers often had
+to add code specific to that particular platform. For example:
+Access 95 was released before Visual Basic 4.0 and did not support
+all of the ActiveX control features that were supported by VB.
+<P>
+Fortunately, Visual Basic 4.0 finally did ship, and so did vendors'
+controls. I can't speak for others, but I was quite pleased with
+the stability and reliability of ours. And the ActiveX control
+standard finally stabilized&#133;a little bit.
+<H4>The Different Flavors of ActiveX Containers</H4>
+<P>
+You see, the ActiveX control standard is not quite as standard
+as one might expect. And you now know enough about ActiveX technology
+to understand why.
+<P>
+Remember that ActiveX technology is based on COM objects. ActiveX
+controls are COM objects that support specific interfaces. In
+fact, the ActiveX control specification consists mostly of definitions
+of those interfaces.
+<P>
+The problem is this: the standards focused mostly on the interfaces
+themselves-the methods and properties for each one. But the standards
+were not clear about which interfaces a container had to support
+to really be considered an ActiveX container. It was possible,
+and common, for a container to only support a minimal set of interfaces.
+For example: There is an interface called ISimpleFrame that a
+control can implement if it wants to be a container for other
+controls. An example of this is a picture control, which can hold
+other controls. An ActiveX container was not required to support
+this interface, and some did not.
+<P>
+This meant a control that wanted to be a container for other controls
+could not assume it would actually be allowed to do so by its
+own host container.
+<P>
+Microsoft did make an effort to specify which interfaces are required
+and which are optional for both containers and controls. But it
+remains a moving target.
+<P>
+You already know that the way ActiveX technology is extended is
+by defining new interfaces. A recent example of this involved
+making ActiveX controls Internet-compatible-it was simply a matter
+of adding new Internet-related interfaces to controls.
+<P>
+But when new interfaces are added to controls, they obviously
+cannot assume that existing containers will support those new
+features. On the contrary, as a control developer you must assume
+there will be containers that cannot support certain features
+of your control. This leaves you two options: You can choose not
+to support those containers, or you can be sure that your control
+degrades gracefully, using careful coding and error detection
+to make sure that if your control does not work, at least it does
+not crash the application.
+<P>
+There are also some areas where container behavior is not clearly
+defined. To see an example of this, look at the ch16ctl1.ocx control
+in the <A HREF="ch16.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch16.htm" >Chapter 16</A> directory on your CD ROM and register it. Try
+adding it to a VB5 project-take note of how it looks at design
+time. Note that properties TestBool1 and TestBool2 both appear
+in the property page.
+<P>
+Now try adding it to a VB4 project. Looks different, does it?
+And what happened to the TestBool1property? You'll find out why
+later.
+<P>
+This book will attempt to point out situations that are likely
+to be container-specific. However, keep in mind that I myself
+have only worked with a fraction of the containers that exist
+today, much less those that will be available by the time you
+read this.
+<H3><A NAME="VBCreatedControlsDoHaveLimitations">
+VB-Created Controls Do Have Limitations</A></H3>
+<P>
+I mentioned earlier that Visual Basic made Windows programming
+accessible by encapsulating the features of Windows into the Basic
+syntax. Visual Basic programming is not as easy as it once was,
+but that is mostly because Windows has grown considerably. Visual
+Basic is still one of the easiest ways to create Windows applications.
+<P>
+Visual Basic is also one of the safest ways to create Windows
+programs. Programmers who use Visual C++ and similar languages
+grow accustomed to dealing with frequent memory exceptions during
+the course of application development. Visual Basic does an excellent
+job of preventing these kinds of exceptions. In fact, the only
+ways to trigger a memory exception during VB development are:
+<UL>
+<LI>Invalid use of API calls or low-level API extensions
+<LI>Use of the AddressOf operator
+<LI>Bugs in Visual Basic
+</UL>
+<P>
+Perhaps the nicest thing about Visual Basic is that it gives you
+control over the trade-offs between power and safety. You can
+stay within the safe and &quot;easy&quot; confines of Visual Basic
+and perform a large percentage of the tasks that Windows makes
+possible. You can selectively extend the power of Visual Basic
+using API calls and third-party controls and DLLs to perform almost
+any task, but at a price. These extensions either reduce the safety
+level, making memory exceptions possible, or increase the overhead,
+as you distribute additional controls and DLLs that perform the
+desired tasks in a safe manner.
+<P>
+This situation is repeated with Visual Basic 5.0's implementation
+of ActiveX control creation.
+<P>
+Visual Basic allows you to create ActiveX controls more easily
+and quickly than has ever been possible. It does this by encapsulating
+many of the ActiveX control-related interfaces and objects into
+the Visual Basic language and environment. Control development
+under VB is remarkably safe as well.
+<P>
+But in doing so, Visual Basic had to sacrifice some of the features
+that are available to ActiveX controls written under Visual C++.
+These limitations fall into several major areas:
+<UL>
+<LI>Inability to create 16-bit controls.
+<LI>Not all events and methods of the OLE control interfaces are
+exposed to VB programmers.
+<LI>Inability to support non-dispatch interfaces.
+<LI>Inability to modify design-time-only properties of contained
+controls at control runtime.
+</UL>
+<P>
+We'll go into more details on these limitations in upcoming chapters.
+<P>
+The good news is that just as it was possible to use direct API
+calls and third-party products to extend the power of Visual Basic,
+it is also possible to use API calls and third-party products
+to extend the reach of VB-created controls to the point where
+they are able to handle almost any task you can perform with other
+control development tools.
+<P>
+Also, keep in mind that Visual Basic controls also have advantages
+over those created in Visual C++. For example: It is notoriously
+difficult to build a control from constituent controls using VC++.
+<P>
+The intent of this section, which focuses on limitations, is not
+to discourage you from using Visual Basic to create your ActiveX
+controls. On the contrary, I think you'll find that Visual Basic
+is the best tool around for creating controls. The intent is to
+get some of the &quot;nasty surprises&quot; out of the way, so
+you can approach the technology with a clearer understanding of
+its strengths and its limitations.
+<H2><A NAME="DesignTimeversusRuntimeversusDesignTimeversusRuntime"><FONT SIZE=5 COLOR=#FF0000>
+Design Time versus Runtime versus Design Time versus Runtime
+</FONT></A></H2>
+<P>
+When working with ActiveX controls you have to be aware at all
+times of whether the control that you created is in design time,
+meaning that its designer is open, or the designer is closed and
+you are in Break mode, which is also considered design time, and
+to differentiate between design time from your perspective as
+a control developer and design time meaning the mode of the container
+that is hosting your control-for your control will usually be
+at runtime while it appears to be exhibiting design-time behavior
+(which you programmed) from the perspective of the end user of
+your controls, keeping in mind, of course, that any constituent
+controls of your control are in runtime mode except for when your
+control designer is actually open.
+<P>
+And we haven't yet discussed what happens when the user of your
+control enters runtime mode as well.
+<P>
+And if you understood that sentence, I am very impressed. It will
+take me the rest of this chapter to explain it. Let us begin.
+<H3><A NAME="AMatterofPerspective">
+A Matter of Perspective</A></H3>
+<P>
+Perhaps the single most important thing you need to do before
+undertaking development of ActiveX controls in Visual Basic is
+to gain a thorough understanding of the different objects you
+use to create controls, how they relate to each other, and the
+different operating modes they support.
+<P>
+Without this understanding, you might get hopelessly lost, as
+you try to figure out which property belongs to which object.
+For example: does the property &quot;Name&quot; refer to the name
+of a constituent control (and if so, which one?), the name of
+your control, or the name that some developer using your control
+assigned to your control? All of these Name properties can exist
+in your control simultaneously and will almost certainly have
+different values.
+<P>
+In fact, some of you reading this probably got lost as soon as
+I mentioned constituent controls!
+<P>
+So let's begin with a somewhat philosophical look at ActiveX controls.
+Then we'll build on your existing knowledge of COM objects and
+ActiveX technology to see how the pieces fit together.
+<P>
+First, consider a standard control type, such as a list box. As
+far as you're concerned at this point, the built-in controls such
+as a list box are identical to any ActiveX control you create
+yourself. The only difference is that a built-in control (also
+called an intrinsic control) is implemented within Visual Basic
+instead of a separate .OCX file.
+<P>
+When you draw a list box onto a blank form, you have placed a
+COM object on a form. Like any object, it has properties, methods,
+and the ability to raise events. For example, you can add an item
+to the list box using the line:
+<BLOCKQUOTE>
+<PRE>
+List1.AddItem
+</PRE>
+</BLOCKQUOTE>
+<P>
+The events of the list box appear with the syntax
+List1_<I>eventname.</I> For example:
+<BLOCKQUOTE>
+<PRE>
+Private Sub List1_Click()
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+You may have noticed that the syntax of a control event is identical
+to that of events raised with an ActiveX code component and of
+interface functions added to an object using the Implements statement.
+That is because this syntax defines both the event name and the
+name of an interface. List1_Click means the Click event on the
+List1 event interface.
+<P>
+Now, here is a question for you. When your form is in design time,
+do the list box properties and events exist? The answer is: yes,
+absolutely. But you can't do much with them. There are two reasons
+for this: First, Visual Basic does not run any of your application's
+code at design time. So if the list control raises an event, nothing
+happens in your code. And your code can't set list box properties
+if it is not running.
+<P>
+But you can set list box properties using the Visual Basic property
+window. As far as the list control itself is concerned, all it
+sees is a property being set. It does not care and cannot tell
+whether the property has been set by a property window or by your
+code.
+<P>
+However, the list control does know whether its container is in
+design time or runtime. It knows this because the ActiveX specification
+provides a way for a control to ask the container what mode it
+is in. The list control can decide how to handle property access
+based on the container's run mode. If you use the VB property
+window to set the background color for a list box, the change
+takes place immediately. However, if you drop a new list control
+on a form, it displays the name of the control at design time
+and nothing at runtime (unless you use the List property to add
+items at design time). There are other properties, such as the
+MultiSelect property, that can only be set at design time.
+<P>
+The key point that you must keep in mind is that these different
+control behaviors are not determined by Visual Basic. They are
+determined by the control itself. Visual Basic knows which properties
+can be set only at design time because the control informs Visual
+Basic of the fact. And the control can do this because the code
+that implements the control is running.
+<P>
+Figure 16.1 illustrates this scenario from the point of view of
+a developer using a control. The control itself is always running
+but may change its behavior based on the mode of the container.
+In VB design mode, most of the communication with the control
+is from Visual Basic's property window. In VB run mode, and in
+compiled executables, most of the communication is from your own
+application's code.
+<P>
+<A HREF="f16-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f16-1.gif"><B>Figure 16.1 :</B> <I>A control from the developer's perspective</I>.</A>
+<H4>The Author's Point of View</H4>
+<P>
+As the author of a control, you will have a different perspective.
+<P>
+Your job is to create a control which, when it is running, exposes
+properties, methods, and events. It will be up to you to ask the
+container whether it is in design mode or run mode, and to vary
+the operation of your control accordingly if you wish. The developer
+who uses your control will only be able to access those properties,
+methods, and events that you choose to make public.
+<P>
+This terminology follows the lead of Microsoft's documentation.
+You are the author of the control. The developer is the person
+who creates instances of your control and places them on the forms
+of his or her application.
+<P>
+Controls do not magically develop themselves. From your point
+of view as an author, your control will be in design mode as well
+as run mode. But controls are a little bit more complex than applications
+in this respect.
+<P>
+You may recall in <A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm" >Chapter 9</A>that I made quite a fuss about designers
+and about distinguishing between the designers that allow you
+to edit user interface characteristics of an object, such as a
+form, and code windows, which allow you to edit the code for an
+object. The reason for this is that the behavior of ActiveX controls
+you create depends on whether the control's designer is open or
+closed.
+<P>
+When the ActiveX control designer is open, your control is unavailable
+to clients. When the designer is closed, you can add the control
+to forms in the current instance of Visual Basic. You can set
+breakpoints in your control's code and thus trace through both
+your control's code and the developer code that is using the control.
+<P>
+So the first step you need to perform in order to test your control
+is to close its designer. This starts the control running. This
+means it is possible to close a designer, set a breakpoint in
+your control's code, place the control on a form, and step through
+your control code that is running even though the container is
+in design mode!
+<P>
+How do you create methods, properties, and events in your control?
+And how do you differentiate between the methods and properties
+you expose to the outside world and those you must use to create
+your control?
+<H3><A NAME="ACacophonyofObjects">
+A Cacophony of Objects</A></H3>
+<P>
+A number of different objects are involved in the process of authoring
+ActiveX controls. The most important of these are:
+<UL>
+<LI>Your Control object
+<LI>The UserControl object
+<LI>The Ambient object
+<LI>The Extender object
+<LI>Constituent control objects
+</UL>
+<P>
+Let's look at these one by one as you follow the process of creating
+a very simple control. This control will be a private control
+that is built into the executable itself. You will not be able
+to create a public OCX for it, but this is the only difference
+between private and public ActiveX controls.
+<P>
+Create a new stand-alone EXE project. Add a UserControl object
+to the project. The ActiveX designer for the control will be visible.
+Change the name of the control from UserControl1 to MyControl.
+Change the project name from Project1 to Ch16CtlA.
+<P>
+Click on the control in the designer window. Look at the property
+window. The properties that you see listed are those of the UserControl
+object for your control. The MyControl class that you have created
+to implement your control contains a UserControl object you will
+use to implement the control.
+<P>
+Double-click on the designer to bring up the code window for the
+control. Add a property to the control by adding the following
+code:
+<BLOCKQUOTE>
+<PRE>
+Dim m_MyProp As String
+
+Public Property Get MyProp() As String
+   MyProp = m_MyProp
+End Property
+
+Public Property Let MyProp(vNewValue As String)
+   m_MyProp = MyProp
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Bring up the form for the project. Change the form's name to MyForm.
+This is the form you will use to test the control. If you look
+in the toolbox, you will see a grayed-out bitmap that is associated
+with your control.
+<P>
+Now close the designer for the control. The control's bitmap will
+become clear. Bring up the form and create an instance of the
+control that you authored on the form. The default name for the
+control instance was defined by the Name property of the control's
+UserControl object, in this case MyControl1. This is also the
+name for the object's type.
+<P>
+Look at the property page for the control. You'll see the MyProp
+string that you created earlier. You'll also see many other properties.
+These properties are called <I>Extender</I> properties because
+they are implemented by a separate object called an Extender object
+provided by the container (in this case, Visual Basic).
+<P>
+Without closing the form designer, open the control designer again
+by clicking on the MyControl icon in the project window. Look
+at the form. The image of the control has been marked with diagonal
+lines to indicate that the control is not available. Bring up
+the code window for the control again and add the following event
+code:
+<BLOCKQUOTE>
+<PRE>
+Event Click()    ' Add this at the top of the module
+
+Private Sub UserControl_Click()
+    RaiseEvent Click
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Close the designer again. In the MyForm code module,
+add the following code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub MyControl1_Click()
+   MsgBox &quot;MyControl was clicked&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Now run the project (be sure MyForm is set as the startup form).
+Click on the control. The message box will appear when the control's
+Click event is triggered.
+<P>
+Stop the project and bring up the ActiveX designer again. Add
+a command button to the control. Add the following code to the
+module
+<BLOCKQUOTE>
+<PRE>
+Event ButtonClick()    ' Add this at the top of the module
+
+Private Sub Command1_Click()
+   RaiseEvent ButtonClick
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Go back to form Myform and add the following code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub MyControl1_ButtonClick()
+   MsgBox &quot;MyControl's button was clicked&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Run the project. Now try clicking on both the control and the
+command button that is on the control. From your perspective as
+an author, you are handling two incoming Click events on two different
+COM event interfaces, one from the UserControl object, the other
+from the command button, which is a constituent control. You are
+then raising two different events on your control's event interface.
+The developer sees both controls as events of MyControl1.
+<P>
+Bring up the ActiveX designer. Add a label control to your control.
+Add the following code to the UserControl_Paint() event:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_Paint()
+   If Ambient.UserMode Then
+      Label1.Caption = &quot;Container is in Run mode&quot;
+   Else
+      Label1.Caption = &quot;Container is in Design mode&quot;
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Now close the designer and look at the form in design mode. Now
+run the project. This demonstrates how a control can change its
+behavior based on whether it is in run mode or design mode. To
+do this, a control uses the Ambient object, which contains information
+about the container's environment.
+<P>
+Let's take a closer look at the five types of objects you have
+seen here.
+<H4>Your Control Object</H4>
+<P>
+The only part of the ActiveX control you implement as an author
+is the control object itself, in this case, the MyControl object.
+This object serves two purposes: It defines the public methods,
+properties, and events that are available to those using your
+control. It defines the behavior of the control.
+<P>
+In addition to methods and properties you implement, you have
+access to properties in the UserControl, Extender, and Ambient
+objects and any constituent controls you add to your control.
+You receive events from the UserControl object and any constituent
+controls you add to your control.
+<H4>The UserControl Object</H4>
+<P>
+From your perspective as a programmer, the UserControl object
+is a subobject of your control. You access methods in the UserControl
+object using the syntax: UserControl.<I>method</I>. The UserControl
+object can raise events in your control object you can respond
+to in your code. Note that this does <I>not</I> raise events in
+the control instances that developers create when using your control.
+If you want a UserControl event such as the UserControl_Click
+event to be exposed to developers using your control, you must
+define a new event in your control's object and raise an event
+yourself.
+<P>
+From the perspective of a Visual Basic application, your control
+object may seem like a subobject of the UserControl object. This
+is because it is the UserControl object that Visual Basic knows
+how to site and place on a container. Visual Basic and Windows
+direct mouse and keyboard input to the UserControl object, which
+processes them and raises events your code can handle as needed.
+The UserControl object is responsible for creating the control's
+window and for handling activation, input focus, and all other
+user interface issues. All of these activities are then exposed
+to your control object through events and properties.
+<P>
+The UserControl object is the default object for your control.
+To see what this means, consider what happens when you work with
+a form and access the property known as &quot;Caption.&quot; In
+this case you will by default access the caption of the form.
+But if you create a new property called Caption in the form, the
+new Caption property will hide the default one provided by the
+form. This is exactly like the variable scoping rules that you
+read about in <A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A>. Locally defined variables hide global
+variables of the same name. Locally defined properties and methods
+hide global properties and methods or properties and methods of
+the default object. You can, however, still access the Caption
+property of the form by explicitly specifying the form; for example:
+Form1.Caption.
+<H4>The Ambient Object</H4>
+<P>
+The Ambient object is used to obtain information from the container.
+The properties in this object allow you to determine some of the
+capabilities of the container and adapt your control to handle
+them if you so wish. One example you saw earlier is the UserMode
+property, which allows you to determine if the container is in
+run mode or design mode. Another example is the BackColor property,
+which allows you to obtain the background color for the container.
+This can be useful if you want your control to track the background
+color of its container. The UserControl object includes the AmbientChanged
+event, which allows you to detect when an Ambient property is
+changed.
+<P>
+Containers may define their own ambient properties and are not
+required to implement even the ones that you see in the Visual
+Basic object browser and VB documentation. To make life easier,
+the Ambient object detects properties that are missing from the
+container and simply returns the default value for the property.
+<P>
+Does this mean, for example, that a container is not required
+to implement a property such as UserMode? Yes. If it isn't implemented,
+how does your control know whether it is in design time or not?
+It doesn't. Some containers do not distinguish between design
+time and runtime. Those containers don't need to expose the UserMode
+property. In this case the Ambient object will always return True.
+<H4>The Extender Object</H4>
+<P>
+There are some properties associated with controls that really
+have nothing to do with the functioning of the control itself.
+For example: Every control in Visual Basic has a Name property,
+and that property is really managed by the container. Other properties
+that fall into this category are the Visible property and the
+position properties, such as Left and Right.
+<P>
+When a developer uses your control, the container automatically
+adds these properties to your control's interface so the developer
+can access them. They are called Extender properties. The developer
+cannot tell the difference between properties provided by the
+container and those provided by the control itself. But you, the
+control author, can. For one thing, you don't need to implement
+Extender properties-in fact, you can't. But you are able to access
+these container-provided Extender properties using the Extender
+object.
+<P>
+There is just one catch to this object. There is no way of knowing
+what properties a container provides. While there are some standard
+properties that most containers support, you must always use error-checking
+when accessing these properties if you want to be sure that you
+can support any container.
+<P>
+Because Extender objects cannot be determined ahead of time, access
+to them is always late bound.
+<H4>Constituent Objects</H4>
+<P>
+In a way, these are the easiest objects to deal with. They work
+almost exactly the same way as controls work in a form. You draw
+them on your control just as if you were placing controls on a
+form. You access them in the same way, and they raise events in
+the same way. Just keep in mind that developers using your control
+will have no access to the properties, methods, or events of constituent
+controls unless you explicitly expose them.
+<P>
+There are some interesting side effects of using constituent controls
+in an ActiveX control. These side effects relate to focus, accelerator
+keys, and tabbing between controls, but this is a subject for
+the next chapter.
+<P>
+Constituent objects in ActiveX controls suffer from one major
+limitation. It derives from the following question: When is a
+constituent control in run mode and when is it in design mode?
+<P>
+Table 16.1 illustrates the possible operating modes for ActiveX
+controls, client applications, and constituent controls. As you
+can see, when the designer is open, your control code cannot run
+(you are in control design mode). At this time you can set the
+design-time properties of your constituent controls using the
+VB property window or their property pages. As soon as you close
+the designer, your control begins to run and the constituent controls
+enter run mode, regardless of the container operating mode.
+<P>
+This means it is not possible with Visual Basic 5.0 to set the
+design time-only properties of a constituent control at runtime.
+For example: you cannot change a constituent list control from
+single selection to multiselection mode, even at the container's
+design time (when you might want to support this capability).
+There are a number of ways to work around this problem, as you
+will see later.
+<P>
+<CENTER><B>Table 16.1:&nbsp;Operating Modes of ActiveX Controls
+and Constituent Controls</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=192><B>ActiveX Designer</B></TD><TD WIDTH=192><B>Client Application Using Your Control</B>
+</TD><TD WIDTH=192><B>Constituent Control Mode</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Open-control is not running</TD><TD WIDTH=192>Control is inactive
+</TD><TD WIDTH=192>Design</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Closed-control is running or in break mode</TD>
+<TD WIDTH=192>Design mode</TD><TD WIDTH=192>Run mode</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Closed-control is running or in break mode</TD>
+<TD WIDTH=192>Run mode or break mode</TD><TD WIDTH=192>Run mode-control is running or in break mode
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Figure 16.2 summarizes the object model for ActiveX controls.
+The gray rectangle at the upper length represents your control.
+Your control includes the UserControl object and any constituent
+controls. The other gray block indicates objects relating to the
+container. The Ambient object and Extender object are provided
+by Visual Basic to provide access to container information.
+<P>
+<A HREF="f16-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f16-2.gif"><B>Figure 16.2 :</B> <I>Object relationships in an ActiveX control</I>.</A>
+<H2><A NAME="TheSTRIKEThreeSTRIKEFourModelsforControlCreation"><FONT SIZE=5 COLOR=#FF0000>
+The <STRIKE>Three</STRIKE> Four Models for Control Creation
+</FONT></A></H2>
+<P>
+Visual Basic supports four models for creating ActiveX controls.
+Yes, I know that Microsoft only mentions three of them, but the
+fourth is really quite important. It's also quite complex and
+requires a somewhat advanced level of knowledge, so I can't really
+fault them for not discussing it.
+<P>
+Choosing a model is one of the most important decisions you will
+make when designing your control. In this section we'll review
+these approaches and the advantages and disadvantages of each
+one. At the same time, we will review some fundamental concepts
+that were introduced earlier in this chapter.
+<H3><A NAME="EnhanceanExistingControl">
+Enhance an Existing Control</A></H3>
+<P>
+Let's say you have been using Command buttons in your applications
+for years, but one day you realize something has been missing.
+There is one feature you really wish command buttons had, and
+that if it was only there, you would be perfectly satisfied with
+everything else relating to Visual Basic. That the one thing you
+wished is that the Click event included parameters telling you
+where in the button the mouse had been clicked.
+<P>
+Now, as a veteran VB programmer, you know that you can accomplish
+this using the MouseUp event, but you also know that anyone for
+whom a modified Click event is the ultimate wish is probably not
+thinking too clearly anyway. But that is irrelevant. The point
+is that almost every VB programmer has probably looked at a control
+and thought, &quot;If only it had this one more feature&#133;&quot;
+<P>
+The ActiveX control designer allows you to drop other controls-called
+Constituent controls-onto your ActiveX control. It also allows
+you to create Public properties and events that can access the
+properties and events of the Constituent control.
+<P>
+The BtnTest group in the <A HREF="ch16.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch16.htm" >Chapter 16</A> sample directory on your CD-ROM
+demonstrates this using a simple example. It contains a BtnTest
+standard EXE project, which is used to test the control, and the
+ch16Button ActiveX control project. This control was created by
+dropping a command button on the UserControl designer and using
+the ActiveX Control Wizard to map properties and events from your
+class to the Command button.
+<P>
+You've already seen the type of code that maps properties and
+events. Here, for example, is the code to map the Font property:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get Font() As Font
+   Set Font = Command1.Font
+End Property
+
+Public Property Set Font(ByVal New_Font As Font)
+   Set Command1.Font = New_Font
+   PropertyChanged &quot;Font&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Here is an example of an event mapping:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Command1_KeyPress(KeyAscii As Integer)
+   RaiseEvent KeyPress(KeyAscii)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Here is how the Click event for your object is modified:
+<BLOCKQUOTE>
+<PRE>
+Event Click(ByVal X As Single, ByVal Y As Single)
+Private mousex As Single, mousey As Single
+
+Private Sub Command1_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+   mousex = X: mousey = Y
+   RaiseEvent MouseDown(Button, Shift, X, Y)
+End Sub
+
+Private Sub Command1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+   mousex = X: mousey = Y
+   RaiseEvent MouseMove(Button, Shift, X, Y)
+End Sub
+
+Private Sub Command1_Click()
+   RaiseEvent Click(mousex, mousey)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+During the Command1_MouseMove and Command1_MouseDown events, the
+mouse location is stored in two private variables. They are used
+to provide the parameters for the Click event.
+<P>
+It is also important to make sure that the command button fills
+the area of the control. This is accomplished by detecting the
+UserControl's Resize event and resizing the command button to
+fill the control area.
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_Resize()
+   ' Let control fill the window
+   Command1.Move 0, 0, Width, Height
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+There are a number of important facts to keep in mind in this
+example. You should not redefine standard events, such as the
+Click event. Doing so is likely to confuse those using your controls.
+Create a new event name instead. The same thing applies to standard
+properties.
+<P>
+This control sample is not a complete implementation of a command
+button. It covers many of the properties and events just to illustrate
+how to approach the task.
+<P>
+This control maps most of its public properties and events directly
+to the command button. It does not use the properties and events
+of the UserControl object. Why is this?
+<P>
+When you click on a constituent button control, the Click event
+of the button is triggered, not that of the UserControl. The UserControl
+Click event is triggered only when you click on the control area
+itself. You can see this in the Ch16CtlA control described earlier,
+which distinguishes between events from the two sources. In this
+example, we don't need to use the UserControl's Click event, because
+we expand the button to fill the entire control. The UserControl's
+Click event is never triggered.
+<P>
+The same applies to UserControl properties, such as the Font property.
+There are three Font properties to consider in this control. The
+command button has one. The UserControl object has one. And your
+class object has one!
+<UL>
+<LI>The command button's Font property controls the appearance
+of the caption on the button.
+<LI>The UserControl's Font property controls text drawing operations
+on the UserControl object itself. But since you don't draw text
+directly onto the UserControl in this example, this property serves
+no purpose.
+<LI>The class Font property is the public property that can be
+accessed by developers who use your control. They have no access
+to the other two unless you expose them explicitly.
+</UL>
+<P>
+It's easy to see which Font property the developer using your
+control sees. But which one do you see within your application?
+<P>
+Try modifying the Command1_KeyPress code as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Command1_KeyPress(KeyAscii As Integer)
+   RaiseEvent KeyPress(KeyAscii)
+   If KeyAscii = Asc(&quot;A&quot;) Then
+      Debug.Print Font.Name
+   End If
+   If KeyAscii = Asc(&quot;B&quot;) Then
+      Debug.Print UserControl.Font.Name
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+In the test program, change the font name for the design time
+instance of your control using the VB property window. (Click
+on the Font property to bring up the font selection dialog box.)
+When you run the program and type in the A and B keys, you will
+see that the Font property you access within your program is the
+one that you yourself defined for the object, which in turn delegates
+to the command button's Font property.
+<P>
+If you did not expose a public Font property, you would instead
+access the UserControl's Font property because the UserControl
+object is the default object for a control.
+<P>
+As you can see, scoping rules for properties are extremely important
+with ActiveX controls because you are very likely to have the
+same property name in use simultaneously by many different objects.
+<H4>Existing Control Trade-Offs</H4>
+<P>
+The biggest advantage of enhancing an existing control is that
+it is extremely easy to do. The ActiveX Control Wizard can do
+much of the work of mapping public properties, methods, and events
+to those of constituent controls or the UserControl object.
+<P>
+There are, however, a number of disadvantages to this approach:
+<UL>
+<LI>Because each constituent control defines its own behavior
+and drawing characteristics, there are limits to what you can
+do to modify the control. There are occasions where you can use
+advanced subclassing techniques to perform some modifications
+to the behavior of the constituent controls. But this is a rather
+advanced technique that requires a good understanding of the Win32
+API and, depending on the control, some trial and error as you
+attempt to figure out how the control responds to different Windows
+messages.
+<LI>As you read earlier, constituent controls are always in run
+mode when your control is active, making it impossible to set
+the control's design-time properties even though the control's
+container is in design mode.
+<LI>As soon as you go beyond the built-in controls or redistributable
+controls provided by Microsoft, you run into licensing and copyright
+issues. In order for your control to work in Visual Basic's design
+environment, each of the constituent controls must be properly
+licensed. This will be discussed further in <A HREF="ch26.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch26.htm" >Chapter 26</A>.
+</UL>
+<H3><A NAME="BuildaControlfromConstituentControls">
+Build a Control from Constituent Controls</A></H3>
+<P>
+This model is described by Microsoft as one of the three possible
+control models. In fact, it is just a superset of the Enhanced
+control model. The major differences are as follows:
+<UL>
+<LI>Instead of mapping your public properties and events to a
+single control, you map them to any or all of the constituent
+controls. It is also possible to map the same property to more
+than one control.
+<LI>You are also much more likely to access properties of the
+UserControl object.
+</UL>
+<P>
+This is demonstrated in the BtnTest project with the Ch16DualButton
+control. This control contains two button controls and demonstrates
+a number of different techniques for mapping properties.
+<P>
+You can map multiple events to one. The Click event from both
+constituent controls is mapped to a single parameterized Click
+event as follows:
+<BLOCKQUOTE>
+<PRE>
+Event Click(ByVal ButtonNum%)
+Private Sub Command1_Click()
+   RaiseEvent Click(1)
+End Sub
+
+Private Sub Command2_Click()
+   RaiseEvent Click(2)
+End Sub
+
+Private Sub UserControl_Click()
+   RaiseEvent Click(0)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Try running the project and clicking on both command buttons and
+the space between them. A message describing which object has
+been clicked is displayed in the Immediate window.
+<P>
+You can map a single class property to multiple controls as shown
+here with the Font property:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get Font() As Font
+   Set Font = UserControl.Font
+End Property
+
+Public Property Set Font(ByVal New_Font As Font)
+   Set Command1.Font = New_Font
+   Set UserControl.Font = New_Font
+   Set Command2.Font = New_Font
+   PropertyChanged &quot;Font&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+In this particular case, mapping the Font property to the UserControl's
+Font property is overkill, because this example does not currently
+draw text directly onto the UserControl. Why do we return the
+Font property from the UserControl object in the Property Get
+statement? In truth, it doesn't matter. All of the objects reference
+the same Font object, so you can retrieve a reference from any
+of them and it will work.
+<P>
+This model of control creation suffers from exactly the same advantages
+and disadvantages as the Enhanced control approach. It also has
+the characteristic that the UserControl itself cannot receive
+the focus-only the constituent controls receive focus. 
+<H3><A NAME="UserDrawnControls">
+User-Drawn Controls</A></H3>
+<P>
+User-drawn controls represent one of the most exciting approaches
+for control creation, though they also represent a jump in complexity.
+With this type of control you work primarily with properties and
+events of the UserControl object. You can include invisible constituent
+controls if you wish, but as soon as you add a visible constituent
+control, the behavior of the control changes in that the UserControl
+object can no longer receive the focus.
+<P>
+The ClkTest sample application contains a private control called
+ClkTest.ctl, which is a trivial demonstration of a user-drawn
+control whose code is shown in Listing 16.1. The control appears
+as a green rectangle when created, then switches to blue and red
+as it receives and loses the input focus. When you run the project,
+you will see the control on the clkForm test form. Try tabbing
+to and from the control, and try clicking on the control to see
+that the Click event works.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 16.1:&nbsp;Trivial User-Drawn Control<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+
+Event Click()
+
+
+Private Sub UserControl_Click()
+   RaiseEvent Click
+End Sub
+
+Private Sub UserControl_GotFocus()
+   UserControl.BackColor = vbBlue
+End Sub
+
+Private Sub UserControl_Initialize()
+   UserControl.BackColor = vbGreen
+End Sub
+
+Private Sub UserControl_LostFocus()
+   UserControl.BackColor = vbRed
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+You will usually use the UserControl_Paint event to draw to the
+control. You'll find out more about user-drawn controls in Chapter
+17 as the various methods and properties of the UserControl object
+are discussed.
+<H4>User-Drawn Control Trade-Offs</H4>
+<P>
+The biggest advantage of user-drawn controls is their flexibility.
+Because you determine the behavior and appearance of the control
+at all points in its life, there are few limits on what your control
+can do.
+<P>
+The biggest disadvantage of user-drawn controls derives from this
+fact. Not only can you determine the behavior and appearance of
+the control-you must do so. This can rapidly get very complex.
+Some of the techniques you can use for user-drawn controls will
+be covered in the chapters that follow, but there are so many
+possibilities it would be presumptuous to suggest that what you
+read here is more than a solid introduction.
+<P>
+Keep in mind that when you are implementing a user-drawn control,
+you are not limited to the functionality inherent in Windows.
+You have access to all of the Win32 API functions as well, and
+the Win32 API includes some extremely powerful graphic and text
+output functions that go far beyond what is implemented by Visual
+Basic (and are faster besides). Refer to the Visual Basic Programmer's
+Guide to the Win32 API for an in-depth description of these functions.
+<P>
+Also watch for third-party products that include commercial quality
+controls with source code. They not only offer controls that you
+can use in your application, but are a great way to learn advanced
+control creation techniques.
+<H3><A NAME="CreateYourOwnWindow">
+Create Your Own Window</A></H3>
+<P>
+The Windows operating system defines standard classes of windows
+such as list boxes, text boxes, outline windows, and common dialog
+boxes.
+<P>
+Many ActiveX controls and Visual Basic intrinsic controls are
+actually superclasses of these standard windows. For example:
+The Visual Basic list box control actually creates a Windows list
+box window. It intercepts the underlying messages for the window
+and maps them into control properties and events. This allows
+a relatively simple control to take full advantage of controls
+that are built into the operating system.
+<P>
+When you use constituent controls, you are, in effect, building
+another level onto this structure, as shown in Figure 16.3.
+<P>
+<A HREF="f16-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f16-3.gif"><B>Figure 16.3 :</B> <I>A hierarchy of controls</I>.</A>
+<P>
+The problem with this approach is that your control can suffer
+from limitations that are introduced at either level of the hierarchy.
+Not every ActiveX control implements all of the functionality
+of the underlying Windows class. For example, even the VB ListBox
+control does not allow you to set tab locations in a list box,
+a feature that is built into the operating system's implementation.
+With Visual Basic 5.0-authored ActiveX controls, you are also
+limited in that any design time-only properties cannot be changed
+at runtime.
+<P>
+Why is this? Because with a LISTBOX class window, certain characteristics,
+such as whether the control can handle multiple selections, must
+be determined as the window is created. In order to change this
+characteristic, it is necessary to destroy and recreate the window.
+Visual Basic 5.0-created controls cannot arbitrarily destroy and
+recreate a constituent control, something that is necessary to
+change characteristics, such as support for multiple selections.
+<P>
+But there is a solution. Instead of using the VB list box, you
+can go directly to the windows class itself and create your own
+LISTBOX class window on top of the UserControl. Because you created
+the window yourself, you can destroy it and re-create it at will.
+This allows you to change these design-time characteristics any
+time you wish, even at the container's runtime if you so choose.
+<P>
+The advantage of this approach is that it allows you to take full
+advantage of window classes that are defined by the operating
+system. But there are a number of disadvantages:
+<UL>
+<LI>This approach requires a good understanding of Windows API
+techniques and the operation of the windows class.
+<LI>This approach can involve quite a bit of work, especially
+for complex controls.
+</UL>
+<P>
+But there is one factor to keep in mind. If you are creating a
+control for your own use, you may not need to expose all of the
+functionality offered by the operating system for a particular
+window class. A commercial developer will usually expose as many
+of the features of the underlying control as possible to make
+the control useful to as many programmers as possible. But when
+you take this approach for your own applications, you can concentrate
+on those features you need and not waste time implementing and
+testing others. So this model may be more practical than it seems
+at first glance. This approach will be discussed further in Chapter
+22.
+<P>
+Now that you are acquainted with the fundementals of ActiveX control
+creation with Visual Basic, it's time to dive in and look at its
+heart and soul: the UserControl object.
+<HR>
+
+<CENTER><P><A HREF="part3.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/part3.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch17.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

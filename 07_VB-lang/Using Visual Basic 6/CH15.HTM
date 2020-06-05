@@ -1,0 +1,1668 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 15 -- Handling Keyboard and Mouse Input in Your Programs</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch14/ch14.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch16.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch16/ch16.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 15 -<BR>
+Handling Keyboard and Mouse Input<BR>
+in Your Programs</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Understanding Device Input</A>
+	<LI><A HREF="#Heading2">Working with the KeyPress Event</A>
+	<UL>
+		<LI><A HREF="#Heading3">Working with the KeyUp and KeyDown Events</A>
+		<LI><A HREF="#Heading4">Using the KeyPreview Property</A>
+	</UL>
+	<LI><A HREF="#Heading5">Understanding Mouse Input</A>
+	<UL>
+		<LI><A HREF="#Heading6">Using the Click Event</A>
+		<LI><A HREF="#Heading7">Working with MouseDown and MouseUp Events</A>
+		<LI><A HREF="#Heading8">Working with the MouseMove Event</A>
+		<LI><A HREF="#Heading9">Recognizing VB's Limitations with Mouse Input</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Understanding Device Input</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Microsoft supports device independence</STRONG></P>
+	<P>In the Windows NT operating system, one part of the Executive Services is the
+	Hardware Abstraction Layer (HAL). The presence of this distinct architecture element
+	demonstrates the distinct support for device independence in the current Microsoft
+	operating systems. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Windows is a <I>device-independent</I> operating system. The Windows operating
+system separates independent operating-system hardware (devices) such as the keyboard,
+mouse, monitor, and printer from the application programs. This separation--or <I>abstraction</I>,
+as it's called in object-oriented programming--enables programmers to work with general
+categories of hardware devices from which they can accept data and to which they
+can send data (see Figure 15.1). In other words, programmers never know the exact
+type of hardware connected to a given system; all they know is that a particular
+category of hardware is out there. Programmers code for a printer in general, not
+a specific model of printer. The same is true for the keyboard and mouse. What particular
+brand of input device is attached to a computer is the responsibility of the Windows
+operation system and the specific device drivers installed on the system. Device
+independence enables you to treat hardware devices as nothing more than event generators.</P>
+<P><A HREF="javascript:popUp('15fig01.gif')"><B>FIGURE 15.1</B></A> <I>The device
+independence of Windows frees VB programmers from the difficult task of writing code
+for a particular piece of hardware.</I></P>
+<P>Most Visual Basic controls support three keyboard input events--KeyPress(), KeyUp(),
+and KeyDown()--and five mouse events--(Click(), DblClick(), MouseUp(), MouseDown(),
+and MouseMove().</P>
+<P>
+<H2><A NAME="Heading2"></A>Working with the KeyPress Event</H2>
+<P>When users press a key within your program, Windows fires a KeyPress event to
+the form with the focus and then to the control with the focus. The KeyPress event
+has this syntax:</P>
+<P>
+<PRE>Private Sub <I>ControlName</I>_KeyPress(<I>KeyAscii</I> as Integer)
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>Private denotes the scope of the event.
+	<P>
+	<LI>Sub denotes a procedure.
+	<P>
+	<LI><I>ControlName</I> is the name of the control from which the event is being fired.
+	<P>
+	<LI>KeyPress is the name of the event.
+	<P>
+	<LI><I>KeyAscii</I> is the ASCII code of the character being pressed.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Function keys don't generate a KeyPress event</STRONG></P>
+	<P>Only numeric, alphabetic, and select command keys generate a KeyPress event. You
+	can test which keys work with this event by using the sample program in the project
+	KeyPress.vbp on the Web site devoted to this book. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>KeyPress is associated with the character of the key being pressed. When the event
+is fired, Visual Basic passes the ASCII code of the character being input to the
+<I>KeyAscii</I> argument and thus makes it available to the event procedure for use.
+If having a parameter attached to an event handler is new to you, take a minute to
+think about it. You will be seeing many of these in the KeyPress, KeyDown, and KeyUp
+events.</P>
+<P>An ASCII code is a number assigned, by formal convention, to each letter in the
+alphabet (separate numbers exist for uppercase and lowercase letters) as well as
+number characters and punctuation characters. Table 15.1 shows the more often used
+characters with their associated ASCII code numbers.</P>
+<P>
+<H4>TABLE 15.1&#160;&#160;The Popular ASCII Characters</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Number</TD>
+		<TD ALIGN="LEFT">Character</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">32</TD>
+		<TD ALIGN="LEFT">space</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">33</TD>
+		<TD ALIGN="LEFT">!</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">34</TD>
+		<TD ALIGN="LEFT">&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">35</TD>
+		<TD ALIGN="LEFT">#</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">36</TD>
+		<TD ALIGN="LEFT">$</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">37</TD>
+		<TD ALIGN="LEFT">%</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">38</TD>
+		<TD ALIGN="LEFT">&amp;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">39</TD>
+		<TD ALIGN="LEFT">`</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">40</TD>
+		<TD ALIGN="LEFT">(</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">41</TD>
+		<TD ALIGN="LEFT">)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">42</TD>
+		<TD ALIGN="LEFT">*</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">43</TD>
+		<TD ALIGN="LEFT">+</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">44</TD>
+		<TD ALIGN="LEFT">,</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">45</TD>
+		<TD ALIGN="LEFT">-</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">46</TD>
+		<TD ALIGN="LEFT">.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">47</TD>
+		<TD ALIGN="LEFT">/</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">48</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">49</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">50</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">51</TD>
+		<TD ALIGN="LEFT">3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">52</TD>
+		<TD ALIGN="LEFT">4</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">53</TD>
+		<TD ALIGN="LEFT">5</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">54</TD>
+		<TD ALIGN="LEFT">6</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">55</TD>
+		<TD ALIGN="LEFT">7</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">56</TD>
+		<TD ALIGN="LEFT">8</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">57</TD>
+		<TD ALIGN="LEFT">9</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">58</TD>
+		<TD ALIGN="LEFT">:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">59</TD>
+		<TD ALIGN="LEFT">;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">60</TD>
+		<TD ALIGN="LEFT">&lt;z</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">61</TD>
+		<TD ALIGN="LEFT">=</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">62</TD>
+		<TD ALIGN="LEFT">&gt;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">63</TD>
+		<TD ALIGN="LEFT">?</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">64</TD>
+		<TD ALIGN="LEFT">@</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">65</TD>
+		<TD ALIGN="LEFT">A</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">66</TD>
+		<TD ALIGN="LEFT">B</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">67</TD>
+		<TD ALIGN="LEFT">C</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">68</TD>
+		<TD ALIGN="LEFT">D</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">69</TD>
+		<TD ALIGN="LEFT">E</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">70</TD>
+		<TD ALIGN="LEFT">F</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">71</TD>
+		<TD ALIGN="LEFT">G</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">72</TD>
+		<TD ALIGN="LEFT">H</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">73</TD>
+		<TD ALIGN="LEFT">I</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">74</TD>
+		<TD ALIGN="LEFT">J</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">75</TD>
+		<TD ALIGN="LEFT">K</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">76</TD>
+		<TD ALIGN="LEFT">L</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">77</TD>
+		<TD ALIGN="LEFT">M</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">78</TD>
+		<TD ALIGN="LEFT">N</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">79</TD>
+		<TD ALIGN="LEFT">O</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">80</TD>
+		<TD ALIGN="LEFT">P</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">81</TD>
+		<TD ALIGN="LEFT">Q</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">82</TD>
+		<TD ALIGN="LEFT">R</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">83</TD>
+		<TD ALIGN="LEFT">S</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">84</TD>
+		<TD ALIGN="LEFT">T</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">85</TD>
+		<TD ALIGN="LEFT">U</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">86</TD>
+		<TD ALIGN="LEFT">V</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">87</TD>
+		<TD ALIGN="LEFT">W</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">88</TD>
+		<TD ALIGN="LEFT">X</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">89</TD>
+		<TD ALIGN="LEFT">Y</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">90</TD>
+		<TD ALIGN="LEFT">Z</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">91</TD>
+		<TD ALIGN="LEFT">[</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">92</TD>
+		<TD ALIGN="LEFT">\</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">93</TD>
+		<TD ALIGN="LEFT">]</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">94</TD>
+		<TD ALIGN="LEFT">^</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">95</TD>
+		<TD ALIGN="LEFT">_</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">96</TD>
+		<TD ALIGN="LEFT">&#180;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">97</TD>
+		<TD ALIGN="LEFT">a</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">98</TD>
+		<TD ALIGN="LEFT">b</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">99</TD>
+		<TD ALIGN="LEFT">c</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">100</TD>
+		<TD ALIGN="LEFT">d</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">101</TD>
+		<TD ALIGN="LEFT">e</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">102</TD>
+		<TD ALIGN="LEFT">f</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">103</TD>
+		<TD ALIGN="LEFT">g</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">104</TD>
+		<TD ALIGN="LEFT">h</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">105</TD>
+		<TD ALIGN="LEFT">i</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">106</TD>
+		<TD ALIGN="LEFT">j</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">107</TD>
+		<TD ALIGN="LEFT">k</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">108</TD>
+		<TD ALIGN="LEFT">l</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">109</TD>
+		<TD ALIGN="LEFT">m</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">110</TD>
+		<TD ALIGN="LEFT">n</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">111</TD>
+		<TD ALIGN="LEFT">o</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">112</TD>
+		<TD ALIGN="LEFT">p</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">113</TD>
+		<TD ALIGN="LEFT">q</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">114</TD>
+		<TD ALIGN="LEFT">r</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">115</TD>
+		<TD ALIGN="LEFT">s</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">116</TD>
+		<TD ALIGN="LEFT">t</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">117</TD>
+		<TD ALIGN="LEFT">u</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">118</TD>
+		<TD ALIGN="LEFT">v</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">119</TD>
+		<TD ALIGN="LEFT">w</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">120</TD>
+		<TD ALIGN="LEFT">x</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">121</TD>
+		<TD ALIGN="LEFT">y</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">122</TD>
+		<TD ALIGN="LEFT">z</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">123</TD>
+		<TD ALIGN="LEFT">{</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">124</TD>
+		<TD ALIGN="LEFT">|</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">125</TD>
+		<TD ALIGN="LEFT">}</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">126</TD>
+		<TD ALIGN="LEFT">~</TD>
+	</TR>
+</TABLE>
+</P>
+<P>Figure 15.2 shows you the output from a program that reports the value and the
+corresponding character of the <I>KeyAscii</I> parameter passed during the KeyPress
+event for a TextBox. Listing 15.1 shows the code for the KeyPress event procedure
+for the TextBox. In this case, the ASCII code number 103 was passed to the TextBox,
+along with the lowercase character <I>g</I>. You will find this is the correct value,
+as listed in Table 15.1.</P>
+<P><A HREF="javascript:popUp('15fig02.gif')"><B>FIGURE 15.2</B></A> <I>The KeyPress
+event is associated with the character sent to the control.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+You can find the code in Listing 15.1 in the project simplKey.VBP on the Web site
+	devoted to this book (http://www.mcp. com/info). Also on this Web site is the sample
+	project KeyPress.vbp, which you can use to test the key combinations in Table 15.2.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>LISTING 15.1&#160;&#160;15LIST01.txt--Converting a Character's ASCII Code into
+a String</H4>
+<PRE><B>01 </B>Private Sub txtSimpl_KeyPress(KeyAscii As Integer)</PRE>
+<PRE><B>02 </B>Dim strKeyPressed As String `inputted character</PRE>
+<PRE><B>03 </B>Dim strAscii As String `Ascii number</PRE>
+<PRE><B>04 </B>Dim Msg As String `Message string</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>`Convert KeyAscii to a character</PRE>
+<PRE><B>07 </B>strKeyPressed = Chr(KeyAscii) `VB function Chr</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>`Convert the actual number to a string</PRE>
+<PRE><B>10 </B>strAscii = CStr(KeyAscii) `VB function CStr</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>`Build the Message display string</PRE>
+<PRE><B>13 </B>Msg = &quot;ASCII Number: &quot; &amp; strAscii</PRE>
+<PRE><B>14 </B>Msg = Msg &amp; &quot;, &quot; &amp; &quot;Character: &quot; &amp; strKeyPressed</PRE>
+<PRE><B>15 </B>MsgBox Msg</PRE>
+<PRE><B>16 </B>End Sub</PRE>
+<P>The ASCII code convention also includes 32 special command or control codes that
+were extremely important in the era of character-based terminals (see Table 15.2).
+Several of these codes are still used for their original purpose in Visual Basic.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Select command keys generate KeyPress events</STRONG></P>
+	<P>Under Windows 95, the Backspace, Enter, and Esc keys generate ASCII values that
+	can be trapped by the KeyPress event's KeyAscii parameter. These values are 8, 13,
+	and 27, respectively. You also can combine the Backspace and Enter keys with the
+	Ctrl key to produce 127 and 10 for ACSII values. These key combinations are in addition
+	to those listed in Table 15.2. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>TABLE 15.2&#160;&#160;The ASCII Control Characters</H4>
+<P>Number Key Combinations Control Code Control Name</P>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">0</TD>
+		<TD ALIGN="LEFT">Ctrl+Shift+@</TD>
+		<TD ALIGN="LEFT">NUL</TD>
+		<TD ALIGN="LEFT">Null</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">1</TD>
+		<TD ALIGN="LEFT">Ctrl+A</TD>
+		<TD ALIGN="LEFT">SOH</TD>
+		<TD ALIGN="LEFT">Start of heading</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">2</TD>
+		<TD ALIGN="LEFT">Ctrl+B</TD>
+		<TD ALIGN="LEFT">STX</TD>
+		<TD ALIGN="LEFT">Start of text</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">3</TD>
+		<TD ALIGN="LEFT">Ctrl+C</TD>
+		<TD ALIGN="LEFT">ETX</TD>
+		<TD ALIGN="LEFT">End of text</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">4</TD>
+		<TD ALIGN="LEFT">Ctrl+D</TD>
+		<TD ALIGN="LEFT">EOT</TD>
+		<TD ALIGN="LEFT">End of transmit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">5</TD>
+		<TD ALIGN="LEFT">Ctrl+E</TD>
+		<TD ALIGN="LEFT">ENQ</TD>
+		<TD ALIGN="LEFT">Inquiry</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">6</TD>
+		<TD ALIGN="LEFT">Ctrl+F</TD>
+		<TD ALIGN="LEFT">ACK</TD>
+		<TD ALIGN="LEFT">Acknowledgement</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">7</TD>
+		<TD ALIGN="LEFT">Ctrl+G</TD>
+		<TD ALIGN="LEFT">BEL</TD>
+		<TD ALIGN="LEFT">Bell</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">8</TD>
+		<TD ALIGN="LEFT">Ctrl+H</TD>
+		<TD ALIGN="LEFT">BS</TD>
+		<TD ALIGN="LEFT">Backspace</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">9</TD>
+		<TD ALIGN="LEFT">Ctrl+I</TD>
+		<TD ALIGN="LEFT">HT</TD>
+		<TD ALIGN="LEFT">Horizontal tab</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">10</TD>
+		<TD ALIGN="LEFT">Ctrl+J</TD>
+		<TD ALIGN="LEFT">LF</TD>
+		<TD ALIGN="LEFT">Line feed</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">11</TD>
+		<TD ALIGN="LEFT">Ctrl+K</TD>
+		<TD ALIGN="LEFT">VT</TD>
+		<TD ALIGN="LEFT">Vertical tab</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">12</TD>
+		<TD ALIGN="LEFT">Ctrl+L</TD>
+		<TD ALIGN="LEFT">FF</TD>
+		<TD ALIGN="LEFT">Form feed</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">13</TD>
+		<TD ALIGN="LEFT">Ctrl+M</TD>
+		<TD ALIGN="LEFT">CR</TD>
+		<TD ALIGN="LEFT">Carriage feed</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">14</TD>
+		<TD ALIGN="LEFT">Ctrl+N</TD>
+		<TD ALIGN="LEFT">SO</TD>
+		<TD ALIGN="LEFT">Shift out</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">15</TD>
+		<TD ALIGN="LEFT">Ctrl+O</TD>
+		<TD ALIGN="LEFT">SI</TD>
+		<TD ALIGN="LEFT">Shift in</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">16</TD>
+		<TD ALIGN="LEFT">Ctrl+P</TD>
+		<TD ALIGN="LEFT">DLE</TD>
+		<TD ALIGN="LEFT">Data line escape</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">17</TD>
+		<TD ALIGN="LEFT">Ctrl+Q</TD>
+		<TD ALIGN="LEFT">DC1</TD>
+		<TD ALIGN="LEFT">Device control 1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">18</TD>
+		<TD ALIGN="LEFT">Ctrl+R</TD>
+		<TD ALIGN="LEFT">DC2</TD>
+		<TD ALIGN="LEFT">Device control 2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">19</TD>
+		<TD ALIGN="LEFT">Ctrl+S</TD>
+		<TD ALIGN="LEFT">DC3</TD>
+		<TD ALIGN="LEFT">Device control 3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">20</TD>
+		<TD ALIGN="LEFT">Ctrl+T</TD>
+		<TD ALIGN="LEFT">DC4</TD>
+		<TD ALIGN="LEFT">Device control 4</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">21</TD>
+		<TD ALIGN="LEFT">Ctrl+U</TD>
+		<TD ALIGN="LEFT">NAK</TD>
+		<TD ALIGN="LEFT">Negative acknowledgment</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">22</TD>
+		<TD ALIGN="LEFT">Ctrl+V</TD>
+		<TD ALIGN="LEFT">SYN</TD>
+		<TD ALIGN="LEFT">Synchronous idle</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">23</TD>
+		<TD ALIGN="LEFT">Ctrl+W</TD>
+		<TD ALIGN="LEFT">ETB</TD>
+		<TD ALIGN="LEFT">End of transmit block</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">24</TD>
+		<TD ALIGN="LEFT">Ctrl+X</TD>
+		<TD ALIGN="LEFT">CAN</TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">25</TD>
+		<TD ALIGN="LEFT">Ctrl+Y</TD>
+		<TD ALIGN="LEFT">EM</TD>
+		<TD ALIGN="LEFT">End of medium</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">26</TD>
+		<TD ALIGN="LEFT">Ctrl+Z</TD>
+		<TD ALIGN="LEFT">SUB</TD>
+		<TD ALIGN="LEFT">Substitute</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">27</TD>
+		<TD ALIGN="LEFT">Ctrl+[</TD>
+		<TD ALIGN="LEFT">ESC</TD>
+		<TD ALIGN="LEFT">Escape</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">28</TD>
+		<TD ALIGN="LEFT">Ctrl+\</TD>
+		<TD ALIGN="LEFT">FS</TD>
+		<TD ALIGN="LEFT">File separator</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">29</TD>
+		<TD ALIGN="LEFT">Ctrl+]</TD>
+		<TD ALIGN="LEFT">GS</TD>
+		<TD ALIGN="LEFT">Group separator</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">30</TD>
+		<TD ALIGN="LEFT">Ctrl+Shift+^</TD>
+		<TD ALIGN="LEFT">RS</TD>
+		<TD ALIGN="LEFT">Record separator</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">31</TD>
+		<TD ALIGN="LEFT">Ctrl+Shift+_</TD>
+		<TD ALIGN="LEFT">US</TD>
+		<TD ALIGN="LEFT">Unit separator</TD>
+	</TR>
+</TABLE>
+</P>
+<P>It's important that you be aware of these codes and their uses. Consider a program
+that needs to disable the entry of an escape command. Although you might remember
+to program your application to ignore the pressing of the Esc key, a user could also
+press Ctrl+[ and send the program an unwanted command. On the other hand, if a program
+disallowed the entry of any ASCII values less than 32, it might prevent the Tab and
+Enter keys from working properly.</P>
+<P>
+<H3><A NAME="Heading3"></A>Working with the KeyUp and KeyDown Events</H3>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Detection of keystrokes versus character codes</STRONG></P>
+	<P>The important distinction between the KeyUp and KeyDown events and the KeyPress
+	event is that KeyPress is associated with characters, whereas KeyUp and KeyDown are
+	associated with keys on the keyboard. Remember, most keys can input one of two characters,
+	depending on the state of the Shift key (a and A, for example). If it's important
+	to your program to know which character has been input, use the KeyPress event. However,
+	if it's important that you know which key has been pressed, use the KeyUp/KeyDown
+	event. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Every time a user presses a key on the keyboard, a KeyDown event is fired to the
+control that has the focus. When the key is released, a KeyUp event is fired.</P>
+<P>The KeyUp/KeyDown event procedures use this syntax:</P>
+<P>
+<PRE>Private Sub <I>ControlName</I>_KeyUp(<I>KeyCode</I> as Integer, _
+                              <I>Shift</I> as Integer)
+Private Sub <I>ControlName</I>_KeyDown(<I>KeyCode</I> as Integer, _
+                                <I>Shift</I> as Integer)
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>Private denotes the scope of the event.
+	<P>
+	<LI>Sub denotes a procedure.
+	<P>
+	<LI><I>ControlName</I> is the name of the control from which the event is being fired.
+	<P>
+	<LI>KeyUp and KeyDown are the event names.
+	<P>
+	<LI><I>KeyCode</I> is an integer that reports the KeyCode constant of the key being
+	pressed or released.
+	<P>
+	<LI><I>Shift</I> is an integer that reports whether the Shift, Control, or Alt keys
+	are also being held down (see Table 15.3).
+</UL>
+
+<H4>TABLE 15.3&#160;&#160;The Different Values for the Shift Parameter</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Combination Key(s) Held Down</TD>
+		<TD ALIGN="LEFT">Value</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Shift</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Ctrl</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Alt</TD>
+		<TD ALIGN="LEFT">4</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Shift+Ctrl</TD>
+		<TD ALIGN="LEFT">3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Shift+Alt</TD>
+		<TD ALIGN="LEFT">5</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Ctrl+Alt</TD>
+		<TD ALIGN="LEFT">6</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Shift+Ctrl+Alt</TD>
+		<TD ALIGN="LEFT">7</TD>
+	</TR>
+</TABLE>
+</P>
+<P>The trick to using the KeyUp/KeyDown event handlers is working with the <I>KeyCode</I>
+and <I>Shift</I> parameters. In addition to reporting which alphabetic key has been
+struck, the <I>KeyCode</I> parameter also can report whether users pressed a function
+key (F1-F12), a key on the numeric keypad, the arrow keys, or any other key. When
+a key is pressed, Visual Basic sends a value to the <I>KeyCode</I> parameter that's
+reporting the key in question. The number sent to <I>KeyCode</I> is represented by
+a constant value, as shown in Table 15.4.</P>
+<P>
+<H4>TABLE 15.4&#160;&#160;Visual Basic 6.0 KeyCode Constants</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">Constant</TD>
+		<TD ALIGN="LEFT">Key</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyLButton</TD>
+		<TD ALIGN="LEFT">Left mouse button</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyRButton</TD>
+		<TD ALIGN="LEFT">Right mouse button</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyCancel</TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyMButton</TD>
+		<TD ALIGN="LEFT">Middle mouse button</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyBack</TD>
+		<TD ALIGN="LEFT">Backspace</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyTab</TD>
+		<TD ALIGN="LEFT">Tab</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyClear</TD>
+		<TD ALIGN="LEFT">Clear</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyReturn</TD>
+		<TD ALIGN="LEFT">Enter</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyShift</TD>
+		<TD ALIGN="LEFT">Shift</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD WIDTH="163" ALIGN="LEFT">vbKeyControl</TD>
+		<TD ALIGN="LEFT">Ctrl</TD>
+	</TR>
+</TABLE>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Help keys come in two flavors</STRONG></P>
+	<P>Many applications use the F1 key as their Help key, because most keyboard manufactures
+	don't provide a separate key labeled Help. Windows, however, supports a Help key,
+	so you may want to support both in your applications. The actual keyboard BIOS scan
+	codes for these two keys are vbKeyHelp = 0x2F and vbKeyF1 = 0x70. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Constant</TD>
+		<TD ALIGN="LEFT">Key</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyMenu</TD>
+		<TD ALIGN="LEFT">Menu</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyPause</TD>
+		<TD ALIGN="LEFT">Pause</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyCapital</TD>
+		<TD ALIGN="LEFT">Caps Lock</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyEscape</TD>
+		<TD ALIGN="LEFT">Esc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeySpace</TD>
+		<TD ALIGN="LEFT">Spacebar</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyPageUp</TD>
+		<TD ALIGN="LEFT">Page Up</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyPageDown</TD>
+		<TD ALIGN="LEFT">Page Down</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyEnd</TD>
+		<TD ALIGN="LEFT">End</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyHome</TD>
+		<TD ALIGN="LEFT">Home</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyLeft</TD>
+		<TD ALIGN="LEFT">&#174;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyUp</TD>
+		<TD ALIGN="LEFT">!=</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyRight</TD>
+		<TD ALIGN="LEFT">[Delta]</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyDown</TD>
+		<TD ALIGN="LEFT">&#255;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeySelect</TD>
+		<TD ALIGN="LEFT">Select</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyPrint</TD>
+		<TD ALIGN="LEFT">Print Screen</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyExecute</TD>
+		<TD ALIGN="LEFT">Execute</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeySnapshot</TD>
+		<TD ALIGN="LEFT">Snapshot</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyInsert</TD>
+		<TD ALIGN="LEFT">Insert</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyDelete</TD>
+		<TD ALIGN="LEFT">Delete</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyHelp</TD>
+		<TD ALIGN="LEFT">Help</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyNumlock</TD>
+		<TD ALIGN="LEFT">Num Lock</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyA through vbKeyZ</TD>
+		<TD ALIGN="LEFT">Althrough Z, respectively</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKey0 through vbKey9</TD>
+		<TD ALIGN="LEFT">0 (zero) through 9, respectively</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyNumpad0</TD>
+		<TD ALIGN="LEFT">0 through 9 on number pad, respectively</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">through vbKeyNumpad9</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyMultiply</TD>
+		<TD ALIGN="LEFT">Multiplication sign (*) on number pad</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyAdd</TD>
+		<TD ALIGN="LEFT">Plus sign (+) on number pad</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeySeparator</TD>
+		<TD ALIGN="LEFT">Enter on number pad</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeySubtract</TD>
+		<TD ALIGN="LEFT">Minus sign (-) on number pad</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Constant</TD>
+		<TD ALIGN="LEFT">Key</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyDecimal</TD>
+		<TD ALIGN="LEFT">Decimal point (.) on number pad</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyDivide</TD>
+		<TD ALIGN="LEFT">Division sign (/) on number pad</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyF1 through</TD>
+		<TD ALIGN="LEFT">F1 through F16, respectively</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbKeyF16</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+</TABLE>
+</P>
+<P>Listing 15.2 shows a piece of code from the project KeyEvent.vbp, which you can
+find on the Web site dedicated to this book (http://www.mcp.com/info). This code
+reports which function key has been pressed. It also reports the state of the Shift,
+Ctrl, and Alt keys. Figure 15.3 shows the code in action.</P>
+<P>
+<H4>LISTING 15.2&#160;&#160;15List02.TXT--Checking Whether a Function Key Has Been
+<BR>
+Pressed</H4>
+<PRE><B>01 </B>Private Sub Form_KeyDown(KeyCode As Integer, _</PRE>
+<PRE>Shift As Integer)</PRE>
+<PRE><B>02 </B>Dim strKey As String `variable to hold key string</PRE>
+<PRE><B>03</B></PRE>
+<PRE><B>04 </B>`Pass Keycode parameter through Case statement.</PRE>
+<PRE><B>05 </B>`If the key up/down is a function key, the case</PRE>
+<PRE><B>06 </B>`statement will catch it.</PRE>
+<PRE><B>07 </B>Select Case KeyCode</PRE>
+<PRE><B>08 </B>Case vbKeyF1</PRE>
+<PRE><B>09 </B>strKey = &quot;F1&quot;</PRE>
+<PRE><B>10 </B>Case vbKeyF2</PRE>
+<PRE><B>11 </B>strKey = &quot;F2&quot;</PRE>
+<PRE><B>12 </B>Case vbKeyF3</PRE>
+<PRE><B>13 </B>strKey = &quot;F3&quot;</PRE>
+<PRE><B>14 </B>Case vbKeyF4</PRE>
+<PRE><B>15 </B>strKey = &quot;F4&quot;</PRE>
+<PRE><B>16 </B>Case vbKeyF5</PRE>
+<PRE><B>17 </B>strKey = &quot;F5&quot;</PRE>
+<PRE><B>18 </B>Case vbKeyF6</PRE>
+<PRE><B>19 </B>strKey = &quot;F6&quot;</PRE>
+<PRE><B>20 </B>Case vbKeyF7</PRE>
+<PRE><B>21 </B>strKey = &quot;F7&quot;</PRE>
+<PRE><B>22 </B>Case vbKeyF8</PRE>
+<PRE><B>23 </B>strKey = &quot;F8&quot;</PRE>
+<PRE><B>24 </B>Case vbKeyF9</PRE>
+<PRE><B>25 </B>strKey = &quot;F9&quot;</PRE>
+<PRE><B>26 </B>Case vbKeyF10</PRE>
+<PRE><B>27 </B>strKey = &quot;F10&quot;</PRE>
+<PRE><B>28 </B>Case vbKeyF11</PRE>
+<PRE><B>29 </B>strKey = &quot;F11&quot;</PRE>
+<PRE><B>30 </B>Case vbKeyF12</PRE>
+<PRE><B>31 </B>strKey = &quot;F12&quot;</PRE>
+<PRE><B>32 </B>Case vbKeyF13</PRE>
+<PRE><B>33 </B>strKey = &quot;F13&quot;</PRE>
+<PRE><B>34 </B>Case vbKeyF14</PRE>
+<PRE><B>35 </B>strKey = &quot;F14&quot;</PRE>
+<PRE><B>36 </B>Case vbKeyF15</PRE>
+<PRE><B>37 </B>strKey = &quot;F15&quot;</PRE>
+<PRE>38 Case vbKeyF16</PRE>
+<PRE><B>39 </B>strKey = &quot;F16&quot;</PRE>
+<PRE><B>40 </B>Case Else</PRE>
+<PRE><B>41 </B>strKey = &quot;Some other key&quot;</PRE>
+<PRE><B>42 </B>End Select</PRE>
+<PRE><B>43 </B>`Check to see if Shift, Ctrl or Alt key is down</PRE>
+<PRE><B>44 </B>Select Case Shift</PRE>
+<PRE><B>45 </B>Case 0</PRE>
+<PRE><B>46 </B>frmKeyEvent.Caption = &quot;No key down&quot;</PRE>
+<PRE><B>47 </B>Case 1</PRE>
+<PRE><B>48 </B>frmKeyEvent.Caption = &quot;Shift down&quot;</PRE>
+<PRE><B>49 </B>Case 2</PRE>
+<PRE><B>50 </B>frmKeyEvent.Caption = &quot;Ctrl down&quot;</PRE>
+<PRE><B>51 </B>Case 3</PRE>
+<PRE><B>52 </B>frmKeyEvent.Caption = &quot;Shift and Ctrl down&quot;</PRE>
+<PRE><B>53 </B>Case 4</PRE>
+<PRE><B>54 </B>frmKeyEvent.Caption = &quot;Alt down&quot;</PRE>
+<PRE><B>55 </B>Case 5</PRE>
+<PRE><B>56 </B>frmKeyEvent.Caption = &quot;Shift and Alt down&quot;</PRE>
+<PRE><B>57 </B>Case 6</PRE>
+<PRE><B>58 </B>frmKeyEvent.Caption = &quot;Ctrl and Alt down&quot;</PRE>
+<PRE><B>59 </B>Case 7</PRE>
+<PRE><B>60 </B>frmKeyEvent.Caption = &quot;Shift,Ctrl,Alt down&quot;</PRE>
+<PRE><B>61 </B>End Select</PRE>
+<PRE><B>62 </B>`Report which key is down</PRE>
+<PRE><B>63 </B>txtKeyEvent.Caption = &quot;Key Down, Key: &quot; &amp; strKey</PRE>
+<PRE><B>64 </B>End Sub</PRE>
+<P><A HREF="javascript:popUp('15fig03.gif')"><B>FIGURE 15.3</B></A> <I>The KeyUp/KeyDown
+event procedures enable access to all keys on the keyboard.</I></P>
+<P>
+<H3><A NAME="Heading4"></A>Using the KeyPreview Property</H3>
+<P>Sometimes you want a form to process keyboard input, even if a control on a form
+has the focus. You use the form's KeyPreview property to do this.</P>
+<P>When you create a form, the default value of the KeyPreview property is False.
+Thus, any keyboard input that you send to a control on the form (a TextBox, for instance)
+goes directly to that control. If you set the value of KeyPreview property to True,
+however, the form intercepts all keyboard input. You can then access the input through
+the form's keyboard event procedures. After the form handles the input, it's passed
+to the control with the focus.</P>
+<P>At http://www.mcp.com/info is a sample project, KeyPress.vbp, in which the form's
+KeyPress event procedure intercepts all keyboard input headed for a TextBox and manipulates
+it into a backward string, and then ASCII reads it out (see Figure 15.4). It then
+sends each respective string to its own TextBox control. The form can intercept and
+distribute all the keyboard input to the various TextBoxes because the value of the
+KeyPreview property is set to True. Listing 15.3 shows the code for the Form_KeyPress()
+event procedure.</P>
+<P><A HREF="javascript:popUp('15fig04.gif')"><B>FIGURE 15.4</B></A> <I>If the value
+of the form's KeyPreview property were set to False, only the Forward TextBox would
+receive data.</I></P>
+<P>
+<H4>LISTING 15.3&#160;&#160;15LIST03.TXT--The Form's KeyPress Event Procedure</H4>
+<PRE><B>01 </B>Private Sub Form_KeyPress(KeyAscii As Integer)</PRE>
+<PRE><B>02 </B>`Send the mouse cursor to the first textbox</PRE>
+<PRE><B>03 </B>txtForward.SetFocus</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>`Convert the KeyAscii parameter to a character and</PRE>
+<PRE><B>06 </B>`put it in front of the existing text</PRE>
+<PRE><B>07 </B>txtBackward.Text = Chr(KeyAscii) &amp; txtBackward.Text</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>`Turn the KeyAscii value to a numeral and</PRE>
+<PRE><B>10 </B>`concatenate it to the end of the existing string</PRE>
+<PRE><B>11 </B>txtAscii.Text = txtAscii.Text &amp; CStr(KeyAscii) &amp; &quot;,</PRE>
+<PRE><B>12 </B>End Sub</PRE>
+<P>
+<H2><A NAME="Heading5"></A>Understanding Mouse Input</H2>
+<P>Every time you do something with the mouse, a mouse event is fired in your Visual
+Basic application. If you click the mouse, a Click event is fired. When you double-click,
+a DblClick event is fired. When you press a mouse button down, a MouseDown event
+is fired, whereas letting the mouse button up causes a MouseUp event. Every time
+the mouse moves, a MouseMove event occurs. Where and when a given event occurs depends
+on the position of the mouse pointer.</P>
+<P>Most controls support the event procedures just described. Some controls, however,
+such as the ComboBox, have no support for the MouseDown, MouseUp, and MouseMove events.</P>
+<P>Sometimes one gesture with a mouse fires many events. When you click a mouse,
+not only is a Click event fired, but MouseDown and MouseUp events are also fired.
+Taking control of the interactions among all the different events requires some getting
+used to.</P>
+<P>
+<H3><A NAME="Heading6"></A>Using the Click Event</H3>
+<P><B>Program a click event procedure</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Start a new project. Name the project and the form TClick and frmTClick,
+	respectively. Add a TextBox to the form as shown in Figure 15.5.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('15fig05.gif')"><B>FIGURE 15.5</B></A> <I>The TextBox
+supports the click event procedure.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>2. </B>Assign a name to the TextBox, such as txtClick.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Double-click the TextBox to open the code window. Go to the event procedure
+	drop-down list and change the event procedure from the Change event to the Click
+	event (see Figure 15.6).
+</DL>
+
+<P>
+<P><A HREF="javascript:popUp('15fig06.gif')"><B>FIGURE 15.6</B></A> <I>The default
+event procedure for the TextBox control is the Change event. Some people mistakenly
+program this event, thinking it's the click event.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>4. </B>In the Properties window, clear the value of txtClick's Text property
+	from &quot;Text1&quot; to an empty string (see Figure 15.7).
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Add the lines of code between Private Sub txtClick_Click() and End
+	Sub (lines 2-21) in Listing 15.4 to the txtClick_Click() event procedure.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Compile and run the code (see Figure 15.8).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('15fig07.gif')"><B>FIGURE 15.7</B></A> <I>Deleting the
+Text property string value in the Properties window deletes text from the TextBox.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Download this code, too</STRONG></P>
+	<P>The code for this exercise is in the project TClick.vbp, which you can find on
+	the Web site dedicated to this book. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>LISTING 15.4&#160;&#160;15LIST4.TXT--Displaying a Message, in the TextBox, That
+Reports How Many Times You've Clicked It</H4>
+<PRE><B>01 </B>Private Sub txtClick_Click()</PRE>
+<PRE><B>02 </B>`Make this static so it keeps its</PRE>
+<PRE><B>03 </B>`value from click to click</PRE>
+<PRE><B>04 </B>Static intCntr As Integer</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>`Make a variable to hold a message string</PRE>
+<PRE><B>07 </B>Dim Msg As String</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>`Begin a message</PRE>
+<PRE><B>10 </B>Msg = &quot;This is click number &quot;</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>`Convert the counter variable from an</PRE>
+<PRE><B>13 </B>`integer to a string and concatenate it</PRE>
+<PRE><B>14 </B>`to the preceding string</PRE>
+<PRE><B>15 </B>Msg = Msg &amp; CStr(intCntr) &amp; &quot;.&quot;</PRE>
+<PRE><B>16</B></PRE>
+<PRE><B>17 </B>`Display the string in the text box</PRE>
+<PRE><B>18 </B>txtClick.Text = Msg</PRE>
+<PRE><B>19</B></PRE>
+<PRE><B>20 </B>`Increment the counter variable</PRE>
+<PRE><B>21 </B>intCntr = intCntr + 1</PRE>
+<PRE><B>22 </B>End Sub</PRE>
+<P><A HREF="javascript:popUp('15fig08.gif')"><B>FIGURE 15.8</B></A> <I>Programming
+the click event in a TextBox control is atypical. Although meaningful for demonstration
+purposes, it confuses users when they try to input text.</I></P>
+<P>As you can see, the Click event is a simple event procedure to program. In fact,
+you can follow the same process to program the DblClick event procedure. Remember,
+however, that variables declared in a Click event procedure go out of scope when
+the procedure is completed. Therefore, if you want to maintain a state or value from
+click to click, you're required to reference a Static variable or a variable from
+the parent form within the Click event procedure. Static variables are covered in
+Chapter 7, &quot;Using Data Types, Constants, and Variables.&quot;</P>
+<P>
+<H3><A NAME="Heading7"></A>Working with MouseDown and MouseUp Events</H3>
+<P>The MouseDown and MouseUp event procedures use this syntax:</P>
+<P>
+<PRE>Private Sub <I>ControlName</I>_MouseDown(<I>Button</I> As Integer, _
+            <I>Shift</I> As Integer, <I>x</I> As Single, <I>y</I> As Single)
+Private Sub <I>ControlName</I>_MouseUp(<I>Button</I> As Integer, _
+            <I>Shift</I> As Integer, <I>x</I> As Single, <I>y</I> As Single)
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>Private denotes the scope of the event.
+	<P>
+	<LI>Sub denotes a procedure.
+	<P>
+	<LI><I>ControlName</I> is the name of the control from which the event is being fired.
+	<P>
+	<LI>MouseUp and MouseDown are the event procedures.
+	<P>
+	<LI><I>Button</I><B> </B>is an integer that reports the mouse button or combination
+	of mouse buttons pressed<B> </B>(see Table 15.5).
+	<P>
+	<LI><I>Shift</I> is an integer that reports whether the Shift, Control, or Alt keys
+	also are being held down (refer to Table 15.3).
+	<P>
+	<LI><I>x</I> is the horizontal position of the mouse pointer.
+	<P>
+	<LI><I>y</I> is the vertical position of the mouse pointer.
+</UL>
+
+<H4>TABLE 15.5&#160;&#160;Mouse Button Values</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Mouse Button(s) Pressed</TD>
+		<TD ALIGN="LEFT">Button Parameter Value</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Left</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Right</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Left and right</TD>
+		<TD ALIGN="LEFT">3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Middle</TD>
+		<TD ALIGN="LEFT">4</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Left and middle</TD>
+		<TD ALIGN="LEFT">5</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Right and middle</TD>
+		<TD ALIGN="LEFT">6</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">All</TD>
+		<TD ALIGN="LEFT">7</TD>
+	</TR>
+</TABLE>
+</P>
+<P>In many ways, working with the MouseDown and MouseUp event procedures is very
+similar to working with the KeyDown and KeyUp procedures. The difference is that
+MouseDown and MouseUp have a few different parameters passed into them. When a MouseDown
+event is fired, Visual Basic passes information about what mouse button was pressed
+and whether the Shift, Ctrl, or Alt key is being held down. VB also passes in the
+location of the mouse pointer within the control firing the event. The same is true
+when working with the MouseUp event.</P>
+<P>Although you might think that the MouseDown and MouseUp events are a complication
+of the Click event procedure, you ought to consider them an enhancement. For instance,
+you can take advantage of the value of the <I>Shift</I> parameter of the MouseDown
+event procedure to do things that you can't do within a Click event procedure. Suppose
+that you want to have a secret way to display an <I>Easter egg</I>. Listing 15.5
+shows how to use the <I>Shift</I> parameter with a form's MouseDown event procedure
+to accomplish this. Only someone holding down the Shift key, when the mouse is clicked,
+can display the message box and the hidden image of an Easter egg.</P>
+<P>
+<H4>LISTING 15.5&#160;&#160;15LIST05.TXT--If the Shift Parameter Is Equivalent to
+1, the Shift Key Is Being Held Down</H4>
+<PRE><B>01 </B>Private Sub Form_MouseDown(Button As Integer, _</PRE>
+<PRE>Shift As Integer, X As Single, Y As Single)</PRE>
+<PRE><B>02 </B>If Shift = 1 Then</PRE>
+<PRE><B>03 </B>imgEgg.Visible = True</PRE>
+<PRE><B>04 </B>MsgBox &quot;I am a secret Easter Egg&quot;</PRE>
+<PRE><B>05 </B>End If</PRE>
+<PRE><B>06 </B>imgEgg.Visible = False</PRE>
+<PRE><B>07 </B>End Sub</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Examples available for download</STRONG></P>
+	<P>The code for Listing 15.5 is in the project MouseBut.vbp, and the code for Listing
+	15.6 is in the project Mouse.vbp. Both projects are available for download from <A
+	HREF="javascript:if(confirm('http:// www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http:// www.mcp.com/info'" tppabs="http:// www.mcp.com/info">http:// www.mcp.com/info</A>. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>On the Web site set up for this book is the project Mouse.vbp, which demonstrates
+programming the MouseDown and MouseUp event procedures as well as the Click and DblClick
+event procedures. The project reports all the mouse activity that takes place within
+a PictureBox control named Picture1. When users press a mouse button (thus firing
+a MouseDown event), the MouseDown event procedure reports which button and which
+combination of Shift, Ctrl, and Alt have been pressed. The event procedure uses two
+Select Case statements to create a string that reports the status of the <I>Shift</I>
+and <I>Button</I> parameters. The event procedure also reports the position of the
+mouse pointer (see Figure 15.9). Listing 15.6 shows the code for the MouseDown and
+MouseUp event procedures.</P>
+<P>
+<H4>LISTING 15.6&#160;&#160;15LIST06--The MouseDown Event Procedure for the Picture1
+<BR>
+PictureBox Control</H4>
+<PRE><B>01 </B>Private Sub Picture1_MouseDown(Button As Integer, _</PRE>
+<PRE>Shift As Integer, X As Single, Y As Single)</PRE>
+<PRE><B>02 </B>Dim strButton As String `holds value of Button param</PRE>
+<PRE><B>03 </B>Dim strShift As String `holds value of Shift param</PRE>
+<PRE><B>04 </B>Dim strX As String `holds value of X param</PRE>
+<PRE><B>05 </B>Dim strY As String `holds value of Y param</PRE>
+<PRE><B>06</B></PRE>
+<PRE><B>07</B> `Convert X , Y parameters from integers to a string</PRE>
+<PRE><B>08 </B>strX = CStr(X)</PRE>
+<PRE><B>09 </B>strY = CStr(Y)</PRE>
+<PRE><B>10</B></PRE>
+<PRE><B>11 </B>`Run the SHIFT parameter through a Select Case</PRE>
+<PRE><B>12 </B>`statement in order to figure out what combination</PRE>
+<PRE><B>13 </B>`of Shift, Ctrl or Alt keys are depressed.</PRE>
+<PRE><B>14</B></PRE>
+<PRE><B>15 </B>`Assign the result to the Shift string variable</PRE>
+<PRE><B>16 </B>Select Case Shift</PRE>
+<PRE><B>17 </B>Case 0</PRE>
+<PRE><B>18 </B>strShift = &quot;&quot;</PRE>
+<PRE><B>19 </B>Case 1</PRE>
+<PRE><B>20 </B>strShift = &quot;Shift&quot;</PRE>
+<PRE><B>21 </B>Case 2</PRE>
+<PRE><B>22 </B>strShift = &quot;Ctrl&quot;</PRE>
+<PRE><B>23 </B>Case 3</PRE>
+<PRE><B>24 </B>strShift = &quot;Shift + Ctrl&quot;</PRE>
+<PRE><B>25 </B>Case 4</PRE>
+<PRE><B>26 </B>strShift = &quot;Alt&quot;</PRE>
+<PRE><B>27 </B>Case 5</PRE>
+<PRE><B>28 </B>strShift = &quot;Shift + Alt&quot;</PRE>
+<PRE><B>29 </B>Case 6</PRE>
+<PRE><B>30 </B>strShift = &quot;Ctrl + Alt&quot;</PRE>
+<PRE><B>31 </B>Case 7</PRE>
+<PRE><B>32 </B>strShift = &quot;Shift + Ctrl + Alt&quot;</PRE>
+<PRE><B>33 </B>End Select</PRE>
+<PRE><B>34</B></PRE>
+<PRE><B>35 </B>`Run the BUTTON parameter through a Select Case</PRE>
+<PRE><B>36 </B>`statement to determine what combination of the</PRE>
+<PRE><B>37 </B>`Mouse Buttons have been pushed. Assign the</PRE>
+<PRE><B>38 </B>`result to the Button string variable</PRE>
+<PRE><B>39 </B>Select Case Button</PRE>
+<PRE><B>40 </B>Case 0</PRE>
+<PRE><B>41 </B>strButton = &quot;&quot;</PRE>
+<PRE><B>42 </B>Case 1</PRE>
+<PRE><B>43 </B>strButton = &quot;Left&quot;</PRE>
+<PRE><B>44 </B>Case 2</PRE>
+<PRE><B>45 </B>strButton = &quot;Right&quot;</PRE>
+<PRE><B>46 </B>Case 3</PRE>
+<PRE><B>47 </B>strButton = &quot;Left + Right&quot;</PRE>
+<PRE><B>48 </B>Case 4</PRE>
+<PRE><B>49 </B>strButton = &quot;Middle&quot;</PRE>
+<PRE><B>50 </B>Case 5</PRE>
+<PRE><B>51 </B>strButton = &quot;Left + Middle&quot;</PRE>
+<PRE><B>52 </B>Case 6</PRE>
+<PRE><B>53 </B>strButton = &quot;Right + Middle&quot;</PRE>
+<PRE><B>54 </B>Case 7</PRE>
+<PRE><B>55 </B>strButton = &quot;All&quot;</PRE>
+<PRE><B>56 </B>End Select</PRE>
+<PRE><B>57</B></PRE>
+<PRE><B>58 </B>`Diplay the event fired</PRE>
+<PRE><B>59 </B>lblMouse.Caption = &quot;Mouse Down&quot;</PRE>
+<PRE><B>60</B></PRE>
+<PRE><B>61 </B>`Display the combination of keys pressed</PRE>
+<PRE><B>62 </B>lblShift.Caption = strShift</PRE>
+<PRE><B>63</B></PRE>
+<PRE><B>64 </B>`Display the mouse buttons pressed</PRE>
+<PRE><B>65 </B>lblButton.Caption = strButton</PRE>
+<PRE><B>66 </B>End Sub</PRE>
+<P><A HREF="javascript:popUp('15fig09.gif')"><B>FIGURE 15.9</B></A> <I>The mouse
+click event fires Click, MouseDown, and MouseUp events.</I></P>
+<P>Notice in Figure 15.9 that the position of the mouse pointer is reported in <I>twips</I>.
+This number might be confusing at times. If you need to report the position of the
+mouse in pixels, replace lines 7-9 of Listing 15.6 with the following code:</P>
+<P>
+<PRE>`Report the X and Y position in pixels by dividing the
+`value of X and Y by the TwipsPerPixelX(Y) property of
+`the Screen object. Convert the X and Y parameters from
+`integers to a string
+    strX = CStr(x/Screen.TwipsPerPixelX)
+    strY = CStr(y/Screen.TwipsPerPixely)
+</PRE>
+<P>Notice also that the following code for the MouseUp event is minimal compared
+with the MouseDown event. This minimalism is intentional. When users release a mouse
+button, the MouseUp and MouseMove events are both fired. If the code in each event
+procedure is trying to affect the same controls, you run into a conflict because
+you must ensure that each event procedure's scope of activity is relatively exclusive.
+In the Mouse.vbp project, the MouseUp event sets a Label control's caption, on line
+3 below , whereas the MouseMove event reports the mouse pointer's position in another
+Label control and uses the Line method to draw on the PictureBox.</P>
+<P>
+<PRE><B>01</B> Private Sub Picture1_MouseUp(Button As Integer, _
+           Shift As Integer, X As Single, Y As Single)
+<B>02</B>     `Diplay the event fired
+<B>03</B>     lblMouse.Caption = &quot;Mouse Up&quot;
+<B>04</B> End Sub
+</PRE>
+<H3><A NAME="Heading8"></A>Working with the MouseMove Event</H3>
+<P>The syntax for the MouseMove event procedure is as follows:</P>
+<P>
+<PRE>Private Sub ControlName_MouseMove(Button As Integer, _
+        Shift As Integer, x As Single, y As Single)
+</PRE>
+<P>It's identical to the MouseDown and MouseUp event procedures. Whenever you move
+the mouse, a MouseMove event is fired.</P>
+<P>The Mouse.vbp project used in the preceding section demonstrates programming the
+MouseMove event. This event procedure is programmed to report the location of the
+mouse within the PictureBox control (see Figure 15.10).</P>
+<P><A HREF="javascript:popUp('15fig10.gif')"><B>FIGURE 15.10</B></A> <I>Most controls
+support the MouseMove event procedure.</I></P>
+
+<P>As shown in Listing 15.7, the MouseMove event procedure of the Picture control
+takes the value of the x and y parameters passed to it and displays those values
+in a Label control. Every time the mouse moves, the new value is reported. Also,
+the parameters are used to draw lines in the PictureBox by using the Line method
+of that control. Line 10 in Listing 15.7 performs the drawing that's shown in Figure
+15.10.</P>
+<P>
+<H4>LISTING 15.7&#160;&#160;15LIST07.TXT--Reporting the Mouse Pointer's Value with
+the <BR>
+MouseMove Event Procedure</H4>
+<PRE><B>01 </B>Private Sub Picture1_MouseMove(Button As Integer, _</PRE>
+<PRE>Shift As Integer, X As Single, Y As Single)</PRE>
+<PRE><B>02 </B>Dim strX As String `holds converted value of X</PRE>
+<PRE><B>03 </B>Dim strY As String `holds converted value of Y</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>`Convert X , Y parameters from integers to string</PRE>
+<PRE><B>06 </B>strX = CStr(X)</PRE>
+<PRE><B>07 </B>strY = CStr(Y)</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>`Draw line in the Sketch Pad</PRE>
+<PRE><B>10 </B>Picture1.Line -(X, Y)</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>`Display the mouse pointer position</PRE>
+<PRE><B>13 </B>lblCursor.Caption = &quot;X: &quot; &amp; strX &amp; &quot;, &quot; &amp; &quot;Y: &quot; &amp; strY</PRE>
+<PRE><B>14 </B>End Sub</PRE>
+<P>When programming with the MouseMove event, remember that the event is fired every
+time the mouse moves. This might sound simplistic, but the implications are important.
+If the code you write in the MouseMove event handler takes longer to execute than
+the amount of time before the next MouseMoves is fired, your program will display
+some very strange, possibly fatal behaviors. In Listing 15.8, for example, every
+time the mouse moves, the code creates a new For...Next loop, thus creating a queue
+of loops waiting to execute. The loops could go on forever. This unanticipated behavior
+will affect the integrity of your program.</P>
+<P>
+<H4>LISTING 15.8&#160;&#160;15LIST08.TXT--Using the MouseMove Event Procedure with
+<BR>
+Loops</H4>
+<PRE><B>01 </B>Private Sub Form_MouseMove(Button As Integer, _</PRE>
+<PRE>Shift As Integer, X As Single, Y As Single)</PRE>
+<PRE><B>02 </B>Dim intCntr As Integer</PRE>
+<PRE><B>03 </B>`Loop could go on forever under certain conditions</PRE>
+<PRE><B>04 </B>`depending on the frequency of mouse movement.</PRE>
+<PRE><B>05 </B>For intCntr = 0 To 10000</PRE>
+<PRE><B>06 </B>frmMouse.Caption = CStr(intCntr)</PRE>
+<PRE><B>07 </B>Next intCntr</PRE>
+<PRE><B>08 </B>End Sub</PRE>
+<P>
+<H3><A NAME="Heading9"></A>Recognizing VB's Limitations with Mouse Input</H3>
+<P>Visual Basic has two significant shortcomings when it comes to handling mouse
+input. The first is that the mouse event procedures are control specific. In other
+words, there's no easy way for a form's mouse-movement event procedures to override
+a contained child control's event procedure. If you have a PictureBox control on
+a form or a separate form in the same application and then move the mouse pointer
+over the PictureBox, the control's MouseMove event procedure is executed. The parent
+form's MouseMove event procedure is ignored, and control is passed to the PictureBox
+that now has focus. This is important because the event procedure's <I>x</I> and
+<I>y</I> mouse pointer location parameters are relative to the control on which the
+mouse pointer is being moved.</P>
+<P>Going back to the PictureBox control scenario, if you place the mouse pointer
+in the upper left corner of the PictureBox control, the <I>x</I> and <I>y</I> parameters
+passed to the form's MouseMove event procedure are 0,0. If you put your mouse pointer
+in the upper left corner of the Picture, the <I>x</I> and <I>y</I> parameters passed
+to the PictureBox's MouseMove event procedure also are 0,0. (This assumes that the
+PictureBox isn't in the upper left corner of the form.) Although the Picture is a
+contained child to the form, it doesn't report back the coordinates of the form;
+instead, it reports back coordinates relative to its internal Top and Left 0,0 position
+(see Figure 15.11).</P>
+<P><A HREF="javascript:popUp('15fig11.gif')"><B>FIGURE 15.11</B></A> <I>Keeping track
+of the mouse pointer's location relative to the form can be difficult.</I></P>
+<H3>Draping the mouse outside the form</H3>
+<P>Use the Mouse.exe application to find the relative offset of the SketchPad PictureBox
+from its parent form. You can check your answers by looking at the Top and Left properties
+of the SketchPad PictureBox in the sample Mouse.vbp application on the dedicated
+Web site.</P>
+<P>The second shortcoming is that Visual Basic doesn't report the mouse pointer's
+location outside its application, unless the MouseDown event has been initiated while
+under the control of the application and held down during the MouseMove event. (This
+is often referred to as <I>dragging the mouse</I>.) While the mouse is being dragged,
+it continues to report its relative position to the control through the MouseMove
+event; however, you have one final chance to process this information. When the mouse
+button is released and the MouseUp event fires, you can process the last x and y
+values, remembering that these are relative to the initiating control's location.
+These values could easily be negative.</P>
+<P>This all means that after the mouse pointer leaves your Visual Basic application,
+VB normally has no idea where it is. Thus, writing a program that needs to know the
+location of the mouse pointer anywhere onscreen at anytime is very difficult to accomplish.
+You can use Visual Basic to access functions in the Windows API (Application Programming
+Interface) that enable you to use an advanced programming technique called <I>subclassing</I>
+to accomplish this task. However, this type of API programming is very advanced and
+very delicate. An error in a Visual Basic application that implements subclassing
+can cause serious problems not only in the VB application but also throughout the
+entire system.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch14/ch14.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch16.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch16/ch16.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

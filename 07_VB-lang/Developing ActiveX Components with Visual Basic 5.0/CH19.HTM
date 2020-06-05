@@ -1,0 +1,2225 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 19 -- The Wonderful World of Properties</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;19</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>The Wonderful World of Properties</FONT>
+</H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#PropertyDataTypes">
+Property Data Types</A>
+<UL>
+<LI><A HREF="#Variants">
+Variants</A>
+<LI><A HREF="#OLECOLOR">
+OLE_COLOR</A>
+<LI><A HREF="#OLETRISTATE">
+OLE_TRISTATE</A>
+<LI><A HREF="#OLEOPTEXCLUSIVE">
+OLE_OPTEXCLUSIVE</A>
+<LI><A HREF="#EnumeratedTypes">
+Enumerated Types</A>
+<LI><A HREF="#PicturesandFonts">
+Pictures and Fonts</A>
+</UL>
+<LI><A HREF="#PropertyProcedures">
+Property Procedures</A>
+<UL>
+<LI><A HREF="#UsingByValwithPropertyLetFunctions">
+Using ByVal with Property Let Functions</A>
+<LI><A HREF="#RaisingErrors">
+Raising Errors</A>
+<LI><A HREF="#RuntimeandDesignTimeCharacteristics">
+Runtime and Design-Time Characteristics</A>
+</UL>
+<LI><A HREF="#ControlProcedureAttributes">
+Control Procedure Attributes</A>
+<UL>
+<LI><A HREF="#ProcedureID">
+Procedure ID</A>
+<LI><A HREF="#UseThisPageinPropertyBrowser">
+Use This Page in Property Browser</A>
+<LI><A HREF="#PropertyCategory">
+Property Category</A>
+<LI><A HREF="#DontShowinPropertyBrowser">
+Don't Show in Property Browser</A>
+<LI><A HREF="#UserInterfaceDefault">
+User Interface Default</A>
+</UL>
+<LI><A HREF="#CustomObjects">
+Custom Objects</A>
+<UL>
+<LI><A HREF="#TheclsMyObjectFractionObject">
+The clsMyObject Fraction Object</A>
+<LI><A HREF="#ThePropertyProcedures">
+The Property Procedures</A>
+<LI><A HREF="#IntroductiontoPropertyPages">
+Introduction to Property Pages</A>
+</UL>
+<LI><A HREF="#Persistence">
+Persistence</A>
+<UL>
+<LI><A HREF="#MappingProperties">
+Mapping Properties</A>
+<LI><A HREF="#SelfPersistingObjects">
+Self-Persisting Objects</A>
+<LI><A HREF="#WereOffToSeetheWizard">
+We're Off To See the Wizard</A>
+<LI><A HREF="#AsynchronousPersistence">
+Asynchronous Persistence</A>
+<LI><A HREF="#UpdatingControls">
+Updating Controls</A>
+</UL>
+<LI><A HREF="#DataBinding">
+DataBinding</A>
+<UL>
+<LI><A HREF="#TheEasyWay">
+The Easy Way</A>
+<LI><A HREF="#TheHardWay">
+The Hard Way</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+All ActiveX components can have properties. But what makes properties
+special with regard to ActiveX controls?
+<P>
+The big difference is persistence-that control properties can
+be set at a container's design time and the values stored with
+an application. This implies that you'll have to pay special attention
+to the differences between the design-time and run-time behavior
+of properties.
+<H2><A NAME="PropertyDataTypes"><FONT SIZE=5 COLOR=#FF0000>
+Property Data Types</FONT></A></H2>
+<P>
+You are probably quite familiar with the usual property types,
+such as longs, strings, variants, and objects. With ActiveX controls,
+the type of property can have a significant impact on the way
+the container interacts with the control at design time. The ch19ctla
+control in the ch19ctls.vbp project demonstrates some of the issues
+relating to property data types. There are several property types
+that are deserving of special attention.
+<H3><A NAME="Variants">
+Variants</A></H3>
+<P>
+When you add a new property procedure to a control using the Tools,
+Add Procedure command, it defaults to the variant property type.
+This is a shame, because a variant is probably the worst type
+for an ActiveX control property.
+<P>
+In order to build a robust ActiveX control it is important that
+the control be able to successfully handle any values set by the
+container in both design and run mode. Since a variant can contain
+any type of data, use of variants as a control property clearly
+imposes a significant amount of extra work on a control author,
+both in terms of coding and testing.
+<P>
+Using variants as properties can potentially confuse the design-time
+property window as well. If the variant contains a value that
+it can convert into a string, the property will appear in the
+Property window (assuming other requirements, which will be described
+later, are also satisfied). But if the variant contains an object
+reference when the control loads, the property will not appear.
+If the property is initially a string, but later is set to contain
+an object reference, a blank line may appear on the property window
+(depending on when the container chooses to update its property
+window), leaving no indication that the property is set to a legal
+value.
+<P>
+The Visual Basic property window will always set a variant to
+the string data type when the developer edits the property.
+<P>
+When you add these facts to the long list of disadvantages associated
+with variants that were described in <A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A>, the bottom line
+is clear: Unless you have some overriding reason, don't use variants
+as properties. At the very least, don't use them for properties
+that are visible at design time.
+<P>
+Now that you know the bottom line, stay tuned, because you'll
+shortly become intimately acquainted with one of those overriding
+reasons to use variants after all.
+<P>
+A typical set of property procedures for a variant property is
+shown below:
+<BLOCKQUOTE>
+<PRE>
+Private m_Variant1 As Variant
+
+Public Property Get Variant1() As Variant
+   Variant1 = m_Variant1
+End Property
+
+Public Property Let Variant1(ByVal vNewValue As Variant)
+   m_Variant1 = vNewValue
+   PropertyChanged &quot;Variant1&quot;
+   Debug.Print &quot;Variant type: &quot; &amp; VarType(m_Variant1)
+End Property
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="OLECOLOR">
+OLE_COLOR</A></H3>
+<P>
+The OLE_COLOR type can be a bit misleading. You might think it
+is a special object type like a font or picture (which we'll discuss
+in a moment), but in fact, an OLE_COLOR variable is simply a 32-bit-long
+integer. It is not an object and thus has no properties or methods.
+It's just another name for a long variable and can be directly
+assigned to and from Visual Basic long variables.
+<P>
+Why, then, should you ever use this variable type? Because Visual
+Basic is smart enough to know that this variable type should receive
+special treatment in the VB property window and with regard to
+property pages. When a property is defined as the OLE_COLOR type,
+Visual Basic adds a pop-up color selection menu to the VB property
+window entry for the property. It also enables linking the property
+to the standard color selection property page.
+<P>
+A typical set of property procedures for an OLE_COLOR property
+is shown below:
+<BLOCKQUOTE>
+<PRE>
+Private m_Color1 As OLE_COLOR
+
+Public Property Get Color1() As OLE_COLOR
+   Color1 = m_Color1
+End Property
+
+Public Property Let Color1(ByVal vNewValue As OLE_COLOR)
+   m_Color1 = vNewValue
+   PropertyChanged &quot;Color1&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="OLETRISTATE">
+OLE_TRISTATE</A></H3>
+<P>
+The OLE_TRISTATE date type is an enumerated value and, like any
+enumerated value in Visual Basic, is also represented by a 32-bit-long
+value. When Visual Basic sees this data type, it provides a dropdown
+list box in the Visual Basic property window that contains the
+three possible values for this data type: 0-Unchecked, 1-Checked,
+and 2-Gray.
+<P>
+Keep in mind that, as with any enumerated type, Visual Basic does
+not, itself, limit the possible values for this property. This
+means you must add your own code to verify that the property is
+not set to an invalid value.
+<P>
+A typical set of property procedures for an OLE_TRISTATE property
+is shown below. Note the use of error checking on the Property
+Let statement.
+<BLOCKQUOTE>
+<PRE>
+Private m_TriState1 As OLE_TRISTATE
+
+Public Property Get MyTriState() As OLE_TRISTATE
+   MyTriState = m_TriState1
+End Property
+
+Public Property Let MyTriState(ByVal vNewValue As OLE_TRISTATE)
+   If vNewValue &gt; 2 or vNewValue &lt;0 Then
+      Err.Raise 380
+   End If
+   m_TriState1 = vNewValue
+   PropertyChanged &quot;MyTriState&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="OLEOPTEXCLUSIVE">
+OLE_OPTEXCLUSIVE</A></H3>
+<P>
+This data type is equivalent to the Visual Basic Boolean data
+type, meaning that it can only take on the values True and False.
+You can assign any value to a variable of this type, but it will
+automatically be set to -1 if the value is not 0.
+<P>
+If the default property for a control has this data type, Visual
+Basic assumes that this control is expected to behave like an
+option button. Only one control that uses OLE_OPTEXCLUSIVE will
+have its default property set to True at any given time. When
+you set one to True, other controls that have a default property
+of this type will be set to False.
+<P>
+There are a few points regarding this data type that are not completely
+clear in the documentation:
+<UL>
+<LI>Contrary to what the documentation says, use of the OLE_OPTEXCLUSIVE
+data type in this manner has nothing to do with the Value property,
+even though it is typically used with that property. What counts
+is that the property be set to be the default property using the
+Tools, Procedure Attributes dialog box. This is done by setting
+the Procedure ID (DispID) to (Default) in the dialog box. This
+is demonstrated in the ch19ctla control, where the default property
+is actually named xValue instead of Value.
+<LI>All controls with a default property of type OLE_OPTEXCLUSIVE
+that share a given container are considered a single group by
+the container regardless of the type of control. You can see this
+in the ch19tst1 form. When you click on the option button, the
+xValue property for both ch19ctla controls is set to False.
+<LI>This behavior is entirely dependent on the container. You
+cannot assume that this type of option exclusion will be implemented
+on a given container. However, most containers seem to support
+it correctly.
+</UL>
+<P>
+A typical set of property procedures for an OLE_OPTEXCLUSIVE property
+is shown below. The Debug.Print statement monitors the current
+state of the variable so you can see when the property is set
+to False after another control's OLE_OPTEXCLUSIVE default property
+is set to True.
+<BLOCKQUOTE>
+<PRE>
+Private m_Value As OLE_OPTEXCLUSIVE
+
+Public Property Get xValue() As OLE_OPTEXCLUSIVE
+   xValue = m_Value
+End Property
+
+Public Property Let xValue(ByVal vNewValue As OLE_OPTEXCLUSIVE)
+   m_Value = vNewValue
+   Debug.Print Ambient.DisplayName &amp; vNewValue
+   PropertyChanged &quot;xValue&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="EnumeratedTypes">
+Enumerated Types</A></H3>
+<P>
+When you assign an enumerated type to a control property, Visual
+Basic will use the enumeration list to build a dropdown list of
+possible property values in the Visual Basic property window.
+This can be seen in the ch19ctlA control with the EnumProp property,
+which is implemented as follows:
+<BLOCKQUOTE>
+<PRE>
+Enum TestEnum
+   dwFirstVal = 0
+   dwSecondVal = 1
+   dwThirdVal = 2
+End Enum
+Private m_Enum As TestEnum
+
+' Enumerated property
+Public Property Get EnumProp() As TestEnum
+   EnumProp = m_Enum
+End Property
+
+Public Property Let EnumProp(ByVal vNewValue As TestEnum)
+   m_Enum = vNewValue
+   PropertyChanged &quot;EnumProp&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+This actually presents a curious limitation for control authors
+using Visual Basic. It is desirable to use enumeration names that
+have a prefix such as &quot;dw&quot; to avoid conflicts with other
+enumerations that might be using a similar name. But it is also
+desirable to have a more easily understood name in the dropdown
+list provided by the Visual Basic property window. Visual Basic
+does not provide a solution to this problem, but Desaware's SpyWorks
+does provide a mechanism to customize the dropdown list in the
+Visual Basic property window instead of using the default enumeration
+list. It also allows you to override the value display in the
+property window.
+<P>
+Enumeration conflicts can cause subtle bugs if you have two different
+components that have the same enumeration name with two different
+values. As long as you are within the same project, Visual Basic
+will warn you about ambiguous names when attempting to run or
+compile the application. Otherwise, Visual Basic will choose the
+first name in the reference order. Reference order was discussed
+in <A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm" >Chapter 9</A> It is important that you resist the temptation to
+choose enumeration names such as &quot;First,&quot; color names,
+and dates, which are all unlikely to be unique.
+<P>
+Keep in mind that Visual Basic does not perform range checking
+on the value passed to an enumerated property procedure. You should
+verify the values passed to the Property Let procedure and raise
+an error if the value is invalid.
+<H3><A NAME="PicturesandFonts">
+Pictures and Fonts</A></H3>
+<P>
+Pictures and Fonts are encapsulated in standard OLE objects, which
+support the interfaces IPictureDisp and IFontDisp. Visual Basic
+recognizes objects with these types and provides them with special
+handling. The Visual Basic property window displays a summary
+display describing the object and a button that can be clicked
+to display a common dialog box or property page, which can be
+used to edit the object.
+<P>
+You should be sure that the Property Get statement for a font
+always returns a valid Font object. If it returns Nothing, the
+container may not be able to correctly set the font. One way to
+do this is to set the private font variable to the ambient font
+during the UserControl's InitProperties event. The Property Get
+statement for a picture may return Nothing to indicate that no
+picture has been specified.
+<P>
+A typical set of property procedures for a Font property is shown
+below:
+<BLOCKQUOTE>
+<PRE>
+Private m_Font1 As Font
+
+Private Sub UserControl_InitProperties()
+   Set m_Font1 = Ambient.Font
+End Sub
+
+Public Property Get Font1() As Font
+   Set Font1 = m_Font1
+End Property
+
+Public Property Set Font1(ByVal vNewValue As Font)
+   Set m_Font1 = vNewValue
+   PropertyChanged &quot;Font1&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can create your own objects, which will be handled similarly
+to Picture and Font objects, but there are some subtleties involved.
+This subject will be covered later in the chapter.
+<P>
+The Font property presents an interesting choice. You can implement
+a single Font object or implement separate properties for the
+FontName, FontSize, FontBold, FontItalic, and FontStrikethru characteristics.
+You can even implement both, as you will see in the Banner project
+in <A HREF="ch21.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch21.htm" >Chapter 21</A>. Regardless of which properties you expose, you
+also have the option of persisting the Font object with a single
+PropBag.WriteProperties call or separate calls for each font characteristic.
+<P>
+At first glance it may seem that using a single Font object both
+as a property and for persistence is the obvious choice, but this
+is not always the case. If you intend your control to be used
+in Web pages, you may choose to expose the individual Font properties
+instead of a single Font object. This is because individual Font
+properties will appear on the Web page in human readable form.
+If you persist the Font object, you will typically get a subobject
+on the Web page, assuming that your Web development tool knows
+how to handle the object at all.
+<P>
+There is another side effect involved in exposing the Font object
+at runtime. You have no way of detecting when a developer changes
+a property of the Font object unless you are using the ambient
+font, in which case you can use the PropertyChanged event to detect
+any change to the ambient font. When you assign a Font object
+from the Ambient Font property, you are not actually obtaining
+a reference to the Ambient font. Visual Basic makes a clone of
+the Font object. This prevents you from accidentally changing
+the Ambient font while setting the font characteristics of your
+control.
+<H2><A NAME="PropertyProcedures"><FONT SIZE=5 COLOR=#FF0000>
+Property Procedures</FONT></A></H2>
+<P>
+When defining properties for ActiveX controls you will always
+use property procedures. How you define them and what you do in
+them is a major part of every control.
+<H3><A NAME="UsingByValwithPropertyLetFunctions">
+Using ByVal with Property Let Functions</A></H3>
+<P>
+Property Let procedures can be defined with or without a ByVal
+in most cases. You can gain some performance benefit with string
+variables by passing the parameter by reference. However, to ensure
+the maximum compatibility with different containers, parameters
+should always be passed by value. This is because some containers
+do not handle all of the variable types correctly when passed
+by reference. For example: Visual Basic 4.0 does not correctly
+handle Boolean variables passed by reference.
+<H3><A NAME="RaisingErrors">
+Raising Errors</A></H3>
+<P>
+<A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm" >Chapter 9</A>introduced the underlying concepts for OLE error handling,
+in which each 32-bit error code is divided into three parts: the
+result code, the facility code, and the error number. You might
+want to quickly review the section on OLE error handling before
+continuing.
+<P>
+As you have seen, the vbObjectError constant uses a facility value
+of 4, indicating an interface error, in which the first 512 error
+numbers are predefined by Visual Basic. When working with ActiveX
+controls, you may, on occasion, raise vbObjectError values when
+you have custom errors. But OLE defines facility code &amp;H0A,
+which is intended specifically for use with ActiveX controls.
+Curiously enough, this is the same facility code Visual Basic
+seems to use internally for trappable errors in general. For example:
+the Invalid Property Value error is trappable error #380. If you
+execute the line
+<BLOCKQUOTE>
+<PRE>
+Err.Raise 380
+</PRE>
+</BLOCKQUOTE>
+<P>
+you'll see an Invalid Property Value error message. If, however,
+you explicitly set the facility code as
+<BLOCKQUOTE>
+<PRE>
+Err.Raise &amp;H800A0000 Or 380
+</PRE>
+</BLOCKQUOTE>
+<P>
+you'll see the same error, and the Err object will report error
+number 380.
+<P>
+If you look at the list of trappable errors in the Visual Basic
+online help, you will see many that are obviously useful with
+ActiveX controls. Should you use them in your control? Absolutely!
+<P>
+You see, the error values defined for the ActiveX control facility
+codes are not just standard to Visual Basic; they are standard
+to all ActiveX controls. Error code 380 will be raised by any
+control when you try to set an invalid property value. This means
+that your Visual Basic program can handle any ActiveX control
+errors regardless of who developed the control and the language
+in which it was written. It also means that you can (and should)
+use these error codes in your controls so they can be supported
+properly by all ActiveX containers.
+<P>
+The ch19Tst2 project is designed to help you experiment with the
+behavior of errors raised by ActiveX controls in both the container's
+design time and runtime. Figure 19.1 shows the ch19ctl2A control
+included in this project.
+<P>
+<A HREF="f19-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f19-1.gif"><B>Figure 19.1 :</B> <I>The ch19ctl2A control</I>.</A>
+<P>
+The control contains a constituent text box in which you can enter
+an error number to raise. The three option buttons allow you to
+choose the facility code (null, control, or automation). The settings
+in the Get and Set checkboxes determine if the error should be
+raised when the property is read or set. The control's code is
+quite simple, as you can see here:
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed
+' Chapter 19 - ch19ctl2a
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+Option Explicit
+
+Private m_Facility As Long
+
+Private Const vbCtlError = &amp;HA0000 Or &amp;H80000000
+
+Private Sub optFacility_Click(Index As Integer)
+   Select Case Index
+      Case 0
+         m_Facility = 0
+      Case 1
+         m_Facility = vbCtlError
+      Case 2
+         m_Facility = vbObjectError
+   End Select
+End Sub
+
+' The Get and Let check boxes determine when the error is triggered
+Public Property Get TriggerError() As String
+   Dim errcode&amp;
+   errcode = Val(txtErrNum.Text) Or m_Facility
+   Debug.Print Hex$(errcode)
+   If chkGet.Value Then Err.Raise errcode
+End Property
+
+Public Property Let TriggerError(ByVal vNewValue As String)
+   Dim errcode&amp;
+   errcode = Val(txtErrNum.Text) Or m_Facility
+   Debug.Print Hex$(errcode)
+   If chkLet.Value Then Err.Raise errcode
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The test form, ch19frm2.frm, contains a single instance of the
+control and two command buttons. The Get command button reads
+the control's TriggerError property. The Set command button sets
+it to an arbitrary value.
+<P>
+Here's a question you should be able to figure out quickly. It
+should be fairly clear how to test the control at runtime-all
+of the constituent controls on the ch19ctl2a control are active,
+so you can just edit the error number in the text box, select
+the desired options, and click the Get or Set command buttons.
+But how can you perform the same test during the container's design
+time?
+<P>
+If you look at the property settings for the control itself (the
+properties of the UserControl object for the control), you'll
+see that the EditAtDesignTime property is set to True. After closing
+the designer and drawing the control on the form, invoke the Edit
+command on the context menu (the pop-up menu that appears when
+you right-click on the control). This will make the control active,
+allowing you to edit the text box and set the other control options.
+Now click on the form. This brings the control out of edit mode.
+When you click on the control again, Visual Basic will attempt
+to read the TriggerError property in order to load the property
+window, allowing you to test the property read side. You can test
+the property setting side by editing the TriggerError string in
+the property window.
+<P>
+Why does this sample program limit itself to testing errors raised
+during property access? Because, generally speaking, the only
+time your control should raise errors is during property access
+or method calls. You should avoid raising errors while processing
+internal events. This is because the container may not be designed
+to handle errors that are raised at arbitrary times. If an error
+occurs at other times, you should keep track of it and raise the
+error next time the control is accessed in a method or property.
+<H4>Frequently Used Error Codes</H4>
+<P>
+A complete list of trappable errors can be found in your Visual
+Basic online help (search the index for trappable errors). Most
+of the errors are self explanatory. Table 19.1 lists the error
+codes most frequently used by control authors. <BR>
+<P>
+<CENTER><B>Table 19.1:&nbsp;Errors Used Frequently by Control
+Authors</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>Error Code</B></CENTER></TD><TD WIDTH=480><B>Description</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>7</CENTER></TD><TD WIDTH=480>Out of Memory-Typically raised if a memory allocation fails within your control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>380</CENTER></TD><TD WIDTH=480>Invalid Property Value-Raise this error when the user tries to set the property to an illegal value.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>381</CENTER></TD><TD WIDTH=480>Invalid Property Array Index-Raise this error when an invalid index value is specified for a parameterized property (property array).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>382</CENTER></TD><TD WIDTH=480>Set not supported at runtime-Raise this error when an attempt is made to set a property you wish to be settable only at design time. Raise this error only when the Ambient UserMode 
+property 
+is True.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>383</CENTER></TD><TD WIDTH=480>Set not supported-Raise this error when an attempt is made to set a property you wish to be read-only.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>387</CENTER></TD><TD WIDTH=480>Set not permitted-Raise this error when an attempt is made to set a property that is temporarily configured as read-only.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>393</CENTER></TD><TD WIDTH=480>Get not supported at runtime-Raise this error when an attempt is made to read a property you wish to be write-only at runtime. This type of property is typically used to trigger an 
+action 
+in the control and may be better implemented as a method. Raise this error only when the Ambient UserMode property is True.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>394</CENTER></TD><TD WIDTH=480>Get not supported-Raise this error when an attempt is made to set a property you wish to be write-only. This type of property may be better implemented as a method.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The principles of error handling described for ActiveX components
+in <A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm" >Chapter 9</A>apply to ActiveX controls as well. If an error is
+raised by a component that your control is using (either a constituent
+control, or an object such as the UserControl object for the control),
+you should handle it within your control, then raise it to your
+control's container if it is appropriate to do so.
+<P>
+To make life easier on developers using your control, you should
+also document those errors that your control can raise. This is
+especially important for customer errors.
+<H3><A NAME="RuntimeandDesignTimeCharacteristics">
+Runtime and Design-Time Characteristics</A></H3>
+<P>
+As the control author, you determine when it is legal to read
+or write properties. There are 16 possible permutations of read/write
+permissions, as shown in Table 19.2. Read indicates whether the
+property can be read, Write indicates that it can be set. VB property
+window characteristics apply to numeric or string property types.
+The most common configurations are shown in bold type.<BR>
+<P>
+<CENTER><B>Table 19.2:&nbsp;Property Permissions. Runtime UserMode
+= True, Design Time UserMode = False</B></CENTER><P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=77><B>Read Runtime</B></TD><TD WIDTH=105><B>Read Design Time</B>
+</TD><TD WIDTH=77><B>Write Runtime</B></TD><TD WIDTH=107><B>Write Design Time</B>
+</TD><TD WIDTH=206>
+<BR>
+<B>Description</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><B><center>Yes</B></TD><TD WIDTH=105><B><center>Yes</B></TD>
+<TD WIDTH=77><B><center>Yes</B></TD><TD WIDTH=107><B><center>Yes</B></TD><TD WIDTH=206><B>Full access at all times-one of the most common configurations.</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>Yes</TD><TD WIDTH=105><center>Yes</TD><TD WIDTH=77><center>Yes
+</TD><TD WIDTH=107><center>No</TD><TD WIDTH=206>See Note #1.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><B><center>Yes</B></TD><TD WIDTH=105><B><center>Yes</B></TD>
+<TD WIDTH=77><B><center>No</B></TD><TD WIDTH=107><B><center>Yes</B></TD><TD WIDTH=206><B>Write-only at design time. This configuration is used frequently for properties that can be set only at design time.</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>Yes</TD><TD WIDTH=105><center>Yes</TD><TD WIDTH=77><center>No
+</TD><TD WIDTH=107><center>No</TD><TD WIDTH=206>What use is a property that cannot be set? It can be used to retrieve information from the control. See Note #1.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>Yes</TD><TD WIDTH=105><center>No</TD><TD WIDTH=77><center>Yes
+</TD><TD WIDTH=107><center>Yes</TD><TD WIDTH=206>See Note #2.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><B><center>Yes</B></TD><TD WIDTH=105><B><center>No</B></TD><TD WIDTH=77><B><center>Yes</B>
+</TD><TD WIDTH=107><B><center>No</B></TD><TD WIDTH=206><B>Accessible only at runtime. Frequently used for runtime-only properties.</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>Yes</TD><TD WIDTH=105><center>No</TD><TD WIDTH=77><center>No
+</TD><TD WIDTH=107><center>Yes</TD><TD WIDTH=206>See Note #2.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><B><center>Yes</B></TD><TD WIDTH=105><B><center>No</B></TD><TD WIDTH=77><B><center>No</B>
+</TD><TD WIDTH=107><B><center>No</B></TD><TD WIDTH=206><B>Read-only at runtime. Frequently used to retrieve information from a control. Cannot be persisted.</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>No</TD><TD WIDTH=105><center>Yes</TD><TD WIDTH=77><center>Yes
+</TD><TD WIDTH=107><center>Yes</TD><TD WIDTH=206>Fully settable at design time, but write-only at runtime. A very uncommon configuration but safe to use.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>No</TD><TD WIDTH=105><center>Yes</TD><TD WIDTH=77><center>Yes
+</TD><TD WIDTH=107><center>No</TD><TD WIDTH=206>See Note #1.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>No</TD><TD WIDTH=105><center>Yes</TD><TD WIDTH=77><center>No
+</TD><TD WIDTH=107><center>Yes</TD><TD WIDTH=206>Design-time only property. Used by a control to allow configuration by the user without any runtime access. An unusual choice-authors typically allow run-time read access instead.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>No</TD><TD WIDTH=105><center>Yes</TD><TD WIDTH=77><center>No
+</TD><TD WIDTH=107><center>No</TD><TD WIDTH=206>See Note #1.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>No</TD><TD WIDTH=105><center>No</TD><TD WIDTH=77><center>Yes
+</TD><TD WIDTH=107><center>Yes</TD><TD WIDTH=206>Could be used to trigger an operation in a control. See Note #2.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>No</TD><TD WIDTH=105><center>No</TD><TD WIDTH=77><center>Yes
+</TD><TD WIDTH=107><center>No</TD><TD WIDTH=206>Sometimes used to trigger an operation in a control. This approach was common with VBX technology, which did not allow custom methods. Consider using a method instead to accomplish this task.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>No</TD><TD WIDTH=105><center>No</TD><TD WIDTH=77><center>No</TD>
+<TD WIDTH=107><center>Yes</TD><TD WIDTH=206>See Note #2.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=77><center>No</TD><TD WIDTH=105><center>No</TD><TD WIDTH=77><center>No</TD>
+<TD WIDTH=107><center>No</TD><TD WIDTH=206>If you can find a good use for this one, please let me know!
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=5 WIDTH=572>Note #1 The property will be displayed in the VB property window but cannot be set. While this configuration may conceivably be useful for displaying a property in the VB property window, it is non-intuitive and 
+will 
+probably lead to complaints from users of your control who will wonder why any attempt to edit the property leads to an error (or fails to work). If you wish to display a property in the VB property window that cannot be set, you should at least avoid 
+
+raising an error.
+<P>
+Note #2 A property that cannot be read at design time will not appear in the VB property window. Still, such a scenario is conceivable if you have a way to set the property value internally or by way of a property page.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+It is your responsibility to restrict property access if you wish
+to do so. This can be accomplished in two ways. You can raise
+an error or simply ignore the operation.
+<P>
+Errors 382, 383, 393, and 394 shown earlier in Table 19.1 can
+be raised on an attempt to access the property. For example: to
+make a property read-only at runtime, you can use the following
+code:
+<BLOCKQUOTE>
+<PRE>
+Public Property Let MyProp(ByVal vNewValue As Variant)
+   If Ambient.UserMode Then
+      Err.Raise 382
+   End If
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Any attempt to set the property at runtime raises the &quot;Set
+not supported at runtime&quot; error.
+<P>
+With ActiveX code components it is customary to create read-only
+properties by simply leaving out the Property Let procedure (and
+vice-versa for write-only properties). You may want to avoid taking
+this approach with ActiveX controls. It will work, but the error
+messages that result when you attempt the illegal operation (messages
+such as &quot;Object required&quot;) will not be particularly
+useful to the end user. It is better to implement the procedure
+and raise the appropriate error.
+<P>
+If you want a property to appear in the Visual Basic property
+window but to be read-only at design time, you should not raise
+an error when the user attempts to set the property. Simply ignore
+the attempt to set the property as shown in the following code:
+<BLOCKQUOTE>
+<PRE>
+Public Property Let MyProp(ByVal vNewValue As Variant)
+   If Not Ambient.UserMode Then   ' Design time
+      Exit Property
+   End If
+   ' Perform the runtime property setting operation here
+End Property
+</PRE>
+</BLOCKQUOTE>
+<H2><A NAME="ControlProcedureAttributes"><FONT SIZE=5 COLOR=#FF0000>
+Control Procedure Attributes</FONT></A></H2>
+<P>
+The Tools, Procedure Attributes dialog box has a number of settings
+that are extremely important to ActiveX controls. <A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A> introduced
+those attributes that are applicable to any ActiveX component.
+Several additional attributes apply specifically to ActiveX controls.
+The Databinding options will be discussed later in this chapter.
+<H3><A NAME="ProcedureID">
+Procedure ID</A></H3>
+<P>
+You have already seen that the procedure ID corresponds to the
+dispatch ID (DispID) on an ActiveX automation interface. You know
+that OLE defines many standard procedure IDs, many of which you
+can select from the dropdown combo box in the Procedure Attributes
+dialog box.
+<P>
+Keep in mind that the procedure ID has no impact on the property
+itself, only on how the container deals with the property. The
+property or method does not have to have the same name as that
+of the procedure ID. The container does not look at the property
+name, only the procedure ID.
+<P>
+Table 19.3 lists those procedure IDs that have an impact on the
+behavior of Visual Basic. You should always assign the standard
+procedure ID to standard properties that you implement in your
+control. This will insure that your control works correctly on
+other containers that may provide special handling for standard
+properties.<BR>
+<P>
+<CENTER><B>Table 19.3:&nbsp;Standard Procedure IDs Used by Visual
+Basic</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=115><B>(None)</B></TD><TD WIDTH=461><B>Non-Standard Dispatch ID Assigned to the Property</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115>(Default)</TD><TD WIDTH=461>The property that is accessed when you reference the object without specifying a property name. Choose the default property carefully (or avoid it entirely) to avoid confusing developers who use 
+your 
+control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115>AboutBox</TD><TD WIDTH=461>When this procedure ID is assigned to a method, the container will invoke this method to display an about box. Visual Basic will add an About Box entry to the VB property window. 
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115>Caption or Text</TD><TD WIDTH=461>When a property is given either of these procedure IDs, Visual Basic will update the property immediately as keystrokes are entered in the VB property window. This is the standard behavior 
+of 
+Text and Caption properties for many controls. Note that you can use these procedure IDs for any property, even if they have no relation to a typical Text or Caption property.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115>Enabled</TD><TD WIDTH=461>Setting this procedure ID to a property allows Visual Basic to implement standard Enabled behavior for your control as described in <A HREF="ch18.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch18.htm" >Chapter 18</A>.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="UseThisPageinPropertyBrowser">
+Use This Page in Property Browser</A></H3>
+<P>
+ActiveX controls can implement property pages to allow editing
+design-time characteristics and properties of your control. This
+combo box contains a list of all of the currently defined property
+pages. When you assign a property to a property page, on the VB
+property window next to the property, Visual Basic will display
+a button that can be clicked to bring up the specified property
+page.
+<P>
+Assigning a property to a property page in this manner overrides
+the existing behavior of the entry for that property in the property
+window. For example, an enumerated property will typically have
+a dropdown combo box in the property window that lists the possible
+values for the property. If you assign the property to a property
+page, the property page dialog button will appear instead. Property
+pages will be discussed further later in this chapter and in Chapter
+20.
+<H3><A NAME="PropertyCategory">
+Property Category</A></H3>
+<P>
+The category combo box allows you to assign a property to a category.
+This helps organize properties that relate to each other and specifies
+which properties will appear together when you select the categorized
+tab in the VB property window. The combo box contains a list of
+standard categories, but you can add your own by typing them into
+the edit portion of the combo box.
+<P>
+This setting is purely for the convenience of developers using
+your control and has no impact on the functionality of the control.
+<H3><A NAME="DontShowinPropertyBrowser">
+Don't Show in Property Browser</A></H3>
+<P>
+This option prevents a property from appearing in the Visual Basic
+property window. Other containers should follow this behavior
+as well. The property can still be viewed by the Visual Basic
+object browser and is not marked as hidden in the type library
+for the control. Use this option for all properties that are intended
+to be accessed only at runtime.
+<P>
+The related HideThisMember setting was covered in <A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A>.
+<H3><A NAME="UserInterfaceDefault">
+User Interface Default</A></H3>
+<P>
+You can specify one property and one event as the user interface
+default. The user interface default property is the one that will
+be initially selected in the VB property window when the developer
+brings it up. The user interface default event is the one that
+is initially selected when the developer double-clicks on the
+code window or selects your component in order to attach code
+to your control's events. This setting is purely for the convenience
+of developers using your control and has no impact on the functionality
+of the control.
+<H2><A NAME="CustomObjects"><FONT SIZE=5 COLOR=#FF0000>
+Custom Objects</FONT></A></H2>
+<P>
+You can create your own objects, which will be handled similarly
+to Picture and Font objects, but there are some subtleties involved.
+Consider for a moment what you already know about working with
+properties and how they work with the VB property window:
+<UL>
+<LI>A Property Get function must return a value that can be represented
+as a string in order for the property to appear in the VB property
+window.
+<LI>A Property Get function must return an object reference if
+you wish it to be a true Object property.
+<LI>An Object property is always edited using a separate dialog
+or property page. Thus you want a dialog button to appear in the
+VB property window for the Object property.
+<LI>A Property Set procedure must allow you to set an object reference
+if you wish it to be a true Object property.
+</UL>
+<P>
+Clearly, both the Picture and Font objects meet all of these requirements.
+Yet, at first glance, they seem somewhat contradictory. How can
+the Property Get function return both a string and an object?
+Drat! I guess we have to use variants after all&#133;
+<H3><A NAME="TheclsMyObjectFractionObject">
+The clsMyObject Fraction Object</A></H3>
+<P>
+The clsMyObject object in the ch19ctls project is an extremely
+simple object that stores two numbers: a numerator and a denominator
+for a fraction. This is not quite as ridiculous an object as you
+might think, because there are many fractions that cannot be represented
+accurately by a floating point number.
+<P>
+The ch19ctlA control will have a property called MyObject1, which
+allows you to set and retrieve an object of this type. The properties
+value can be set at design time using a property page and then
+persisted (saved with the project). I realize that property pages
+have not been discussed yet. You'll see a brief introduction to
+them in this section, followed by a much more in-depth discussion
+in the next chapter.
+<P>
+We'll look at the persistence issues later. For now, let's review
+the object itself.
+<P>
+Listing 19.1 shows the code for the clsMyObject object. The Numerator
+and Denominator properties are quite straightforward. You'll note
+that the Denominator is initialized to 1, and it cannot be set
+to 0. The Result property (which is read-only) could raise an
+overflow error, but no error checking is implemented because all
+it would probably do is raise the same overflow error anyway.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 19.1:&nbsp;Object clsMyObject<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed
+' <A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 19</A> examples
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Private m_Numerator As Double
+Private m_Denominator As Double
+
+Public Property Get Numerator() As Double
+   Numerator = m_Numerator
+End Property
+
+Public Property Let Numerator(ByVal vNewValue As Double)
+   m_Numerator = vNewValue
+End Property
+
+Public Property Get Denominator() As Double
+   Denominator = m_Denominator
+End Property
+
+Public Property Let Denominator(ByVal vNewValue As Double)
+   If vNewValue = 0 Then Exit Property
+   m_Denominator = vNewValue
+End Property
+
+Private Sub Class_Initialize()
+   m_Denominator = 1
+End Sub
+
+Public Property Get Result() As Double
+   Result = m_Numerator / m_Denominator
+End Property
+
+Public Property Get DisplayName() As String
+   DisplayName = Str$(m_Numerator) &amp; &quot;/&quot; &amp; LTrim$(Str$(m_Denominator))
+End Property
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<H3><A NAME="ThePropertyProcedures">
+The Property Procedures</A></H3>
+<P>
+In this particular example, the m_MyObject1 variable, which contains
+the current setting of the MyObject1 property, is always set to
+a valid value. Thus, it is defined and initialized as shown below:
+<BLOCKQUOTE>
+<PRE>
+Private m_MyObject1 As clsMyObject
+
+Private Sub UserControl_Initialize()
+   Set m_MyObject1 = New clsMyObject
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Before looking at the rest of the implementation code, let's consider
+what it must do in order to meet the requirements set earlier.
+At design time:
+<UL>
+<LI>The Property Get statement must return a descriptive string
+that can be displayed in the VB property window.
+<LI>It must ignore any changes made by the user editing the VB
+property window.
+<LI>It must have a button to bring up a property page that allows
+editing of the object.
+<LI>It must provide a way for the property page to read and write
+the property's object.
+</UL>
+<P>
+At runtime the property must only accept references to clsMyObject
+type objects on both reading and assignment.
+<P>
+Let's look first at the Get side of the equation. The Property
+Get procedure is defined as follows:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get MyObject1() As Variant
+   If Ambient.UserMode Then
+      Set MyObject1 = m_MyObject1
+   Else
+      MyObject1 = m_MyObject1.DisplayName
+   End If
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+At runtime, the Property Get statement always returns a reference
+to the object. At design time, it always returns a descriptive
+string for the object. This string will appear in the VB property
+window for the property.
+<P>
+But how can a property page access the property's object itself
+at design time if the Property Get statement returns a string?
+It does so through a separate procedure such as this one:
+<BLOCKQUOTE>
+<PRE>
+Friend Property Get InternalMyObject1() As clsMyObject
+   Set InternalMyObject1 = m_MyObject1
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Note that this procedure is a Friend function and is only accessible
+by other components in the same project. The property page will
+be able to use it, but it will be hidden to developers using your
+control. 
+<P>
+On the assignment side, you need to deal with both the Let and
+Set procedures. On the Let side, you can simply detect if the
+variant contains an object of the correct type. If so, the internal
+variable is assigned the new value. Otherwise, an Invalid Property
+Type error is raised at runtime. At design time, errors are simply
+ignored; the display in the VB property window will be unchanged.
+You don't need to worry about incorrect values being set from
+the property page because you are the author of the property page
+and can make sure that it always uses valid values when setting
+the property.
+<P>
+A separate Property Set procedure is used to handle direct setting
+of the object using the Set statement instead of the variant assignment.
+<BLOCKQUOTE>
+<PRE>
+Public Property Let MyObject1(ByVal vNewValue As Variant)
+   If TypeOf vNewValue Is clsMyObject Then
+      Set m_MyObject1 = vNewValue
+   Else
+      If Ambient.UserMode Then
+         Err.Raise 380
+      End If
+      ' Don't raise error at design time
+   End If
+   PropertyChanged &quot;MyObject1&quot;
+End Property
+
+Public Property Set MyObject1(ByVal vNewValue As clsMyObject)
+   Set m_MyObject1 = vNewValue
+   PropertyChanged &quot;MyObject1&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+With this code, you can assign the property two ways as shown
+in the following code from the ch19tst1 project:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Command1_Click()
+   Dim myobj As clsMyObject
+   Set myobj = ch19ctlA1.MyObject1
+   myobj.Numerator = 2
+   myobj.Denominator = 3
+   ch19ctlA1.MyObject1 = myobj
+   Debug.Print ch19ctlA1.MyObject1.DisplayName
+   myobj.Numerator = 1
+   myobj.Denominator = 3
+   Set ch19ctlA1.MyObject1 = myobj
+   Debug.Print ch19ctlA1.MyObject1.DisplayName
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+In the first case you are using a direct assignment without a
+Set statement. This works because the object is automatically
+converted into a temporary variant, which is then passed to the
+Property Let procedure. The procedure detects that the object
+is of the correct type and performs the assignment. In the second
+case, the object is passed directly to the Property Set procedure.
+This approach is much more efficient.
+<P>
+You could remove the ability of the Property Let statement to
+assign clsMyObject objects (variable assignment without the Set
+keyword) by always raising an error if it is called at runtime.
+This would require developers to always use the Set command syntax.
+Be sure to raise an error if you take this approach. Otherwise,
+developers will not be able to figure out what is wrong when they
+accidentally leave off the Set keyword (a very common oversight).
+<P>
+One final comment about the above code: How many objects are you
+actually dealing with? If you walk through it carefully, you'll
+see there is only one object involved! Assigning the myobj variable
+to the control's MyObject1 property assigns the property to the
+same object that it is already referencing. You'll see the same
+trace results if you took out the assignments. This doesn't matter
+for this example, because the intent is only to prove that the
+assignment actually works.
+<H3><A NAME="IntroductiontoPropertyPages">
+Introduction to Property Pages</A></H3>
+<P>
+We'll look at property pages in depth in the next chapter. For
+now, we'll just cover enough to show how one might implement a
+custom object. The property page for the clsMyObject object is
+shown in Figure 19.2.
+<P>
+<A HREF="f19-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f19-2.gif"><B>Figure 19.2 :</B> <I>Design view of the clsMyObject property
+page, myObjPg1</I>.</A>
+<P>
+There is one text box for the numerator and one for the denominator.
+Visual Basic automatically adds the OK, Cancel, and Apply buttons
+to the page when it is displayed.
+<P>
+Once you have created the property page, you can assign it to
+the property using the Tools, Procedure Attributes dialog box.
+All defined property pages appear in the &quot;Use this Page in
+Property Browser&quot; combo box.
+<P>
+Every property page has a PropertyPage object, much in the same
+way as every VB control has a UserControl object. The PropertyPage
+object has a property called Changed, which indicates if any of
+the properties for the page have been changed. It is set any time
+you edit either of the text boxes representing Object properties,
+as shown in the following code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub txtDenominator_Change()
+   Changed = True
+End Sub
+
+Private Sub txtNumerator_Change()
+   Changed = True
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The PropertyPage SelectionChanged event occurs when the page is
+first assigned to an object. At this time, the program uses the
+InternalMyObject1 property of the control to retrieve the actual
+object to edit. It then initializes the text boxes based on the
+object. Finally, it sets the Changed property back to False (since
+it was set to True when the text boxes were initialized and we
+haven't actually made any changes yet). Don't worry about the
+SelectedControls() array yet. Just assume it provides a way to
+access the control that is being edited.
+<BLOCKQUOTE>
+<PRE>
+Private Sub PropertyPage_SelectionChanged()
+   Dim myobject As ch19ctlA
+   Dim refobject As clsMyObject
+   ' We have to go early bound to get at the friend procedure
+   Set myobject = SelectedControls(0)
+   Set refobject = myobject.InternalMyObject1
+   txtNumerator.Text = refobject.Numerator
+   txtDenominator.Text = refobject.Denominator
+   ' Initialization complete - override the
+   ' changes that supposedly were made
+   Changed = False
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+When you apply the changes to the property or click the OK button
+for the page, the PropertyPage's ApplyChanges event is triggered.
+The program creates a new object at this time, loads the object's
+properties based on the text boxes, and assigns it to the control
+via the control's Property Set statement, as shown below:
+<BLOCKQUOTE>
+<PRE>
+Private Sub PropertyPage_ApplyChanges()
+   Dim refobject As clsMyObject
+   Set refobject = New clsMyObject
+   refobject.Numerator = txtNumerator.Text
+   refobject.Denominator = txtDenominator.Text
+   Set SelectedControls(0).MyObject1 = refobject
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+There are other approaches you could take when implementing the
+ApplyChanges statement, as you will see in the next chapter.
+<H2><A NAME="Persistence"><FONT SIZE=5 COLOR=#FF0000>
+Persistence</FONT></A></H2>
+<P>
+One of the key differences between ActiveX code components and
+ActiveX controls is the ability of controls to save information
+about the state of the control that is set by a developer at design
+time. <A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch17.htm" >Chapter 17</A> discussed the events during which you should
+save property information. Now let's take a look at how it is
+actually accomplished.
+<P>
+The major portion of the work is done by the PropBag object that
+is provided by the UserControl object during the ReadProperties
+and WriteProperties event. The PropBag object has two methods.
+The Read method takes a property name and default value as parameters,
+and returns the stored property value. The function returns a
+variant and can thus handle any property type. The Write method
+takes a property name, value, and default value as parameters.
+The importance of Default values is also discussed in Chapter
+17.
+<P>
+Visual Basic strives to be efficient and only saves properties
+when changes have been made. Thus, it is critical that you call
+the PropertyChanged method of the UserControl object any time
+a persisted property is changed. If you fail to do so, any changes
+you make to the properties at design time will not be saved and
+the VB property window will not be updated to display the current
+value of the property. There is no harm in calling this method
+at runtime, so you do not need to add a runtime/design time test
+to your property setting code.
+<P>
+You've already seen some simple persistence examples in previous
+code samples-it's hard to do anything in an ActiveX control without
+it. Unfortunately, the simple examples you see most often can
+lead to a somewhat limited view of property persistence. So allow
+me to make a somewhat radical statement:<I> The PropBag object
+and its methods and the ReadProperties and WriteProperties events
+have nothing to do with your control's properties.</I>
+<P>
+OK, perhaps that is a bit strong. After all, you often will use
+these elements of Visual Basic to persist the values of your control's
+properties. But my point is this: The ReadProperties and WriteProperties
+events are intended to signal the correct time to save or load
+your control's persistent data. The PropBag object is used to
+perform the save and load operations.
+<P>
+But whether your control's persistent data has any relationship
+with your control's properties is entirely up to you. In other
+words:
+<UL>
+<LI>The property name under which you save data using the PropBag
+object need not match the name of a property in your control.
+<LI>Using the PropBag object, you can save data that does not
+correspond to a control property.
+<LI>You can use more than one PropBag property to save information
+relating to a control property.
+</UL>
+<P>
+The property name under which you save data is just a label-it
+bears absolutely no relationship to the properties in your control.
+That said, it is obvious that when you are using the PropBag object
+to store control properties, you should store the data under the
+property name in order to minimize possible confusion when people
+read form files or HTML pages that use your control. But you don't
+have to.
+<P>
+The ch19ctlB control in the ch19ctls project demonstrates the
+difference between persisted data and control properties. The
+control implements a read-only property called CreationTime, which
+will always contain the date and time that the control instance
+was added to a container.
+<P>
+The time is stored in a date variable called m_CreationTime. This
+variable is initialized during the UserControl's InitProperties
+event. This event is only called when a control instance is created,
+as shown in the following code:
+<BLOCKQUOTE>
+<PRE>
+Private m_CreationTime As Date
+
+Private Sub UserControl_InitProperties()
+   m_CreationTime = Now()
+   Label3.Caption = m_CreationTime
+   PropertyChanged &quot;CreationTime&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The label3 constituent control is used to display the creation
+time. The PropertyChanged method is called to ensure that the
+change is stored.
+<P>
+The creation time is stored during the WriteProperties event as
+follows:
+<BLOCKQUOTE>
+<PRE>
+Call PropBag.WriteProperty(&quot;ControlCreationTime&quot;, m_CreationTime)
+</PRE>
+</BLOCKQUOTE>
+<P>
+And loaded during the ReadProperties event as follows:
+<BLOCKQUOTE>
+<PRE>
+m_CreationTime = PropBag.ReadProperty(&quot;ControlCreationTime&quot;, m_CreationTime)
+Label3.Caption = m_CreationTime
+</PRE>
+</BLOCKQUOTE>
+<P>
+The property can be read using the Property Get procedure:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get CreationTime() As Date
+   CreationTime = m_CreationTime
+End Property
+
+Public Property Let CreationTime(ByVal vNewValue As Date)
+   Err.Raise 383
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The name under which the data is stored (ControlCreationTime)
+was intentionally chosen to be different from the property name
+to emphasize the point that they bear no direct relation to each
+other. The Property Let procedure always raises the &quot;Set
+not supported&quot; error. The property is marked with the &quot;Don't
+show in property browser&quot; option using the Tools, Procedure
+Attributes statement so it will not appear in the property browser
+(VB property window). This is the correct way to implement a read-only
+property in an ActiveX control.
+<P>
+Because there is no way to set the CreationTime property at design
+time or at runtime, the value will always remain as it was when
+the control was first placed on the container.
+<H3><A NAME="MappingProperties">
+Mapping Properties</A></H3>
+<P>
+The fact that persisted data has no direct relationship to a particular
+property or variable within a control offers enormous flexibility
+in how you can use this data. You have already seen several cases
+where a single data item can be mapped to more than one property
+or variable. This is demonstrated in the ch19ctlB control with
+both the BackColor and the Font properties.
+<P>
+The BackColor property is used to set the background property
+for the control and the two picture boxes. The Font property is
+used to set the fonts for the three Label controls. The property
+procedures for these properties is shown below.
+<BLOCKQUOTE>
+<PRE>
+Public Property Get BackColor() As OLE_COLOR
+   BackColor = UserControl.BackColor
+End Property
+
+Public Property Let BackColor(ByVal New_BackColor As OLE_COLOR)
+   UserControl.BackColor() = New_BackColor
+   Picture1.BackColor = New_BackColor
+   Picture2.BackColor = New_BackColor
+   PropertyChanged &quot;BackColor&quot;
+End Property
+
+Public Property Get Font() As Font
+   Set Font = Label3.Font
+End Property
+
+Public Property Set Font(ByVal New_Font As Font)
+   Dim lbl As Object
+   For Each lbl In UserControl.Controls
+      If TypeOf lbl Is Label Then Set lbl.Font = New_Font
+   Next
+   PropertyChanged &quot;Font&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The BackColor property demonstrates one way to map a single property
+to multiple objects. The Font property demonstrates how you can
+use the controls collection to do the same. The ReadProperties
+and WriteProperties events are implemented as follows:
+<BLOCKQUOTE>
+<PRE>
+'Load property values from storage
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   ' By using the public property, we set all 3, but
+   ' also call PropertyChanged unnecessarily
+   BackColor = PropBag.ReadProperty(&quot;BackColor&quot;, &amp;H8000000F)
+   Set Font = PropBag.ReadProperty(&quot;Font&quot;, Ambient.Font)
+End Sub
+
+'Write property values to storage
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;BackColor&quot;, UserControl.BackColor, &amp;H8000000F)
+   Call PropBag.WriteProperty(&quot;Font&quot;, Font, Ambient.Font)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+During the ReadProperties event, you can load the Object properties
+directly or use the control's Property Get procedure as shown
+here.
+<H3><A NAME="SelfPersistingObjects">
+Self-Persisting Objects</A></H3>
+<P>
+Earlier in this chapter you saw how it was possible to create
+a custom Object property, which can be edited at design time using
+a property page. The ch19ctlA control demonstrates how you can
+persist such an object.
+<P>
+It is always best to have the object save its own internal properties.
+The clsMyObject class contains the following two functions, which
+are called from the control:
+<BLOCKQUOTE>
+<PRE>
+' One method to save properties
+Friend Sub ReadProperties(PropBag As PropertyBag, propname$)
+   m_Numerator = PropBag.ReadProperty(propname$ &amp; &quot;Numerator&quot;, 0)
+   m_Denominator = PropBag.ReadProperty(propname$ &amp; &quot;Denominator&quot;, 1)
+End Sub
+
+Friend Sub WriteProperties(PropBag As PropertyBag, propname$)
+   PropBag.WriteProperty propname$ &amp; &quot;Numerator&quot;, m_Numerator, 0
+   PropBag.WriteProperty propname$ &amp; &quot;Denominator&quot;, m_Denominator, 1
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The functions are defined as Friend functions because there is
+no particular reason for them to be exposed to end users. You
+would have to make them public if the class was defined in its
+own ActiveX DLL. The functions are called in the ch19ctlA ReadProperties
+and WriteProperties events as follows. In the ReadProperties event:
+<BLOCKQUOTE>
+<PRE>
+   Call m_MyObject1.ReadProperties(PropBag, &quot;MyObject1&quot;)
+</PRE>
+</BLOCKQUOTE>
+<P>
+In the WriteProperties event:
+<BLOCKQUOTE>
+<PRE>
+   m_MyObject1.WriteProperties PropBag, &quot;MyObject1&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+In this particular example, the object stores its internal data
+in multiple properties. The name of the object must be passed
+to the component so it can create a unique property name (in case
+there is more than one property using this object).
+<P>
+Keep in mind that the PropBag object can also handle binary data
+(byte arrays), so if you have a complex object with many internal
+variables, you can always load them into a single array and store
+them in one block of data.
+<P>
+You'll notice that the Font and Picture properties are entirely
+self-persisting through the PropBag object. There does not seem
+to be any support in Visual Basic at this time for creating an
+object that is completely self-persisting in this manner, but
+rest assured, I'll continue to look for a way to accomplish this.
+<H3><A NAME="WereOffToSeetheWizard">
+We're Off To See the Wizard</A></H3>
+<P>
+Visual Basic includes an ActiveX Control Interface Wizard that
+can help you build and maintain your ActiveX controls.
+<P>
+As you've probably noticed by now, I tend to be somewhat skeptical
+of wizards. They can become a crutch that allows you to replace
+your own understanding and design effort with that of another
+programmer who may not be as smart as you and had no knowledge
+of the needs of your particular application. Because you did not
+create the underlying code, you may remain unaware of possibilities
+that were not implemented by the wizard but that could be useful
+in solving your particular problem.
+<P>
+That said, there are two places where wizards can be extremely
+useful. First, to do the grunt work of creating routines you already
+know how to do yourself. Second, to help learn the proper way
+to solve certain software problems.
+<P>
+This book has taken the approach of teaching you how to create
+ActiveX components without using a wizard. Now that you have a
+good understanding of the techniques involved, I encourage you
+to look at the wizards provided by Microsoft. The ActiveX Control
+Interface Wizard is especially useful. Listing 19.2 shows the
+code produced by this wizard with a set of default properties
+and events that are mapped to the UserControl object. The sample
+code is contained in the AsyncCtl.ctl project.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 19.2:&nbsp;Code Created by the ActiveX Control Interface
+Wizard<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+'Event Declarations:
+Event Click() 'MappingInfo=UserControl,UserControl,-1,Click
+Event DblClick() 'MappingInfo=UserControl,UserControl,-1,DblClick
+Event KeyDown(KeyCode As Integer, Shift As Integer) 'MappingInfo=UserControl,UserControl,-1,KeyDown
+Event KeyPress(KeyAscii As Integer) 'MappingInfo=UserControl,UserControl, _
+                                     -1,KeyPress
+Event KeyUp(KeyCode As Integer, Shift As Integer) 'MappingInfo=UserControl,UserControl,-1,KeyUp
+Event MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single) 
+'MappingInfo=UserControl,UserControl,-1,MouseDown
+Event MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single) 
+'MappingInfo=UserControl,UserControl,-1,MouseMove
+Event MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single) 
+'MappingInfo=UserControl,UserControl,-1,MouseUp
+
+
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,BackColor
+Public Property Get BackColor() As OLE_COLOR
+   BackColor = UserControl.BackColor
+End Property
+
+Public Property Let BackColor(ByVal New_BackColor As OLE_COLOR)
+   UserControl.BackColor() = New_BackColor
+   PropertyChanged &quot;BackColor&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,ForeColor
+Public Property Get ForeColor() As OLE_COLOR
+   ForeColor = UserControl.ForeColor
+End Property
+
+Public Property Let ForeColor(ByVal New_ForeColor As OLE_COLOR)
+   UserControl.ForeColor() = New_ForeColor
+   PropertyChanged &quot;ForeColor&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,Enabled
+Public Property Get Enabled() As Boolean
+   Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal New_Enabled As Boolean)
+   UserControl.Enabled() = New_Enabled
+   PropertyChanged &quot;Enabled&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,Font
+Public Property Get Font() As Font
+   Set Font = UserControl.Font
+End Property
+
+Public Property Set Font(ByVal New_Font As Font)
+   Set UserControl.Font = New_Font
+   PropertyChanged &quot;Font&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,BackStyle
+Public Property Get BackStyle() As Integer
+   BackStyle = UserControl.BackStyle
+End Property
+
+Public Property Let BackStyle(ByVal New_BackStyle As Integer)
+   UserControl.BackStyle() = New_BackStyle
+   PropertyChanged &quot;BackStyle&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,BorderStyle
+Public Property Get BorderStyle() As Integer
+   BorderStyle = UserControl.BorderStyle
+End Property
+
+Public Property Let BorderStyle(ByVal New_BorderStyle As Integer)
+   UserControl.BorderStyle() = New_BorderStyle
+   PropertyChanged &quot;BorderStyle&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,Refresh
+Public Sub Refresh()
+   UserControl.Refresh
+End Sub
+
+Private Sub UserControl_Click()
+   RaiseEvent Click
+End Sub
+
+Private Sub UserControl_DblClick()
+   RaiseEvent DblClick
+End Sub
+
+Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
+   RaiseEvent KeyDown(KeyCode, Shift)
+End Sub
+
+Private Sub UserControl_KeyPress(KeyAscii As Integer)
+   RaiseEvent KeyPress(KeyAscii)
+End Sub
+
+Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
+   RaiseEvent KeyUp(KeyCode, Shift)
+End Sub
+
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, _
+                                  X As Single, Y As Single)
+   RaiseEvent MouseDown(Button, Shift, X, Y)
+End Sub
+
+Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, _
+                                  X As Single, Y As Single)
+   RaiseEvent MouseMove(Button, Shift, X, Y)
+End Sub
+
+Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, _
+                                X As Single, Y As Single)
+   RaiseEvent MouseUp(Button, Shift, X, Y)
+End Sub
+
+'Initialize Properties for User Control
+Private Sub UserControl_InitProperties()
+   Set Font = Ambient.Font
+   m_PictureName = m_def_PictureName
+End Sub
+
+'Load property values from storage
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   UserControl.BackColor = PropBag.ReadProperty(&quot;BackColor&quot;, &amp;H8000000F)
+   UserControl.ForeColor = PropBag.ReadProperty(&quot;ForeColor&quot;, &amp;H80000012)
+   UserControl.Enabled = PropBag.ReadProperty(&quot;Enabled&quot;, True)
+   Set Font = PropBag.ReadProperty(&quot;Font&quot;, Ambient.Font)
+   UserControl.BackStyle = PropBag.ReadProperty(&quot;BackStyle&quot;, 1)
+   UserControl.BorderStyle = PropBag.ReadProperty(&quot;BorderStyle&quot;, 1)
+   m_PictureName = PropBag.ReadProperty(&quot;PictureName&quot;, m_def_PictureName)
+End Sub
+
+'Write property values to storage
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;BackColor&quot;, UserControl.BackColor, &amp;H8000000F)
+   Call PropBag.WriteProperty(&quot;ForeColor&quot;, UserControl.ForeColor, &amp;H80000012)
+   Call PropBag.WriteProperty(&quot;Enabled&quot;, UserControl.Enabled, True)
+   Call PropBag.WriteProperty(&quot;Font&quot;, Font, Ambient.Font)
+   Call PropBag.WriteProperty(&quot;BackStyle&quot;, UserControl.BackStyle, 1)
+   Call PropBag.WriteProperty(&quot;BorderStyle&quot;, UserControl.BorderStyle, 1)
+   Call PropBag.WriteProperty(&quot;PictureName&quot;, m_PictureName, m_def_PictureName)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+There are a couple of things to remember when using the wizard.
+<UL>
+<LI>Be sure to check the procedure IDs of the standard properties
+and events and make sure they are set to the standard procedure
+IDs that are appropriate. This is especially necessary for the
+Enabled property if you wish it to work correctly.
+<LI>The wizard does not set properties to enumerated types. You
+should change the property type if you wish the Visual Basic property
+window to display an enumerated list of values for the property.
+<LI>If you change the default property of the UserControl object
+using the VB property window when authoring the control, be sure
+to change the default values in the PropBag.ReadProperty and PropBag.WriteProperty
+call for the property. This is illustrated in the example with
+the BackStyle property.
+</UL>
+<H3><A NAME="AsynchronousPersistence">
+Asynchronous Persistence</A></H3>
+<P>
+You've seen how a container can use a property bag to persist
+properties. When data is written to a property bag, the container
+can do a number of things with it, depending on the data type.
+If the data type is a string, number, or other type that can be
+represented as text, the container may save the information in
+text form. If you look into a form file with a text editor, you
+will see properties as strings. The properties for a typical command
+button may appear as follows:
+<BLOCKQUOTE>
+<PRE>
+   Begin VB.CommandButton cmdSet 
+      Caption         =   &quot;Set&quot;
+      Height          =   465
+      Left            =   3420
+      TabIndex        =   2
+      Top             =   810
+      Width           =   1005
+   End
+</PRE>
+</BLOCKQUOTE>
+<P>
+But what about data that cannot be represented as text? Pictures
+and other binary data types must be stored in a separate file.
+A picture property might be stored thus:
+<BLOCKQUOTE>
+<PRE>
+Picture         =   &quot;Form1.frx&quot;:0000
+</PRE>
+</BLOCKQUOTE>
+<P>
+The form file contains a reference to a data file (with the .frx
+extension) that contains the actual data.
+<P>
+Now, let us take a moment and consider the implications of placing
+an ActiveX control on a Web page. Properties that can be represented
+as text are easy enough to handle-they can be included directly
+on the Web page. HTML also provides a way to include the binary
+data on the page, but who wants to force someone to download hundreds
+of kilobytes, if not megabytes, of encoded binary data in order
+to see a Web page?
+<P>
+Clearly there needs to be a way to direct a control to retrieve
+data from a different location. Plus, to provide reasonable performance,
+there needs to be a way to download data asynchronously in the
+background in cases where the control needs to be displayed or
+provide some initial functionality as quickly as possible. For
+example: you might want the Picture property of a control to be
+retrieved in the background so the control displays and starts
+running immediately, just without the correct image.
+<P>
+Visual Basic 5.0 ActiveX controls support this type of asynchronous
+downloading. The AsyncCtl.ctl control demonstrates one approach
+for loading a picture asynchronously. The program will work with
+any container, but the download will be asynchronous only on containers
+such as Microsoft Explorer, which support this feature. The relevant
+listings are shown in Listing 19.3.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 19.3:&nbsp;The AsyncCtl.ctl Code Relating to Asynchronous
+Persistence<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+Const m_def_PictureName = &quot;&quot;
+'Property Variables:
+Dim m_PictureName As String
+
+Public Property Get Picture() As Picture
+   Set Picture = UserControl.Picture
+End Property
+
+Public Property Set Picture(ByVal vNewValue As Picture)
+   Set UserControl.Picture = vNewValue
+End Property
+
+Public Property Get PictureName() As String
+   PictureName = m_PictureName
+End Property
+
+Public Property Let PictureName(ByVal New_PictureName As String)
+   m_PictureName = New_PictureName
+   UserControl.AsyncRead m_PictureName, vbAsyncTypePicture, &quot;Picture&quot;
+   PropertyChanged &quot;PictureName&quot;
+End Property
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   PictureName = PropBag.ReadProperty(&quot;PictureName&quot;, m_def_PictureName)
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;PictureName&quot;, m_PictureName, m_def_PictureName)
+End Sub
+
+Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
+   On Error GoTo AsyncErr
+   Select Case AsyncProp.PropertyName
+      Case &quot;Picture&quot;
+         Debug.Print &quot;Picture arrived&quot;
+         Set Picture = AsyncProp.Value
+   End Select
+   Exit Sub
+AsyncErr:
+   ' Errors on async operations will be reported when you try
+   ' to access the value
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+In this case, the Picture property is marked as not viewable in
+the property browser, using the Tools, Procedure Attributes dialog
+box. This is because we are not actually persisting the Picture
+property. Instead, we persist a property called PictureName, which
+does appear in the Visual Basic property window and is persisted
+using the ReadProperties and WriteProperties events as shown.
+This property will contain the location from which the control
+should load the picture. This location can be specified as a network
+URL or a local file path. When this property is set, via either
+the ReadProperties event or the Property Let procedure, it calls
+the AsyncRead method of the UserControl object. 
+<P>
+The AsyncRead method takes three parameters. The first is the
+path or URL (Web address) specifying the file to retrieve. The
+second is the type of data, picture, file, or binary. The final
+parameter is a label identifying the data being retrieved. You
+set as many properties as you wish to load in the background,
+so the label is used to identify each one. This label will typically
+be the name of the property, but the choice is entirely up to
+you.
+<P>
+Once the data is retrieved, the AsyncReadComplete event will be
+triggered. This event has a reference to an AsyncProperty object
+as its sole parameter. This object allows you to retrieve the
+data type and label that was specified during the AsyncRead call.
+It also contains a Value property, which is a variant containing
+the returned data. The Value will contain a picture if you specified
+a picture type, the name of a temporary file if you specified
+a file type, or a byte array if you specified the binary type.
+<P>
+If an error occurred during the read operation, an error will
+be raised as soon as you access the Value property. Thus, it is
+critical to always use error handling during the AsyncReadComplete
+event. By the same token, you should never raise an error during
+this event. This event can happen at any time and containers will
+not be ready to handle errors you raise while it is being processed.
+<P>
+You can safely use asynchronous reads for local files on any container.
+Only browser-enabled containers will support URL paths. Whether
+the operation will actually take place asynchronously or not also
+depends on the container and whether the access is a URL or path.
+You can see the behavior of an asynchronous load by registering
+the AsyncCtl.ocx control and loading the following Web page using
+MS Internet Explorer 3.0 or other ActiveX-enabled browser. Note
+that the CLSID of the control and the URL shown here are subject
+to change between the time this book goes to press and when the
+accompanying CD is created. A later version of the page can be
+found on your CD ROM in file AsyncCtl.htm.
+<BLOCKQUOTE>
+<PRE>
+&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;New Page&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+&lt;BODY&gt;
+This is a test of an asynchronous control.
+&lt;OBJECT ID=&quot;AsyncControl1&quot; WIDTH=320 HEIGHT=240
+ CLASSID=&quot;CLSID:C49A2B57-6E63-11D0-91BB-00AA0036005A&quot;&gt;
+    &lt;PARAM NAME=&quot;_ExtentX&quot; VALUE=&quot;8467&quot;&gt;
+    &lt;PARAM NAME=&quot;_ExtentY&quot; VALUE=&quot;6350&quot;&gt;
+    &lt;PARAM NAME=&quot;PictureName&quot; VALUE=&quot;http://www.desaware.com/desaware/images/bookcvr4.gif&quot;&gt;
+&lt;/OBJECT&gt;
+
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="UpdatingControls">
+Updating Controls</A></H3>
+<P>
+What happens when you add or remove persisted data when your control
+is updated? If you add a persisted property to a control, be sure
+you specify a default value. Otherwise an error may occur when
+the control tries to read a project saved with an older control.
+When a default value is specified, it will be loaded into the
+variable when the property is not found in the file. You can add
+persisted data without any problems.
+<P>
+A more complete discussion of the issues surrounding control upgrades
+can be found in <A HREF="ch25.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch25.htm" >Chapter 25</A>.
+<H2><A NAME="DataBinding"><FONT SIZE=5 COLOR=#FF0000>
+DataBinding</FONT></A></H2>
+<P>
+Databinding refers to the process of binding one or more properties
+of an ActiveX control to fields in a database. The problem with
+trying to discuss this subject is that it can rapidly grow to
+fill not just the rest of this book but dozens of additional volumes
+as well.
+<P>
+This section assumes that you have at least a passing acquaintance
+with databinding as it is implemented with standard controls,
+such as a Text Box or Label control. That should be enough for
+you to understand the &quot;easy&quot; way to bind controls, which
+will be covered very briefly because it is explained quite nicely
+in the Visual Basic 5.0 documentation.
+<P>
+After that, we'll take a look at the &quot;hard way&quot; of doing
+databinding, in which you take over from Visual Basic and do it
+yourself. This subject will also be covered very briefly because
+it is simply too large a subject to cover here. My intent is to
+point you in the right direction. If you are a Data Access Objects
+(DAO) expert, you should have no trouble extending the simple
+example presented here into as sophisticated a data management
+system as you wish. If you are not a DAO expert, that section
+will lose you anyway because I will make no effort to explain
+the intricacies of data access under Visual Basic. That is truly
+a subject for another time and place.
+<H3><A NAME="TheEasyWay">
+The Easy Way</A></H3>
+<P>
+The easy way to databind a property in a control is to let Visual
+Basic do it for you. This is accomplished by defining a property
+and setting its attributes using the Tools, Procedure Attributes
+dialog box. There are four available selections for databinding:
+<UL>
+<LI>Property is data bound. Select this checkbox to bind the property.
+<LI>This property binds to the DataField. This property becomes
+the default bound property if the control has more than one bound
+property.
+<LI>Show in DataBindings collection at design time. Allows the
+developer using your control to edit the databinding at design
+time.
+<LI>Property will call CanPropertyChange before changing. This
+options informs the container that your control will call CanPropertyChange
+before changing bound property values.
+</UL>
+<P>
+To understand these better, you need to have an idea of what happens
+when you set a property to be bound. Visual Basic adds four properties
+to the control's Extender object:
+<OL>
+<LI>The DataSource property is used by the developer to select
+a data control to which your control will be bound. 
+<LI>The DataField property is used by the developer to select
+a field in the database to which one of your control's properties
+will be bound (the one that has its &quot;This property binds
+to Datafield&quot; checkbox selected. You should always select
+this checkbox for at least one property). 
+<LI>The DataBindings property appears in the VB window to allow
+the developer to bind other bound properties in your control to
+various fields in the database. All bound controls whose procedure
+attribute specifies &quot;Show in DataBindings collection at design
+time&quot; will appear in the DataBindings dialog box. The control's
+Extender object also exposes a DataBindings collection that contains
+a DataBinding object for each bound property. This object contains
+the binding information for the property.
+<LI>The DataChanged property indicates if any of the bound properties
+have been changed.
+</OL>
+<P>
+One important thing to keep in mind is that databinding is supported
+by the container. Containers are not required to support databinding
+and not all that do will support binding of more than one property
+in a control.
+<P>
+Figure 19.3 illustrates the architecture of simple databinding.
+The DataSource property of the control selects a data control
+that specifies the database, the source table or dynaset, and
+determines at runtime which row in the recordset is being accessed.
+The DataBindings object binds individual properties within the
+control to the various fields in the RecordSet. You specify one
+of the properties as the default bound property by selecting the
+&quot;This property binds to the DataField&quot; attribute; the
+field that it is bound to is specified by the control's DataField
+property.
+<P>
+<A HREF="f19-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f19-3.gif"><B>Figure 19.3 :</B> <I>Architecture of simple databinding</I>.</A>
+<P>
+The ch19bind.ctl control in the <A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 19</A> Binding.vbp project
+demonstrates simple binding of two control properties to a database.
+A simple database, dbdemo.mdb, has been provided for this example.
+The database contains a single table with several fields. Two
+of them are of interest here: &quot;show,&quot; which contains
+the name of a TV show, and &quot;rating,&quot; which contains
+a brief evaluation of the show.
+<P>
+The control implements a number of standard properties, which
+will not be shown in the listings that follow. The control contains
+two properties, each of which will be bound, one to the &quot;show&quot;
+field and one to the &quot;rating&quot; field in the table. Note
+that the binding is done at design time by the developer, not
+by you as the control author. In fact, each of these properties
+could be bound to any field in the database. The properties are
+mapped to two text boxes, txtShow and txtRating. The code for
+their property procedures is as follows:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get ShowInfo() As String
+   ShowInfo = txtShow.Text
+End Property
+
+Public Property Let ShowInfo(ByVal New_ShowInfo As String)
+   If UserControl.CanPropertyChange(&quot;ShowInfo&quot;) Then
+      txtShow.Text() = New_ShowInfo
+      PropertyChanged &quot;ShowInfo&quot;
+   End If
+End Property
+
+Public Property Get RatingInfo() As String
+   RatingInfo = txtRating.Text
+End Property
+
+Public Property Let RatingInfo(ByVal New_RatingInfo As String)
+   If UserControl.CanPropertyChange(&quot;RatingInfo&quot;) Then
+      txtRating.Text() = New_RatingInfo
+      PropertyChanged &quot;RatingInfo&quot;
+   End If
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Note that the value of the property can only be set if the CanPropertyChange
+function returns True. This is necessary because the procedure
+attributes for both properties have the &quot;Property will call
+CanPropertyChange&quot; checkbox selected. This option is not
+used by VB at this time-CanPropertyChange will always return True.
+However, by always calling CanPropertyChange, you will help ensure
+the correct behavior of your control on future containers (both
+VB and others).
+<P>
+The call to the PropertyChanged function is especially critical
+when using databinding. You may recall that PropertyChanged informs
+Visual Basic that a property has been changed, so it knows whether
+the property needs to be saved. It is also used to inform Visual
+Basic that the value of a bound property has changed, so it will
+know to write it out to the database.
+<P>
+If you wish the database fields to be editable, you must inform
+Visual Basic that they have been changed. This is done as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Sub txtRating_Change()
+   PropertyChanged &quot;RatingInfo&quot;
+End Sub
+
+Private Sub txtShow_Change()
+   PropertyChanged &quot;ShowInfo&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+When the Data control switches to another property, VB will access
+the DataChanged property of the control (or the DataChanged property
+for each DataBinding object). If this property is True, VB will
+attempt to write out the updated information to the database.
+<P>
+If you have used the ActiveX Interface Wizard to create the bound
+properties, remember to add the CanPropertyChange test on the
+property Let procedure and to remove the property persistence
+from the UserControl's ReadProperties and WriteProperties event.
+It's rather pointless to persist a property that is bound to a
+database.
+<P>
+Keep in mind that when a control contains multiple bound properties,
+it can define ways for them to interact within the control. For
+example, you can initialize one property to a default value that
+is based on another property.
+<H3><A NAME="TheHardWay">
+The Hard Way</A></H3>
+<P>
+What if you want your control to contain a bound list? Or a set
+of lists from different tables? The rather simple binding provided
+by Visual Basic does not extend easily to that level of functionality.
+<P>
+But keep in mind that your ActiveX control has complete access
+to all of the database capabilities of Visual Basic. In other
+words, it is possible to implement binding on your own. It may
+not be as clean as that provided by Visual Basic, but it can be
+extremely powerful.
+<P>
+The Binding.vbp project contains a second control, ch19bnd2.ctl,
+which implements its own databinding. The sample shown here is
+just a sketchy implementation, intended only to give you an idea
+of how the standard database operations can be executed. The control
+contains a combo box and a text box. The combo box will be used
+to select the &quot;show&quot; information, and the text box will
+display and permit editing of the &quot;rating&quot; information.
+<P>
+The first issue the control must deal with is obtaining a reference
+to a Database object. You have a number of ways to accomplish
+this. You can actually add a property that will contain the database
+name and the record source name, in effect copying the properties
+used by the data control to choose a database and record source.
+<P>
+Or you can keep things simple and cheat. This example implements
+a DataSource property, which is a string specifying the name of
+a Data control on the same container as the control. The property
+is implemented as follows:
+<BLOCKQUOTE>
+<PRE>
+Dim m_DataSource As String
+
+Public Property Get DataSource() As String
+   DataSource = m_DataSource
+End Property
+
+Public Property Let DataSource(ByVal vNewValue As String)
+   m_DataSource = vNewValue
+   PropertyChanged &quot;DataSource&quot;
+End Property
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   m_DataSource = PropBag.ReadProperty(&quot;DataSource&quot;, &quot;&quot;)
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   PropBag.WriteProperty &quot;DataSource&quot;, m_DataSource, &quot;&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The property is also persisted in the UserControl object's ReadProperties
+and WriteProperties event in the usual way. The disadvantage of
+this approach is that you cannot display a dropdown list box showing
+the names of the data controls already present on the container
+(the normal behavior of the DataSource property). This leaves
+you with a number of choices:
+<UL>
+<LI>You can settle for having the developer enter the name directly
+(perhaps performing validation to make sure it does match a value
+for a control, an operation not shown here).
+<LI>You can prevent direct input and perhaps use a property page
+to allow the user to select from controls on the container.
+<LI>You can use Desaware's SpyWorks to create a custom dropdown
+list box containing the names of available data controls, thus
+mimicking the standard behavior of the DataSource property.
+<LI>You can implement a separate bound property (which will cause
+the DataSource property to be defined for the control). You can
+then read that DataSource property at the container's design time
+and persist it in your own internal variable. This step is necessary
+because you cannot read the Extender DataSource property at runtime.
+</UL>
+<P>
+I must stress that the DataSource property implemented in the
+first three options above may seem to the developer to be similar
+and able to function the same way as the standard DataSource property.
+But it is implemented differently. In the ch19Bind.ctl example
+shown earlier, the DataSource property is part of the control's
+Extender object and is implemented by the container (as is any
+Extender property). In this example the DataSource property is
+part of your control's public interface and is implemented by
+you, the control author.
+<P>
+The DataSource property gives you the name of the data control.
+But how do you obtain a reference to the control? One way is shown
+in the following code:
+<BLOCKQUOTE>
+<PRE>
+Dim m_MyRecordSet As RecordSet
+Dim m_MyData As Data
+
+Private Sub UserControl_Show()
+   Dim obj As Object
+   If Ambient.UserMode Then
+      For Each obj In Extender.Parent.Controls
+         If TypeOf obj Is Data Then
+            If obj.Name = m_DataSource Then
+               Set m_MyData = obj
+               Set m_MyRecordSet = m_MyData.RecordSet
+               LoadCombo
+           End If
+         End If
+      Next
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This code shows how you can search for a specific control using
+the controls collection of the container, which can be accessed
+via the Extender property. This function is called during the
+Show event, during which it is safe to assume (at least with Visual
+Basic) that all of the other controls belonging to the container
+have already been sited.
+<P>
+Two things need to be done to this function to make it robust
+for use in a real control:
+<UL>
+<LI>Add error checking. Remember that you cannot assume that every
+extender has a Parent property or that the container has a controls
+collection.
+<LI>Add additional logic to determine whether you really want
+to reload the combo box each time the control is shown.
+</UL>
+<P>
+The combo box can be loaded using standard database techniques
+as follows:
+<BLOCKQUOTE>
+<PRE>
+Public Sub LoadCombo()
+   m_MyRecordSet.MoveFirst
+   Do While Not m_MyRecordSet.EOF
+      Combo1.AddItem m_MyRecordSet.Fields(&quot;Show&quot;)
+      m_MyRecordSet.MoveNext
+   Loop
+   Combo1.ListIndex = 0
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Once again, you should add any necessary error checking.
+<P>
+In this example, the DataField information is hard coded into
+the sample. Clearly you could specify one or more DataField properties
+of your own or implement your own DataBindings type collection
+and object with its own property page to implement more sophisticated
+binding. This could allow the developer to specify different fields
+for the different bound objects in the control.
+<P>
+The Text box containing the rating is loaded any time a selection
+is made in the combo box. This is accomplished using the following
+code:
+<BLOCKQUOTE>
+<PRE>
+Dim m_RatingChanged As Boolean
+
+Private Sub Combo1_Click()
+   If m_RatingChanged Then
+      m_MyRecordSet.Edit
+      m_MyRecordSet.Fields(&quot;rating&quot;) = Text1.Text
+      m_MyRecordSet.Update
+   End If
+   m_MyRecordSet.FindFirst &quot;[Show] = '&quot; &amp; Combo1.Text &amp; &quot;'&quot;
+   Text1.Text = m_MyRecordSet.Fields(&quot;rating&quot;)
+   m_RatingChanged = False
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Once again, the field information is hard coded in this particular
+instance. The m_RatingChanged variable is a private Boolean variable
+that indicates that the Text1 text box has been changed. This
+variable could easily be exposed as a public property to provide
+identical functionality to the standard DataChanged property.
+When the combo box selection changes, as indicated by the Click
+event, the control checks to see if the text box has been changed.
+If so, it updates the field in the database. It then finds the
+record that you selected and sets the RecordSet cursor to that
+position using the FindFirst method. It then loads the Text1 control
+with the rating field for that record and marks the Text1 control
+as &quot;clean.&quot; All that's left is the code that marks the
+Text1 box as changed:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Text1_Change()
+   m_RatingChanged = True
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+One interesting thing to note about this example is that while
+the control does effectively bind database fields to the control
+(in this case, to constituent controls, but it could be to variables
+as well), it does not bind them to public properties of the control!
+Could you define public properties that would act as bound? Absolutely-just
+have them set the appropriate constituent control properties,
+just as you saw in the prior example.
+<P>
+Because we are not using Visual Basic's binding, we don't need
+to worry about calling PropertyChanged or CanPropertyChange for
+changes in the database. It would not be critical if you did decide
+to create bound public properties in this manner, but it would
+do no harm either.
+<P>
+This concludes our brief introduction to the possibilities of
+do-it-yourself databinding using Visual Basic ActiveX controls.
+It does represent more work for the author, but it can provide
+substantially more functionality and reduce the dependence on
+the container. If container-supported databinding is adequate
+for your needs, by all means use it.
+<P>
+We are almost finished with our coverage of ActiveX control fundamentals.
+Just one important issue remains. You've seen a quick introduction
+to property pages, now it's time to really put them to work.
+<HR>
+
+<CENTER><P><A HREF="ch18.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch18.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch20.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch20.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

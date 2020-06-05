@@ -1,0 +1,1870 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 9 - Creating Forms</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch08.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch10.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;9</H1>
+<H1>Creating Forms</H1>
+
+<UL>
+<LI><A HREF="#AnatomyofaForm">
+Anatomy of a Form</A>
+<LI><A HREF="#CreatingForms">
+Creating Forms</A>
+<UL>
+<LI><A HREF="#WorkingintheFormDesigner">
+Working in the Form Designer</A>
+<LI><A HREF="#AddingControlstoaForm">
+Adding Controls to a Form</A>
+<LI><A HREF="#TheFormControlsToolbar">
+The Form Controls Toolbar</A>
+</UL>
+<LI><A HREF="#WorkingwithPropertiesEventsandMethods">
+Working with Properties, Events, and Methods</A>
+<UL>
+<LI><A HREF="#ChangingFormandControlProperties">
+Changing Form and Control Properties</A>
+<LI><A HREF="#ChangingaProperty">
+Changing a Property</A>
+<LI><A HREF="#EditingaMethod">
+Editing a Method</A>
+<LI><A HREF="#DefaultValuesandNondefaultValues">
+Default Values and Nondefault Values</A>
+<LI><A HREF="#PEMTabs">
+PEM Tabs</A>
+<LI><A HREF="#CodingwithPropertiesEventsandMethods">
+Coding with Properties, Events, and Methods</A>
+<LI><A HREF="#AddingNewPropertiesorMethodstoaForm">
+Adding New Properties or Methods to a Form</A>
+<LI><A HREF="#ShortcutOptionsfromthePropertiesWindow">
+Shortcut Options from the Properties Window</A>
+</UL>
+<LI><A HREF="#WorkingwithControlsonaForm">
+Working with Controls on a Form</A>
+<UL>
+<LI><A HREF="#AligningControls">
+Aligning Controls</A>
+<LI><A HREF="#Size">
+Size</A>
+<LI><A HREF="#Spacing">
+Spacing</A>
+<LI><A HREF="#TabOrderofControls">
+Tab Order of Controls</A>
+<LI><A HREF="#NamingFormControls">
+Naming Form Controls</A>
+</UL>
+<LI><A HREF="#TheDataConnection">
+The Data Connection</A>
+<UL>
+<LI><A HREF="#SettingtheFormiacutesDataEnvironment">
+Setting the Form&iacute;s Data Environment</A>
+<LI><A HREF="#WorkingwithRelationshipsintheDataEnvironmentDesigner">
+Working with Relationships in the Data Environment Designer
+</A>
+<LI><A HREF="#DataEnvironmentAFinalWord">
+Data Environment: A Final Word</A>
+<LI><A HREF="#DraggingandDroppingDataControlsontoYourForm">
+Dragging and Dropping Data Controls onto Your Form</A>
+<LI><A HREF="#BoundVersusUnboundControls">
+Bound Versus Unbound Controls</A>
+<LI><A HREF="#UnderstandingPrivateDataSessions">
+Understanding Private Data Sessions</A>
+<LI><A HREF="#SoWhoControlstheData">
+So, Who Controls the Data?</A>
+</UL>
+<LI><A HREF="#RunningaForm">
+Running a Form</A>
+<LI><A HREF="#OtherFeaturesofForms">
+Other Features of Forms</A>
+<UL>
+<LI><A HREF="#UsingMultipleInstancesofaSingleForm">
+Using Multiple Instances of a Single Form</A>
+<LI><A HREF="#FormSets">
+Form Sets</A>
+<LI><A HREF="#TheTTLockScreenTTProperty">
+The <TT>LockScreen</TT> Property
+</A>
+<LI><A HREF="#CreatingModalForms">
+Creating Modal Forms</A>
+</UL>
+<LI><A HREF="#UsingFormWizardsandBuilders">
+Using Form Wizards and Builders</A>
+<UL>
+<LI><A HREF="#CreatingaFormwiththeFormWizard">
+Creating a Form with the Form Wizard</A>
+<LI><A HREF="#UsingBuilderstoDevelopForms">
+Using Builders to Develop Forms</A>
+</UL>
+<LI><A HREF="#SomeBrandNewFormOptions">
+Some Brand-New Form Options</A>
+<UL>
+<LI><A HREF="#FormScrolls">
+Form Scrolls</A>
+<LI><A HREF="#TitleBars">
+Title Bars</A>
+</UL>
+<LI><A HREF="#TheLastWord">
+The Last Word</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="AnatomyofaForm"><FONT SIZE=5 COLOR=#FF0000>
+Anatomy of a Form</FONT></A></H2>
+<P>
+Nearly every application or user utility that you write in Visual
+FoxPro will include at least one form (and probably quite a few).
+Forms are the powerful descendants of pre-Visual FoxPro screens,
+and they serve as the primary points of user interaction with
+both the underlying data and business logic in most applications.
+The days of simple, two-dimensional, programmer-directed dialog
+boxes are over. User expectations have changed dramatically in
+recent years, and odds are you'll be expected to provide your
+customers with event-driven, user-controllable, Windows-standard
+graphical user interfaces (GUIs). The most thorough database design
+and most powerful programming paradigm in the world probably won't
+stand a chance of winning over clients if the application interface
+consists of white-on-blue modal screens in a Courier 12 font.
+Luckily, Visual FoxPro 6 includes a powerful and flexible Form
+Designer to assist developers in the creation of slick, flexible,
+fully object-oriented forms for any size application. And, as
+you'll see, creating and maintaining forms can be remarkably simple
+and straightforward.
+<P>
+The Visual FoxPro <I>form</I> is a container class, capable of
+holding any number of other controls or containers such as text
+boxes, command buttons, check boxes, pageframes, or grids. Because
+the form is simply a specialized container class, it supports
+every aspect of Visual FoxPro's powerful and thorough object-oriented
+programming paradigm. Forms have over 100 base properties and
+60 base methods and support the addition of an unlimited number
+of user-defined properties or methods to augment their functionality.
+Forms can be inherited from specialized form subclasses or can
+serve as a superclass of other forms. In fact, you'll find only
+two major differences between forms and most other container classes:
+Forms can assume their own visual presence on the user desktop,
+and forms (like toolbars) can draw their information from a private
+data session.
+<P>
+Despite all this power, basic forms are remarkably easy to create,
+edit, and run. Figure 9.1 shows a basic sample form, consisting
+of two general sets of visual components:
+<UL>
+<LI>The form itself
+<LI>Controls on the form
+</UL>
+<P>
+<IMG SRC="f9-1.gif"><B>Figure 9.1 : </B><I>A basic form presents information in an
+easy-to-read manner</I>.</A>
+<P>
+The form itself consists of the background, on which most of the
+functional contents of the form will sit. I say &quot;most&quot;
+because it is important to remember that the form itself responds
+to a set of Windows events: mouse clicks, activation, resizing,
+and moving. But, in most cases, the core user functionality will
+be provided by the controls within forms. Back in FoxPro 2.6 and
+earlier versions, controls were placed within user-defined windows
+with <TT>@SAY</TT> and <TT>GET</TT> style commands and were generally
+quite limited in their capability to respond to user events. Starting
+with Version 3, Visual FoxPro extended its set of native controls
+and even allowed support for ActiveX components.  Table 9.1 includes
+a listing of native Visual FoxPro controls that are used in forms,
+along with brief descriptions.<BR>
+<P>
+<CENTER><B>Table 9.1&nbsp;&nbsp;Visual FoxPro Form Controls</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><B>Control Name</B></TD><TD WIDTH=384><B>Description</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Check box</TD><TD WIDTH=384>A control that shows an On/Off state.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Combo box</TD><TD WIDTH=384>A control that presents a list. Only the currently selected value is shown, but the rest of the list can be expanded by the user.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Command button</TD><TD WIDTH=384>A button that the user can click to make something happen.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Command button group</TD><TD WIDTH=384>A group of command buttons that work together.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Edit box</TD><TD WIDTH=384>A box that enables the user to enter long strings of information.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Grid</TD><TD WIDTH=384>A control that browses a table on a form.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Image</TD><TD WIDTH=384>A control that shows a picture on a form.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Label</TD><TD WIDTH=384>A control that displays text.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Line</TD><TD WIDTH=384>A line drawn on a form.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>List box</TD><TD WIDTH=384>A box that shows a list of items.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>OLE bound control</TD><TD WIDTH=384>A control that has as its source a general field in a table.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>OLE container control</TD><TD WIDTH=384>A control for OLE objects and controls.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Option group</TD><TD WIDTH=384>A series of options, from which the user can select only one.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Page frame</TD><TD WIDTH=384>A control that enables the user to pick one of some number of tabs, each of which has a different set of controls.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Shape</TD><TD WIDTH=384>A drawn shape.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>Spinner</TD><TD WIDTH=384>A combination of a text box and up and down controls, enabling the user to increment numeric data.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Text box</TD><TD WIDTH=384>A control that enables the user to enter information, usually to be saved to a character, numeric, or date field.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Timer</TD><TD WIDTH=384>A control that runs a command or series of commands at predetermined intervals.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Forms are stored in <TT>.SCX</TT> and <TT>.SCT</TT> files, which are identical in structure to the class library's <TT>.VCX</TT> and <TT>.VCT</TT> files. A form, in fact, is simply a class library with only one class-the form itself. And, unlike its pre-Visual FoxPro cousin, the screen, the form doesn't need to be generated into code in order to be run. A form is a full-fledged Visual FoxPro object.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="CreatingForms"><FONT SIZE=5 COLOR=#FF0000>
+Creating Forms</FONT></A></H2>
+<P>
+The simplest and most common way to create a form is with one
+of the following commands:
+<BLOCKQUOTE>
+<PRE>
+CREATE FORM <I>file name</I>
+</PRE>
+</BLOCKQUOTE>
+<P>
+or
+<BLOCKQUOTE>
+<PRE>
+CREATE FORM <I>file name</I> AS <I>superclass name</I> FROM <I>base library name</I>
+</PRE>
+</BLOCKQUOTE>
+<P>
+However, you can use one of several additional ways to create
+a form in Visual FoxPro. Here are just a few:
+<UL>
+<LI>Select File, New, Form from the system menu.
+<LI>Enter the command <TT>MODIFY FORM <I>formname</I></TT>,
+or enter <TT>MODIFY FORM</TT> followed by an entry in the File,
+Open dialog box.
+<LI>Select the New button from the toolbar, and select Form in
+the resulting dialog box.
+<LI>Select the Docs tab of the Project Manager, click on Forms,
+and select New (you will be asked whether you want to use a Form
+Wizard or go right to creating a new form).
+<LI>Use the Component Gallery or the Class Browser.
+<LI>Enter the command
+</UL>
+<BLOCKQUOTE>
+<PRE>
+MyForm = CREATEOBJECT(&lt;form subclass name or &quot;Form&quot; for base class&gt;)
+</PRE>
+</BLOCKQUOTE>
+<UL>
+<LI>  followed by
+</UL>
+<BLOCKQUOTE>
+<PRE>
+MODIFY FORM &quot;MyForm&quot;
+</PRE>
+</BLOCKQUOTE>
+<UL>
+<LI>Use one of the Visual FoxPro Form Wizards or a developer-defined
+Form Wizard.
+</UL>
+<P>
+The approach you use for creating new forms will depend on your
+own personal preference, as well as that of your fellow developers
+if you work in a team programming environment. You will examine
+the Form Wizard in the section titled &quot;Using Form Wizards
+and Builders&quot; later in this chapter. In the meantime, let's
+explore Visual FoxPro's Form Designer.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Many of the approaches specified use the default setting to determine the class on which the form should be based. If you do not want to use the Visual FoxPro base class, you will need to set your default by first choosing Tools, Options. Click on the Forms tab, and then check the Form check box in the Template classes area. You will be prompted to select your preferred template class. You can change this setting at any time by returning to this screen and clicking the ellipsis next to the filename (see Figure 9.2).</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<IMG SRC="f9-2.gif"><B>Figure 9.2 : </B><I>You can set the form template class through
+the Forms tab of the Options dialog box</I>.</A>
+<H3><A NAME="WorkingintheFormDesigner">
+Working in the Form Designer</A></H3>
+<P>
+After you have created a new form, FoxPro will launch the Form
+Designer (see Figure 9.3). The most crucial elements of the Form
+Designer are the Form Canvas, the visual representation of the
+form container; the Properties Window, which shows all available
+property, event, and method (PEM) settings for the form and its
+controls; and the Form Controls toolbar, which makes available
+various controls that can be dropped onto the canvas. Each of
+these elements is covered in greater detail in this section. However,
+note that you can also add the following windows and toolbars
+to the Form Designer to assist in your design and development:
+<P>
+<IMG SRC="f9-3.gif"><B>Figure 9.3 : </B><I>Using the Form Designer, you can specify
+the placement of information, text, and graphics on your form</I>.</A>
+<UL>
+<LI>The Color Palette toolbar-This toolbar enables you to easily
+set the colors on a form and any of its controls.
+<LI>The Layout toolbar-This toolbar provides the tools for properly
+aligning and sizing controls on the form, modifying the relative
+stacking order of overlapping objects, and resizing controls.
+(You can find more details about this toolbar in the section &quot;Aligning
+Controls&quot; later in this chapter.)
+<LI>The Form Designer toolbar-This toolbar operates at the control
+center, or meta-toolbar, and dictates which other Form Designer
+bars are shown. You can also control which toolbars are shown
+by selecting them from the View menu or by double-clicking their
+close boxes to release them.
+<LI>The Data Environment window-This window shows the specified
+elements of the Form's Data Environment. (You can find more details
+about this subject in the section titled &quot;Setting the Form's
+Data Environment&quot; later in this chapter.)
+<LI>The Code window-This window shows the code that has been added
+to any of the methods of the form or its controls.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Because the Form Designer enables you to view so many different components at once, you might want to consider increasing your resolution to maximize the available area. You will be shocked how much more screen real estate you gain by switching from 640 &#0215; 480, or even 800 &#0215; 600, to a 1024 &#0215; 768 resolution. And, luckily, FoxPro includes the capability to define the resolution for which you are developing, so you can see how much &quot;real&quot; space you have for your lower-resolution viewers (refer to Figure 9.2). One point of caution, however: When Visual FoxPro determines lower-resolution borders, it does not take into account any toolbars a user might have docked along some edge of the screen. Always leave a suitable margin, and if necessary, during your final screen testing, change your monitor's resolution to the desired settings to be sure that everything fits as you expected.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Because forms are actually classes, you might not be surprised to learn that the Form Designer and Class Designer are quite similar. You cannot modify forms in the Class Designer, though you can view and modify forms through the Class Browser. See <A HREF="ch15/ch15.htm">Chapters 15</a>, &quot;Creating Classes with Visual FoxPro,&quot; and <A HREF="ch16/ch16.htm">16</a>, &quot;Managing Classes with Visual FoxPro,&quot; for more information on using the Class Designer and Class Browser.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="AddingControlstoaForm">
+Adding Controls to a Form</A></H3>
+<P>
+You can add controls to a form by clicking on the desired control
+and then clicking on the spot on the form canvas where you want
+the control to reside (more specifically, click the spot where
+you want the top-left corner of the control to start). Visual
+FoxPro gives the control a default size, which you can then change
+by clicking on one of the corner or side placeholders and dragging
+to the desired boundary. Or, if you prefer to add a control and
+resize it in one step, you can vary these steps slightly. Click
+on the control you want, as usual, but instead of clicking on
+the form canvas, drag the mouse to create a dotted area of the
+desired size. Then release the mouse button to drop the resized
+control into this area.
+<H3><A NAME="TheFormControlsToolbar">
+The Form Controls Toolbar</A></H3>
+<P>
+Figure 9.4 shows the Form Controls toolbar, which, like the Control
+Palette toolbar, consists of several sections. The top two buttons
+are not controls, but instead are tools to control the settings
+for the rest of the toolbar.
+<P>
+<IMG SRC="f9-4.gif"><B>Figure 9.4 : </B><I>Using the Form Controls toolbar, you can
+include various types of form controls on your report</I>.</A>
+<P>
+<B>The Select Objects Button</B>&nbsp;&nbsp;The Select Objects
+button (with the arrow icon), at the top left of the Form Controls
+toolbar, indicates whether a control is currently selected and
+ready to be dropped. If no control is selected, the arrow button
+is in the down, or on, position, indicating that your mouse serves
+as a pointer on the form canvas. After you select a control, and
+while you are still deciding where to drop the control, the arrow
+button is in the up, or off, position. This position indicates
+that the mouse is currently in the drop-control mode. If you decide
+you don't want to drop a control you have just selected, click
+on the arrow button to end the process and restore your mouse
+to a pointing device.
+<P>
+The View Classes Button&nbsp;&nbsp;The View Classes button (with
+the bookshelf/library icon), at the top right of the Form Controls
+toolbar, enables you to toggle among any number of class libraries.
+The currently selected class library determines which controls
+are shown in the middle section of the toolbar. Three options
+are always available when you click on this button. Standard includes
+applicable controls from the FoxPro base classes, Active X includes
+Visual FoxPro's default Active X controls (such as the calendar
+control and the Microsoft progress bar), and Add enables you to
+add additional class libraries to the list. You can also add libraries
+to the list and assign your own names to them by selecting Tools,
+Options and clicking the Controls tab.
+<P>
+Available Controls&nbsp;&nbsp; The middle section of the Form
+Controls toolbar includes all available classes from the currently
+selected class library. The controls show up under the icons assigned
+to them by Visual FoxPro (or by the developer during class design
+of a specialized control). The standard buttons (in the order
+they are shown in Figure 9.4) are as shown in Table 9.2.<BR>
+<P>
+<CENTER><B>Table 9.2&nbsp;&nbsp;Form Control Toolbar Buttons</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Label</B></CENTER></TD><TD WIDTH=144><CENTER><B>Text Box</B></CENTER>
+</TD><TD WIDTH=192><CENTER><B>Edit Box</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Command Button</TD><TD WIDTH=144>Command Group
+</TD><TD WIDTH=192>Option Group</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Check Box</TD><TD WIDTH=144>Combo Box</TD><TD WIDTH=192>List Box
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Spinner</TD><TD WIDTH=144>Grid</TD><TD WIDTH=192>Image
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Timer</TD><TD WIDTH=144>Page Frame</TD><TD WIDTH=192>OLE Container Control
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>OLE Bound Control</TD><TD WIDTH=144>Line</TD>
+<TD WIDTH=192>Shape</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Separator</TD><TD WIDTH=144>&nbsp;</TD><TD WIDTH=192>&nbsp;
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>The Builder Lock&nbsp;&nbsp;</B>   The Builder Lock button
+(with the wand icon), at the bottom of the Form Controls toolbar,
+controls whether adding a control should automatically launch
+an associated builder. You can always call any available builders
+after dropping a control by right-clicking and selecting Builder.
+The Builder Lock simply makes this a one-step process. (You'll
+find more details on builders in the section titled &quot;Using
+Form Wizards and Builders.&quot;)
+<P>
+The Button Lock&nbsp;&nbsp; The default Visual FoxPro behavior
+is to enable you to choose and drop one instance of a control
+at a time. When the Button Lock button (with the padlock icon)
+is set on, you can click and add any number of the same controls
+to a form without having to return to the Form Controls Toolbar
+and click the control again. This capability can prove useful
+when you know you need 10 text boxes on a form; unfortunately,
+it can also prove quite irritating when you accidentally drop
+17 pageframes onto the same form.
+<H2><A NAME="WorkingwithPropertiesEventsandMethods"><FONT SIZE=5 COLOR=#FF0000>
+Working with Properties, Events, and Methods</FONT></A></H2>
+<P>
+Table Part 4 discusses Visual FoxPro's properties, events, and
+methods (PEM) model in some detail, but to take full advantage
+of the Form Designer, you need to have some understanding of these
+concepts. What follows is a brief discussion of objects, properties,
+events, and methods as they apply to form design.
+<P>
+A form, as I've mentioned, is a container object; it is a visible
+window that holds other controls. The form, like any object, is
+a distinct unit with attributes and behaviors-that is, with properties,
+events, and methods. The different objects available in Visual
+FoxPro have a range of properties, events, and methods. Some of
+them are particular to one type of object, some are available
+for many objects, and others are available to all types of objects.
+Table 9.3 presents the behaviors that Microsoft considers the
+&quot;core events&quot; of Visual FoxPro.<BR>
+<P>
+<CENTER><B>Table 9.3&nbsp;&nbsp;Core Object Events in Visual FoxPro</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>Name of Event</B></CENTER></TD><TD WIDTH=384><CENTER><B>Executes When&#133;</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Init</TT></TD><TD WIDTH=384>An object is created.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Destroy</TT></TD><TD WIDTH=384>An object is released from memory.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Error</TT></TD><TD WIDTH=384>An error occurs in an event or method of the object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Click</TT></TD><TD WIDTH=384>The user clicks the object using the primary mouse button.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>DblClick</TT></TD><TD WIDTH=384>The user double-clicks the object using the primary mouse button.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>RightClick</TT></TD><TD WIDTH=384>The user clicks the object using the secondary mouse button.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>GotFocus</TT></TD><TD WIDTH=384>The object receives focus through a user-initiated event or through code.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>LostFocus</TT></TD><TD WIDTH=384>The object loses focus through a user-initiated event or through code.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>KeyPress</TT></TD><TD WIDTH=384>The user presses and releases any key.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>MouseDown</TT></TD><TD WIDTH=384>The user presses a mouse button while the mouse pointer is over the object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>MouseMove</TT></TD><TD WIDTH=384>The user moves the mouse over the object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>MouseUp</TT></TD><TD WIDTH=384>The user releases a mouse button while the mouse pointer is over the object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>InteractiveChange</TT></TD><TD WIDTH=384>The value of the object is changed by the user.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>ProgrammaticChange</TT></TD><TD WIDTH=384>The value of the object is changed in a program.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+With a firm understanding of these core events, you'll be well
+on your way to designing fully object-oriented Visual FoxPro forms.
+Of course, most Visual FoxPro objects offer you greater flexibility
+through additional events and methods, but these core events will
+give you the running start you need to begin working with forms.
+<P>
+As you might suspect, Visual FoxPro also has a number of common
+properties (see Table 9.4). The supported values and default values
+will differ by the type of object you are modifying.<BR>
+<P>
+<CENTER><B>Table 9.4&nbsp;&nbsp;Common Properties in Visual FoxPro</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Property Name</B></CENTER></TD><TD WIDTH=288><CENTER><B>Description</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Alignment</TT></TD><TD WIDTH=288>Specifies how text is aligned in a control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>AutoSize</TT></TD><TD WIDTH=288>Specifies whether the control is automatically sized to fit its caption.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>BackColor</TT></TD><TD WIDTH=288>Indicates the background color of an object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>BackStyle</TT></TD><TD WIDTH=288>Specifies whether the background of an object is opaque or transparent.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>BorderColor</TT></TD><TD WIDTH=288>Specifies the color of the border around an object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Caption</TT></TD><TD WIDTH=288>Specifies the text displayed within an object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Comment</TT></TD><TD WIDTH=288>Provides a comment about the object. Visual FoxPro doesn't use this property; it is a freebie for developers, and might be used to describe to other programmers the purpose of the object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>ControlSource</TT></TD><TD WIDTH=288>Indicates the source for the control's value. Can be a field or a memory variable.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Enabled</TT></TD><TD WIDTH=288>Determines whether a control is enabled or disabled.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Height</TT></TD><TD WIDTH=288>Specifies the height of the object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Left</TT></TD><TD WIDTH=288>Specifies the leftmost coordinate of the object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Name</TT></TD><TD WIDTH=288>Indicates the name of the object. This value determines how the object will be referenced by other object's methods or external code.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Tag</TT></TD><TD WIDTH=288>Provides an extra base property to hold any additional information about the property. Can be used at developers' discretion.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>ToolTipTest</TT></TD><TD WIDTH=288>Holds the text that will be shown as a Windows ToolTip when the mouse cursor hovers over an object. Note that ToolTips are shown only when the <TT>ShowTips</TT> property is set to <TT>.T.</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Top</TT></TD><TD WIDTH=288>Specifies the top coordinate of the object, relative to the top of the form.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Value</TT></TD><TD WIDTH=288>Indicates the value for the control. If <TT>ControlSource</TT> is populated, these two properties are always equal.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Visible</TT></TD><TD WIDTH=288>Specifies whether an object can be seen by users.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Width</TT></TD><TD WIDTH=288>Specifies the width of an object.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="ChangingFormandControlProperties">
+Changing Form and Control Properties</A></H3>
+<P>
+You can edit the properties of a form or its controls via the
+Properties window, which is shown in Figure 9.5. You can access
+the Properties window by selecting View, Properties from the system
+menu, or right-clicking and selecting Properties from the shortcut
+menu.
+<P>
+<IMG SRC="f9-5.gif"><B>Figure 9.5 : </B><I>Using the Properties window, you can view
+and, in most cases, change the properties of a form or an embedded
+control</I>.</A>
+<P>
+The Properties window consists of two parts: the Controls section
+and the PEM section. The Controls section, at the top of the window,
+consists of several important elements. The Object drop-down shows
+objects on the form in a hierarchical format and enables you to
+toggle easily to the properties, events, and methods of a particular
+control. The push pin enables you to force the Properties window
+to remain on top of any windows or toolbars in the Form Designer.
+The Builder Button activates the Builder for the currently selected
+object. (You'll learn more about Builders in the section titled
+&quot;Using Form Wizards and Builders.&quot;)
+<P>
+The PEM section lists the properties, events, and methods of the
+selected object and has five tabs: All, Data, Methods, Layout,
+and Other. Each tab includes only those properties, events, and
+methods that fall under the category specified in the heading.
+(As you might suspect, the All tab includes all properties, events,
+and methods.) Each of these tabs is reviewed in more detail later
+in this chapter.
+<P>
+Each tab consists of two columns: The left side (shown with a
+gray background) holds the name of the property, event, or method.
+The right side (in white) holds the value for properties, and
+the words <TT>Default</TT> or <TT>User Procedure</TT> for events
+and methods. Note that some properties, events, and methods are
+read-only during design time. They have values represented in
+<I>italic</I> text and, for properties, a disabled text box on
+the top of the tab.
+<H3><A NAME="ChangingaProperty">
+Changing a Property</A></H3>
+<P>
+Generally speaking, changing a property is as simple as clicking
+the property and typing the value into the text box at the top
+of the tab. However, some native Visual FoxPro properties must
+evaluate to a particular data type, or a range of values. For
+instance, a logical property, such as the form's <TT>Visible</TT>
+setting, must be set to either <TT>.T.</TT> or <TT>.F.</TT> (and,
+in fact, double-clicking this property will toggle the value of
+such a property). Properties with a strict range of values, such
+as the form's <TT>WindowState</TT> property, can be entered using
+a combo box that will appear on top of the tab.
+<P>
+Does this mean that Visual FoxPro is now a strictly typed language?
+No, not really. You'll note that I specified that &quot;some native
+Visual FoxPro properties&quot; limit the user to a series of choices
+or a particular data type. User-defined properties and many native
+properties cannot be set up with such limitations. Keep in mind
+that the values for these less strictly typed properties can be
+entered as text (<TT>MyName</TT>), as a variable (<TT>=glMySetting</TT>),
+or as an expression (<TT>=3+4, or =MyFunction()</TT>). Expressions
+can be entered directly or can be created with some assistance
+from Visual FoxPro by clicking on the formula button on top of
+the Form Controls toolbar tab (the button marked <TT>fx</TT>).
+For user-defined properties, as well as some native properties,
+<TT>.T.</TT>, <TT>.F.</TT>, and <TT>.NULL</TT>. are acceptable
+entries. (These values must include periods on both sides to indicate
+to Visual FoxPro that you are referring to a value and not a variable.)
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can enter a character value for, say, a label in the PEM window in several different ways. Any of the following entries will result in a label of <TT>Last Name</TT>:
+<P>
+<TT>Last Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No quotation marks
+<BR>
+=&quot;Last Name&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quotation marks with an equal sign
+<BR>=FunctionCall()&nbsp;&nbsp;&nbsp;A function or procedure that is currently in
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scope and available
+<BR>
+= MyLabelVar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A variable that is currently in scope</TT>
+<P>
+Many developers and programmers also choose to load the property value from the <TT>Init()</TT> event of the control or the form. This approach can make searching for values and debugging them easier, but remember that in version 6, it carries a small price: The property's associated <TT>_Assign</TT> method, if it exists, will fire. (For more details on the <TT>_Assign</TT> method, see the section &quot;<TT>Access</TT> and <TT>Assign</TT> Methods&quot; later in this chapter.)
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="EditingaMethod">
+Editing a Method</A></H3>
+<P>
+To edit the code behind a method, double-click the method name
+in the Properties window. When the Code window appears, you can
+type any code that should fire when the event occurs or the method
+is called. Note that you can also edit methods and events by choosing
+the desired object and method directly from the Code window; to
+do so, use the Object and Procedure pull-downs (see Figure 9.6).
+<P>
+<IMG SRC="f9-6.gif"><B>Figure 9.6 : </B><I>You can select a method to edit by using
+the pull-downs in the Code window</I>.</A>
+<H3><A NAME="DefaultValuesandNondefaultValues">
+Default Values and Nondefault Values</A></H3>
+<P>
+After you've changed a property or a method from its default,
+it will appear in the Form Controls toolbar tab in <B>bold</B>
+type. To restore a property or a method to its default, right-click
+and select Reset To Default.
+<P>
+Suppose you change a label's <TT>FontName</TT> property from the
+Arial default to Courier, and then you change your mind and restore
+the property to Arial. You think it's once again set to the default,
+but the property value is still listed in bold. Manually resetting
+the original value is not the same as right-clicking and selecting
+Reset To Default.
+<P>
+Reset To Default tells FoxPro to once again accept the property's
+value from the object's parent. A manual resetting of <TT>FontName</TT>
+tells FoxPro that you want the Font property to be Arial, <I>even
+if the parent class </I><TT><I>FontName</I></TT><I>
+is one day set to, let's say, Times Roman.</I> Inheritance is
+discussed in greater detail in Part 4 of this book, but for now,
+remember that if you want to restore a property to the default
+value, the safest approach is right-clicking and selecting Reset
+to Default.
+<H3><A NAME="PEMTabs">
+PEM Tabs</A></H3>
+<P>
+The Properties window includes a pageframe that lets you limit
+the number of properties, events, and methods that you view at
+one time.
+<P>
+<B>The All Tab&nbsp;&nbsp;</B>The All tab includes all PEM settings
+for the object specified, including user-defined properties and
+objects. Figure 9.7 shows the All tab for a form.
+<P>
+<IMG SRC="f9-7.gif"><B>Figure 9.7 : </B><I>Using the All tab, you can view all properties,
+events, and methods</I>.</A>
+<P>
+The Data Tab&nbsp;&nbsp;The Data tab shows only those properties
+related to the data for the control (see Figure 9.8). These properties
+vary according to the control being modified, but this tab might
+include the data control source, the control value, the input
+mask and format commands, and which columns of combo boxes or
+list boxes are bound to the underlying data. The form's Data tab
+includes information on the data session and buffering (see the
+section &quot;Understanding Private Data Sessions&quot; later
+in this chapter).
+<P>
+<IMG SRC="f9-8.gif"><B>Figure 9.8 : </B><I>The Data tab shows all data-related properties</I>.</A>
+<P>
+The Data tab also includes a control's <TT>Tag</TT> property and
+<TT>Comment</TT> property (where applicable), which serve as areas
+for the developer to include any additional data relating to the
+object that might need to be accessed. The developer can also
+add his or her own properties when designing a control subclass.
+The <TT>Tag</TT> and <TT>Comment</TT> properties have been included
+to provide at least one extra property on every single class,
+thereby adding a degree of flexibility to most controls, even
+those subclasses as high up in the class hierarchy as the FoxPro
+base classes.
+<P>
+<B>The Methods Tab&nbsp;&nbsp;</B>The Methods tab shows all methods
+and events, including user-defined methods. Figure 9.9 shows the
+Methods tab for a form object.
+<P>
+<IMG SRC="f9-9.gif"><B>Figure 9.9 : </B><I>The Methods tab shows all methods and events,
+but no properties</I>.</A>
+<P>
+The Layout Tab&nbsp;&nbsp;The Layout tab shows all the native
+Visual FoxPro properties related to the physical appearance of
+the object. Figure 9.10 shows the Layout tab for a form object.
+<P>
+<IMG SRC="f9-10.gif"><B>Figure 9.10: </B><I>The Layout tab shows properties related
+to a form or a control's layout</I>.</A>
+<P>
+The Other Tab&nbsp;&nbsp;The Other tab shows all the native Visual
+FoxPro properties that do not fit logically into the Data or Layout
+categories. Figure 9.11 shows the Other tab for a form object.
+<P>
+<IMG SRC="f9-11.gif"><B>Figure 9.11: </B><I>The Other tab shows all miscellaneous properties</I>.</A>
+<H3><A NAME="CodingwithPropertiesEventsandMethods">
+Coding with Properties, Events, and Methods</A></H3>
+<P>
+The sheer number of properties, events, and methods in Visual
+FoxPro might seem daunting to you, particularly when compared
+with software products with fewer PEM options. Don't feel overwhelmed
+just yet. You will soon find that the bulk of your coding will
+occur in a relatively small number of methods and that you will
+usually change only a limited number of properties.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+To find a property, event, or method in a Properties window list, you don't have to scroll through the entire list. If you know the name of the property you are looking for (or have an idea of the name), you can press Ctrl+Alt and the first letter of the name while the list has focus. The list will automatically reposition itself to the first property, event, or method starting with that letter. For example, to find the <TT>ControlSource</TT> property, press Ctrl+Alt+C when in either the All or Data tab, and the list will position to the first entry starting with the letter C.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Visual FoxPro's wide range of methods and properties allows for
+very precise fine-tuning (and in some cases, they have been retained
+for backward compatibility). Such flexibility has been a hallmark
+of FoxPro since its earliest incarnations, and Visual FoxPro's
+object model has greatly increased the number of available points
+of access and code execution. Enjoy the control you have as a
+programmer, and don't become overly entangled too quickly in the
+subtle differences between <TT>Valid</TT>, <TT>InteractiveChange</TT>,
+and <TT>LostFocus</TT> events. Use what you can (or what you already
+know), until you brush up against limitations and need to move
+on.
+<P>
+For instance, let's look for a moment at validation information
+entered in a text box. Pre-Visual FoxPro users will recognize
+the <TT>Valid</TT> event, but it has since been fully incorporated
+into the Visual FoxPro object-oriented model.
+<P>
+Validation of the data entered in a text box is accomplished by
+placing code in the <TT>Valid</TT> event. Figure 9.12 shows how
+to trap an invalid entry in a text box.
+<P>
+<IMG SRC="f9-12.gif"><B>Figure 9.12: </B><I>This example checks for invalid entry in
+a text box</I>.</A>
+<P>
+You might notice that the <TT>Valid</TT> event contains no code
+for displaying an error message. The actual text to be returned
+goes in the text box's <TT>ErrorMessage</TT> method. This method
+is automatically triggered whenever the <TT>Valid</TT> method
+returns <TT>False</TT>. The code for <TT>ErrorMessage</TT> is
+shown in Figure 9.13.
+<P>
+<IMG SRC="f9-13.gif"><B>Figure 9.13: </B><I>You can specify a particular message to
+be shown when Valid returns False by including code in the object's
+ErrorMessage method</I>.</A>
+<P>
+By the way, if you do not place code in the <TT>ErrorMessage</TT>
+method, the default error message of <TT>Invalid Input</TT> will
+appear (assuming that <TT>Set Notify</TT> is <TT>On</TT>).
+<H3><A NAME="AddingNewPropertiesorMethodstoaForm">
+Adding New Properties or Methods to a Form</A></H3>
+<P>
+To add a new property or method to a form, select Form, New Property
+or Form, New Method. A modal dialog box appears, into which you
+can enter the property or method name and description (optional),
+and click the Add button. The default value for a new property
+is a logical false (<TT>.F.</TT>). A new method defaults to an
+empty procedure; nothing will occur when this method is called
+until you actually add some code.
+<P>
+When you're adding a new property, you can tell Visual FoxPro
+to automatically create a new Access and/or Assign method corresponding
+to the new property (see Figure 9.14). You can also create an
+Access or Assign method at any time the same way as you would
+create any other new method. (For more details on Access and Assign
+methods, see the section titled &quot;Access and Assign Methods.&quot;)
+<P>
+<IMG SRC="f9-14.gif"><B>Figure 9.14: </B><I>You can add new properties to a form</I>.</A>
+<P>
+If you want to add a new array property, include array dimensions
+in the property name, even if you will later change these dimensions.
+Doing so automatically initializes the property as an array, which
+also makes the values read-only during development. You will need
+to write code (quite likely in your form's <TT>Init</TT> event)
+to fill this array property.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro assumes that you will want to add more than one property or method. In fact, after you have added a new property or method, Visual FoxPro keeps providing the same dialog box. To end this cycle and save the new properties or methods you have already added, just click Close or press Escape when you are shown the new dialog box.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Properties or methods added by the user appear in the Properties
+window in alphabetical order <I>after</I> all the native Visual
+FoxPro properties, events, and methods. User-defined property
+and method names always appear in lowercase (even hacking the
+underlying table doesn't help).<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You cannot add new properties or methods to controls from the Form Designer. Instead, you must subclass the control and add your new class. (You'll find more details on subclassing in Part 4.) Remember, though, that every control has a <TT>Tag</TT> property that you can use. Think of it as a single-property freebie.&nbsp;n
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Access and Assign Methods&nbsp;&nbsp;</B>Beginning with version
+6, Visual FoxPro's object model has been expanded through the
+addition of Access and Assign methods. These methods enable you
+to track every time a particular property is viewed, touched,
+or changed in any way. Let's say that your form includes a text
+box that is bound to a property on the form called <TT>.cLastName</TT>,
+and you want a certain action to occur whenever the property is
+changed. You can do just that by creating a method called <TT>cLastName_Assign</TT>.
+<TT>cLastName_Access</TT> would be even more thorough in its tracking;
+every time a piece of code &quot;looked&quot; at the property,
+this method would fire.
+<P>
+Confused yet? Don't be. You can accomplish a good deal of programming
+without ever using the Access or Assign methods. In fact, that's
+exactly what Visual FoxPro 5 developers have been doing all along!
+But if you do need greater protection against outside influence
+on your form, Visual FoxPro 6 now provides you with that flexibility.
+<H3><A NAME="ShortcutOptionsfromthePropertiesWindow">
+Shortcut Options from the Properties Window</A></H3>
+<P>
+The Properties Window shortcut menu is among the most useful right-click
+menus in the entire product. Six options are available to you
+(seven if you count Help) and can prove quite useful when you're
+navigating the maze of properties, events, and methods (see Figure
+9.15).
+<P>
+<IMG SRC="f9-15.gif"><B>Figure 9.15: </B><I>Using the Properties window shortcut options,
+you can easily take some common actions</I>.</A>
+<P>
+<B>Property Descriptions&nbsp;&nbsp;</B>Property Descriptions,
+the first choice in this shortcut menu, indicates whether you
+want to view the property descriptions at the bottom of the window.
+Turning this feature off saves screen space, but turning it on
+can greatly ease development, especially if you are new to Visual
+FoxPro or if you are modifying a form originally designed by someone
+else (and containing a number of user-defined properties and methods).
+<P>
+<B>Always on Top&nbsp;&nbsp;</B>Always on Top works just as it
+does throughout most of Visual FoxPro: Selecting this option guarantees
+that the Properties window will always be in the forefront of
+the screen while you are developing rather than lost beneath a
+maze of toolbars and other windows.
+<P>
+<B>Non-Default Properties Only&nbsp;&nbsp;</B>Selecting Non-Default
+Properties Only limits what is shown in the Properties window
+to those properties and methods that have been changed for this
+form. This option can help you tell at a glance what has been
+changed on a given form, without fishing through the dozens of
+default PEM settings.
+<P>
+<B>Font Settings&nbsp;&nbsp;</B>The Small Font, Medium Font, and
+Large Font selections enable you to choose the size of the font
+you want for the Properties window. The default is Small, and
+it's likely that you'll want to fit as many PEM settings as possible
+in the Properties window by keeping it that way. On a smaller
+monitor or a larger monitor with greater resolution, however,
+telling your <TT>MaxLeft</TT> from your <TT>MaxTop </TT>can be
+hard.
+<H2><A NAME="WorkingwithControlsonaForm"><FONT SIZE=5 COLOR=#FF0000>
+Working with Controls on a Form</FONT></A></H2>
+<P>
+Visual FoxPro provides a full range of tools and properties for
+formatting controls, and you definitely should make them a part
+of your programming life. It's true that most programmers are
+not expected to also act as graphic designers. However, you should
+still strive for a professional and slick look and feel, especially
+because creating it is so easy in Visual FoxPro. Remember that
+forms are the primary point of user interaction with your application,
+and to the user, running those first forms can be like checking
+out a used car. We all know that a tiny dent in the fender has
+no firm connection to engine performance, but what if the mirrors
+are cracked, the doors are different colors, and the gear settings
+are painted over? Well, you start wondering pretty quickly about
+what oddities lurk beneath the hood as well, no matter how many
+reassurances the salesman offers you.
+<P>
+Take pride in how your forms look and feel, and remember that
+to the many users, your forms <I>are</I> your application. Neatness
+counts!
+<H3><A NAME="AligningControls">
+Aligning Controls</A></H3>
+<P>
+Every control has a series of format properties to assist you
+in fine-tuning its location on the form. Visual FoxPro also provides
+a series of menu options under Format to ease this process. To
+align a series of text boxes, for instance, start by multi-selecting
+the text boxes (you can do so by holding down the Ctrl key as
+you click or holding down the mouse button and drawing a rectangular
+area around the controls you want to select). Then, while the
+controls are still selected, select Format, Align. You can choose
+how you want to align the select controls: left, right, top, bottom,
+centered vertically, or centered horizontally. This alignment
+process has no effect on the alignment of text within each control.
+Instead, it determines how the controls sit in reference to each
+other.
+<P>
+Visual FoxPro tries to take its best guess at exactly where you
+want the newly aligned group of controls to reside, but if you
+align controls that start out quite far apart, FoxPro might end
+up placing them a few pixels away from where you want them to
+be. In that case, while the controls are still multi-selected,
+you can move them together by using either the mouse or the arrow
+keys.
+<H3><A NAME="Size">
+Size</A></H3>
+<P>
+The Format menu also includes a number of Size options, which
+enable the developer to easily size multiple controls to each
+other or to the gridline settings in the Form Designer. Choosing
+Format, Size, To Fit makes multiple controls the same height and
+width. Choosing Format, Size, To Grid snaps one or more controls
+to the same dimensions as the nearest Form Designer gridlines.
+The other options determine the size of multiple controls based
+on the tallest, shortest, widest, or most narrow selected control.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Notice that the Properties window changes slightly when you multi-select controls. The object pull-down contains the words Multiple Selection, and the window includes only properties common to all the selected controls. Changing a PEM setting changes the settings in all the selected controls.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="Spacing">
+Spacing</A></H3>
+<P>
+The Spacing options in the Format menu enable you to space three
+or more controls equal distances apart, either vertically or horizontally.
+You might not notice if a series of text boxes are a few pixels
+more or less apart from each other. On the other hand, a data
+entry clerk who stares at the screen all day certainly will.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The View menu includes two options that might prove quite useful for creating an elegant form. The Grid Lines option fills in the form canvas with horizontal and vertical grid lines, enabling you to better gauge distances, as well as snap or size controls to the nearest gridlines. The Show Position option will show the exact size and location of the selected objects.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="TabOrderofControls">
+Tab Order of Controls</A></H3>
+<P>
+Even in our mouse-centric computer age, people still use keyboards.
+Personally, nothing ruffles my feathers more than opening a data
+entry form and trying to tab through the controls, only to find
+that focus jumps all over the page. Trust me: Your users will
+notice when this happens, and it will cost you more than a few
+points of credibility.
+<P>
+You can set tab order for controls in two ways, and the one you
+use will depend on your setting on the Forms tab of the Options
+dialog box (choose Tools, Options). The Tab Ordering pull-down
+includes two possible options: Interactive (the default) and By
+List. Selecting the Interactive option means that your controls
+will receive Tab focus in the order you specify in their <TT>TabOrder</TT>
+properties (in fact, choosing the View, Tab Order option will
+make the tab order visible right on the form). Selecting the By
+List option means that the View, Tab Order menu selection will
+present you with a dialog box. There, you'll see a list of controls
+and can manipulate the tab order as you want. Figure 9.16 shows
+the Tab Order dialog box.
+<P>
+<IMG SRC="f9-16.gif"><B>Figure 9.16: </B><I>In the Tab Order dialog box, you can specify
+the tab order of controls on your form</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro enables you to switch to any font currently on your system. Keep in mind that not all users' PCs will have the same fonts loaded as your own PC. You can include these fonts as long as you own royalty-free copies. Sticking to the most common typefaces-Arial, Courier or Courier New, and Times Roman-is probably safer unless you are certain of all your customers' configurations.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="NamingFormControls">
+Naming Form Controls</A></H3>
+<P>
+When you drop a control onto the form canvas, Visual FoxPro automatically
+assigns the control a unique name, consisting of the control class
+and a numeric suffix (<TT>Command1</TT>, <TT>Label6</TT>, and
+so on). Most likely, the first property you will want to change
+is the control name. Many developers find it helpful to name controls
+in such a way that the control type and purpose are readily apparent:
+<TT>txtLastName</TT>, <TT>cmdProcess</TT>, <TT>chkSendMail</TT>,
+and so on.
+<P>
+Visual FoxPro does not enforce a naming scheme, outside of requiring
+unique names within a container and not allowing certain characters
+(spaces, slashes, hyphens, and punctuation). The naming convention
+you use will depend on your own preferences or, if you work in
+a team environment, existing standards. However, Microsoft does
+suggest the naming convention listed in Table 9.5. Many FoxPro
+developers use this scheme or one very similar to it.<BR>
+<P>
+<CENTER><B>Table 9.5&nbsp;&nbsp;Microsoft Naming Conventions</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>Object Prefix</B></CENTER></TD><TD WIDTH=144><CENTER><B>Object</B></CENTER>
+</TD><TD WIDTH=192><CENTER><B>Example</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>chk</TT></TD><TD WIDTH=144><TT>CheckBox</TT>
+</TD><TD WIDTH=192><TT>chkReadOnly</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>cbo</TT></TD><TD WIDTH=144><TT>ComboBox</TT>
+</TD><TD WIDTH=192><TT>cboEnglish</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>cmd</TT></TD><TD WIDTH=144><TT>CommandButton</TT> 
+</TD><TD WIDTH=192><TT>cmdCancel</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>cmg</TT></TD><TD WIDTH=144><TT>CommandGroup</TT>
+</TD><TD WIDTH=192><TT>cmgChoices</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>cnt</TT></TD><TD WIDTH=144><TT>Container</TT>
+</TD><TD WIDTH=192><TT>cntMoverList</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>ctl</TT></TD><TD WIDTH=144><TT>Control</TT>
+</TD><TD WIDTH=192><TT>ctlFileList</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>&lt;user-defined&gt;</TT></TD><TD WIDTH=144><TT>Custom</TT>
+</TD><TD WIDTH=192><TT>user-defined</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>edt</TT></TD><TD WIDTH=144><TT>EditBox </TT>
+</TD><TD WIDTH=192><TT>edtTextArea</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>frm</TT></TD><TD WIDTH=144><TT>Form</TT>
+</TD><TD WIDTH=192><TT>frmFileOpen</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>frs</TT></TD><TD WIDTH=144><TT>FormSet</TT>
+</TD><TD WIDTH=192><TT>frsDataEntry</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>grd</TT></TD><TD WIDTH=144><TT>Grid</TT>
+</TD><TD WIDTH=192><TT>grdPrices</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>grc</TT></TD><TD WIDTH=144><TT>Column</TT>
+</TD><TD WIDTH=192><TT>grcCurrentPrice</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>grh</TT></TD><TD WIDTH=144><TT>Header</TT>
+</TD><TD WIDTH=192><TT>grhTotalInventory</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>img</TT></TD><TD WIDTH=144><TT>Image</TT>
+</TD><TD WIDTH=192><TT>imgIcon</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>lbl</TT></TD><TD WIDTH=144><TT>Label</TT>
+</TD><TD WIDTH=192><TT>lblHelpMessage</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>lin</TT></TD><TD WIDTH=144><TT>Line</TT>
+</TD><TD WIDTH=192><TT>linVertical</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>lst</TT></TD><TD WIDTH=144><TT>ListBox</TT>
+</TD><TD WIDTH=192><TT>lstPolicyCodes</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>olb</TT></TD><TD WIDTH=144><TT>OLEBoundControl</TT>
+</TD><TD WIDTH=192><TT>olbObject1</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>ole</TT></TD><TD WIDTH=144><TT>OLE</TT>
+</TD><TD WIDTH=192><TT>oleObject1</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>opt</TT></TD><TD WIDTH=144><TT>OptionButton </TT>
+</TD><TD WIDTH=192><TT>optFrench</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>opg</TT></TD><TD WIDTH=144><TT>OptionGroup</TT>
+</TD><TD WIDTH=192><TT>opgType</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>pag</TT></TD><TD WIDTH=144><TT>Page</TD><TD WIDTH=192><TT>pagDataUpdate
+</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>pgf</TT></TD><TD WIDTH=144><TT>PageFrame</TD><TD WIDTH=192><TT>pgfLeft
+</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>sep</TT></TD><TD WIDTH=144><TT>Separator</TD><TD WIDTH=192><TT>sepToolSection1
+</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>shp</TT></TD><TD WIDTH=144><TT>Shape</TD><TD WIDTH=192><TT>shpCircle
+</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>spn</TT></TD><TD WIDTH=144><TT>Spinner</TD><TD WIDTH=192><TT>spnValues
+</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>txt</TT></TD><TD WIDTH=144><TT>TextBox</TD><TD WIDTH=192><TT>txtGetText
+</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>tmr</TT></TD><TD WIDTH=144><TT>Timer</TD><TD WIDTH=192><TT>tmrAlarm
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>tbr</TT></TD><TD WIDTH=144><TT>ToolBar</TT>
+</TD><TD WIDTH=192><TT>tbrEditReport</TT>
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="TheDataConnection"><FONT SIZE=5 COLOR=#FF0000>
+The Data Connection</FONT></A></H2>
+<P>
+Now that you've learned about designing the visual and code pieces
+of forms, you're ready to take a look at how FoxPro makes data
+available in the Form Designer. As is so often the case with Visual
+FoxPro, flexibility is the name of the game: Visual FoxPro enables
+you to access data as directly or indirectly as you want, and
+the Form Designer includes all the tools you need to follow your
+preferred approach.
+<H3><A NAME="SettingtheFormiacutesDataEnvironment">
+Setting the Form&iacute;s Data Environment</A></H3>
+<P>
+Perhaps the most radical enhancement to screen development (starting
+with Visual FoxPro 3) has been the inclusion of a flexible and
+visual Data Environment to each form you design. You are free
+to make as much or as little use of this Data Environment as you
+might like, though I think you'll find too many advantages to
+ignore it altogether.
+<P>
+Every form has a built-in Data Environment that exists as a child
+object of the form container. You won't be able to access this
+special object in the ways discussed here, though; the Data Environment
+cannot be selected through the Properties or Code windows and
+it cannot be clicked and selected from anywhere on the form canvas.
+Instead, you can access the Data Environment by selecting View,
+Data Environment or by right-clicking and selecting Data Environment
+from the shortcut menu.
+<P>
+Either way, you will be shown a visual representation of the Data
+Environment for the form, as shown in Figure 9.17, and you can
+choose to add tables, cursors, or views as you like. Each is added
+as a Cursor object, complete with its own set of properties, events,
+and methods. You can visually set relations between cursor objects
+or access the properties, events, and methods of tables, cursors,
+or relations via the Properties and Code windows.
+<P>
+<IMG SRC="f9-17.gif"><B>Figure 9.17: </B><I>Using the Data Environment of a form, you
+can specify and save the settings of the underlying data sources</I>.</A>
+<P>
+To add tables or views to the Data Environment, select Data Environment,
+Add, or right-click on the Data Environment designer and select
+Add. If a database is already open, that database and its tables
+or views will appear in the Add Table or View dialog box (see
+Figure 9.18). If no database is currently opened, or if you choose
+Other, a GetFile dialog box will appear for you to choose a table.
+If you select a table that is part of a database that is not yet
+open, Visual FoxPro backlinks the table to the database and opens
+the database automatically.
+<P>
+<IMG SRC="f9-18.gif"><B>Figure 9.18: </B><I>You can add tables or views to the form's
+Data Environment</I>.</A>
+<P>
+If you want to work against a view instead of a table, select
+the Views option button, and the list of tables will be replaced
+by a list of views in the database.
+<P>
+After you add the table or view to the Data Environment, you can
+browse it by right-clicking on the table or view and selecting
+Browse from the shortcut menu. You can also select Data Environment,
+Browse from the system menu, but only if the table or view has
+already been selected (you select it by clicking it).<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Cursor objects include a logical property called <TT>.NoDataOnLoad</TT>. Setting this property to <TT>True</TT> for a cursor with an updateable view as its source will cause the cursor to start out empty. In forms designed to query specific data sets, this feature can be quite useful because it greatly enhances form loading performance. This property has no effect on local tables.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="WorkingwithRelationshipsintheDataEnvironmentDesigner">
+Working with Relationships in the Data Environment Designer
+</A></H3>
+<P>
+You can easily create a relationship between two cursor objects
+in the Data Environment. To do so, select the relation field from
+the parent data source, and drag it onto the child cursor. The
+child table must have an index on this field. If it doesn't, FoxPro
+offers to create one for you (see Figure 9.19).
+<P>
+<IMG SRC="f9-19.gif"><B>Figure 9.19: </B><I>Here, you must confirm whether to create
+a Data Environment index</I>.</A>
+<H3><A NAME="DataEnvironmentAFinalWord">
+Data Environment: A Final Word</A></H3>
+<P>
+You can switch back and forth in your form between the Data Environment
+and the form canvas by clicking on either. Any tables you add
+to a form's Data Environment will be automatically opened whenever
+you run the form and automatically closed after the form is destroyed.
+If you have set relations between several tables or cursors, these
+relations are reset for you each time you run an instance of the
+form. Gone are the days of <TT>Open_File</TT> and <TT>Close_File</TT>
+style functions, with file alias assignments and tag order settings
+and those seemingly endless strings of <TT>Set Relation To <I><TT>childtable</TT></I>
+Additive</TT> commands. Now, you set your Data Environment at
+the same time as you design your form and then (practically) never
+worry about it again.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+In addition to filling your Data Environment with visual cursor and relation objects, you can also enter code in any of the DE events, including <TT>BeforeOpenTables</TT>, <TT>Init</TT>, and <TT>AfterCloseTables</TT>. Be careful, though, about mixing and matching visual objects and code in this case. Stumbling into a web of cyclical relations and hard-to-debug anomalies is very frustrating. FoxPro attempts to undertake a certain set of low-level events when you enter objects visually into the Data Environment (and in fact, they fire more quickly than your code will). As you become comfortable with using Data Environments, you might want to augment their functionality. Until then, try using the visual Data Environment tools for all that you can.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="DraggingandDroppingDataControlsontoYourForm">
+Dragging and Dropping Data Controls onto Your Form</A></H3>
+<P>
+The Data Environment would be a helpful feature of Visual FoxPro's
+Form Designer even if its functionality stopped there. But it
+doesn't. Perhaps best of all, Visual FoxPro enables you to drag
+and drop data controls from the Data Environment directly onto
+your form, where they are instantiated as text boxes, spinners,
+or check boxes, along with field descriptions or names as corresponding
+labels. To move a field onto a form, add a table to the Data Environment,
+and click on the field you want to add. Drag and drop the control
+onto the form, and you'll notice that a label and a control appear.
+The label is the field description, or the field name if there
+is no description, and the control is precoded to be bound to
+the field you specified. The type of control that is created during
+drag-and-drop depends on the <TT>DisplayClass</TT> and <TT>DisplayLibrary</TT>
+settings in the Field tab of the Table Designer. (See Part 2 for
+more information on working with data.)
+<P>
+To drag multiple fields onto a form, just multi-select them by
+holding down the Ctrl key while clicking. To select all the fields
+in a view or table as individual fields, click on the word <I>Fields</I>
+on top of the table representation. To select all fields into
+a grid on the form, grab the title bar of the cursor object and
+drag and drop.
+<H3><A NAME="BoundVersusUnboundControls">
+Bound Versus Unbound Controls</A></H3>
+<P>
+Adding controls to the form by dragging them from the Data Environment
+results in controls with <TT>ControlSource</TT> properties pointing
+to field references. That is, they are <I>bound</I> controls;
+they are directly tied to underlying tables or views, and changing
+the value of the control results in a corresponding change in
+the relevant field. Visual FoxPro makes it very easy to create
+forms with bound controls, and most developers choose to do so.
+However, Visual FoxPro also supports data manipulation through
+<I>unbound </I>controls. In other words, FoxPro lets you manipulate
+controls with no <TT>ControlSource</TT>, or with variables or
+properties as the <TT>ControlSource</TT>, and then programmatically
+change your data based on the control properties.
+<P>
+Many developers and OOP aficionados feel quite strongly one way
+or the other. My advice is to use what works for you: Bound controls
+offer many advantages, including the wonders of drag-and-drop.
+Unbound controls can provide you greater flexibility when you're
+dealing with a multitier environment, where you keep special business
+rules or validation methods in a separate layer of code, and let
+those objects take care of actually writing down data.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When you're deciding whether to bind your controls, keep in mind your current framework (if any) and your fellow developers (if any). Nothing gets muddier more quickly than a set of forms with varying approaches to the binding and writing of data. Remember that any code that relies on <TT>GetNextModifed()</TT> or other commands that read from the underlying data source will not be privy to changes in unbound controls.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="UnderstandingPrivateDataSessions">
+Understanding Private Data Sessions</A></H3>
+<P>
+One of the issues to deal with when you're working with forms
+that modify data is the issue of <I>data sessions</I>. In days
+gone by, FoxPro programmers jumped through a lot of hoops to guarantee
+that changes made to record pointers, relations, and so on, in
+one form did not change the settings in any other forms. Virtually
+anyone who programmed in FoxPro during the pre-3.0 days knows
+what I am talking about: macro-expansion aliases, saved and restored
+memory variables with every setting, and any number of less elegant
+and less efficient approaches.
+<P>
+We can be thankful that all those approaches changed with the
+advent of the Visual FoxPro data session. A <I>data session</I>
+is an environment of work areas and data settings. Each data session
+has 32,767 available work areas and a number of FoxPro settings
+particular to its own area of your application. In other words,
+a data session is a small, relatively well-protected area of your
+application, enabling a form to change record pointers, index
+orders, relations, or any other setting without affecting other
+forms.
+<P>
+Private data sessions are a very powerful feature. Basically,
+private data sessions enable the developer to encapsulate a form's
+Data Environment within itself.
+<P>
+You can easily assign a form its own data session. Just set the
+<TT>DataSession</TT> property of the form to <TT>2 - Private Data
+Session</TT>.
+<P>
+A good way to view private data sessions in action is to run a
+form with the <TT>DataSession</TT> property set to <TT>2</TT>
+and then access the View window, by selecting Windows, View or
+typing <TT>Set</TT> in the command window. Expand the Current
+Session drop-down list (as shown in Figure 9.20). Note that you
+now have two sessions that are independent of each other. Opening
+or closing tables in one session will have no effect on any other
+data session.
+<P>
+<IMG SRC="f9-20.gif"><B>Figure 9.20: </B><I>You can switch data sessions from the View
+window to debug multiple forms</I>.</A>
+<H3><A NAME="SoWhoControlstheData">
+So, Who Controls the Data?</A></H3>
+<P>
+With all this talk of Data Environments, bound controls, and private
+data sessions, you might be wondering how it all fits in with
+the settings in the database container. The answer is actually
+quite simple: After you've set up your underlying database, the
+form's Data Environment enables you to maintain any relevant pieces
+of the database within the form's own private data session. At
+the form level, you can change certain general data properties,
+such as the level of data buffering. At any point in the form
+code, you can change a particular data-related setting, such as
+<TT>Set Century On</TT>, and it will affect all data accessed
+in the form's session.
+<P>
+You'll find that the database, the Data Environment, and the form
+itself can each be put to use to fine-tune your data access on
+each form. And it doesn't stop there! You can even drag tables
+from the Project Manager into your Data Environment or form. Just
+remember, whatever exists in the Data Environment, whether visually
+or through code in the Data Environment <TT>Init</TT> method,
+will be opened every time the form is run and closed each time
+the form is destroyed.
+<H2><A NAME="RunningaForm"><FONT SIZE=5 COLOR=#FF0000>
+Running a Form</FONT></A></H2>
+<P>
+Now that's you've created a form, using it is quite easy. Just
+type the following command in the command window, or include it
+in your code:
+<BLOCKQUOTE>
+<PRE>
+DO FORM MyForm
+</PRE>
+</BLOCKQUOTE>
+<P>
+Is running the form really that easy? Well, yes and no. As is
+so often the case, Visual FoxPro offers a good deal of flexibility
+in referencing and releasing forms. The <TT>Name</TT> keyword
+enables the user to specify an alternative name for a form:
+<BLOCKQUOTE>
+<PRE>
+Do Form MyForm Name MyGreatForm
+</PRE>
+</BLOCKQUOTE>
+<P>
+A form created in this manner can be manipulated by calls to <TT>MyGreatForm</TT>.
+You'll soon notice, though, that a <TT>Release MyGreatForm</TT>
+command will have no effect on the form. It's almost as if the
+<TT>Name</TT> clause creates a form alias but doesn't bind the
+form entirely to the object reference. Fortunately, the <TT>Linked</TT>
+clause does just that: It strengthens the form's bind to the named
+object reference, above and beyond simple naming and reference.
+Instead, the form is represented by the variable and shares its
+scope:
+<BLOCKQUOTE>
+<PRE>
+Do Form MyForm Name MyGreatForm Linked
+</PRE>
+</BLOCKQUOTE>
+<P>
+A form created in this manner can be released by setting <TT>MyGreatForm</TT>
+to <TT>.Null.</TT> or by releasing the variable.
+<P>
+Suppose, however, that you run an instance of a form named <TT>MyMainForm</TT>
+by using <TT>Do Form MyMainForm Name MyForm</TT>. Then you release
+the <TT>MyForm</TT> variable and even set it to <TT>.NULL.</TT>,
+but the screen doesn't close. The problem is that you must include
+the <TT>Linked</TT> keyword to bind a form to its object reference.
+Keep in mind that binding a form to a variable in this way introduces
+a pitfall: You must use caution when creating a form that is linked
+to a local (or private) variable. As soon as the variable goes
+out of scope, the form will be released.
+<H2><A NAME="OtherFeaturesofForms"><FONT SIZE=5 COLOR=#FF0000>
+Other Features of Forms</FONT></A></H2>
+<P>
+By now, you should have a pretty good idea of the power (and relative
+ease) of the Form Designer. Now, let's turn our attention to a
+few important additional notes on designing and running forms,
+including details of some features that are brand-new to Visual
+FoxPro 6.
+<H3><A NAME="UsingMultipleInstancesofaSingleForm">
+Using Multiple Instances of a Single Form</A></H3>
+<P>
+Visual FoxPro enables you to run multiple instances of forms at
+the same time. This feature might be needed in an application
+for many reasons. For instance, a phone operator might be entering
+information for one customer when he or she is interrupted with
+a request to look up data for a second customer. You don't need
+to adjust any special settings for FoxPro to enable multiple instances
+of the same form; in fact, it's the default behavior. You'll want
+to be sure to use private data sessions for those forms, though.
+Otherwise, changes to the environment made by one form will be
+reflected in the other (record pointers, most notably). Then you'll
+have to write code to deal with potential record pointer changes
+in your <TT>Activate()</TT> and <TT>Deactivate()</TT> commands.
+And no VFP programmer I know <I>ever</I> wants to deal with all
+that again.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro's support of multiple form instances presents an often-overlooked fringe benefit. Programmers and developers can use this feature, along with private data sessions, to test for multiuser contention right on their own PCs. Multiple data sessions basically imitate multiple user behavior, and by firing up a few copies of your form, you can easily do what used to be so difficult: test the exact behavior your user will encounter during most cases of multiuser contention.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="FormSets">
+Form Sets</A></H3>
+<P>
+<I>Form sets</I> were included in Visual FoxPro mainly for backward
+compatibility issues (they are very similar to pre-3.0 screen
+sets), but they have since proven useful to many programmers.
+Form sets have several advantages over individual forms:
+<UL>
+<LI>Developers can show or hide multiple forms
+at once. Of course, you could also write a little loop to scan
+through active forms, but if you'll be calling such code often,
+why not let Visual FoxPro do the work for you?
+<LI>Forms in a form set can share the same
+private data session, which can be quite useful when multiple
+forms need to keep record pointers in sync.
+<LI>If you want a group of forms to show up
+in a particular arrangement, form sets enable you to make such
+an arrangement much more quickly than you could if you were developing
+each form one-by-one.
+</UL>
+<P>
+So what's the downside? Well, some programmers feel that form
+sets muddy the water by adding an extra level of control and removing
+control of some properties from our friend, the form, into its
+bullying higher-level cousin. But, once again, you can turn FoxPro's
+flexibility to your advantage. Use form sets if you find a need,
+and keep using them if you find them useful. Or ignore them altogether,
+and dive right into the single-form development paradigm.
+<H3><A NAME="TheTTLockScreenTTProperty">
+The <TT>LockScreen</TT> Property
+</A></H3>
+<P>
+If you have a control-laden form running against a large data
+source, you might notice a quick flicker across the form when
+the screen refreshes. Visual FoxPro forms include a special logical
+property, called <TT>LockScreen,</TT> that indicates whether the
+user's changes to the form are visible to the user. Typically,
+developers take advantage of this property as follows:
+<BLOCKQUOTE>
+<PRE>
+THISFORM.LockScreen = .T.
+* -- a series of checks, refreshes, and data queries
+THISFORM.LockScreen = .F.
+</PRE>
+</BLOCKQUOTE>
+<P>
+Be careful when using this property. If you leave a form's <TT>LockScreen</TT>
+property set to <TT>True</TT> and do not include code to set it
+back to <TT>False</TT>, the form will remain locked and no subsequent
+changes will show. Also, be careful when using the <TT>LockScreen</TT>
+property when you're working within embedded methods. A calling
+procedure might have set <TT>LockScreen</TT> on or off and will
+expect it to return to that state when your code returns control.
+Follow the cardinal rule of programming: Restore anything in the
+environment that you have changed. The following code is a vast
+improvement on the preceding code:
+<BLOCKQUOTE>
+<PRE>
+Local llOldLockScreen
+llOldLockScreen = THISFORM.LockScreen
+THISFORM.LockScreen = .T.
+* -- a series of checks, refreshes, and data queries
+THISFORM.LockScreen = llOldLockScreen
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="CreatingModalForms">
+Creating Modal Forms</A></H3>
+<P>
+As much as we strive to give users control over their environment,
+sometimes a crucial question still must be asked or a key piece
+of information must be entered or verified before any application
+functions can continue. At those moments, you can make use of
+Visual FoxPro <I>modal forms</I>.
+<P>
+Even younger and/or less-experienced computer users have grown
+used to the distinction between forms that let you &quot;leave&quot;
+or switch to another form, and those that stop you dead in your
+tracks and demand an answer. Modal forms are still an accepted
+application tool, <I>in moderation</I>. When you do need to develop
+a modal form, you can do so quite easily. Just set the form's
+<TT>WindowType</TT> property from <TT>0 - Modeless</TT> (the default)
+to <TT>1 - Modal</TT>. Voil&agrave;! You've created a modal form.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=650><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=650>
+<BLOCKQUOTE>
+Another way of making a form modal is by calling its <TT>Show</TT> method with an optional parameter of <TT>0</TT> for Modeless or <TT>1</TT> for Modal. The parameter overrides the <TT>WindowType</TT> setting. The only hitch, as shown next, is that you must first hide the form to override the property. Consider this code:
+<P>
+<TT>
+DO FORM MyModelessForm  &amp;&amp; form opened modeless<BR>
+MyModelessForm.Hide()   &nbsp;&amp;&amp; hides the form from view<BR>
+MyModelessForm.Show(1)  &amp;&amp; shows the form as a modal form</TT>
+<P>
+You could also have executed this code as follows:<P>
+<TT>
+DO FORM MyModelessForm NoShow  &amp;&amp; form is in memory, but not yet shown<BR>
+MyModelessForm.Show(1)         &amp;&amp; shows the form as a modal form</TT>
+<P>
+In this way, you can easily call any of your existing forms as modal forms.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Modal forms are often called in circumstances in which the programmer
+needs some sort of response from the user. Calling the forms is
+quite easy in Visual FoxPro. You can use a special version of
+the <TT>DO FORM</TT> command that looks like this:
+<BLOCKQUOTE>
+<PRE>
+Do FORM frmname to varname
+</PRE>
+</BLOCKQUOTE>
+<P>
+The <TT>return</TT> statement, specifying the value to return,
+should be placed in the modal form's <TT>Unload</TT> method.
+<H2><A NAME="UsingFormWizardsandBuilders"><FONT SIZE=5 COLOR=#FF0000>
+Using Form Wizards and Builders</FONT></A></H2>
+<P>
+Visual FoxPro includes two sets of powerful tools for facilitating
+Rapid Application Development of forms. The Form Wizards create
+a form for you, complete with fully functional pushbutton controls
+for editing and navigation. The builders help you quickly design
+and format a particular object through a series of wizard-like
+questions.
+<H3><A NAME="CreatingaFormwiththeFormWizard">
+Creating a Form with the Form Wizard</A></H3>
+<P>
+Like other FoxPro wizards, the Form Wizards step you through the
+process of form creation by asking a series of questions about
+the desired form. The Form Wizards were designed to be quite easy
+to use and require little in the way of formal offline instruction.
+Let's take a few moments now to detail the process.
+<P>
+From the Tools menu option, select Wizards, Form. Visual FoxPro
+ships with two available types of Form Wizards: a basic one-record
+form and a one-to-many form. They are shown in the dialog box
+featured in Figure 9.21.
+<P>
+<IMG SRC="f9-21.gif"><B>Figure 9.21: </B><I>You can choose from two types of Form Wizards</I>.</A>
+<P>
+Let's assume that you want a form that is based on a single table,
+query, or view. Choose Form Wizard from the dialog box and click
+OK. You then see the first of the Form Wizard dialog boxes, as
+shown in Figure 9.22.
+<P>
+<IMG SRC="f9-22.gif"><B>Figure 9.22: </B><I>In the first step of the Form Wizard, you
+can select fields for your form</I>.</A>
+<P>
+Select the desired database and associated table under the Databases
+and Tables options on the left. You will then see a list of available
+fields. You can click on the right-arrow command button to move
+the fields you want into the Selected Fields list, in any order
+you like. The double right-arrow button will move all available
+fields into the Selected Fields list.
+<P>
+The next dialog box presented by the Form Wizards asks which style
+you want for the form (see Figure 9.23). Your choices are Standard,
+Chiseled, Shadowed, Boxed, or Embossed. The magnifying glass view
+at the top left of the screen will change with each selection
+to show you an example of the style you have just selected.
+<P>
+<IMG SRC="f9-23.gif"><B>Figure 9.23: </B><I>You can choose from various common form
+styles</I>.</A>
+<P>
+In this screen, you also choose which style navigation buttons
+you prefer or whether you would like to use scrolling grid to
+navigate through your table.
+<P>
+The next dialog box will ask you for the sort order of the data.
+You can add up to three fields on which to sort by clicking each
+desired field in the Available Fields list and then clicking the
+Add button (see Figure 9.24). You can choose from fields or from
+any existing index tags.
+<P>
+<IMG SRC="f9-24.gif"><B>Figure 9.24: </B><I>You can sort your form by an index or a
+field specification (up to three different fields</I>).</A>
+<P>
+The last dialog box requests whether you want to save the form,
+save the form and immediately run it, or save the form and immediately
+begin modifying the form (see Figure 9.25). You can also decide
+whether you would like a pageframe form if the number of fields
+selected cannot fit on the main form canvas. Creating forms is
+that simple.
+<P>
+<IMG SRC="f9-25.gif"><B>Figure 9.25: </B><I>When you are finished with the Form Wizard,
+you can choose to run the form, save it, or modify it</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The Form Wizard can be a useful tool for creating a simple form, prototyping a form, or just learning more about controls and how they work. The ease of use, however, carries with it an associated loss of control. After you become more comfortable with the Form Designer, you might begin to steer clear of the Form Wizards altogether. The choice is up to you.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="UsingBuilderstoDevelopForms">
+Using Builders to Develop Forms</A></H3>
+<P>
+Whether you've started your form design from scratch or used a
+wizard to get a running start, you will probably want to take
+advantage of Visual FoxPro's builders. Simply put, a builder is
+kind of like a wizard: It's a dialog box that enables you to quickly
+and easily define some of the basic behaviors and formats of a
+form and its controls. Unlike wizards, though, builders can be
+run again and again against the same controls. You can use builders
+not just to create, but to edit.
+<P>
+You can use the following builders in the Form Designer:
+<BLOCKQUOTE>
+AutoFormat Builder<BR>
+ComboBox Builder<BR>
+Command Group Builder<BR>
+Edit Box Builder<BR>
+Form Builder<BR>
+Grid Builder<BR>
+List Box Builder<BR>
+Option Group Builder<BR>
+Text Box Builder
+</BLOCKQUOTE>
+<P>
+You can run the builder associated with an object in two ways:
+<UL>
+<LI>Select the Builder Lock button on the
+Form Controls toolbar. Every time you drop an object on the form
+canvas, the associated builder (if it exists) will run.
+<LI>Right-click the object you want to build,
+and select Builder from the shortcut menu.
+</UL>
+<P>
+<B>The Text Box Builder&nbsp;&nbsp;</B>Builders range in complexity
+based on the object being built. The Text Box Builder, shown in
+Figures 9.26 through 9.28, has three tabs of information enabling
+you to define how the text box should behave, including how it
+should look and what field in a table the text box should be bound
+to.
+<P>
+<IMG SRC="f9-26.gif"><B>Figure 9.26: </B><I>Use the Format tab of the Text Box Builder
+to specify input masks and the behavior of your text box at runtime</I>.</A>
+<P>
+<IMG SRC="f9-27.gif"><B>Figure 9.27: </B><I>On the Style tab of the Text Box Builder,
+you can select the size, border style, and alignment of your text
+box</I>.</A>
+<P>
+<IMG SRC="f9-28.gif"><B>Figure 9.28: </B><I>On the Value tab of the Text Box Builder,
+you can indicate the source of your data</I>.</A>
+<P>
+The Grid Builder&nbsp;&nbsp;The Grid Builder, shown in Figures
+9.29 through 9.32, makes the formatting and design of a grid a
+snap. The Grid Items tab, shown in Figure 9.29, like the Form
+Wizard, enables you to select the fields you want to include in
+the grid.
+<P>
+<IMG SRC="f9-29.gif"><B>Figure 9.29: </B><I>On the Grid Items tab of the Grid Builder,
+you can select the fields to be included in the grid</I>.</A>
+<P>
+The Style tab, shown in Figure 9.30, enables you to select a particular
+style, including a &quot;Ledger&quot; style that alternates white
+and green rows.
+<P>
+<IMG SRC="f9-30.gif"><B>Figure 9.30: </B><I>On the Style tab of the Grid Builder, you
+can select a style for the grid</I>.</A>
+<P>
+On the Layout tab, shown in Figure 9.31, you can specify column
+captions, as well as the control that will be used within the
+grid to show the data. For instance, you can choose here to have
+a spinner or an edit box embedded inside the column to show numeric
+or memo field data.
+<P>
+<IMG SRC="f9-31.gif"><B>Figure 9.31: </B><I>On the Layout tab of the Grid Builder,
+you can specify the layout of the grid</I>.</A>
+<P>
+Finally, the Relationship tab (see Figure 9.32) helps you to define
+the relationship the table in the grid has with a parent table
+on the form. This capability is very useful when you're creating
+one-to-many forms.
+<P>
+<IMG SRC="f9-32.gif"><B>Figure 9.32: </B><I>On the Relationship tab of the Grid Builder,
+you can specify the relationships on a one-to- many form</I>.</A>
+<P>
+<B>The AutoFormat Builder&nbsp;&nbsp;</B>Most builders work on
+one object in the Form Designer, but the AutoFormat Builder enables
+you to apply a particular style to multiple controls. Just multi-select
+various controls, right-click, and select Builder. Figure 9.33
+shows the resulting dialog box.
+<P>
+<IMG SRC="f9-33.gif"><B>Figure 9.33: </B><I>Using the AutoFormat Builder, you can specify
+a style for multiple controls</I>.</A>
+<H2><A NAME="SomeBrandNewFormOptions"><FONT SIZE=5 COLOR=#FF0000>
+Some Brand-New Form Options</FONT></A></H2>
+<P>
+Visual FoxPro 6 offers a couple of brand-new form features, which
+are discussed in the following sections.
+<H3><A NAME="FormScrolls">
+Form Scrolls</A></H3>
+<P>
+One of my favorite new Visual FoxPro 6 form features is the capability
+to create forms with scrollbars on the side or bottom, enabling
+users to scroll through your form just as they would scroll through
+a grid, a word processing document, or an HTML page. In earlier
+versions of Visual FoxPro, developers had just a few choices when
+a form grew too long for a certain screen resolution. You could
+move some of the controls out to a new form (and perhaps include
+these forms in one FormSet), use pageframes, or take advantage
+of the ActiveX slider that ships with FoxPro and roll your own
+scrollbar-forms. The third option was quite attractive but required
+some specialized coding, and more important, some problems were
+documented with the slider control on PCs using multiple Microsoft
+products (newly installed products often overwrote Registry entries
+for previously installed sliders).
+<P>
+Now, scrollable forms are a native Visual FoxPro feature. The
+default behavior of a form is to have no scrollbars, but you can
+choose to include vertical scrollbars, horizontal scrollbars,
+or both. The <TT>Scrolled</TT> event fires every time a scrollbar
+is used, and <TT>VscrollSmallChange</TT> and <TT>HscrollSmallChange</TT>
+let the user determine how much the form scrolls for each click.
+<TT>ContinuousScroll</TT> indicates whether the user sees the
+scroll commence as soon as the scroll cursor begins moving or
+whether the scrolling waits until the move is done to adjust the
+screen (this is analogous to the form's <TT>LockScreen</TT> properties).
+<P>
+If your form is Sizable, Visual FoxPro takes care of activating
+and deactivating the scrollbars as necessary. As soon as the user
+makes the screen too small to fit all the controls, the scrollbars
+become visible.
+<H3><A NAME="TitleBars">
+Title Bars</A></H3>
+<P>
+Visual FoxPro 6 includes a new property, <TT>TitleBar</TT>, that
+indicates whether the form includes a title bar. Savvy developers
+had managed to remove title bars in versions 3 and 5, but only
+by manipulating a particular sequence of properties and events
+(shades of 2.x). The <TT>TitleBar</TT> property simplifies matters
+a great deal.
+<P>
+On the downside, when you lose the title bar, you lose some of
+the built-in functionality users might have come to expect. They
+can't minimize, maximize, resize, or move the form with the mouse
+any longer.
+<H2><A NAME="TheLastWord"><FONT SIZE=5 COLOR=#FF0000>
+The Last Word</FONT></A></H2>
+<P>
+If you're like most Visual FoxPro programmers and developers,
+you'll spend a remarkable amount of time working inside the Form
+Designer. Fortunately, VFP's object-oriented programming model
+makes it possible to create flexible, powerful, slick forms for
+your applications. The tools included in the designer-from toolbars
+to formatting options to wizards and builders-simplify your coding
+and help to make VFP a true RAD tool.
+<P>
+Keep in mind that no VFP tool is an island. Your forms and form
+development process will really begin to zing after you've become
+familiar with other facets of Visual FoxPro. The Form Designer
+enables you to set some data-related properties, but even the
+Data Environment is no substitute for the Database Designer. Your
+VFP 5 code might have been remarkably quick and flexible, but
+odds are that your various form methods will benefit from some
+of the new language extensions of VFP 6. The better grasp you
+have of Visual FoxPro's OOP implementation, the better use you'll
+make of the Form Designer.
+<P>
+Try to find time to really delve into the Form Designer. Microsoft
+has packed an awful lot into it, and the more you learn about
+it and experiment with it, the better your applications will become.
+<HR>
+<CENTER>
+
+<A HREF="ch08.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch10.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

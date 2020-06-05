@@ -1,0 +1,927 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 11 -- Events</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;11</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Events</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#AMethodByAnyOtherName">
+A Method By Any Other Name</A>
+<UL>
+<LI><A HREF="#OLECallbacks">
+OLE Callbacks</A>
+</UL>
+<LI><A HREF="#BacktoCOM">
+Back to COM</A>
+<UL>
+<LI><A HREF="#CreatingSeparateEventswithOLECallbacks">
+Creating Separate Events with OLE Callbacks</A>
+</UL>
+<LI><A HREF="#CombiningOLECallbacksandOLEEvents">
+Combining OLE Callbacks and OLE Events</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+How is it possible to reach <A HREF="ch11.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch11.htm" >Chapter 11</A> in a book on developing
+ActiveX components and not mention events even once? Well, the
+truth is, you have already read a great deal about events. In
+fact, you know almost everything that you need to know about how
+they work.
+<P>
+How is this possible? Read on&#133;
+<H2><A NAME="AMethodByAnyOtherName"><FONT SIZE=5 COLOR=#FF0000>
+A Method By Any Other Name</FONT></A></H2>
+<P>
+Looking back: What is the difference between a method and a property?
+<UL>
+<LI>The syntax you use to access them is slightly different in
+Visual Basic.
+<LI>A property is implemented with two methods: a Get method and
+a Set method.
+</UL>
+<P>
+In other words, they are really nothing more than two slightly
+different ways to invoke functions belonging to a COM interface.
+<P>
+There is a strong tendency in most ActiveX documentation (including
+that of Visual Basic) to deal with events as a unique entity.
+But in truth, they are the same as methods and properties-just
+a slightly different way to invoke functions on a COM interface.
+<P>
+The only real difference is one of perspective. If your application
+as a client calls an object method, then it is called a method.
+If the object calls a method belonging to one of your application's
+objects, it is an event.
+<P>
+Let's back up for a moment and see how this works without resorting
+to what is commonly called <I>events</I>.
+<H3><A NAME="OLECallbacks">
+OLE Callbacks</A></H3>
+<P>
+Imagine you have a client application that is using an object
+provided by a DLL or EXE code component. This object is going
+to perform an operation in the background. When the background
+operation is complete, you want the object to somehow notify your
+application that it is finished. In Visual Basic 4.0 the only
+way to accomplish this was through a technique called <I>OLE callbacks</I>.
+<P>
+The scenario for this type of operation can be seen in Figure
+11.1. First, choose an object in your own application that you
+want to have notified when the event occurs. Add a method to this
+object, which will be called to signal the event. In the TickTst1.vbp
+example, this method is called DelayedCall.
+<P>
+<A HREF="f11-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f11-1.gif"><B>Figure 11.1 :</B> <I>OLE callback scenario</I>.</A>
+<P>
+The TickTst1 form, shown below, uses an object provided by the
+Tick1.vbp code component. The application creates an instance
+of this object when it loads (and frees it when it unloads). In
+this particular case late binding was chosen, but early binding
+could be implemented as well. You'll  shortly see why, in this
+example, I chose to use an EXE server.
+<BLOCKQUOTE>
+<PRE>
+Dim TimerObj As Object
+
+Private Sub Form_Load()
+   ' Be sure Tick1 is running
+   Set TimerObj = CreateObject(&quot;Tick1.clsTick1&quot;)
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+   Set TimerObj = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Tick.clsTick1 object is very simple. It sets a timer to a
+specified delay and notifies your form when the time has expired
+by calling the form's DelayedCall method. How can it access the
+DelayedCall method in your form? Obviously, you must give it a
+reference to the form, which it will hold until the timer is triggered.
+This is done in the TimerObj.TriggerDelay method, where a reference
+to the form is passed by providing Me as a parameter.
+<P>
+The cmdTest button is disabled in order to avoid invoking the
+TriggerDelay method while a time operation is in progress. The
+Tick1 sample, being a very simple program, is not designed to
+handle re-entrancy. The cmdTest_Click function and its associated
+callback are shown here:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdTest_Click()
+   ' 2000 ms delay
+   TimerObj.TriggerDelay Me, 2000
+   cmdTest.Enabled = False
+End Sub
+
+Public Sub DelayedCall()
+   MsgBox &quot;DelayedCall 'Event' received&quot;
+   cmdTest.Enabled = True
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Referring again to Figure 11.1, you can see the two objects. The
+TickTst1 form includes the DelayedCall method on its default interface.
+The clsTick1 object includes the TriggerDelay method on its default
+interface. The client object (TickTst1) obtains a reference to
+the clsTick1 object and calls the TriggerDelay method for the
+object. This method includes a reference to the TickTst1 form
+as one of its parameters. The object holds on to that form reference
+in a private variable. When it is ready, it can call the DelayedCall
+method on the form.
+<P>
+Now, which one is an event? Both components are performing exactly
+the same operation-a method call. But the DelayedCall method is
+acting like an event because it is being called in response to
+some occurrence in the server. You see, it's mostly a matter of
+perspective.
+<P>
+Now, let's take a look inside the clsTick1 object. First, let
+me warn you: this object, while very short, actually takes advantage
+of a variety of advanced techniques. Some of these have already
+been discussed, but some won't be covered until later.
+<H4>The Tick1 Project</H4>
+<P>
+This project implements a simple alarm type application. You provide
+it with a time delay, and after the time expires, your client
+object is notified. In the real world, you would probably implement
+this functionality with a timer in your own application. But this
+is actually an excellent learning example because a timer event
+is representative of any external event. The principles shown
+here can be applied directly to applications such as:
+<UL>
+<LI>Waiting for a remote query to complete
+<LI>Waiting for a child process to terminate
+<LI>Waiting for a system event
+<LI>Waiting for a download of a large file over the Internet
+</UL>
+<P>
+This project includes a single class (clsTick1.cls) and a module
+modTick1.bas. The class module contains two private variables.
+DelayToUse holds the delay value. CallbackObject is used to hold
+a reference to the client object. This object must contain a method
+named DelayedCall. If it doesn't, an error will occur.
+<P>
+Note that this reference must be late bound because you want this
+object to be useable from any client object that is willing to
+implement the DelayedCall method. Can you change this to early
+bound? Yes, by defining a custom interface that contains the DelayedCall
+method. You can then require any client applications who wish
+to use this server to implement that interface in the calling
+object using the Implements statement. However, this particular
+component is implemented in an EXE server, so the benefit to be
+gained by early binding is negligible compared to the overhead
+incurred by being out of process.
+<P>
+The TriggerDelay function stores a reference to the client object
+in the CallbackObject variable. It then calls the StartTimer function
+in the modTick1 module (more on this shortly). The timer portion
+is implemented in the module, and it needs a way to inform the
+clsTick1 object that the time has expired. You already know how
+this is done: another OLE callback! The StartTimer method takes
+a reference to the clsTick1 object and stores it in the module.
+When the time has expired, the module will call the TimerExpired
+method for the class object. The TimerExpired method in turn calls
+the DelayedCall method of the CallbackObject object.
+<P>
+How does the module know what time delay to use? Two possibilities
+come to mind. You could pass the delay value as a parameter in
+the StartTimer method. But this seems a good place to demonstrate
+the value of the Friend function. By making the Delay property
+a Friend property, it becomes possible for other modules in this
+project to retrieve the value of the private DelayToUse variable
+without exposing it to the outside world. Listing 11.1 shows the
+clsTick1 module.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 11.1:&nbsp;Class clsTick1<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to Perplexed: Tick1
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+'
+Option Explicit
+
+Private DelayToUse As Long
+Private CallbackObject As Object
+
+' Callbackparam is an object that contains
+' the method 'DelayedCall'
+Public Sub TriggerDelay(Callbackparam As Object, delayval As Long)
+   DelayToUse = delayval
+   ' This is the object that we want to callback
+   Set CallbackObject = Callbackparam
+   StartTimer Me
+End Sub
+
+' Allow the module to access the delay value
+' It's not public though
+Friend Property Get Delay() As Long
+   Delay = DelayToUse
+End Property
+
+' This is the timer expiration event from
+' the module
+Friend Sub TimerExpired()
+   ' This is late bound
+   CallbackObject.DelayedCall
+   ' Don't hold a reference to the object
+   Set CallbackObject = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+So how does the timer itself work? It makes use of the timer capability
+that is built into Windows. This is demonstrated in Listing 11.2.
+Two API functions are declared: SetTimer and KillTimer. SetTimer
+creates a timer object with a specified delay and returns an identifier
+to that timer. KillTimer destroys a timer object given a timer
+identifier.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 11.2:&nbsp;Module modTick1.bas<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to Perplexed: Tick1
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+' Timer identifier
+Dim TimerID&amp;
+
+' Object for this timer
+Dim TimerObject As clsTick1
+
+Declare Function SetTimer Lib &quot;user32&quot; (ByVal hwnd As Long, ByVal nIDEvent
+As_ Long, ByVal uElapse As Long, ByVal lpTimerFunc As Long) As Long
+Declare Function KillTimer Lib &quot;user32&quot; (ByVal hwnd As Long, ByVal nIDEvent
+As_ Long) As Long
+
+
+Public Sub StartTimer(callingobject As clsTick1)
+   Set TimerObject = callingobject
+   TimerID = SetTimer(0, 0, callingobject.Delay, AddressOf TimerProc)
+End Sub
+
+' Callback function
+Public Sub TimerProc(ByVal hwnd&amp;, ByVal msg&amp;, ByVal id&amp;, ByVal currentime&amp;)
+   Call KillTimer(0, TimerID)
+   TimerID = 0
+   TimerObject.TimerExpired
+   ' And clear the object reference so it can delete
+   Set TimerObject = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The StartTimer method stores a reference to the calling object
+in variable TimerObject, which exposes the TimerExpired method.
+Note that in this case the callback object (TimerObject) is early
+bound. This is easily accomplished because we know that it is
+the only object type that will call the StartTimer method-no need
+to define a custom interface.
+<P>
+The SetTimer function also requires a pointer to a function to
+call when the timer has expired. A function address for a function
+in a standard module can be obtained using the AddressOf operator
+as shown. It is critical that the module function be declared
+with the exact parameters, parameter types, and return types or
+you are likely to cause a memory exception. This includes getting
+the ByVal and ByRef qualifiers correct for each parameter.
+<P>
+Windows holds on to the address function provided by the SetTimer
+function and calls that function (in this case TimerProc) when
+the timer expires. The TimerProc function kills the timer, calls
+the TimerExpired method on the calling object, and clears the
+TimerObject variable so it can be deleted properly.
+<P>
+If you think about it, the concept of holding on to a function
+address and calling it later is conceptually the same as holding
+on to an object reference and calling a method for the object
+at a later time. In fact, the type of operation where you pass
+a function address to Windows or a DLL for it to call later is
+called a <I>callback</I> and the function address that you pass
+to the DLL is called a <I>callback function</I>. It is important,
+however, to distinguish between this type of <I>API callback</I>
+and OLE callbacks. They may be similar in concept but they are
+completely different in terms of implementation.
+<P>
+The entire scenario shown here can be demonstrated by loading
+the Tick1 project and the TickTst1 project into two separate instances
+of Visual Basic. Run the Tick1 project to make its objects available.
+Make sure the TickTst1 project is referencing the Tick1 project,
+then run the TickTst1 application and click on the Test button.
+The scenario shown in Figure 11.2 will occur and you will see
+a message box indicating the event after about 2 seconds.
+<P>
+<A HREF="f11-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f11-2.gif"><B>Figure 11.2 :</B> <I>Scenario of objects and methods called
+during the TickTst1 and Tick1 example</I>.</A>
+<P>
+Why is the Tick1 object implemented as an EXE server with the
+Instancing property of the clsTick1 object set to SingleUse?
+<P>
+A Windows timer requires use of a standard module for the callback.
+If the component were to support multiple clsTick1 objects, it
+would be necessary to keep track of those objects within the module
+and manage multiple timers. This is possible, and you will see
+later how this can be accomplished, but I decided that this sample
+was already sufficiently complex. By making the object single
+use, each instance of the object will have its own process space
+and thus have its own global variables. Thus, there is no need
+to worry about managing multiple objects-it happens automatically.
+The only way to make an object single use is to implement it in
+an EXE server.
+<P>
+When experimenting with the TickTst1 and Tick1 projects, you will
+need to stop and restart the Tick1 project each time you start
+the TickTst1 project if you are running Tick1 within the VB environment.
+This is because Visual Basic can only provide a single object
+from a class if the Instancing property for the class is set for
+single use. You can compile Tick1 into an executable to avoid
+this problem.
+<P>
+If you were actually going to implement a timer object, the approach
+you see here is about the last you would take. It is terribly
+inefficient to launch a new process just to obtain a timeout.
+But remember that the time delay in this example is intended to
+represent any long operation you wish to take place in the background.
+Those other scenarios that were described earlier in this chapter
+are often appropriate to implement in this manner. In subsequent
+chapters, especially <A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch14.htm" >Chapter 14</A>, you'll find out a great deal
+more about the trade-offs involved. Meanwhile, let's take another
+look at events.
+<H4>Events Revisited</H4>
+<P>
+OLE callbacks provide a way for an application to be signaled
+when an event occurs in another object. Event in this context
+is an idea-the concept that a server can notify a client when
+something occurs.
+<P>
+But when you read ActiveX documentation, including the Visual
+Basic documentation, the term <I>event</I> is also used to refer
+to a different way for a server object to notify a client. This
+technique is demonstrated in the Tick2.vbp and TickTst2.vbp projects.
+These projects were created by first copying the Tick1 and TickTst1
+projects and all of their associated files. Then the suffix of
+the class and module names was changed from 1 to 2 (thus clsTick1
+became clsTick2) and all code changed accordingly. This was done
+just to differentiate between the examples and prevent any confusion
+due to reuse of the class names.
+<P>
+To enable Tick2 for events, you need only add the following line
+to the declaration section of the clsTick2 module:
+<BLOCKQUOTE>
+<PRE>
+Event DelayedCall()
+</PRE>
+</BLOCKQUOTE>
+<P>
+You'll also need to modify the TimerExpired function as follows:
+<BLOCKQUOTE>
+<PRE>
+Friend Sub TimerExpired()
+   ' This is late bound
+   If Not CallbackObject Is Nothing Then
+      CallbackObject.DelayedCall
+      ' Don't hold a reference to the object
+      Set CallbackObject = Nothing
+   Else
+      RaiseEvent DelayedCall
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+As you can see, the clsTick2 object still supports OLE callbacks.
+All you need to do is pass Nothing as a parameter to the TriggerDelay
+method. This tells the component to raise the DelayedCall event
+instead of calling a DelayedCall method.
+<P>
+The changes to the client test application TickTst2 are more substantial,
+but only slightly so. The form code is shown in Listing 11.3.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 11.3:&nbsp;The frmTickTst2 Module Code<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed: TickTst2
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Dim WithEvents TimerObj As Tick2.clsTick2
+
+Private Sub cmdTest_Click()
+   ' 2000 ms delay
+   TimerObj.TriggerDelay Nothing, 2000
+   cmdTest.Enabled = False
+End Sub
+
+
+Private Sub Form_Load()
+   Set TimerObj = New clsTick2
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+   Set TimerObj = Nothing
+End Sub
+
+Private Sub TimerObj_DelayedCall()
+   MsgBox &quot;DelayedCall 'Event' received&quot;
+   cmdTest.Enabled = True
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The big change is that when using events, you must use early binding.
+Thus before trying to run this code you must run the Tick2 application
+in the Visual Basic environment (not necessary if you've compiled
+it to an executable), then use the References dialog box to add
+a reference to Tick2 to the TickTst2 project. You must do this
+even if you are running the sample code provided. Once you have
+added a reference to the project, you can create an object of
+that class using the Dim WithEvents function. 
+<P>
+Why did Listing 11.3 include the fully qualified class name Tick2.clsTick2
+instead of just using clsTick2? Answer: No functional reason whatsoever.
+It just improves the readability in this example, since we just
+finished talking about a Tick1 project.
+<P>
+The form load event actually creates the object. You cannot use
+the New command when dimensioning an object variable using WithEvents
+in Visual Basic 5.0. I have no idea why; maybe they'll change
+it in a future version.
+<P>
+When the clsTick2 object uses the RaiseEvent method to raise an
+event, it calls the DelayedCall method on a special event interface
+that appears in your form with the name of the dimensioned variable,
+in this case, TimerObj.
+<P>
+So what has really changed here?
+<UL>
+<LI>We're using early instead of late binding, but that is not
+really a change since we could have easily used early binding
+on the Tick1 example as well.
+<LI>We're dimensioning an object variable WithEvents.
+<LI>We're using RaiseEvent instead of a direct method call in
+the Tick2 object.
+<LI>The event syntax is slightly different.
+</UL>
+<P>
+If the two approaches seem very similar, it's because they are.
+ActiveX events are really nothing more than a way to let OLE do
+some of the callback work for you. In a moment you'll see what's
+going on behind the scenes but, in short, what is happening is
+that the server object is calling a method on the client object.
+Whether it's an OLE callback or an OLE event, it's still ultimately
+a method call. And you already know about method calls.
+<P>
+So you see, I really wasn't kidding when I said that you've been
+learning about events all along. Whether it's a method or a property
+or an event, it all comes down to a method call on an IDispatch
+interface.
+<H2><A NAME="BacktoCOM"><FONT SIZE=5 COLOR=#FF0000>
+Back to COM</FONT></A></H2>
+<P>
+So what does OLE actually do behind the scenes to make OLE events
+easy to use? Let's first look at the differences between events
+and callbacks in terms of their use. These are shown in Table
+11.1.<BR>
+<P>
+<CENTER><B>Table 11.1:&nbsp;Programming Characteristics for OLE
+Callbacks and OLE Events</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=288><B>OLE Events</B></TD><TD WIDTH=288><B>OLE Callbacks</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=288>Early bound.*</TD><TD WIDTH=288>Late bound or early bound.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=288>No need to explicitly pass an object reference to the server object.
+</TD><TD WIDTH=288>Must pass object reference to server object for it to call back.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=288>Visual Basic automatically creates event templates in code module when the event is selected in the designer window.
+</TD><TD WIDTH=288>Callback methods must be defined manually.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=288>Visual Basic's Auto-List capability makes it easy to raise events in the client object.
+</TD><TD WIDTH=288>Server does not have access to the client's type information.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=288>Separate event routine for each object dimensioned with events.
+</TD><TD WIDTH=288>Multiple objects of the same type will call the same callback method. You can pass parameters with the event to differentiate between objects (you can even pass a reference to the server object itself by passing 'Me' as a 
+parameter).
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=576>* Early binding in this case means that you add a reference to the object to your project and that you can access methods and properties in the object using early binding. It does NOT imply that events are 
+themselves 
+early bound. Whether the RaiseEvent statement uses early or late binding to trigger the event depends on Visual Basic's implementation of the call.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4>Behind the Scenes</H4>
+<P>
+How does OLE implement events? Clearly, the following steps must
+occur:
+<UL>
+<LI>The client object must ask the server if it supports events.
+<LI>The client object must obtain a list of the events for the
+server object and the parameters for each event.
+<LI>The client object must create a new interface that contains
+methods that correspond to the server's events.
+<LI>The client object must pass to the server object a reference
+to this new interface. The server can then raise events by calling
+the methods of this interface.
+</UL>
+<P>
+Now you may begin to appreciate why it took seven chapters to
+reach the point of actually talking about ActiveX components.
+You know that an object can support more than one interface. You
+know that you can create multiple interfaces for an object by
+using the Implements statement. All that is happening here is
+that for each object dimensioned WithEvents, Visual Basic creates
+a new interface. It bases the methods of this interface on the
+information provided by the server (so the server determines the
+names and parameters of the events, which makes sense, since the
+server is going to invoke them). Visual Basic passes a reference
+to this interface to the server object, which then calls those
+methods.
+<P>
+Figure 11.3 illustrates the way OLE objects with event support
+are often diagrammed. An outgoing arrow called an <I>outgoing
+interface </I>indicates that the object is able to call methods
+on an interface that it defines. The server object does not actually
+implement this outgoing interface. It is, rather, a specification
+for the interface that the client object must create in order
+to receive events.
+<P>
+<A HREF="f11-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f11-3.gif"><B>Figure 11.3 :</B> <I>Implementation of OLE events</I>.</A>
+<P>
+How does the client object obtain this interface specification?
+It uses QueryInterface to obtain from the server object a reference
+to an interface called IConnectionPointContainer. This interface
+provides methods that allow the object to obtain objects with
+an interface called IConnectionPoint. 
+<P>
+IConnectionPoint objects have methods from which the object can
+obtain information on the return type and parameters of a method.
+The client object uses this information to create the event interface.
+Of course, you don't need to know anything about this process
+to use it from Visual Basic. It all happens behind the scenes.
+If you want to read more about it, you can find information about
+this process on the Microsoft Developer's Network Library CD-ROM
+available directly from Microsoft.
+<P>
+Isn't it amazing how many interfaces even a simple object can
+have? Believe it or not, only a few years ago the only way to
+use OLE objects was to hand-code each one of these interfaces
+using C or C++! No wonder OLE was so hard to code!
+<P>
+In the previous section you saw that the callback object was dimensioned
+As Object so the server could handle any type of object. But I
+also pointed out another approach in which you could define a
+custom interface that would be supported by any client object
+that wanted to use this server. If you are using a single object,
+this would produce the same effect as the OLE event mechanism,
+but things change if you are using multiple events of the same
+type.
+<P>
+Consider what would happen if the TickTst2 sample had a second
+clsTick2 object called TimerObject2. Using events, you would need
+to create a second event method called TimerObject2_DelayedCall.
+This is shown in Figure 11.4. The TickTst2 client creates a separate
+interface for each object dimensioned WithEvents.
+<P>
+<A HREF="f11-4.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f11-4.gif"><B>Figure 11.4 :</B> <I>OLE events with two objects</I>.</A>
+<P>
+With OLE callbacks, you have a choice. You can have the server
+dimension its callback variable As Object and call a method on
+the object's main interface. Or you can define a custom interface
+that is implemented by any client object using the server and
+use that interface. Either way, there is no way for the client
+to create a separate interface for each object. So no matter how
+many server objects you create, they will all call the same method.
+This is shown in Figure 11.5.
+<P>
+<A HREF="f11-5.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f11-5.gif"><B>Figure 11.5 :</B> <I>OLE callbacks with two objects</I>.</A>
+<H3><A NAME="CreatingSeparateEventswithOLECallbacks">
+Creating Separate Events with OLE Callbacks</A></H3>
+<P>
+The easiest way to differentiate between server objects is to
+have the server itself pass information back to the client's method
+as a parameter. But if you are using an object that does not do
+this, you can still use multiple objects and differentiate between
+them.
+<P>
+The callbk1.vbg project group demonstrates how this can be accomplished.
+This project group contains two projects, an ActiveX DLL server
+and a test project.
+<P>
+The server project, Callback1Server (Callbk1s.vbp), contains a
+simple class that uses an OLE callback to signal an event. The
+SetCallback function takes the client object reference as a parameter
+and stores it in a private variable. The EventDemo function is
+a simple test function that triggers the event via the callback.
+The code for this object is shown below:
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed: Callback1 Sample
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+
+Option Explicit
+
+Private CallbackObject As Object
+
+' Sample function that sets the callback
+Public Sub SetCallback(myobject As Object)
+   Set CallbackObject = myobject
+End Sub
+
+' Sample function that does the callback
+Public Sub EventDemo()
+   CallbackObject.SampleEvent &quot;an event&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This class is defined as multiple use and implemented in an ActiveX
+DLL. This means that the client can create as many of these objects
+as it wishes. However, each of these objects calls the SampleEvent
+method on the client object to trigger an event. Because the SampleEvent
+method has no parameter, there is no way for the client to determine
+which object made the function call.
+<P>
+The only answer to distinguishing between multiple CallbackObject
+objects is obvious: provide separate clients for each one. This
+is illustrated in the Callback1 project. It defines a class, clsCallbackSink,
+whose only purpose is to be a recipient of SampleEvent method
+calls from the server. The code for this class is as follows:
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+
+' This object
+Public Name As String
+
+' Sample Event is called from the server object
+Public Sub SampleEvent(ByVal msg As String)
+   MsgBox Name &amp; &quot; received an event&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Setting up the OLE callback is demonstrated in the frmCallback
+form, whose module code is shown in Listing 11.4. The form contains
+two command buttons, cmdServer1 and cmdServer2.
+<P>
+Two clsCallback server objects named server1 and server2 are defined.
+Each of these has a corresponding clsCallbackSink object that
+will receive the OLE callback. Instead of a reference to the form,
+the clsCallbackSink objects are passed to the server's SetCallback
+function.
+<P>
+The two command buttons simulate the occurrence of an event. When
+you click one, the EventDemo method of the server object is called,
+which in turn calls the SampleEvent method in the clsCallbackSink
+object. In this manner your project can differentiate between
+as many server objects as you wish.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 11.4:&nbsp;Form frmCallback Module Code<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed: Callback1 Sample
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+
+Option Explicit
+
+' Dimension two separate objects
+Dim obj1 As New clsCallbackSink
+Dim obj2 As New clsCallbackSink
+
+' Here are the server objects
+Dim server1 As New clsCallback
+Dim server2 As New clsCallback
+
+Private Sub cmdServer1_Click()
+   server1.EventDemo
+End Sub
+
+Private Sub cmdServer2_Click()
+   server2.EventDemo
+End Sub
+
+Private Sub Form_Load()
+   obj1.Name = &quot;Object 1&quot;
+   obj2.Name = &quot;Object 2&quot;
+   ' Each server object receives a different client
+   ' object reference
+   server1.SetCallback obj1
+   server2.SetCallback obj2
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This approach closely resembles the one you saw earlier with OLE
+events; it's just a little bit more work.
+<H2><A NAME="CombiningOLECallbacksandOLEEvents"><FONT SIZE=5 COLOR=#FF0000>
+Combining OLE Callbacks and OLE Events</FONT></A></H2>
+<P>
+To use OLE events with an object you must take the following steps:
+<UL>
+<LI>Dimension the objects with events: Dim WithEvents <I>myobject</I>
+as <I>objecttype</I>
+<LI>Create the object: Set myobject = New objecttype (or use CreateObject)
+<LI>Implement the event function: Sub <I>myobject_myevent(paramlist)</I>
+</UL>
+<P>
+And you must do this for each object for which you want to support
+events.
+<P>
+Clearly this approach does not lend itself to dynamic allocation
+of objects that use events. If you want dynamically allocated
+objects to signal your application, you must use OLE callbacks,
+but you can hide the callbacks behind another class to simplify
+their use. In doing so, you can also eliminate the overhead of
+creating a separate object and method for each server object.
+<P>
+The Callbk2.vbg group contains two projects that demonstrate how
+this can be accomplished. The server project, Callback2server
+(clsCbk2.cls), now contains two classes. The first class is essentially
+identical to the previous Callbackserver class with the addition
+of an object name property and the fact that it is now designed
+to work with the clsCallback2col class, the new class in this
+project. Both classes are shown in Listing 11.5.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 11.5:&nbsp;The clsCallback2 and clsCallback2 Class
+Modules<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed: Callback2 Sample
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+
+Option Explicit
+
+Public Name$
+
+Private callbackobject As clsCallback2Col
+
+' Sample function that sets the callback
+Public Sub SetCallback(myobject As Object)
+   Set callbackobject = myobject
+End Sub
+
+' Sample function that does the callback
+Public Sub EventDemo()
+   callbackobject.SampleEvent Name$
+End Sub
+
+' Guide to the Perplexed: Callback2 Sample
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Class clsCallback2Col
+
+Option Explicit
+
+' This is the OLE event definition for the
+' event combining object. Note that it is in
+' a different name space
+Event SampleEvent(ByVal objectname$)
+
+' This is the OLE callback method on the main interface
+' for the event combining object
+Sub SampleEvent(ByVal objectname$)
+   RaiseEvent SampleEvent(objectname)
+End Sub
+
+' A utility function to initialize the OLE callback
+' for the object
+Public Sub SetCallbackServer(obj As clsCallback2)
+   obj.SetCallback Me
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The clsCallback2col class serves as a go-between to multiple clsCallback2
+objects. The SetCallbackServer method of this class sets the OLE
+callback for the object to reference the clsCallback2col object.
+The object contains a SampleEvent method, which is called by the
+OLE callback in the clsCallback2 object. The object then raises
+the SampleEvent event on the client form.
+<P>
+How can an object have an event and a property of the same name?
+It's easy-remember that the event actually becomes a method on
+an interface belonging to the client object. It never exists in
+the server object that triggers the event. Thus, there is no naming
+conflict.
+<P>
+The result of this approach can be seen in the form code. It is
+quite different from that of the frmCallback form in the previous
+example, as you can see in Listing 11.6.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 11.6:&nbsp;Listing for Form frmCallback2<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed: Callback2 Sample
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+
+Option Explicit
+
+' Dimension two separate objects
+Dim WithEvents multievent As clsCallback2Col
+
+' Here are the server objects
+Dim server1 As New clsCallback2
+Dim server2 As New clsCallback2
+Dim server3 As New clsCallback2
+
+Private Sub cmdServer1_Click()
+   server1.EventDemo
+End Sub
+
+Private Sub cmdServer2_Click()
+   server2.EventDemo
+End Sub
+
+Private Sub cmdServer3_Click()
+   server3.EventDemo
+End Sub
+
+Private Sub Form_Load()
+   Set multievent = New clsCallback2Col
+   server1.Name = &quot;Object 1&quot;
+   server2.Name = &quot;Object 2&quot;
+   server3.Name = &quot;Object 3&quot;
+   
+   multievent.SetCallbackServer server1
+   multievent.SetCallbackServer server2
+   multievent.SetCallbackServer server3
+   
+End Sub
+
+' All of the server objects ultimately trigger this
+' event
+Private Sub multievent_SampleEvent(ByVal objectname As String)
+   MsgBox &quot;Event received from &quot; &amp; objectname
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Take a close look at the procedures that create the server objects.
+The objects are dimensioned, but without the WithEvents keyword.
+The Name property is then set and the object is passed as a parameter
+to the Multievent object's SetCallbackServer method. This sets
+up the server objects to use OLE callbacks to call the SampleEvent
+method in the Multievent object. Can you see any reason why you
+could not use this technique on an array of clsCallback2 server
+objects? Or use it with objects that are allocated and freed as
+needed? I hope not, because there isn't any.
+<P>
+Meanwhile, all of the server events (triggered via OLE callbacks)
+are mapped into a single OLE event on the client form. You no
+longer have the overhead of separate event functions for each
+object, or of secondary objects that serve as intermediaries for
+the server.
+<P>
+As you may gather, there are many possible ways of handling events,
+whether they are OLE callbacks, OLE events, or some combination
+of the two. We'll be going into more possibilities later. The
+important thing to keep in mind is that no matter how you handle
+it, ultimately you are just calling a method on an interface,
+which is really what COM is all about in the first place.
+<HR>
+
+<CENTER><P><A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch12.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

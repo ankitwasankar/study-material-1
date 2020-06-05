@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.uk/csharp/csharp_s13p3.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 06:56:59 GMT -->
+<HEAD>
+		<TITLE>Visual C# .NET: Getting at the values on other Forms</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-2.css">
+		<meta itemprop="name" content="Home and Learn">
+		<meta itemprop="description" content="Free C# .NET Course">
+		<meta itemprop="image" content="../logo5.jpg">
+		<link rel="publisher" href="https://plus.google.com/104045712242599534737" />
+		<link rel="author" href="https://plus.google.com/104045712242599534737" />
+		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="links.js"></SCRIPT>
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">C#.NET</SPAN> <SPAN class="Logo_Text">Course</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+<ul>
+<LI><a href="../index-2.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2010.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign.html">Web Design</a></LI>
+<LI><a href="../javascript/javascript.html">Javascript</a></LI>
+<LI><a href="../NET/vbNet.html">Visual Basic .NET</a></LI>
+<LI><a href="../php/php.html">Beginners PHP</a></LI>
+<LI><a href="csharp.html">C# .NET</a> <B>&lt; &lt;</B></LI>
+<LI><a href="../java/java.html">Java for Beginners</a></LI>
+</ul>
+		
+</NAV> <SECTION ID="Wrapper"> <ARTICLE> <HEADER> 
+<H1 ID="Article">Getting at the values on other Forms</H1>
+</HEADER> <SECTION> 
+<p align="center"> 
+  <script language="JavaScript">
+				writeImageCsharp()
+			</script>
+</p>
+<p align="center"><a href="csharp_s13p1.html">&lt;&lt; Part of an ongoing lesson 
+  - first part is here &gt;&gt;</a></p>
+<p>&nbsp;</p>
+<p>Turn your Form2 into a Change Case dialogue box, just like ours below:</p>
+<p align="center"><img src="images/extras/formChangeCase.gif" width="257" height="274" alt="A Change Case form"></p>
+<p>When the OK button is clicked, we want the text in the text box on Form1 to 
+  change case, depending on which of the three options was chosen.</p>
+<p>The problem we face is that the text box is private to Form1, and can't be 
+  seen from outside it. If you tried to refer to the text box from Form2, you'd 
+  just get errors.</p>
+<p>One solution is to set up a public static variable, of type TextBox. You then 
+  assign textBox1 to this new variable.</p>
+<p>So add the following to Form1:</p>
+<p class="indent_big">public static TextBox tb = new TextBox();</p>
+<p>This creates a new TextBox object called <b>tb</b>. Add the line just under 
+  your Form variable, and your coding window will look like this:</p>
+<p align="center"><img src="images/extras/formTB.gif" width="419" height="170" border="1" alt="C# code to create a new text box"></p>
+<p>Notice that we've deleted the message box code, and went back to the original. 
+  That's because we don't need the message box anymore. Delete yours as well.</p>
+<p>Now that we have a TextBox object, we can assign our text box on form one to 
+  it. In the Form Load event of Form1, add the following line:</p>
+<p class="indent_big">tb = txtChangeCase;</p>
+<p>(The easiest way to bring up the code stub for the Form Load event is to double 
+  click a blank area of the form in design view.)</p>
+<p>Here's what all the Form1 code looks like now:</p>
+<p align="center"><img src="images/extras/formTB2A.gif" width="444" height="329" border="1" alt="Form Load Event"></p>
+<p>When the main form (Form1) loads, the text box will now be available to Form2.</p>
+<p>So double click your OK button on Form2 to bring up its code stub. Enter the 
+  following:</p>
+<p class="indent_big">string changeCase = Form1.tb.Text;</p>
+<p>We're setting up a string variable called changeCase. The contents of this 
+  new string variable will be the Text from the text box called tb on Form1.</p>
+<p>To change the case of the text, we can use string methods for two of them: 
+  Uppercase and Lowercase. Like this:</p>
+<p class="indent_big">changeCase = changeCase.ToUpper();</p>
+<p class="indent_big">changeCase = changeCase.ToLower();</p>
+<p>Unfortunately, C# .NET does not have a direct string method to change text 
+  to Proper Case (or Title case as it's also know). Proper Case is capitalising 
+  the first letter of each word. For example, &quot;This Is Proper Case&quot;.</p>
+<p>In order to get Proper Case, you have to reference two System namespaces. One 
+  called Globalization and one called Threading. Add the following to the very 
+  top of the coding window:</p>
+<p class="indent_big">using System.Globalization;<br>
+  using System.Threading;</p>
+<p>The code window will then look something like this:</p>
+<p align="center"><img src="images/extras/properCase.gif" width="277" height="224" alt="Add two using statements" border="1"></p>
+<p>Now that we have these two references, the next thing to do is to set up something 
+  called a CultureInfo object:</p>
+<p align="center"><b>CultureInfo properCase = Thread.CurrentThread.CurrentCulture;</b></p>
+<p>The CurrentCulture tells you information about the various language options 
+  of your particular country. Our CultureInfo object is called properCase.</p>
+<p>That's not the end of it, though! You also need a TextInfo object:</p>
+<p align="center"><b>TextInfo textInfoObject = properCase.TextInfo;</b></p>
+<p>It's this TextInfo object that has the methods we need. We're setting up a 
+  TextInfo object called textInfoObject. We're handing it the TextInfo property 
+  of our properCase CultureInfo object.</p>
+<p>Finally, we can change the case:</p>
+<p align="center"><b>changeCase = textInfoObject.ToTitleCase( <i>changeCase</i> 
+  );</b></p>
+<p>The TextInfo object has a method called ToTitleCase. In between the round brackets 
+  of the method, you type what it is you want to convert.</p>
+<p>Hopefully, in future versions of C#, they'll add an easier way to convert to 
+  Proper Case!</p>
+<p>To get which of the options on our Form2 was chosen, we can add a series of 
+  if &#133; else statements:</p>
+<p align="center"><img src="images/extras/properCase3.gif" width="494" height="307" alt="C# code to change case" border="1"></p>
+<p>So we're just checking to see which radio button was selected. We're then doing 
+  the case conversion.</p>
+<p>To put the changed text into the text box on Form1, add the following line:</p>
+<p align="center"><b>Form1.tb.Text = changeCase;</b></p>
+<p>Add the line just before your DialogResult line. The full code for the button 
+  should be this</p>
+<p align="center"><img src="images/extras/properCase2.gif" width="503" height="409" border="1" alt="Full C# code for form 2"></p>
+<p>Run your programme and test it out. Click your button to bring up Form2. Select 
+  the Upper Case option and then click your OK button. You should find that the 
+  text in txtChangeCase on your main form will now be in uppercase.</p>
+<p>&nbsp;</p>
+<p>The next section of the C# course deals with Dates and Times.</p>
+</SECTION></ARTICLE></SECTION><FOOTER> 
+<p align="right"><a href="csharp_s13p2.html">&lt;-- Modal Forms</a> | <a href="csharp_s14p1.html">Dates and Times in C# --&gt;</a></p>
+		<P><A HREF="csharp.html">Back to the C# NET Contents Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.uk/csharp/csharp_s13p3.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 06:56:59 GMT -->
+</HTML>
+

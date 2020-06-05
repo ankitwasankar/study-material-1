@@ -1,0 +1,575 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 24 -- ActiveX Documents and the Internet</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;24</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>ActiveX Documents and the Internet</FONT>
+</H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#TheRealtyActiveXDocument">
+The Realty ActiveX Document</A>
+<LI><A HREF="#ActiveXDocumentsandHTML">
+ActiveX Documents and HTML</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+I read through the documentation on ActiveX documents several
+times trying to understand the implications of this technology.
+But it wasn't until I actually used these documents that I began
+to realize the possibilities. In this chapter, my intent is not
+so much to tell you about ActiveX documents, as it is to show
+you. To do this, I had the pleasure of inventing a fictitious
+real estate company. I hope you enjoy its site, which makes extensive
+use of ActiveX documents. However, I encourage you to use extreme
+caution before sending a check or your credit card number there!
+<H2><A NAME="TheRealtyActiveXDocument"><FONT SIZE=5 COLOR=#FF0000>
+The Realty ActiveX Document</FONT></A></H2>
+<P>
+Really Realty Services Inc. is a small fictitious outfit with
+big goals. They don't want to just display properties on the Web.
+They want to display the current information about a property
+along with an interactive program that allows potential customers
+to calculate their mortgage payments and even submit online bids.
+They could come up with some sophisticated form-based Web pages
+to do this, but they've figured out that there is no reason to
+tie up their server with tasks such as calculating loans. It's
+much better to have those types of programs just run on the client
+machine.
+<P>
+Besides, they are Visual Basic programming wizards and don't know
+much about complex form-based HTML code and server-side programming.
+By using an ActiveX document, they are able to use the full resources
+of the local system. They're not quite sure what to do with that
+capability yet, but they know it will come in handy in the future.
+<P>
+Figure 24.1 shows the page they've created to display information
+about a property. There is a Picture Box that will contain a picture
+of the property, a Label to show the current asking price, and
+a Text Box that will display the current property description.
+<P>
+<A HREF="f24-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f24-1.gif"><B>Figure 24.1 :</B> <I>Design-time view of the realty.dob ActiveX
+document</I>.</A>
+<P>
+The ActiveX document has three properties: Price, Picture, and
+Description. The property procedures for these properties and
+persistence functions are shown below:
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed
+' Realty Example
+' Copyright &#169; 1997 by Desaware Inc. All Rights Reserved.
+' Really Realty Services Inc. is a fictional company, and
+' any resemblance to a real company is entirely unintentional
+Option Explicit
+
+Dim m_Price As Currency
+
+
+Public Property Get Picture() As Picture
+   Set Picture = Picture1.Picture
+End Property
+
+Public Property Set Picture(ByVal vNewValue As Picture)
+   Set Picture1.Picture = vNewValue
+   PropertyChanged &quot;Picture&quot;
+End Property
+
+Public Property Get Price() As Currency
+   Price = m_Price
+End Property
+
+Public Property Let Price(ByVal new_Price As Currency)
+   If new_Price &lt; 0 Then Exit Property
+   m_Price = new_Price
+   lblPrice.Caption = Format$(m_Price, &quot;Currency&quot;)
+   PropertyChanged &quot;Price&quot;
+End Property
+
+Public Property Get Description() As String
+   Description = txtDescription.Text
+End Property
+
+Public Property Let Description(new_Description As String)
+   txtDescription.Text = new_Description
+   PropertyChanged &quot;Description&quot;
+End Property
+
+Private Sub UserDocument_InitProperties()
+   cmdEdit.Visible = True
+   cmdNew.Visible = True
+End Sub
+
+Private Sub UserDocument_ReadProperties(PropBag As PropertyBag)
+   txtDescription.Text = PropBag.ReadProperty(&quot;Description&quot;)
+   m_Price = PropBag.ReadProperty(&quot;Price&quot;)
+   lblPrice.Caption = Format$(m_Price, &quot;Currency&quot;)
+   Set Picture1.Picture = PropBag.ReadProperty(&quot;Picture&quot;)
+End Sub
+
+Private Sub UserDocument_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;Description&quot;, txtDescription.Text)
+   Call PropBag.WriteProperty(&quot;Price&quot;, m_Price)
+   Call PropBag.WriteProperty(&quot;Picture&quot;, Picture1.Picture)
+   ' Once data is written, this page is not editable
+   cmdEdit.Visible = False
+   cmdNew.Visible = False
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+There are also four buttons. The Bid button is used to bring up
+a bid submission form, which is a separate Visual Basic modal
+form that not only allows the client to submit bids on the property,
+but to perform any other tasks they decide will be related to
+submitting a bid. The Back button is just a navigation aid to
+allow the client to return to the previous browser page without
+having to use the browser toolbar or menu.
+<P>
+This ActiveX document is designed to work in two modes. When the
+browser opens an empty .VBD file, the InitProperties event is
+triggered and the Edit and New buttons are made visible (they
+are invisible by default). This is done in the following code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserDocument_InitProperties()
+   cmdEdit.Visible = True
+   cmdNew.Visible = True
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This mode is intended for their own use when developing the site.
+They use Microsoft's Internet browser to open the empty RealtyDoc.vbd
+file, then use the Edit and New buttons to create new VBD documents
+that have the picture, price, and description properties set.
+When those documents are loaded, the ReadProperties event will
+be triggered, which does not make the Edit and New buttons visible.
+These two buttons are also hidden after the WriteProperties event
+occurs, to prevent the pages from being edited again. (Note that
+the RealtyDoc.vbd file has been renamed ReltyDoc.vbd in the CH24
+sample directory in order to fit within the 8.3 filename format
+required by the CD-ROM.)
+<P>
+Editing the current page is a simple task. A separate form named
+frmEdit is used to edit the document's properties. It is brought
+up using the following code when the Edit button is clicked. The
+Edit form is shown in Figure 24.2.
+<P>
+<A HREF="f24-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f24-2.gif"><B>Figure 24.2 :</B> <I>The document editing form</I>.</A>
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdEdit_Click()
+      Set frmEdit.OwnerDoc = Me
+      frmEdit.Show vbModal
+      Set frmEdit = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This form has a preview window to display a picture of the property.
+It has two text boxes for editing the price and the description,
+and it uses a common dialog control to load the picture file.
+The code for this form is shown below:
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+
+Public OwnerDoc As RealtyDoc
+
+Private Sub cmdCancel_Click()
+   Unload Me
+End Sub
+
+Private Sub cmdLoadImage_Click()
+   Dim newfile$
+   CmnDialog1.ShowOpen
+   If CmnDialog1.FileTitle = &quot;&quot; Then Exit Sub
+   newfile = CmnDialog1.filename
+   On Error GoTo badimage
+   Set Picture1.Picture = LoadPicture(newfile)
+   Exit Sub
+badimage:
+End Sub
+
+Private Sub cmdOk_Click()
+   OwnerDoc.Price = txtPrice.Text
+   OwnerDoc.Description = txtDescription.Text
+   Set OwnerDoc.Picture = Picture1.Picture
+   Unload Me
+End Sub
+
+Private Sub Form_Load()
+   txtPrice.Text = OwnerDoc.Price
+   txtDescription.Text = OwnerDoc.Description
+   Set Picture1.Picture = OwnerDoc.Picture
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The OwnerDoc variable is a public property of the form that is
+set by the realty Document object before the form is shown. This
+allows the form to access the public properties of the document.
+You can also access Friend properties and methods of the Document
+object, though this is not shown in this particular example.
+<P>
+If you look at the settings for the common dialog control, you'll
+find that its filter property is set to Pictures (*.bmp;*.ico;*.wmf;*.gif).
+WMF? That's a&nbsp;Windows metafile. Since when can a Web browser
+download and display a Windows metafile? Well, most of them can't.
+But it doesn't matter. You see, the Web browser does not download
+and display the metafile. It downloads the VBD ActiveX document
+file. That document file contains the metafile, and Visual Basic
+knows how to read and display metafiles in picture boxes.
+<P>
+Does this mean that ActiveX documents can allow you to potentially
+handle any file format or even create custom file formats of your
+own that you can edit and display, regardless of the capabilities
+of the browser? Yes. In fact, this example uses metafile pictures
+for all of its graphics. A complete discussion of metafiles is
+beyond the scope of this book but, in short, they differ from
+bitmaps in two major characteristics:
+<UL>
+<LI>They contain graphic drawing commands instead of bitmap information.
+This means they may be smaller than a bitmap.
+<LI>They are fully scaleable and do not lose image quality as
+they are resized.
+</UL>
+<P>
+The Edit button edits the current document. But you don't want
+to edit the empty RealtyDoc document. You need to keep it around
+as a blank template for other documents. For this reason, it should
+be set to read-only. Instead, there needs to be a way to create
+new documents.
+<P>
+One method to do so is shown below in the cmdNew_Click command
+code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdNew_Click()
+   Dim newname$
+   Dim newpath$, oldpath$
+   Dim searchloc&amp;, curloc&amp;, curchar$
+   newname$ = InputBox(&quot;Enter new document name&quot;, &quot;New&quot;)
+   If newname$ = &quot;&quot; Then Exit Sub
+   oldpath = Parent.locationname
+   newpath = oldpath
+   curloc = Len(newpath)
+   Do While curloc &gt; 0
+      curchar$ = Mid$(newpath, curloc, 1)
+      If curchar = &quot;/&quot; Or curchar = &quot;\&quot; Then
+         newpath = Left$(newpath, curloc)
+         Exit Do
+      End If
+      curloc = curloc - 1
+   Loop
+   newpath = newpath &amp; newname$ &amp; &quot;.vbd&quot;
+   ' Add test for existing file here
+   FileCopy oldpath, newpath
+   m_HyperLinked = True
+   Hyperlink.NavigateTo &quot;file://&quot; &amp; newpath
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Parent object's Locationname property provides the document
+name. You can't use the App.Path property in Visual Basic because
+it gives you the location of the server, not the current document.
+<P>
+The document name is assumed to be on the local system. If you
+loaded it through a Web site, this code will fail with an error.
+But in this particular application, it is assumed that new properties
+will only be defined on the local system. The routine strips the
+final document name from the path and appends in a new document
+name that is entered using an input box. The name should be added
+without an extension; a more robust example would verify this.
+The FileCopy command is used to create the new document file.
+Note that this will be a blank document.
+<P>
+The next step is to navigate to the new document. This is done
+by setting a global variable called m_HyperLinked to True. This
+variable is used to indicate to a newly loaded document that it
+has been loaded as a result of a New operation and to tell it
+to bring up its edit form during the Show event. The Hyperlink
+object is then used to navigate to the new page.
+<P>
+The m_HyperLinked variable is defined in a standard form so it
+will be global to all document objects. If it is True, the edit
+form is shown, as you can see below:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserDocument_Show()
+   If m_HyperLinked Then
+      m_HyperLinked = False
+      Set frmEdit.OwnerDoc = Me
+      frmEdit.Show vbModal
+      Set frmEdit = Nothing
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The ActiveX document includes an About Box implemented in the
+usual way as shown below: The document has a menu that includes
+both a Help and an About command. The Negotiate attribute for
+the menu is set so it will be merged with the container's menu.
+<BLOCKQUOTE>
+<PRE>
+Private Sub mnuAbout_Click()
+   frmAbout.Show vbModal
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+A text box is used for the description because it supports scrolling.
+However, the document does not allow editing of the description
+on the document page itself. In order to prevent editing, keypresses
+are intercepted to block editing and deleting in the text box,
+as shown below:
+<BLOCKQUOTE>
+<PRE>
+Private Sub txtDescription_KeyDown(KeyCode As Integer, Shift As Integer)
+   If KeyCode = vbKeyDelete Then
+      KeyCode = 0
+   End If
+End Sub
+
+Private Sub txtDescription_KeyPress(KeyAscii As Integer)
+   KeyAscii = 0
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Implementing the Back browser command is trivial:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdBack_Click()
+   Hyperlink.GoBack
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Bid form is brought up using the following code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdBid_Click()
+   Set frmBid.OwnerDoc = Me
+   frmBid.Show vbModal
+   Set frmBid = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The form is shown in Figure 24.3.
+<P>
+<A HREF="f24-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f24-3.gif"><B>Figure 24.3 :</B> <I>The Bid form at design time</I>.</A>
+<P>
+Right now the form does nothing with the information that is entered.
+But this is a standard Visual Basic form, so you can do anything
+you want at this point. You could generate an e-mail message with
+the bid. You could calculate a loan payment and send information
+based on the results. You could allow the user to record an audio
+message and upload it to an FTP site somewhere.
+<P>
+This brings up an important point. Standard Web sites are designed
+to accept small amounts of data from the client while sending
+large amounts of data back to the client. Relatively short text
+command lines are used in HTML to request information from a server.
+Once in Visual Basic, you have a great deal more flexibility for
+sending information to the server. You could, for example, upload
+data to an FTP site, then send a command with the name of the
+file. Or use a separate direct Internet connection using a Winsock
+control. ActiveX documents may prove to be an excellent solution
+for this type of situation. For example: If the fictitious folks
+that run Really Realty Services, Inc. ever go out of business,
+they could set up an ActiveX document-based dating service, where
+you can use a VB form to submit your picture and perhaps a short
+video clip directly to the services computer systems via the Internet.
+<P>
+Now let's take a look at what it takes to make this document work
+on a Web site.
+<H2><A NAME="ActiveXDocumentsandHTML"><FONT SIZE=5 COLOR=#FF0000>
+ActiveX Documents and HTML</FONT></A></H2>
+<P>
+The process of setting up an ActiveX document for Internet distribution
+is identical to that of ActiveX controls and will not be repeated
+here. The only difference is that what you are distributing is
+the document server, not the document itself.
+<P>
+If you look at the Setup subdirectory under the <A HREF="ch24.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch24.htm" >Chapter 24</A> sample
+directory on the CD-ROM that comes with this book, you will find
+the file Realty.htm HTML page that is created by the Visual Basic
+setup wizard.
+<BLOCKQUOTE>
+<PRE>
+&lt;HTML&gt;
+&lt;OBJECT ID=&quot;RealtyDoc&quot;
+CLASSID=&quot;CLSID:18C62902-7B03-11D0-91BB-00AA0036005A&quot;
+CODEBASE=&quot;realty.CAB#version=1,0,0,1&quot;&gt;
+&lt;/OBJECT&gt;
+
+&lt;SCRIPT LANGUAGE=&quot;VBScript&quot;&gt;
+Sub Window_OnLoad
+      Document.Open
+      Document.Write &quot;&lt;FRAMESET&gt;&quot;
+      Document.Write &quot;&lt;FRAME SRC=&quot;&quot;RealtyDoc.VBD&quot;&quot;&gt;&quot;
+      Document.Write &quot;&lt;/FRAMESET&gt;&quot;
+      Document.Close
+End Sub
+&lt;/SCRIPT&gt;
+&lt;/HTML&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Object tag should be familiar to you from the ActiveX control
+example. The .CAB file can be signed just as it was in the ActiveX
+control example. The servers within the file can be marked as
+safe for initialization and safe for scripting using either the
+registry technique or the IObjectSafety technique described in
+<A HREF="ch21.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch21.htm" >Chapter 21</A>. Note that this sample code does use scripting and
+thus will generate a warning message if the component is not marked
+as safe for scripting. 
+<P>
+Speaking of scripting, what is the script that appears below the
+Object tag? When this HTML page is loaded by the browser, it will
+first verify that the object is present on the system, downloading
+it if necessary. It will then run the VB Script code shown. This
+code opens the current page and starts writing new HTML code into
+the page. It first writes a &lt;FRAMESET&gt; tag, which defines
+what follows as being a frame that takes over the entire browser
+window. It then specifies that the frame should be loaded with
+the ActiveX document, in this case, the default RealtyDoc.VBD
+file. Finally it closes the frameset and the document. In effect,
+it tells the browser to load the .VBD file and display it.
+<P>
+The page shown here will, in fact, download a document server
+if necessary and then display a document. However, it is somewhat
+misleading. I'm afraid that many ActiveX document developers will
+get the idea that this is the only way to display an ActiveX document
+and that each ActiveX document requires its own HTML page to load
+and display. That may be true if you are using a single ActiveX
+document, but if your site uses many documents, it is terribly
+inefficient.
+<P>
+The programmers at the Really Realty Services company knew better.
+You can see their handiwork by opening the default.htm file in
+<A HREF="ch24.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch24.htm" >Chapter 24</A> on the CD-ROM with Microsoft Internet Explorer. This
+page is shown below:
+<BLOCKQUOTE>
+<PRE>
+&lt;!DOCTYPE HTML PUBLIC &quot;-//W3O/DTD HTML//EN&quot;&gt;
+
+&lt;html&gt;
+&lt;OBJECT ID=&quot;RealtyDoc&quot;
+CLASSID=&quot;CLSID:18C62902-7B03-11D0-91BB-00AA0036005A&quot;
+CODEBASE=&quot;realty.CAB#version=1,0,0,1&quot;&gt;
+&lt;/OBJECT&gt;
+&lt;head&gt;
+&lt;title&gt;mainpage&lt;/title&gt;
+&lt;meta name=&quot;FORMATTER&quot; content=&quot;Microsoft FrontPage 1.1&quot;&gt;
+&lt;/head&gt;
+&lt;frameset rows=&quot;23%,77%&quot;&gt;
+    &lt;frame src=&quot;frbanner.htm&quot; name=&quot;banner&quot; marginwidth=&quot;1&quot;
+    marginheight=&quot;1&quot;&gt;
+    &lt;frameset cols=&quot;30%,70%&quot;&gt;
+        &lt;frame src=&quot;frconten.htm&quot; name=&quot;contents&quot; marginwidth=&quot;1&quot;
+        marginheight=&quot;1&quot;&gt;
+        &lt;frame src=&quot;frmain.htm&quot; name=&quot;main&quot; marginwidth=&quot;1&quot;
+        marginheight=&quot;1&quot;&gt;
+    &lt;/frameset&gt;
+    &lt;noframes&gt;
+    &lt;body&gt;
+    &lt;p&gt; &lt;/p&gt;
+    &lt;p&gt;This web page uses frames, but your browser doesn't
+    support them.&lt;/p&gt;
+    &lt;/body&gt;
+    &lt;/noframes&gt;
+&lt;/frameset&gt;
+&lt;/html&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+This is the root page for the site. The company expects everyone
+viewing the site to go through this page at least the first time
+they access the site. Thus, the document server download takes
+place at this time. The page has a banner frame with the company
+name at the top and a list of properties on the left. The main
+portion of the page, on the right, contains an introductory text
+at first. The contents page, frconten.htm, contains jumps that
+go directly to the ActiveX documents. For example, the line:
+<P>
+&lt;h3&gt;&lt;a href=&quot;bigben.vbd&quot;&gt;Big Ben&lt;/a&gt;&lt;/h3&gt;
+<P>
+will appear as <U>Big Ben</U> on the Web page in blue text (or
+whichever color your browser is using to indicate a jump). When
+you click on the link, the browser will download file bigben.vbd
+from the site. It examines the file and sees that it is a structured
+storage file that meets the standard of ActiveX documents. It
+extracts the CLSID identifier of the server and checks the server,
+to find that it is registered to realty.dll, which was downloaded
+earlier. The browser then asks the server to create a RealtyDoc
+object. The object's ReadProperties event is then triggered, allowing
+it to read the property information from file bigben.vbd, which
+had just been downloaded. The browser then displays the ActiveX
+document in the main frame, which is the default target for all
+links on the current page.
+<P>
+It is conceivable that a client will run into trouble if they
+set bookmarks directly to one of these documents and lose access
+to their server, but if this occurs they will be notified by the
+browser. All they need to do is go back to the home page to reload
+the document server. The contents page code is shown below.
+<BLOCKQUOTE>
+<PRE>
+&lt;!DOCTYPE HTML PUBLIC &quot;-//IETF//DTD HTML//EN&quot;&gt;
+
+&lt;html&gt;
+
+&lt;head&gt;
+&lt;title&gt;Table of Contents Frame in mainpage&lt;/title&gt;
+&lt;meta name=&quot;GENERATOR&quot; content=&quot;Microsoft FrontPage 1.1&quot;&gt;
+&lt;base target=&quot;main&quot;&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;h3&gt;Choose from among &lt;br&gt;
+these fine properties:&lt;/h3&gt;
+&lt;h3&gt;&lt;a href=&quot;bigben.vbd&quot;&gt;Big Ben&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href=&quot;capitol.vbd&quot;&gt;U.S. Capitol&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href=&quot;eiffel.vbd&quot;&gt;Eiffel Tower&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href=&quot;empire.vbd&quot;&gt;Empire State&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href=&quot;sydney.vbd&quot;&gt;Opera House&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href=&quot;tajmahal.vbd&quot;&gt;Taj Mahal&lt;/a&gt;&lt;/h3&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+It is up to you whether you want to have a separate HTML page
+for each ActiveX document or implement direct links as shown here.
+The end result can be seen in Figure 24.4.
+<P>
+<A HREF="f24-4.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f24-4.gif"><B>Figure 24.4 :</B> <I>Sample page from the Realty site</I>.</A>
+<P>
+I encourage you to explore this small site and to create some
+documents of your own. This concludes our coverage of ActiveX
+documents. Are they the future of Internet and intranet Web sites?
+Or are they a solution to a problem that doesn't really exist?
+Or perhaps a good idea that just won't catch on. Time will tell.
+<HR>
+
+<CENTER><P><A HREF="ch23.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch23.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="part5.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/part5.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

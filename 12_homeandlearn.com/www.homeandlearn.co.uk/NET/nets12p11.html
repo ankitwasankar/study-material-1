@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.uk/NET/nets12p11.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 07:21:35 GMT -->
+<HEAD>
+		<TITLE>Visual Basic .NET programming for Beginners - Delete a Record from a Database</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-2.css">
+		<meta name="description" content="">
+		<meta itemprop="name" content="Home and Learn">
+		<meta itemprop="description" content="Free Visual Basic .NET Course">
+		<meta itemprop="image" content="../logo5.jpg">
+		<link rel="publisher" href="https://plus.google.com/104045712242599534737" />
+<link rel="author" href="https://plus.google.com/104045712242599534737" />
+		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="links.js"></SCRIPT>
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">Visual Basic .NET</SPAN> <SPAN class="Logo_Text">Course</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+<ul>
+<LI><a href="../index-2.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2010.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign.html">Web Design</a></LI>
+<LI><a href="../javascript/javascript.html">Javascript</a></LI>
+<LI><a href="vbNet.html">Visual Basic .NET</a> <B>&lt; &lt;</B></LI>
+<LI><a href="../php/php.html">Beginners PHP</a></LI>
+<LI><a href="../csharp/csharp.html">C# .NET</a></LI>
+<LI><a href="../java/java.html">Java for Beginners</a></LI>
+</ul>
+		
+</NAV> <SECTION ID="Wrapper"> <ARTICLE> <HEADER> 
+<H1 ID="Article">Delete a Record from a Database</H1>
+</HEADER> <SECTION> 
+<p align="center"> 
+  <script language="JavaScript">
+				writeImageVB()
+			</script>
+</p>
+<p align="left">Part of an ongoing tutorial. This lessons is part of an ongoing 
+  tutorial. The first part is here: </p>
+<p align="center"><a href="nets12p4.html">Coding your own VB .NET database projects</a></p>
+<p align="center">&nbsp;</p>
+<P>In the <a href="nets12p10.html">last part</a>, you saw how to Add a new record 
+to the database using VB .NET code. In this final part, you'll learn how to delete 
+records.</P>
+<p>&nbsp;</p>
+<h3>Deleting Records from a Database</h3>
+<p>The code to delete a record is a little easier than last time. Double click 
+  your <b>btnDelete</b> and add the following:</p>
+  
+<p class="indent_small_blue">Dim cb As New OleDb.OleDbCommandBuilder(da)</p>
+<p class="indent_small_blue">ds.Tables(&quot;AddressBook&quot;).Rows(inc).Delete()<br>
+  MaxRows = MaxRows - 1</p>
+<p class="indent_small_blue">inc = 0<br>
+  da.Update(ds, &quot;AddressBook&quot;)<br>
+  NavigateRecords()</p>
+  
+<p>You've met most of it before. First we set up a Command Builder. Then we have 
+  this line:<br>
+</p>
+<p align="center"><b>ds.Tables(&quot;AddressBook&quot;).Rows(inc).Delete()</b></p>
+<p>Just as there is an <b>Add</b> method of the DataSet Rows property, so there 
+  is a <b>Delete</b> method. You don't need anything between the round brackets, 
+  this time. We've specified the Row to delete with:</p>
+<p align="center"><b>Rows( inc )</b></p>
+<p>The <b>inc</b> variable is setting which particular Row we're on. When the 
+  <b>Delete</b> method is called, it is this row that will be deleted.</p>
+<p>However, it will only be deleted from the DataSet. To delete the row from the 
+  underlying database, we have this again:</p>
+<p align="center"><b>da.Update(ds, &quot;AddressBook&quot;)</b><br>
+</p>
+<p>The Command Builder, in conjunction with the Data Adapter, will take care of 
+  the deleting. All you need to is call the <b>Update</b> method of the Data Adapter.</p>
+<p>The <b>MaxRows</b> line in the code just deducts 1 from the variable. This 
+  just ensures that the number of rows in the DataSet matches the number we have 
+  in the MaxRows variable.</p>
+<p>We also reset the <b>inc</b> variable to zero, and call the <b>NavigateRecords()</b> 
+  subroutine. This will mean that the first record is displayed, after a record 
+  has been deleted.</p>
+<p>Try out your programme. Click the <b>Next Record</b> button a few times to 
+  move to a valid record. Then click the <b>Delete Record</b> button. The record 
+  will be deleted from the DataSet AND the database. The record that is then displayed 
+  will be the first one.</p>
+<p>There's another problem, though: if you click the <b>Delete Record</b> button 
+  before the<b> Next Record </b>button, you'll get an error message. You can add 
+  an If Statement to check that the inc variable does not equal minus 1.</p>
+<p>Another thing you can do is to display a message box asking users if they really 
+  want to delete this record. Here's one in action:</p>
+<p align="center"><img src="images/vb_2010/addressBookMessage_p296.jpg"></p>
+<p>To get this in your own programme, add the following code to the 
+  very top of your Delete button code:</p>
+<p class="indent_small_blue">If MessageBox.Show(&quot;Do you really want to Delete this Record?&quot;,
+  &quot;Delete&quot;, MessageBoxButtons.YesNo,
+  MessageBoxIcon.Warning) = DialogResult.No Then</p>
+  
+  <P class="indent_big_blue">MsgBox(&quot;Operation Cancelled&quot;)<br>
+  Exit Sub</p>
+<p class="indent_small_blue">End If</p>
+<p>The first two lines of the code are really one line, spread out so as to fit 
+  on this page.</p>
+<p>But we're using the new message box function:</p>
+<p align="center"><b>MessageBox.Show()</b></p>
+<p>In between the round brackets, we specifying the message to display, followed 
+  by a caption for the message box. We then have this:</p>
+<p align="center"><b>MessageBoxButtons.YesNo</b></p>
+<p>You won't have to type all that out; you'll be able to select it from a popup 
+  list. But what it does is give you Yes and No buttons on your message box.</p>
+<p>After typing a comma, we selected the <b>MessageBoxIcon</b>.Warning icon from 
+  the popup list.</p>
+<p>But you need to check which button the user clicked. This is done with this:</p>
+<p align="center"><b>= DialogResult.No</b></p>
+<p>Again, you select from a popup list. We want to check if the user clicked the 
+  No button. This will mean a change of mind from the user. A value of No will 
+  then be returned, which is what we're checking for in the If Statement.</p>
+<p>The code for the If Statement itself is this:</p>
+<p class="indent_small_blue">MsgBox(&quot;Operation Cancelled&quot;)<br>
+  Exit Sub</p>
+<p>This will display another message for the user. But most importantly, the subroutine 
+  will be exited: we don't want the rest of the Delete code to be executed, if 
+  the user clicked the No button.</p>
+<p>&nbsp;</p>
+<p>And that's it for our introduction to database programming. You not only saw 
+  how to construct a database programme using the Wizard, but how to write code 
+  to do this yourself. There is an awful lot more to database programming, and 
+  we've just scratched the surface. But in a beginner's course, that's all we 
+  have time for.</p>
+<p>The section that follows is all about Forms.</p>
+<p>&nbsp;</p>
+<p align="center"><a href='../bookshop/net.html'><img src='vbBanBorder.gif' alt='Buy our VB NET Book Here' border='0'/></a></p>
+</SECTION></ARTICLE></SECTION><FOOTER> 
+<P class="course_links"><a href="nets13p1.html">Learn about VB .NET Forms --&gt;</a></P>
+		<P><A HREF="vbNet.html">Back to the VB NET Contents Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.uk/NET/nets12p11.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 07:21:35 GMT -->
+</HTML>
+

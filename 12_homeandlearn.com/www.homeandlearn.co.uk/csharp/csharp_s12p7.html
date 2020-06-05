@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.uk/csharp/csharp_s12p7.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 06:56:51 GMT -->
+<HEAD>
+		<TITLE>C# .NET: Access Data from a Dataset</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-2.css">
+		<meta itemprop="name" content="Home and Learn">
+		<meta itemprop="description" content="Free C# .NET Course">
+		<meta itemprop="image" content="../logo5.jpg">
+		<link rel="publisher" href="https://plus.google.com/104045712242599534737" />
+		<link rel="author" href="https://plus.google.com/104045712242599534737" />
+		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="links.js"></SCRIPT>
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">C#.NET</SPAN> <SPAN class="Logo_Text">Course</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+<ul>
+<LI><a href="../index-2.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2010.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign.html">Web Design</a></LI>
+<LI><a href="../javascript/javascript.html">Javascript</a></LI>
+<LI><a href="../NET/vbNet.html">Visual Basic .NET</a></LI>
+<LI><a href="../php/php.html">Beginners PHP</a></LI>
+<LI><a href="csharp.html">C# .NET</a> <B>&lt; &lt;</B></LI>
+<LI><a href="../java/java.html">Java for Beginners</a></LI>
+</ul>
+		
+</NAV> <SECTION ID="Wrapper"> <ARTICLE> <HEADER> 
+<H1 ID="Article">Getting at the data in the Dataset</H1>
+</HEADER> <SECTION>
+<p align="center"> 
+  <script language="JavaScript">
+				writeImageCsharp()
+			</script>
+</p>
+<P>&nbsp;</P>
+<P>At the moment, we have a Dataset filled with records from the database table. 
+  But we can't actually see anything. What we'd like to do is to display the records 
+  on a form. We'll put the data in textboxes.</P>
+<p>Add four text boxes and four labels to your form, so that the design looks 
+  something like ours below:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/form_1.gif" width="395" height="260" alt="A data entry form in C# .NET"></p>
+<p>When the form loads, we want the first record from the Dataset to appear in 
+  the text boxes.</p>
+<p>We'll do all that from a method. So just after your form load code, add a new 
+  method called <b>NavigateRecords</b>. It's not going to return a value, so you 
+  can make it a void method.</p>
+<p>Trying to get at the data from a Dataset can be a torturous business, because 
+  there are so many properties and methods to access. The easiest way is to first 
+  set up a new DataRow variable:</p>
+<p class="indent_small">DataRow dRow;</p>
+<p>This will refer to a row from the Dataset:</p>
+<p class="indent_small">DataRow dRow = ds1.Tables[&quot;Workers&quot;].Rows[0];</p>
+<p>So after the equals sign, we have this:</p>
+<p class="indent_small">ds1.Tables[&quot;Workers&quot;].Rows[0];</p>
+<p>You first type the name of your Dataset, which is <b>ds1</b> for us. After 
+  a dot, select Tables from the IntelliSense list. <b>Tables</b> is a collection, 
+  and stores a list of all the available Tables (a Table is just that grid that 
+  we mentioned). To tell C# which Table you want, type its name between square 
+  brackets and a pair of double quotes. After another dot, select Rows from the 
+  IntelliSense list. In between square brackets, you specify which Row from the 
+  Dataset you want. Row zero [0] is the first Row in the Table.</p>
+<p>So add that line to your <b>NavigateRecords</b> method.</p>
+<p>But that's not the end of it! We've only pointed to a Row in the Dataset. We 
+  also need to specify a column.</p>
+<p>To get at a Column in the Row, the code is this:</p>
+<p class="indent_small">dRow.ItemArray.GetValue(1).ToString()</p>
+<p>We've started with our Row object, which we've called <b>dRow</b>. After a 
+  dot, select <b>ItemArray</b> from the IntelliSense list. This is an Array of 
+  all the Items (Columns) in your Row. We had five columns in our database table: 
+  ID, first_name, family_name, job_title, and department. ItemArray starts at 
+  zero, so ID will be Item 0, first_name will be Item 1, last_name will be Item 
+  2, job_title will be Item 3, and department will be Item 4.</p>
+<p>After another dot, then, select <b>GetValue</b> from the list. As its name 
+  suggests, this will Get the Values from your Columns. In between round brackets, 
+  you need the Item number from the array. <b>GetValue(1)</b> will refer to the 
+  first_name column in our Dataset. Finally, you need to convert it to a string 
+  with <b>ToString</b>. Once converted to a string, you can put it straight into 
+  a text box.</p>
+<p>Putting all that together, add the following code to your NavigateRecords method:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/con_code_3.gif" width="424" height="151" alt="Getting records from a C# .NET DataSet"></p>
+<p>If you prefer, you can put everything on one line. But it will be a very long 
+  line. Here it is:</p>
+<p class="indent_small">textBox1.Text = ds1.Tables[&quot;Workers&quot;].Rows[0].ItemArray.GetValue(1).ToString();</p>
+<p>But you are almost ready to test it all out. The final thing to do is to add 
+  a call to your NavigateRecords method. Put the call just before the <b>con.Close</b> 
+  line, as in the image below:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/con_code_4.gif" width="418" height="271" alt="A method to pull data from a dataset"></p>
+<p>Now you can test it out. Run your programme and the form should display the 
+  first record from your database. It should look like ours:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/form_2.gif" width="395" height="260" alt="A record displayed on a C# form"></p>
+<p>Now that we have one record displayed, we can add buttons to navigate backwards 
+  and forward through all the records in our database. We'lldo that in the next 
+  part below.</p>
+</SECTION></ARTICLE> </SECTION> <FOOTER> 
+<p align="right"><a href="csharp_s12p6.html">&lt;-- DataSets and DataAdapters</a> | <a href="csharp_s12p8.html">Database Navigation Buttons --&gt;</a></P>
+		<P><A HREF="csharp.html">Back to the C# NET Contents Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.uk/csharp/csharp_s12p7.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 06:56:51 GMT -->
+</HTML>
+

@@ -1,0 +1,486 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 31 -- Making Reports in Visual Basic 6</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch30.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch30/ch30.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch32.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch32/ch32.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 31 -<BR>
+Making Reports in Visual Basic 6</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">What's New with Reporting?</A>
+	<LI><A HREF="#Heading2">Building a Simple Report</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>What's New with Reporting?</H2>
+<P>Creating reports is a main function of any good business application. You might
+have useful data in the system, but without a coherent way to present it, the numbers
+are meaningless. Visual Basic's primary reporting tool wasn't even a Microsoft product
+until this version. Previous versions of VB included a version of Seagate Software's
+Crystal Reports tool. With the release of VB 6, Microsoft has integrated a good report
+writer into VB that will provide most users an alternative to purchasing another
+tool.</P>
+<P>The VB Data Report Designer will look familiar to developers who have built reports
+in Microsoft Access, because the layout of the tools is almost identical. However,
+the Data Report for VB can actually be compiled into your executable, which means
+no format files need to be installed on a user's machine. This also means that the
+format files can't be corrupted by users who decide to go exploring.</P>
+<P>Your VB reporting workspace has a few new additions. The first is the Report Layout
+window (shown in Figure 31.1). You learn more about its different sections later
+in this example.</P>
+<P><A HREF="javascript:popUp('31fig01.gif')"><B>FIGURE 31.1</B></A> <I>The Report
+Layout window looks similar to the Report Designer used in Microsoft Access.</I></P>
+<P>The next change is the addition of six new controls to the Toolbox, as described
+in Table 31.1.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Data Report Designer ToolBox controls</STRONG></P>
+	<P>These six controls aren't interchangeable with their counterparts you've always
+	used for form design. Likewise, you can't use form design controls in Data Report
+	Designer. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>TABLE 31.1&#160;&#160;Data Report Designer Controls</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Control Type</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">RptTextBox<IMG SRC="ic90-1.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch31/ic90.gif" WIDTH="28" HEIGHT="28" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">Any data that will be supplied at runtime--through code or through a command--needs
+			to be put in a RptTextBox. RptTextBox controls can be configured to look like plain
+			text without any borders.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">RptLine<BR>
+			<IMG SRC="ic91-1.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch31/ic91.gif" WIDTH="27" HEIGHT="26" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">Use this control to draw a variety of lines on the report.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">RptFunction<IMG SRC="ic92.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch31/ic92.gif" WIDTH="28" HEIGHT="27" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">This control performs functions on data groups in the report and can be used only
+			in a group footer section of the report. It supplies functions such as row and value
+			counting, sums, and so on.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">RptLabel<BR>
+			<IMG SRC="ic93.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch31/ic93.gif" WIDTH="25" HEIGHT="25" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">The RptLabel control is used to add static text to the report.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">RptImage<BR>
+			<IMG SRC="ic94.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch31/ic94.gif" WIDTH="27" HEIGHT="26" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">Use the RptImage control to add a picture to your report. This control, like the
+			standard Image control, can hold bitmaps (BMP), icons, metafiles, or GIF or JPEG
+			files.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">RptShape<BR>
+			<IMG SRC="ic95.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch31/ic95.gif" WIDTH="26" HEIGHT="25" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">You can use the RptShape control to add a variety of graphical shapes to your report,
+			including rectangles, circles, and variations of them.</TD>
+	</TR>
+</TABLE>
+
+<H2><A NAME="Heading2"></A>Building a Simple Report</H2>
+<P>As its name implies, the Data Report Designer builds reports from database tables.
+The example in this chapter uses the Northwind Traders database (Nwind.mdb), which
+is included in the main Visual Basic directory.</P>
+<P><B>Start building your report</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>From the <B>Project</B> menu, choose <B>Add Data Report</B>.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>You need a title for your report. This title can be either in the Report
+	Header, and only on the first page of the report, or in the Page Header and on the
+	top of every report. Add a RptLabel control or two to create a title for your report,
+	as shown in Figure 31.2. Simply draw the RptLabel control where you want it and set
+	at least the Caption property to change the text that should be displayed.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('31fig03.gif')"><B>FIGURE 31.2</B></A> <I>RptLabel controls
+enable you to add static text anywhere on your report. The text in the Report Header
+section repeats on every page in your report.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Cleaning up the report</STRONG></P>
+	<P>You can also set the Caption property of the Report itself by using the Properties
+	window when the Report is selected. Also, any blank space you leave around the controls
+	will be repeated whenever the report is shown, so be sure to place the controls correctly
+	and to close up any blank space around them. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>You can add other labels or graphics to the report as you want. The next step
+is to connect the report to a data source by using the Data Environment Designer.
+A data environment contains all the connections and queries that you're using in
+your application. In this example, you need a query to generate a list of customers
+for your report.</P>
+<P><B>Using the Data Environment Designer</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>From the <B>Project</B> menu, choose <B>More ActiveX Designers</B>
+	and then choose <B>Data Environment</B>.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>To make a connection to the Northwind Traders database, right-click
+	<B>Connection1</B> and select <B>Properties</B> from the popup menu.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Because you're connecting to an Access database, select <B>Microsoft
+	Jet 3.51 OLE DB Provider</B> (see Figure 31.3) and then click <B>Next</B>.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('31fig04.gif')"><B>FIGURE 31.3</B></A> <I>Always use
+the Jet OLE DB Provider when connecting to Access databases in a data environment.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>4. </B>Enter or select the database filename to use for this connection. The
+	Northwind Traders database is located in the VB installation directory. For the other
+	options in the window (see Figure 31.4), you don't need to specify any user ID (other
+	than Admin) because no access control is set up on the Nwind.mdb file. If you were
+	using another database that had security, you would have to specify a user ID and
+	password here or at runtime.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>To verify that the connection is correct, click the <B>Test Connection
+	</B>button. If you receive a message indicating a successful test, click <B>OK</B>
+	to continue. Otherwise, go back and make sure that you followed the steps correctly.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Because a name like Connection1 isn't useful, click the <B>Connection1</B>
+	item and hover for a few seconds. VB will allow you to rename the connection at this
+	point. Pick a useful name, such as dcnNWind, which is the name used throughout this
+	example.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('31fig05.gif')"><B>FIGURE 31.4</B> </A><I>Enter the
+filename of the database you want to use in this connection. Access always provides
+the Admin user ID, even if you don't specify one. For this example, you can leave
+Admin as the user ID.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>7. </B>Repeat step 6 and give the data environment a useful name, such as
+	denvNWind. If you have multiple data environments in your project, it's imperative
+	that you keep the names straight.
+	<P>
+</DL>
+
+<P>You've successfully created a data environment. Be sure to save your work but
+don't shut the window just yet. With the data environment created, you can now create
+the query that will retrieve customer information from the database.</P>
+<P><B>Create the query to retrieve information from the database</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Right-click <B>Commands</B> and select <B>Add Command </B>from the
+	popup menu. The Data Environment Designer will add a new command to the environment.
+	Right-click it and select <B>Properties</B>.
+	<P>
+	<DT></DT>
+	<DD>Quite a few properties are available for the command, but the ones you need to
+	set are on the first page, <B>General</B> (see Figure 31.5).
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Give the command a useful name, such as qryGetCustomerList.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Pick the connection to use. Select <B>dcnNWind</B> from the <B>Connection</B>
+	drop-down list.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('31fig06.gif')"><B>FIGURE 31.5</B></A> <I>All the properties
+you need to set for this query are on the <B>General</B> page.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Use the SQL Builder</STRONG></P>
+	<P>You can use the SQL Builder if you want to create complex joins and don't want
+	to type the SQL yourself. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Because the database can understand SQL, type the following <B>SQL
+	Statement</B> to specify how to retrieve the data:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>SELECT CompanyName, City, Region, Country, Phone
+</PRE>
+	<PRE>FROM Customers ORDER BY CompanyName</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Click <B>OK</B>.
+	<P>
+</DL>
+
+<P>Be sure to save your work because you have now finished building your data connections.</P>
+<P><B>Finish building the report</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Before adding the data fields, you need to set a few properties on
+	the report itself so that it knows where to obtain its data. Set the DataSource property
+	to the name of your data environment; set the DataMember property to the name of
+	your customer list query. If you don't set these properties, you'll receive errors
+	when you try to run the report.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Finding the Properties window</STRONG></P>
+	<P>If you can't see the Properties window (where these properties can be set), press
+	F4 to open it. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>To add data to the report, take a field from the Data Environment Designer
+	window, such as CustomerName, and drag it to the Detail section of your report. VB
+	will automatically draw a RptTextBox, along with a RptLabel, control on the report.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using repeating rows</STRONG></P>
+	<P>The Detail section is very narrow because any blank space in this section will
+	be repeated for every row in the report. Also notice that a line is drawn beneath
+	the column headers. You can use the RptLine control to create this graphic, if you
+	like. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>To make this report column-based, drag the RptLabel into the PageHeader
+	section. Place the RptTextBox beneath the RptLabel but leave the RptTextBox in the
+	Detail section. Repeat this process for all the fields. Your window will look like
+	Figure 31.6.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('31fig07.gif')"><B>FIGURE 31.6</B></A> <I>You can move
+your controls between sections to create a column-based report.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>4. </B>To include a page number and total number of pages (as in Page 3 of
+	5), create a page footer. This is very easy to do with a RptLabel control, which
+	supports a number of substitutions so that you don't have to write code to put page
+	numbers in your report. The RptLabel control supports these substitutions:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">%p</TD>
+		<TD ALIGN="LEFT">Current page number</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">%P</TD>
+		<TD ALIGN="LEFT">Total number of pages</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">%d</TD>
+		<TD ALIGN="LEFT">Current date (short format)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">%D</TD>
+		<TD ALIGN="LEFT">Current date (long format)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">%t</TD>
+		<TD ALIGN="LEFT">Current time (short format)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">%T</TD>
+		<TD ALIGN="LEFT">Current time (long format)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">%i</TD>
+		<TD ALIGN="LEFT">Report title</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD>If, for instance, you wanted to include a page number, the Caption for the RptLabel
+	control would be as follows:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Page %p of %P</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD>VB will automatically substitute the page number and number of pages on each
+	page of the report.
+	<P>
+</DL>
+
+<P>Now that the report is complete, you can run it just like any other module in
+your project. Choose <B>Properties</B> from the <B>Project</B> menu and use this
+report as your startup form. When you run your program, your report will be displayed
+as shown in Figure 31.7.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Centering the page number</STRONG></P>
+	<P>To center the page number, right-click the RptLabel, select Center in Section,
+	and then select Horizontally from the pop-up menu. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><A HREF="javascript:popUp('31fig08.gif')"><B>FIGURE 31.7</B></A> <I>The report
+is shown in its final form in run mode.</I></P>
+<P>With the report viewer, users can print or export the report to plain text or
+HTML. As shown in Figure 31.7, you also can shrink or enlarge the report by using
+the Zoom feature available on the viewer.</P>
+<P>To show this report from code, use the standard Show method. You can use the PrintReport
+method to instruct the report to print through code. Adding a True or False to the
+PrintReport call tells VB whether to display a Print dialog. You don't even have
+to have a CommonDialog control in your project--VB will automatically create the
+Print dialog.</P>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch30.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch30/ch30.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch32.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch32/ch32.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

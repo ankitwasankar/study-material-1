@@ -1,0 +1,1231 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 29 -- Packages and Interfaces</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;29</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Packages and Interfaces</FONT>
+
+</H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#Packages">
+
+Packages</A>
+
+<UL>
+
+<LI><A HREF="#CreatingYourOwnPackages">
+
+Creating Your Own Packages</A>
+
+<LI><A HREF="#ExampleCreatingaSimplePackage">
+
+Example: Creating a Simple Package</A>
+
+<LI><A HREF="#ExampleUsingtheNewPackage">
+
+Example: Using the New Package</A>
+
+<LI><A HREF="#ExampleExtendingthePackage">
+
+Example: Extending the Package</A>
+
+</UL>
+
+<LI><A HREF="#Interfaces">
+
+Interfaces</A>
+
+<UL>
+
+<LI><A HREF="#TheBasicInterface">
+
+The Basic Interface</A>
+
+<LI><A HREF="#ExampleCreatinganInterface">
+
+Example: Creating an Interface</A>
+
+<LI><A HREF="#ImplementinganInterface">
+
+Implementing an Interface</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+As you write more and more Java source code, you're going to start
+
+having a hard time finding the snippets of code you need for your
+
+current project. You may, for example, have a number of classes
+
+that are related in some way, yet are scattered in separate files
+
+making it difficult to determine exactly what you have. One solution
+
+to this problem is packages, which enable you to organize your
+
+classes into logical groups.
+
+<P>
+
+You may also have a number of classes that contain capabilities
+
+that you'd like to use in a newly derived class. However, Java
+
+does not allow multiple inheritance, which is deriving a single
+
+class directly from two or more classes simultaneously. To get
+
+around this deliberate limitation, Java uses something called
+
+interfaces, which enable the programmer to define capabilities
+
+for classes without implementing those capabilities until the
+
+classes that use the interface are defined. In this chapter, you
+
+study both packages and interfaces.
+
+<H2><A NAME="Packages"><FONT SIZE=5 COLOR=#Ff0000>
+
+Packages</FONT></A></H2>
+
+<P>
+
+You may not realize it, but you've been using Java packages since
+
+the first applet you created. That's because all of the Java Developer's
+
+Kit's classes are organized into packages. You've been importing
+
+those packages into your source code with code similar to this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+If you examine either of these lines, you'll see that each starts
+
+with the word <TT>java</TT> followed by a package name and an
+
+asterisk, each element being separated by a dot. The use of the
+
+different names separated by the dots illustrates the hierarchy
+
+that Java's creators used when they created the Java packages.
+
+This hierarchy is used not only as a way of referring to class
+
+names in source code, but also as a way to organize the .CLASS
+
+files that comprise a class library.
+
+<P>
+
+If you look in your JAVA\LIB folder, you'll find the JAVA folder,
+
+within which is the AWT and APPLET folders. In the AWT and APPLET
+
+folders are the .class files for the <TT>awt</TT> and <TT>applet</TT>
+
+packages. You can see that the <TT>import</TT> lines indicate
+
+the directory structure under which the package source-code files
+
+are stored. When Java's compiler runs into such import lines,
+
+it expects the directory structure to match the package's hierarchy.
+
+<P>
+
+In the preceding two sample <TT>import</TT> lines, the asterisks
+
+mean that Java should import all of the classes of the <TT>awt</TT>
+
+and <TT>applet</TT> packages into the applet you're writing. If
+
+you wanted to, you could streamline the import process by importing
+
+exactly the classes used in your source code. (When doing this,
+
+keep in mind that Java is case sensitive.) You would do this by
+
+replacing the asterisk with the name of the class you want to
+
+import. For example, to import only the <TT>Button</TT> class
+
+from the <TT>awt</TT> package, you use this line:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.Button;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+However, because you frequently need to access more than a single
+
+class in a package, it's often more convenient to import all of
+
+the classes at once.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+If you like, you can do without <TT>import</TT> statements at all. To do this, you need to use fully qualified package names when referring to a Java class. For example, to create a new button object, you could write <TT>java.awt.Button button = new 
+java.awt.Button(label)</TT>. As you can see, however, such program lines become unwieldy, which is why Java supports the <TT>import</TT> statement.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H3><A NAME="CreatingYourOwnPackages">
+
+Creating Your Own Packages</A></H3>
+
+<P>
+
+As you write your own classes, you're going to want to organize
+
+the related classes into packages just as Java does. You do this
+
+by organizing your classes into the same sort of hierarchy. For
+
+example, you may want to start with a folder called MYPACKAGES
+
+into which you'll store the .class files that make up your class
+
+libraries. This folder should be in the folder in which your main
+
+source-code files are located. If you've been following the instructions
+
+given earlier in this book, you've been using a folder called
+
+CLASSES for this purpose.
+
+<P>
+
+To add a class to a package, you put the following line at the
+
+top of the class's source code:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+package PackageName;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Here, the keyword <TT>package</TT> tells Java that you want to
+
+add this class to a package. The name of this package will be
+
+<TT>PackageName</TT>. The package line must be the first line
+
+in the class's source code (except for blank lines or comments).
+
+<H3><A NAME="ExampleCreatingaSimplePackage">
+
+Example: Creating a Simple Package</A></H3>
+
+<P>
+
+Suppose that you want to create a class called <TT>DisplayClass</TT>
+
+that returns a test string to be displayed in an applet. You want
+
+this class to be part of a package called DISPLAY. Listing 29.1
+
+shows the source code for the <TT>DisplayClass</TT> class:
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 29.1&nbsp;&nbsp;DisplayClass.java: The </B><I>DisplayClass</I><B>
+
+Class.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+package MyPackages.Display;
+
+
+
+public class DisplayClass
+
+{
+
+    public String GetDisplayText()
+
+    {
+
+        return &quot;Display Text&quot;;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+When you examine Listing 29.1, you may wonder how <TT>DisplayClass</TT> can reference Java's <TT>String</TT> class without including an <TT>import</TT> line at the top of the listing. The class gets away with this because Java automatically imports the 
+java.lang package, where the <TT>String</TT> class is defined.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+The first line of Listing 29.1 determines not only the name of
+
+the package, but also the way it must be stored on your hard drive.
+
+That is, the DisplayClass.class file must end up in a folder called
+
+Display, which itself must be in a folder called MYPACKAGES. To
+
+compile DisplayClass.java, follow these steps:
+
+<OL>
+
+<LI>In your CLASSES folder, create a folder called MYPACKAGES.
+
+This is where you will create the folders needed by each of the
+
+packages you create.
+
+<LI>In the MYPACKAGES folder, create a folder called DISPLAY.
+
+This folder will hold any of the classes that are part of the
+
+<TT>Display</TT> package.
+
+<LI>Type in Listing 29.1 and save it in the DISPLAY folder, under
+
+the name DisplayClass.java. (If you don't want to type, you can
+
+copy the file from this book's CD-ROM.)
+
+<LI>Select the MS-DOS Prompt command from the Start menu's Program
+
+group and switch to the CLASSES\MYPACKAGES\DISPLAY folder, as
+
+shown in Figure 29.1.<BR>
+
+<IMG SRC="f29-1.gif"><B> Figure 29.1 : </B><I>To compile a package's class, you must switch to the folder in which the class's source code is stored.
+
+
+
+</I></A><P>
+
+<LI>At the MS-DOS prompt, type <TT>javac DisplayClass.java</TT>.
+
+Java's compiler then compiles the DisplayClass.java file, creating
+
+the DisplayClass.class file in your DISPLAY folder.
+
+</OL>
+
+<P>
+
+As you can see in Figure 29.2, if you now look in your DISPLAY
+
+folder, you'll have not only the original source code file for
+
+the <TT>DisplayClass</TT> class, but also the DisplayClass.class
+
+file, which is the class's byte-code representation that Java
+
+can understand. Congratulations! You've just created your first
+
+package.
+
+<P>
+
+<IMG SRC="f29-2.gif"><B> Figure 29.2 : </B><I>After compiling, you will have the class's .CLASS file on your disk.
+
+
+
+</I></A><P>
+
+<H3><A NAME="ExampleUsingtheNewPackage">
+
+Example: Using the New Package</A></H3>
+
+<P>
+
+Now that you've created a package, you'd probably like to use
+
+it in an applet. To do this, you must first import the class into
+
+the applet's source code file. You can then use the class in exactly
+
+the same way you've been using Java's classes throughout this
+
+book. Listing 29.2 is an applet, called PackageApplet, that demonstrates
+
+how to use your new package. Listing 29.3 is the applet's HTML
+
+document.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 29.2&nbsp;&nbsp;PackageApplet.java: An Applet That
+
+Uses Your New Package.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+import MyPackages.Display.DisplayClass;
+
+
+
+public class PackageApplet extends Applet
+
+{
+
+    public void paint(Graphics g)
+
+    {
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.PLAIN, 24);
+
+        g.setFont(font);
+
+
+
+        DisplayClass myClass = new DisplayClass();
+
+        String s = myClass.GetDisplayText();
+
+
+
+        g.drawString(s, 60, 80);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 29.3&nbsp;&nbsp;PACKAGEAPPLET.htmlL: PackageApplet's
+
+HTML Document.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;title&gt;Applet Test Page&lt;/title&gt;
+
+&lt;h1&gt;Applet Test Page&lt;/h1&gt;
+
+&lt;applet
+
+    code=&quot;PackageApplet.class&quot;
+
+    width=250
+
+    height=250
+
+    name=&quot;PackageApplet&quot;&gt;
+
+&lt;/applet&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+Notice how the third line in Listing 29.2 imports the <TT>DisplayClass</TT>
+
+class from the <TT>Display</TT> package. You also could have used
+
+the line <TT>import MyPackages.Display.*</TT>, as you did with
+
+the Java packages in the first two lines of the listing. Because
+
+there is currently only one class in the package, using the asterisk
+
+achieves exactly the same results as specifying the class's name
+
+in the <TT>import</TT> line. However, when you add other classes
+
+to the package, the asterisk will tell Java to include those classes,
+
+as well.
+
+<P>
+
+To see how all this package stuff works with the PackageApplet
+
+applet, follow these steps:
+
+<OL>
+
+<LI>Type in Listings 29.2 and 29.3 and save them in your CLASSES
+
+folder (the same folder that contains your new MYPACKAGES folder).
+
+If you prefer, you can copy the listings from this book's CD-ROM.
+
+<LI>In your DOS window, switch to the CLASSES directory.
+
+<LI>Type <TT>javac PackageApplet.java</TT> to compile the applet
+
+into a .class file.
+
+<LI>Run the applet by typing appletviewer packageapplet.htmll.
+
+</OL>
+
+<P>
+
+When you run the PackageApplet applet, you see the window shown
+
+in Figure 29.3. The text that's displayed in the applet is acquired
+
+by the call to the <TT>DisplayClass</TT> class's <TT>GetDisplayText()</TT>
+
+method. This class is part of your new <TT>Display</TT> class.
+
+When you run the applet, Java knows where to find the <TT>Display</TT>
+
+class because of the hierarchy of folders you created to mirror
+
+the MYPACKAGES\DISPLAY \ DisplayClass.class hierarchy.
+
+<P>
+
+<IMG SRC="f29-3.gif"><B> Figure 29.3 : </B><I>PackageApplet displays the text string obtained from a class defined in your new Display package.
+
+
+
+</I></A><P>
+
+<H3><A NAME="ExampleExtendingthePackage">
+
+Example: Extending the Package</A></H3>
+
+<P>
+
+Now that you've got the package started, you can extend it simply
+
+by creating new classes that have the line <TT>package MyPackages.Display</TT>
+
+at the top of the source code. Thanks to the folder hierarchy
+
+you've developed (and that Java insists upon), all the class files
+
+(both source and byte-code) in the <TT>Display</TT> package will
+
+end up in the DISPLAY folder. You could have one or a hundred.
+
+<P>
+
+You can add new packages to your growing library by creating folders
+
+inside the MYPACKAGES folder and storing the new classes there.
+
+Suppose, for example, that you want to start a new package called
+
+<TT>Shapes</TT>. The classes you want to add to this package are
+
+called <TT>Star</TT>, <TT>Hexagon</TT>, and <TT>Triangle</TT>.
+
+You'd then follow the steps given here:
+
+<OL>
+
+<LI>Create a folder called SHAPES inside the MYPACKAGES folder.
+
+This is where you'll store all the files associated with the <TT>Shapes</TT>
+
+package.
+
+<LI>Create the <TT>Star</TT>, <TT>Hexagon</TT>, and <TT>Triangle</TT>
+
+classes in separate source-code files, being sure to place the
+
+line <TT>package MyPackages.Shapes;</TT> at the top of each file.
+
+<LI>Switch to the C:\CLASSES\MYPACKAGES\SHAPES folder and type
+
+<TT>javac Star.java</TT> to compile the <TT>Star</TT> class. Compile
+
+the <TT>Hexagon</TT> and <TT>Triangle</TT> classes in the same
+
+way.
+
+<LI>Write the source code for the applet that uses your new <TT>Shapes</TT>
+
+package, storing the file in the C:\CLASSES directory. Remember
+
+to put the line <TT>import MyPackages.Shapes.*;</TT> at the top
+
+of the file. The asterisk ensures that all classes in the <TT>Shapes</TT>
+
+package are imported into the program.
+
+</OL>
+
+<H2><A NAME="Interfaces"><FONT SIZE=5 COLOR=#Ff0000>
+
+Interfaces</FONT></A></H2>
+
+<P>
+
+Packages are fairly easy to understand, being little more than
+
+a way to organize related classes, whether supplied with Java
+
+or created by a programmer like yourself. Interfaces, on the other
+
+hand, are a concept that is a bit harder to grasp. To really understand
+
+Java's interfaces, you have to know about something called multiple
+
+inheritance, which is not allowed in Java, but which is often
+
+used in other object-oriented languages.
+
+<P>
+
+Multiple inheritance means creating a new class that inherits
+
+behavior directly from more than one superclass. To make this
+
+concept a little clearer, look at how you derive classes from
+
+superclasses in Java. For example, every applet you've created
+
+so far has been derived from Java's <TT>Applet</TT> class, like
+
+this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public class AppletName extends Applet
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The preceding line tells Java that you want to create a new class
+
+that inherits the data fields and methods of the <TT>Applet</TT>
+
+class. This is a sample of single inheritance. Now, suppose that
+
+you had a class of your own, called <TT>MyClass</TT>, that implemented
+
+some capabilities that you also want your new applet to inherit.
+
+In a language like C++, you simply add the class to a list of
+
+superclasses, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public class AppletName extends Applet, MyClass
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This would be an example of multiple inheritance if Java allowed
+
+such a thing. However, for many reasons, Java's designers decided
+
+that multiple inheritance was too cumbersome and unpredictable
+
+to be useful. They still liked the idea, though, of being able
+
+to declare a set of behaviors that can be inherited by one or
+
+more classes. So, they came up with interfaces.
+
+<H3><A NAME="TheBasicInterface">
+
+The Basic Interface</A></H3>
+
+<P>
+
+An interface is very much like a class-with one important difference.
+
+None of the methods declared in an interface are implemented in
+
+the interface itself. Instead, these methods must be implemented
+
+in any class that uses the interface. In short, interfaces describe
+
+behaviors but do not detail how those behaviors will be carried
+
+out.
+
+<P>
+
+Interfaces are so much like classes, in fact, that they are declared
+
+in almost exactly the same way. You just replace the <TT>class</TT>
+
+keyword with the <TT>interface</TT> keyword, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+interface MyInterface
+
+{
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The preceding example is a complete interface, meaning that it
+
+can be compiled, after which other Java programs can reference
+
+it. You compile an interface exactly the same way you compile
+
+a class. First, you save the interface's source code in a file
+
+with the .java extension. Then you use the Java compiler, javac,
+
+to compile the source code into byte-code form. Just like a normal
+
+class, the byte-code file will have the .class extension.
+
+<P>
+
+Missing from the preceding sample interface are the methods that
+
+describe the interface's behaviors. In the sections that follow,
+
+you'll learn how to add this important element to an interface.
+
+<H3><A NAME="ExampleCreatinganInterface">
+
+Example: Creating an Interface</A></H3>
+
+<P>
+
+Suppose that instead of creating a full-fledged class out of your
+
+<TT>Display</TT> package's <TT>DisplayClass</TT> class, you want
+
+to make it an interface. (Yes, just like classes, you can make
+
+interfaces part of a package.) Listing 29.4 shows how the source
+
+code would be modified.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 29.4&nbsp;&nbsp;DisplayInterface.java: Creating an
+
+Interface.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+package MyPackages.Display;
+
+
+
+public interface DisplayInterface
+
+{
+
+    public String GetDisplayText();
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+The first line in Listing 29.4 is exactly like the first line
+
+in Listing 29.1, which shows the original class. The first line
+
+specifies that this interface is to be part of the <TT>MyPackages.Display</TT>
+
+package. The second line declares the interface. The only difference
+
+here is the use of the <TT>interface</TT> keyword in place of
+
+<TT>class</TT> and the new name, <TT>DisplayInterface</TT>.
+
+<P>
+
+Now, the real difference between a class and an interface becomes
+
+evident. Although Listing 29.4 declares the <TT>GetDisplayText()</TT>
+
+method, it doesn't actually implement the method. That is, you
+
+can see from the interface that <TT>GetDisplayText()</TT> is supposed
+
+to return a <TT>String</TT> object, but there isn't a clue as
+
+to how that <TT>String</TT> object is created or what it contains.
+
+Those details are left up to any class that decides to implement
+
+the interface.
+
+<P>
+
+But before you worry about implementing the interface in a class,
+
+you have to compile the interface source code. To do that, follow
+
+these steps:
+
+<OL>
+
+<LI>Type in Listing 29.3 and save it in the DISPLAY folder, under
+
+the name DisplayInterface.java. (If you don't want to type, you
+
+can copy the file from this book's CD-ROM.)
+
+<LI>Select the MS-DOS Prompt command from the Start menu's Program
+
+group and switch to the CLASSES\MYPACKAGES\DISPLAY folder.
+
+<LI>At the MS-DOS prompt, type <TT>javac DisplayInterface.java</TT>.
+
+Java's compiler then compiles the DisplayInterface.java file,
+
+creating the DisplayInterface.class file in your DISPLAY folder.
+
+</OL>
+
+<H3><A NAME="ImplementinganInterface">
+
+Implementing an Interface</A></H3>
+
+<P>
+
+Now that you have your new interface compiled, you can implement
+
+it in a class. This means not only telling Java that you'll be
+
+using the interface, but also implementing the interface within
+
+the new class. That is, every method that is listed in the interface's
+
+declaration must be defined in the class's source code. Listing
+
+29.5 is a new applet, called InterfaceApplet, that shows how to
+
+implement the <TT>DisplayInterface</TT> interface. When you compile
+
+and run this applet, you see exactly the same display as that
+
+produced by the original version, PackageApplet. Notice how the
+
+listing uses the <TT>implements</TT> keyword to tell Java that
+
+the applet will be implementing the <TT>DisplayInterface</TT>
+
+interface.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 29.5&nbsp;&nbsp;InterfaceApplet.java: An Applet That
+
+Implements the </B><I>DisplayInterface</I><B> Interface.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+import MyPackages.Display.DisplayInterface;
+
+
+
+public class InterfaceApplet extends Applet
+
+    implements DisplayInterface
+
+{
+
+    public void paint(Graphics g)
+
+    {
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.PLAIN, 24);
+
+        g.setFont(font);
+
+
+
+        String s = GetDisplayText();
+
+
+
+        g.drawString(s, 60, 80);
+
+    }
+
+
+
+    public String GetDisplayText()
+
+    {
+
+        return &quot;Display Text&quot;;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the <TT>Display</TT> package's
+
+<TT>DisplayInterface</TT>.<BR>
+
+Derive <TT>InterfaceApplet</TT> from <TT>Applet</TT> and implement
+
+<TT>DisplayInterface</TT>.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Create and set the <TT>Graphics</TT> object's font.<BR>
+
+        Get the display string.<BR>
+
+        Draw the display string.<BR>
+
+    Define the interface's <TT>GetDisplayText()</TT> method.<BR>
+
+        Return the display string.<BR>
+
+</BLOCKQUOTE>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>TIP</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+A class can implement as many interfaces as it needs to. To implement multiple interfaces, just list the interfaces after the <TT>implements</TT> keyword, separating each interface name from the others with a comma. Remember, however, that you must 
+implement in your new class all the methods declared in all the interfaces you implement.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+There's quite a lot to learn about interfaces. However, due to the skill level of this book and the fact that you probably won't have to worry about interfaces until you're an experienced Java programmer, only the basics have been presented here. Chances 
+are good that you won't have to create interfaces at all. It's just good to know they're there in case you need them.</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+Packages are a great way to create and organize class libraries.
+
+The more Java code you write, the more you'll appreciate the ability
+
+to create your own packages. Although you won't need to use interfaces
+
+for some time to come (if at all), interfaces are a unique element
+
+of the Java programming language. Although other object-oriented
+
+languages such as C++ allow multiple inheritance, only Java supports
+
+the idea of interfaces, which can be powerful tools when they're
+
+needed.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>What's a package?
+
+<LI>How do you tell Java that a source-code file uses a particular
+
+package?
+
+<LI>How do you add a class or interface to a package?
+
+<LI>How do you tell Java that the class you're creating implements
+
+a particular interface?
+
+<LI>What's the biggest difference between an interface and a class?
+
+<LI>How are interfaces similar to classes?
+
+<LI>How does the complete name of a package relate to the package's
+
+storage on your disk?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Add a new class to the Display package. This class should
+
+return an integer representing the size of the font to use when
+
+drawing the display text.
+
+<LI>Change the class you wrote in exercise 1 to an interface.
+
+Write an applet that implements the new interface.
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch28.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch30.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

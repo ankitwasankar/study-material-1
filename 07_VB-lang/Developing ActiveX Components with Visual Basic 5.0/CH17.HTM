@@ -1,0 +1,1735 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 17 -- The UserControl Object</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chatper&nbsp;17</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>The UserControl Object</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#LifetimeRelatedEvents">
+Lifetime-Related Events</A>
+<UL>
+<LI><A HREF="#TheInitializeEvent">
+The Initialize Event</A>
+<LI><A HREF="#TheTerminateEvent">
+The Terminate Event</A>
+</UL>
+<LI><A HREF="#IntroductiontoPropertyPersistence">
+Introduction to Property Persistence</A>
+<UL>
+<LI><A HREF="#OnDefaultValues">
+On Default Values</A>
+<LI><A HREF="#TheInitPropertiesEvent">
+The InitProperties Event</A>
+<LI><A HREF="#TheReadPropertiesEvent">
+The ReadProperties Event</A>
+<LI><A HREF="#TheWritePropertiesEvent">
+The WriteProperties Event</A>
+<LI><A HREF="#ThePropertyChangedMethod">
+The PropertyChanged Method</A>
+</UL>
+<LI><A HREF="#SitingandDisplayEventsandProperties">
+Siting and Display Events and Properties</A>
+<UL>
+<LI><A HREF="#TheResizeEvent">
+The Resize Event</A>
+<LI><A HREF="#TheShowandHideEvents">
+The Show and Hide Events</A>
+<LI><A HREF="#ThePaintEvent">
+The Paint Event</A>
+<LI><A HREF="#TheInvisibleAtRuntimeProperty">
+The InvisibleAtRuntime Property</A>
+</UL>
+<LI><A HREF="#FocusEventsandProperties">
+Focus Events and Properties</A>
+<UL>
+<LI><A HREF="#TheGotFocusEvent">
+The GotFocus Event</A>
+<LI><A HREF="#TheLostFocusEvent">
+The LostFocus Event</A>
+<LI><A HREF="#TheEnterFocusandExitFocusEvents">
+The EnterFocus and ExitFocus Events</A>
+<LI><A HREF="#TheCanGetFocusProperty">
+The CanGetFocus Property</A>
+<LI><A HREF="#TheAccessKeysProperty">
+The AccessKeys Property</A>
+<LI><A HREF="#TheForwardFocusProperty">
+The ForwardFocus Property</A>
+<LI><A HREF="#TheAccessKeyPressedEvent">
+The AccessKeyPressed Event</A>
+<LI><A HREF="#WorkingwithAccessKeys">
+Working with Access Keys</A>
+<LI><A HREF="#TheDefaultCancelProperty">
+The DefaultCancel Property</A>
+</UL>
+<LI><A HREF="#TransparentControls">
+Transparent Controls</A>
+<UL>
+<LI><A HREF="#TransparentConstituentBasedControls">
+Transparent Constituent-Based Controls</A>
+<LI><A HREF="#OddlyShapedControls">
+Oddly Shaped Controls</A>
+<LI><A HREF="#LabelStyleBasedControls">
+Label Style-Based Controls</A>
+<LI><A HREF="#BitmapBasedControls">
+Bitmap-Based Controls</A>
+</UL>
+<LI><A HREF="#OtherPropertiesandMethods">
+Other Properties and Methods</A>
+<UL>
+<LI><A HREF="#TheAlignableProperty">
+The Alignable Property</A>
+<LI><A HREF="#TheControlContainerandContainedControlsProperties">
+The ControlContainer and ContainedControls Properties</A>
+<LI><A HREF="#TheEditAtDesignTimeProperty">
+The EditAtDesignTime Property</A>
+<LI><A HREF="#TheEnabledProperty">
+The Enabled Property</A>
+<LI><A HREF="#TheEventsFrozenProperty">
+The EventsFrozen Property </A>
+<LI><A HREF="#ThePaletteModeProperty">
+The PaletteMode Property</A>
+<LI><A HREF="#TheParentProperty">
+The Parent Property</A>
+<LI><A HREF="#TheParentControlsProperty">
+The ParentControls Property </A>
+<LI><A HREF="#ThePublicProperty">
+The Public Property</A>
+<LI><A HREF="#TheRightToLeftProperty">
+The RightToLeft Property</A>
+<LI><A HREF="#TheToolBoxBitmapProperty">
+The ToolBoxBitmap Property</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+The UserControl object is the heart and soul behind every ActiveX
+control authored in Visual Basic. It's roughly the equivalent
+of the form for ActiveX controls. It contains the interfaces that
+make an ActiveX control work and allow the container to communicate
+with it. But, above all, the UserControl object is a COM object.
+And to know a COM object, you have to know its interfaces.
+<P>
+Not every UserControl property and event is covered here. Many
+of them should be quite familiar to you from general Visual Basic
+programming. Instead, I've focused on those events and methods
+that are unique to ActiveX controls, or that behave differently
+in ActiveX controls than they do in forms or controls. I've tried
+to group properties and events that are related to each other
+and provide samples that illustrate specific behaviors.
+<H2><A NAME="LifetimeRelatedEvents"><FONT SIZE=5 COLOR=#FF0000>
+Lifetime-Related Events</FONT></A></H2>
+<P>
+In <A HREF="ch16.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch16.htm" >Chapter 16</A> you learned about the different states a control
+can be in. The typical life of a control during authoring (when
+you are creating and testing the control) is:
+<UL>
+<LI>Designer open-Control is in design mode.
+<LI>Designer closed-No instance of the control exists yet.
+<LI>Control is drawn on a container-An instance of the control
+is created and is in run mode on a container that is in design
+mode.
+<LI>The container runs-Any existing design-time instance of the
+control is first destroyed, then a new instance is created and
+run on a container that is in run mode.
+</UL>
+<P>
+When you run an executable that uses a control, only Step 4 takes
+place: an instance of the control is created and run on a container
+that is in run mode.
+<P>
+While it is true that ultimately your control will spend most
+of its time in containers that are running, you must, as a control
+author, consider the container's design time. This is because,
+from your perspective, the control will be running in that environment
+as well.
+<P>
+The UserControl has a lot of events. It's important to understand
+how they work in each container mode, when they occur, and what
+kinds of things you can, cannot, should, and should not do during
+those events. The same applies to properties.
+<P>
+Let's start with the events that relate directly to the initialization
+and termination of a control. The ch17tst1.vbg group contains
+two projects, ch17ctl1 and ch17tst1.vbp. The ch17ctl1.vbp project
+contains a number of controls that will illustrate many of the
+issues described in this chapter.
+<P>
+The first control in the project is ch17ctlA. This control has
+a single public property called myprop, which is a variant property
+that can be set at design time. It includes debug.print statements
+for a number of UserControl events.
+<P>
+Open the project group and make sure the control designers are
+closed. You may need to first register the ch17ctl1.ocx control
+for the project group to open without error. When a new ch17ctlA
+control is drawn on the ch17tst1 form, the following events are
+triggered:
+<UL>
+<LI>UserControl_Initialize
+<LI>UserControl_InitProperties
+</UL>
+<P>
+When you run the ch17tst1 project, the following events occur:
+<UL>
+<LI>UserControl_Terminate
+<LI>UserControl_Initialize
+<LI>UserControl_ReadProperties
+</UL>
+<P>
+This proves that a control is destroyed when the container switches
+from design mode to run mode.
+<P>
+The Initialize and Terminate events are familiar to you from class
+modules. Initialize is always the first event that takes place
+when an object is created. Terminate is the last event to occur
+before it is destroyed.
+<P>
+When you switch back to design mode, the following events are
+triggered:
+<UL>
+<LI>UserControl_Terminate
+<LI>UserControl_Initialize
+<LI>UserControl_ReadProperties
+</UL>
+<P>
+We'll take a look at the property-related events in just a moment.
+<H3><A NAME="TheInitializeEvent">
+The Initialize Event</A></H3>
+<P>
+The Initialize event is the first event received by your control.
+<P>
+<CENTER><B>The Initialize Event</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should: </TD><TD WIDTH=432>Initialize any module level variables for your control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Initialize properties of constituent controls to their default values.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you may:</TD><TD WIDTH=432>Access or initialize the properties of any constituent controls. All constituent controls exist at this time.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Initialize variables that are used to hold the control's property values to their default value (this will be discussed further in the next section).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you may not:</TD><TD WIDTH=432>Access the Extender or Ambient properties of the UserControl object or any of their properties. This is because while your control object does exist at this time, it has not 
+yet 
+been placed on the container (or, as they usually phrase it, the control has not yet been sited at this time).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Access property values that were saved previously for the control. Properties have not yet been read at this time.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should not:</TD><TD WIDTH=432>Rearrange constituent control or perform any operations that are based on the expected size of the control. Not only has the control not yet been sited, it has not been 
+resized to its final dimensions.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Perform any operations that are dependent on features, attributes, or properties of the container. 
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Display anything.</TD>
+</TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheTerminateEvent">
+The Terminate Event</A></H3>
+<P>
+The Terminate event is triggered before the object closes. It
+is the last event to be triggered for a control and (with rare
+exceptions) the last code to run in the control module.
+<P>
+<CENTER><B>The Terminate Event</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should:</TD><TD WIDTH=432>Make sure that any objects your control is using are properly released.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you may:</TD><TD WIDTH=432>Perform any other &quot;cleanup&quot; operations that are necessary for your control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Access the properties of any constituent controls. All constituent controls still exist at this time.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you may not:</TD><TD WIDTH=432>Access the Extender or Ambient properties of the UserControl object or any of their properties. This is because your control has already been removed from the container when 
+this 
+event is called. In fact, when Visual Basic is the container, the form has already been unloaded by the time this event is called.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should not: </TD><TD WIDTH=432>Perform any operations that are dependent on features, attributes, or properties of the container. 
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4>Termination Issues</H4>
+<P>
+There are a few other important things to consider with regard
+to the Terminate event. You cannot know the order in which controls
+will be terminated. This is unlikely to be a problem in most cases,
+but it can become an issue when an application is closing.
+<P>
+Consider what happens if your control contains variables or accesses
+global variables that reference other objects or ActiveX code
+components. Normally, the very act of referencing the object prevents
+it from terminating, but when a Visual Basic application closes,
+all of the objects and controls are terminated despite any references
+that may still be held to them. You cannot determine the order
+in which these objects will be terminated.
+<P>
+What happens if you try to access another control or object during
+your control's Termination event? If the Termination event for
+the other control has not yet been called, you are unlikely to
+have any problem. But what if the other object or control has
+terminated? Surprisingly, the operation may work. For example:
+you can access properties in the other control. This means that
+code for that control may be running after its Terminate event
+has been called! The real problem occurs if the other control
+performed some cleanup operations during its Termination event
+that could cause a property access to fail (for example, setting
+a required object reference to Nothing). In this case an error
+will be raised when your control attempts to access the property.
+<P>
+This is not a terribly common scenario, but it is one that you
+should test for if you access object properties or methods during
+a Terminate event. One way to handle the problem is to use error
+trapping during the event.
+<P>
+Another thing to remember is that you should avoid using the Visual
+Basic Stop or End command in your application or invoking the
+Run, End menu command when running a component project. These
+commands stop your application or component immediately and prevent
+the object's Terminate event from triggering. 
+<P>
+This problem does not apply to compiled controls. When you load
+a compiled control into a project and stop the project using the
+Run, End command, the Terminate event for the project's form will
+not fire. However, the Terminate event for the compiled control
+will fire. This is because the compiled control is not considered
+to be Visual Basic code from the perspective of your project,
+and the Stop or End command only stops further execution of VB
+code. 
+<H2><A NAME="IntroductiontoPropertyPersistence"><FONT SIZE=5 COLOR=#FF0000>
+Introduction to Property Persistence</FONT></A></H2>
+<P>
+One of the features that differentiates between ActiveX code components
+and ActiveX controls is that controls you author can run at design
+time in the environment of a developer using your control. This
+means that ActiveX controls have the ability to allow developers
+to set properties at design time. These property values can be
+saved by the development environment in whatever format it uses
+to save applications that are being developed. The properties
+can be loaded again when the control is recreated. This process
+of saving and loading properties is called <I>property</I> <I>persistence</I>.
+<P>
+Consider the simple Text control. Table 17.1 shows the typical
+property persistence for a text control. The operations should
+be quite familiar to you already.<BR>
+<P>
+<CENTER><B>Table 17.1:&nbsp;Property Persistence with a Text Control.
+The Text Property.</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=156><B>Event in the Life of a Control</B></TD><TD WIDTH=420><B>Property Operations</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=156>Control is drawn on a form for the first time.
+</TD><TD WIDTH=420>Control properties are initialized. The Text property is initialized to the name of the control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=156>Project or file containing the control is saved.
+</TD><TD WIDTH=420>Control properties are saved into the .FRM file (in the case of VB).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=156>Project is run.</TD><TD WIDTH=420>Control properties are saved into memory when the control is destroyed. The properties are read back into the control when it is created in the run-time environment.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=156>Project is stopped.</TD><TD WIDTH=420>Control properties are not written when the control is stopped because run-time values are not persisted. Control properties are read from memory (where they were last saved) when the 
+
+control is created in the design-time environment.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=156>Project is compiled.</TD><TD WIDTH=420>Control properties are written into the executable file.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=156>Executable is run.</TD><TD WIDTH=420>Control properties are read from the executable file when the control is created.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+As you can see, three different operations need to be supported
+for properties. They need to be initialized, they need to be saved,
+and they need to be loaded. A control knows when to perform these
+operations via three events from the UserControl object: InitProperties,
+ReadProperties, and WriteProperties.
+<H3><A NAME="OnDefaultValues">
+On Default Values</A></H3>
+<P>
+One of the most confusing things about properties with regard
+to ActiveX controls is that there are two types of property initializations
+to consider. This situation arises because ActiveX control properties
+can have default values. Let me explain&#133;
+<P>
+Obviously not every property in your control needs to be persisted.
+The hWnd property, for example, returns the current window handle
+of the control. Because this is determined at runtime and changes
+each time the control is created, it would be silly to save this
+property in a project or executable file.
+<P>
+For those properties that you do wish to persist, you must keep
+one fact in mind: saving and loading property values takes time.
+A lot of time. The exact mechanism of persisting properties will
+be discussed in <A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 19</A>, but for now just look at a .FRM file
+(open one using a text editor such as Notepad). The properties
+of controls are all listed with the property name and a text representation
+of the value. Binary values (such as pictures) are stored in the
+.FRX file. Converting to and from a text representation of a value
+is obviously a fairly slow process, as is opening files and finding
+where in a file a particular property value can be found.
+<P>
+The designers of the ActiveX specification realized that in many
+cases control authors would initialize properties to values they
+expected would be the most common ones used. This implies that
+in many cases property values will be unchanged by developers.
+If a control is going to initialize a property to the correct
+value anyway, why bother with the overhead of saving and reloading
+it?
+<P>
+Thus each property in your control may be assigned a default value.
+When it comes time to write the property, Visual Basic will check
+to see if the property is set to the default value. If it is,
+there is no need to write the property. When the control is reloaded,
+Visual Basic will not try to read the property (it can't, since
+it was not written in the first place). Instead, VB will assign
+it the specified default value.
+<P>
+Now look again at Table 17.1. When the control is first drawn
+on a form, the Text property is the name of the control (for example:
+Text1). But what is the default property? You wouldn't want to
+use the control name because that is going to be different for
+each control. The empty string is a much more reasonable choice,
+if only because it is very common for Text controls to be empty
+when a form is first brought up. But how then does it get set
+to Text1 when a control is first added to a form? Clearly there
+must be a separate event to indicate when a control is first being
+created. This is the InitProperties event.
+<H3><A NAME="TheInitPropertiesEvent">
+The InitProperties Event</A></H3>
+<P>
+The InitProperties event is received by a control instance only
+when it is created for the very first time (for example: when
+drawn on a form).
+<P>
+<CENTER><B>The InitProperties Event</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should:</TD><TD WIDTH=432>Set persisted properties to their initial values. Not to their default values. Default values are set during the ReadProperties event. In the case of a standard text box, the 
+
+default value for the Text property is the empty string, the initial value is the name of the control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Call any control initialization routines that need to be performed after a control is created. You may wish to place this type of initialization in a separate function, because you may need to 
+perform 
+the same operations after the ReadProperties event.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Set non-persisted properties to their initial values. The idea of &quot;default&quot; values does not really exist for non-persisted properties. You may wish to place this code in a separate 
+routine, 
+because it will typically be called during the ReadProperties event as well.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you may:</TD><TD WIDTH=432>Perform most of the initializations that depend on the container. The control is already sited when this event occurs, thus the Extender and Ambient properties are valid.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should not:</TD><TD WIDTH=432>Display anything. The control will not yet be visible at this time.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Perform operations that depend on the size of the control. The control and container may not yet be at their final size.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Perform operations that assume that the control window is actually present on the container. Examples of these include API functions that manipulate windows. The control window is not actually on 
+the 
+container during this event (though from the point of view of the object relationships, it has already been sited).
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheReadPropertiesEvent">
+The ReadProperties Event</A></H3>
+<P>
+The ReadProperties event occurs any time a control is created
+except for the very first time it is placed on a form.<BR>
+<P>
+<CENTER><B>The ReadProperties Event</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should:</TD><TD WIDTH=432>Use the PropBag object to read the values of persisted properties. The actual mechanism for reading and writing properties will be covered in <A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 
+19</A>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Call any control initialization routines that need to be performed after a control is created. You may wish to place this type of initialization in a separate function, because you may need to 
+perform 
+the same operations after the InitProperties event.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Set non-persisted properties to their initial values. The idea of default values does not really exist for non-persisted properties. You may wish to place this code in a separate routine, because 
+it 
+will typically be called during the InitProperties event as well.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you may:</TD><TD WIDTH=432>Perform most of the initializations that depend on the container. The control is already sited when this event occurs, thus the Extender and Ambient properties are valid.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should not:</TD><TD WIDTH=432>Display anything. The control will not yet be visible at this time.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Perform operations that depend on the size of the control. The control and container may not yet be at their final size.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Perform operations that assume that the control window is actually present on the container. Examples of these include API functions that manipulate windows. The control window is not actually on 
+the 
+container during this event (though from the point of view of the object relationships, it has already been sited).
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheWritePropertiesEvent">
+The WriteProperties Event</A></H3>
+<P>
+This function is called any time a control is saved to a project
+or executable or saved to memory in preparation for entering run
+mode. You cannot tell which of these operations is being performed,
+nor do you need to. Visual Basic's property persistence functions
+automatically channel the data to the correct place. 
+<P>
+<CENTER><B>The WriteProperties Event</B></CENTER><P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should:</TD><TD WIDTH=432>Use the PropBag object to save the values of persisted properties. The actual mechanism for reading and writing properties will be covered in <A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 
+19</A>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should not:</TD><TD WIDTH=432>Perform any required termination operations. There are situations when this event will not be triggered.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>There are two situations you should be aware of in which this event is not triggered:
+</TD><TD WIDTH=432>When switching from run mode to design mode in the VB environment.<BR>
+<P>
+When Visual Basic Believes no property values have changed.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Keep in mind that the decision of when to invoke the WriteProperties
+event belongs to the container. Containers that don't support
+a design mode may never call this function.
+<H3><A NAME="ThePropertyChangedMethod">
+The PropertyChanged Method</A></H3>
+<P>
+Consider a control with a single text property. Every time you
+switch from design mode to run mode, Visual Basic must save the
+persisted property values in memory so they can be reloaded when
+the control is recreated in run mode. But why save all of the
+properties each time if they haven't all changed? Couldn't Visual
+Basic cache the property values and only update those that have
+changed in order to improve performance?
+<P>
+Absolutely. Visual Basic only writes properties it knows have
+changed. This means that must notify Visual Basic any time you
+change a property value. This is accomplished using the PropertyChanged
+method of the UserControl object. This method takes as a parameter
+the name of the property that has been changed.
+<P>
+Containers use this method in several different ways:
+<UL>
+<LI>To keep track of which properties need to be written when
+the project is saved or switches from design time to runtime.
+<LI>To update the value of the property in the development environment's
+property page. Note that it is possible (though rare) for non-persisted
+properties to appear in a property page. In this case you should
+call PropertyChanged for the property even though it is not persisted.
+<LI>If the control supports databinding, this method is used to
+inform the system that the bound property has been changed and
+may need to be updated in the database. This particular situation
+often applies when the container is in run mode as well.
+</UL>
+<P>
+There is no harm in calling the PropertyChanged method for properties
+that don't need it (other than perhaps a slight performance impact).
+Failing to call the PropertyChanged method when necessary can
+cause design-time settings to not be written, the VB property
+page to not update itself when values are changed by the control,
+or bound properties to fail to update their underlying databases.
+So be sure to ask yourself whether the method needs to be called
+each time a property is changed.
+<P>
+Here's another tip. Let's say you have a typical property defined
+in a control as follows:
+<BLOCKQUOTE>
+<PRE>
+'Property Variables:
+Dim m_myprop As Variant
+
+Public Property Get myprop() As Variant
+    myprop = m_myprop
+    myprop = UserControl.Name
+End Property
+
+Public Property Let myprop(ByVal New_myprop As Variant)
+    m_myprop = New_myprop
+    PropertyChanged &quot;myprop&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Let's say you need to change the myprop property somewhere else
+in your control. Your control can access the m_myprop variable
+directly, but it may be preferable to use the control's myprop
+property instead. If you get in the habit of using existing properties
+within your control, you reduce the chances of forgetting to call
+PropertyChanged. You also gain the benefits of any error checking
+you've added to the property procedures.
+<H2><A NAME="SitingandDisplayEventsandProperties"><FONT SIZE=5 COLOR=#FF0000>
+Siting and Display Events and Properties</FONT></A></H2>
+<P>
+Siting is the process of placing a control on a container. Siting
+and display is one area where the behavior of a UserControl object
+may depend on the state and type of container.
+<P>
+After properties have been initialized, either through InitProperties
+or ReadProperties, the following three events will occur:
+<UL>
+<LI>Resize-Indicates that the control has been resized
+<LI>Show-Indicates that the control is sited and/or visible
+<LI>Paint-Indicates it is time for you to draw the contents of
+the control
+</UL>
+<P>
+Let's tackle them one at a time.
+<H3><A NAME="TheResizeEvent">
+The Resize Event</A></H3>
+<P>
+The Resize event indicates that the control's size has changed.
+This event occurs after a control has been sited on the container
+and all properties have been read. This event also occurs when
+the control is created.
+<P>
+<CENTER><B>The Resize Event</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=174>During this event you may:</TD><TD WIDTH=402>Rearrange constituent controls based on the final size of the control (final, at least until the control is resized again).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=174>&nbsp;</TD><TD WIDTH=402>Perform other operations that relate to the size of the control or container.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=174>During this operation you should not:</TD><TD WIDTH=402>Redraw your control. Wait for the Paint event.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The ch17ctlc control in the ch17ctls1 project demonstrates some
+of the features control and constituent resizing. By experimenting
+with this control, you will discover the following.
+<P>
+First, you may not receive a Resize event for Constituent controls
+during control creation. This is because by the time you receive
+an Initialize event in your control, Constituent controls have
+already been placed and sited on your control. To see this, look
+for the debug message from the picture1 Constituent control. You
+will not see one when the control is created, but if you double-click
+on the control while it is running in a container (not in design
+mode), you will see the event when the control is resized by the
+following code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Picture1_DblClick()
+   ' Generate picture1 resize event
+   Picture1.Width = Picture1.Width + 1
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Second, the Resize event may not be reliable on all containers
+at design time. This is because containers are not required to
+site a control during design time. This will be discussed further
+in the next section that discusses the Paint event.
+<H4>Setting a Fixed Size for Controls</H4>
+<P>
+Let me start by saying that generally speaking you should allow
+your control to be resized by the developer. You should never
+move your control on the container, but there are some cases where
+you may want your control to have a fixed size. For example: a
+control that is invisible at runtime may have a simple icon display
+at design time. Or you may wish to force the size of a control
+to that of a contained bitmap.
+<P>
+To resize a control, you can use the Size method as shown in the
+following example from the ch17ctlc control:
+<BLOCKQUOTE>
+<PRE>
+Private m_AutoResize As Boolean
+
+Public Property Let AutoResize(ByVal bResize As Boolean)
+   m_AutoResize = bResize
+   PropertyChanged &quot;AutoResize&quot;
+   SetDefaultSize
+End Property
+
+Public Property Get AutoResize() As Boolean
+   AutoResize = m_AutoResize
+End Property
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   m_AutoResize = PropBag.ReadProperty(&quot;AutoResize&quot;, False)
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   PropBag.WriteProperty &quot;AutoResize&quot;, m_AutoResize, False
+End Sub
+
+
+Private Sub UserControl_Resize()
+   Debug.Print &quot;C: resize&quot;
+   SetDefaultSize
+End Sub
+
+Private Sub SetDefaultSize()
+   if m_AutoResize then
+       Size 200 * Screen.TwipsPerPixelX, 100 * Screen.TwipsPerPixelY
+   EndIf
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Try resizing the control at design time with the AutoResize property
+set to False and the True to see how this works. The Size method
+does not generate additional Resize events if the control is already
+at the specified size.
+<H3><A NAME="TheShowandHideEvents">
+The Show and Hide Events</A></H3>
+<P>
+The Show event occurs when your control's window is sited or is
+made visible on a container. Now this may be an odd way of phrasing
+the description, but there is a reason for describing it this
+way. First, it implies that the control must have a window and
+that the window must have the container as its parent. It also
+demands that we carefully define what it means for a control to
+be visible.
+<P>
+Every Visual Basic-created control has a window (it is possible
+to create windowless controls using other development tools).
+However, the window does not always have the container as its
+parent. For example: when a control has not yet been sited on
+the container, the window may exist, but it has a different parent
+(one that Visual Basic creates to hold control windows until they
+are needed). So the first condition for the Show event is that
+the control be sited.
+<P>
+Next, you need to know a little bit about visibility as it relates
+to Windows. Say you have a parent window and a child window and
+both of them are visible. When you hide the child window, its
+state changes to invisible. (For those of you knowledgable about
+the Win32 API: A window's visibility state is dictated by the
+WS_VISIBLE style.) When you hide the parent window, both are hidden
+but the state of the child window remains visible. That way it
+will automatically be shown when the parent is made visible again.
+In other words, a child window is truly visible only if it is
+visible and the parent window is visible as well. A visible window
+may still be obscured because it is behind another window, but
+that does not affect the internal state of the window itself.
+Table 17.2 illustrates the possible visibility states of a window
+and whether or not you can actually see it.<BR>
+<P>
+<CENTER><B>Table 17.2:&nbsp;Visibility States of a Child Window
+Contained in a Parent Window</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144><B>Parent Window State</B></TD><TD WIDTH=144><B>Child Window State</B>
+</TD><TD WIDTH=144><B>Is Another Window on Top?</B></TD><TD WIDTH=144><B>Can You See the Window?</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Visible</TD><TD WIDTH=144>Visible</TD><TD WIDTH=144><center>No
+</TD><TD WIDTH=144>Both</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Visible</TD><TD WIDTH=144>Hidden</TD><TD WIDTH=144><center>No
+</TD><TD WIDTH=144>Parent</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Hidden</TD><TD WIDTH=144>Visible</TD><TD WIDTH=144><center>No
+</TD><TD WIDTH=144>Neither</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Hidden</TD><TD WIDTH=144>Hidden</TD><TD WIDTH=144><center>No
+</TD><TD WIDTH=144>Neither</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Any</TD><TD WIDTH=144>Any</TD><TD WIDTH=144><center>Yes
+</TD><TD WIDTH=144>Neither</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The Show event occurs when the child window state becomes visible
+or when it is first sited on a container. The Visual Basic documentation
+suggests that this event occurs immediately after the control
+is sited. However, experimentation shows that the control is already
+sited during the Resize event, which comes before the Show event.
+<P>
+It occurs even if you load a form that contains a control but
+does not actually show the form. It occurs any time you change
+the Visible property of the control to True (changing its state
+to visible). It occurs any time an Internet browser returns to
+a page containing the control.
+<P>
+It does not occur when you change the visibility state of the
+container. Thus if you hide the container or minimize it, then
+show it again, the Show event will not be generated. It does not
+occur at design time on containers that do not site control windows,
+for example, in Visual Basic 4.0. This scenario is discussed further
+in the description for the Paint event.
+<P>
+<CENTER><B>The Show Event</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you may:</TD><TD WIDTH=432>Perform any operations that you would like a Web-based control to do when the user returns to the page containing the control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Set a flag variable to indicate that your control has, in fact, been sited on a container. Some development environments do not site controls at design time. This will be discussed further in the 
+section describing the Paint event.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>When this event occurs (at least on VB5), all of the other controls on a form are sited and the form's Load event has executed. This differs from the ReadProperties event, which guarantees only 
+that 
+your control is sited. If your control must interact with other controls on a form (which is not recommended), this is probably a safe time to do so, though this behavior is not guaranteed for every container.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The Hide event is the inverse of the Show event. It occurs when
+the control window is removed from the container and any time
+the visible property of the control is set to False.
+<H3><A NAME="ThePaintEvent">
+The Paint Event</A></H3>
+<P>
+The Paint event occurs when all or part of your control needs
+to be drawn. The UserControl Paint event occurs before Paint events
+in Constituent controls. This is one of the most important events
+for user-drawn controls but is relatively unimportant for controls
+that are simply aggregates of other controls.
+<P>
+Visual Basic-created controls support many of the standard properties
+that affect drawing, including AutoRedraw and ClipControls. There
+is a sample project called clipctls.vbp in the <A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch17.htm" >Chapter 17</A> directory
+on your CD-ROM that allows you to experiment with the ClipControls
+property. These properties should be familiar to you from general
+VB programming.
+<P>
+Keep in mind that the Paint event will not occur for controls
+whose AutoRedraw property is True. I encourage you to avoid setting
+AutoRedraw to True in your controls. It adds substantially to
+the overhead of your control and has little benefit. If you do
+need a persistent image, it can be much more efficient to create
+one yourself using Win32 API techniques.
+<P>
+You can use subclassing to detect the update area for a control
+in situations where the drawing is complex and you wish to only
+draw those portions of the control that were changed. This involves
+intercepting the WM_PAINT message for the control and saving the
+update area. This technique is demonstrated in <A HREF="ch22.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch22.htm" >Chapter 22</A>.
+<P>
+<CENTER><B>The Paint Event</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144>During the Paint event you may:</TD><TD WIDTH=432>Perform any drawing operations (subject to siting issues that follow).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During the Paint event you should not:</TD>
+<TD WIDTH=432>Change the size of your control or call the Refresh method. These operations can trigger another Paint event and ultimately a chain of Paint events, which can cause a stack overflow.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=432>Modify properties that can trigger another Paint event (for example: the BackColor property).
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4>Siting and Drawing Issues</H4>
+<P>
+There are two fundamental techniques for drawing onto a control:
+Visual Basic commands and Win32 API commands. API functions require
+that you draw into an object called a <I>device</I> <I>context</I>.
+An extensive discussion of how to do this is beyond the scope
+of this book but is covered in almost mind-numbing detail in the
+<I>Visual Basic 5.0 Programmer's Guide to</I> <I>the Win32 API</I>.
+I realize that readers who are not familiar with the Win32 API
+may be overwhelmed by what follows, and I apologize for that,
+but the information, though somewhat advanced, is important for
+those who wish to support multiple containers.
+<P>
+The UserControl Paint event is shown below:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_Paint()
+   Dim usedc&amp;
+   Dim pt As POINTAPI
+   
+   Debug.Print &quot;C: control paint&quot;
+   
+   usedc = GetDC(UserControl.hwnd)  ' Use DC obtained from window
+   Call MoveToEx(usedc, 0, 5, pt)
+   Call LineTo(usedc, 100, 5)
+   Call ReleaseDC(UserControl.hwnd, usedc)
+   UserControl.Line (5, 15)-(100, 15), &amp;HFF
+   Call MoveToEx(UserControl.hdc, 10, 25, pt)
+   Call LineTo(UserControl.hdc, 100, 25)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The question that arises when using API functions is how to obtain
+the device context. This code demonstrates two methods: you can
+obtain one from the window handle or from the hDC property of
+the UserControl object. Similar code is included for the Paint
+event of the constituent Picture control as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Picture1_Paint()
+   Dim usedc&amp;
+   Dim pt As POINTAPI
+   
+   Debug.Print &quot;C: picture paint&quot;
+   ' Now do the picture control
+   usedc = GetDC(Picture1.hwnd)  ' Use DC obtained from window
+   Call MoveToEx(usedc, 0, 5, pt)
+   Call LineTo(usedc, 100, 5)
+   Call ReleaseDC(Picture1.hwnd, usedc)
+   Picture1.Line (5, 15)-(100, 15), &amp;HFF
+   Call MoveToEx(Picture1.hdc, 10, 25, pt)
+   Call LineTo(Picture1.hdc, 100, 25)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+These events each draw three horizontal lines: two black lines
+with a red line in the middle. If you place this control on a
+VB 5 form, everything looks fine, both in design time and at runtime.
+But try placing the control on a VB4 form. (Register the OCX file
+provided using Regsvr32 or recompile the project.) You'll see
+that at design time the upper line in the user control and all
+three of the lines in the Picture control are missing.
+<P>
+Why is this? Because a container is not required to site and activate
+a control at design time, and Visual Basic 4.0 does not do so.
+The contained Picture control is not handled at all. Its window
+exists somewhere else in the system, and VB4 is not smart enough
+to realize that it needs to draw onto a different location.
+<P>
+But the UserControl drawing works part of the way. The Line command
+works, and drawing using the hDC property of the UserControl object
+works. Why is this? Because the ActiveX specification does handle
+this type of situation and provides a mechanism for the container
+to provide a device context to use for drawing when a control
+is not sited. Visual Basic is smart enough to provide this device
+context as the hDC property and use it for Visual Basic drawing
+commands. Which window does this device context belong to? The
+container form itself! Your control may think it is drawing into
+the UserControl window, but in fact it is drawing directly onto
+the container.
+<P>
+As long as you stick with the VB drawing commands, you are unlikely
+to have any problems. But with API functions you must be careful.
+In this particular example, drawing into the device context provided
+by the hDC property works. The coordinate system for this device
+context is the same as it would be for a sited control, but there
+is no reason this should always be the case. This code really
+should obtain the viewport, extents, and origins of the device
+context using the GetViewportOrgEx and GetViewPortExtEx functions,
+and draw into the area provided.
+<P>
+Under no circumstances should you use API functions that work
+with window handles to do such things as draw or perform sizing
+calculations. Remember that the control's window is not sited
+on the control, so the results you obtain are likely to be incorrect
+or inapplicable. Keep in mind that these problems only occur on
+containers that do not site controls at design time.
+<P>
+How can you tell if your control is sited? You have two obvious
+choices:
+<UL>
+<LI>You can set a flag during the Show event. This event only
+occurs when the control is sited.
+<LI>You can use the following code:
+</UL>
+<BLOCKQUOTE>
+<PRE>
+' If Parent.hwnd &lt;&gt; GetParent(hwnd) Then MsgBox &quot;I am not sited!&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can try this latter approach during the Paint event and during
+the ReadProperties event under both VB4 and VB5 to see the difference
+between the two.
+<H3><A NAME="TheInvisibleAtRuntimeProperty">
+The InvisibleAtRuntime Property</A></H3>
+<P>
+You can set this UserControl property to True to prevent your
+control from being sited on a container at runtime.
+<P>
+This property sets a flag for the control indicating to the container
+that it should not place the control on the container or activate
+it. It prevents user interface events such as Show, Paint, and
+Resize from occurring, as well as the input events (focus is obviously
+not applicable to invisible controls). VB Extender properties
+other than Name, Index, Left, Top, and Tag are unavailable.
+<P>
+ActiveX controls created under Visual Basic 5.0 always have a
+control window, even if this property is true. Constituent controls
+are created as well.
+<P>
+There is just one catch. Containers are not required to support
+this option. If you use your control on such a container, it will
+be visible. You can detect this condition by seeing if the Resize
+or Paint event arrives. You then have a number of options. You
+could use the Extender property to set the control's Visible property
+to False or you can move the control outside of the container's
+visible area. You will need to keep monitoring the Resize or Paint
+event to make sure the developer does not try to show your control.
+Also be sure to differentiate between the container design time
+and runtime-you do want your control to be visible at design time.
+<P>
+For many cases in which you would create an InvisibleAtRuntime
+property, an ActiveX code component might be a better choice.
+The advantages of InvisibleAtRuntime controls is that they allow
+you to have a design time user interface (including property pages)
+and to persist data.
+<H2><A NAME="FocusEventsandProperties"><FONT SIZE=5 COLOR=#FF0000>
+Focus Events and Properties</FONT></A></H2>
+<P>
+There is a huge difference between user-drawn controls and constituent-based
+controls when it comes to focus management. When a control contains
+constituent controls, the UserControl object itself never receives
+the focus. Otherwise, it is possible for it to receive the focus.
+This is illustrated in Figures 17.1 and 17.2.
+<P>
+<A HREF="f17-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f17-2.gif"><B>Figure 17.2 :</B> <I>Focus sequence for a control with constituent
+controls</I>.</A>
+<P>
+<A HREF="f17-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f17-1.gif"><B>Figure 17.1 :</B> <I>Focus sequence for a control without constituent
+controls</I>.</A>
+<P>
+The EnterFocus and ExitFocus events are used to indicate when
+any constituent control in an ActiveX control has the focus.
+<P>
+The subject of how to use focus events in general is vast. Many
+Visual Basic programmers use them for data validation-a subject
+beyond the scope of this book. You can use the GotFocus and LostFocus
+events in controls in the same way as you would in ordinary Visual
+Basic programs. 
+<H3><A NAME="TheGotFocusEvent">
+The GotFocus Event</A></H3>
+<P>
+When a control receives the GotFocus event, it already has the
+input focus. This event occurs after the EnterFocus event for
+a control.
+<P>
+The control container may trigger its GotFocus event for a control
+before you receive the UserControl object's GotFocus event within
+your control. This is what happens in Visual Basic, but there
+is no guarantee that every container will behave the same way.
+<P>
+This means that a developer using your control might execute code
+during the container's GotFocus event, thinking that your control
+has the focus. Your control does, in fact, have the focus, but
+it has not yet received its GotFocus event.
+<P>
+The HasTheFocus method in the ch17ctlD control demonstrates a
+reliable way to determine if your control actually has the focus.
+Place the following API declaration in the module.
+<BLOCKQUOTE>
+<PRE>
+Private Declare Function GetFocus Lib &quot;user32&quot; () As Long
+</PRE>
+</BLOCKQUOTE>
+<P>
+The HasTheFocus method tests the window handle returned from the
+function with the window handle of the UserControl object. You
+could easily modify this example to test for focus on any constituent
+controls as well.
+<BLOCKQUOTE>
+<PRE>
+Public Function HasTheFocus() As Boolean
+   If GetFocus() = hwnd Then
+      HasTheFocus = True
+   End If
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+An important use of this event is to provide some indication that
+the control has received the focus (for a user-drawn control).
+It is very important that developers using your control (and their
+end users) be able to differentiate between the focus and non-focus
+states of your control.
+<P>
+<CENTER><B>The GotFocus Event</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144>During the event you should:</TD><TD WIDTH=432>Indicate focus state with user-drawn controls.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you may not:</TD><TD WIDTH=432>Try raising the Extender object's GotFocus event. That is the responsibility of the container.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>During this event you should not:</TD><TD WIDTH=432>Use this event to set a flag that indicates reliably whether the control has the focus.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheLostFocusEvent">
+The LostFocus Event</A></H3>
+<P>
+When a control receives the LostFocus event, it has already lost
+the input focus. This event occurs before the ExitFocus event
+for a control.
+<P>
+The control container should trigger its LostFocus event for a
+control after you receive the LostFocus and ExitFocus events within
+your control. This is what happens in Visual Basic, but there
+is no guarantee that every container will behave the same way.
+<P>
+During this event you can set the focus back to the control that
+just lost the focus, but not before the next control receives
+the focus (and a GotFocus and LostFocus event). This is because
+this event does not actually trigger when the control loses the
+focus. It triggers later during the course of normal Windows event
+processing. This limits the use of this event for data validation
+purposes, but this problem is fundamental to Visual Basic in general
+and not unique to ActiveX controls.
+<P>
+<CENTER><B>The LostFocus Event</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=131>During the event you should:</TD><TD WIDTH=342>Indicate non-focus state with user-drawn controls.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheEnterFocusandExitFocusEvents">
+The EnterFocus and ExitFocus Events</A></H3>
+<P>
+The EnterFocus event occurs when an ActiveX control or any constituent
+control first receives the focus. The control has already received
+the focus when this event occurs. The ExitFocus event occurs when
+a control, or all of its constituent controls, loses the focus.
+The control has already lost the focus when this event occurs.
+<P>
+These are perhaps the most important events for focus management
+when creating controls that use constituent controls. It can be
+thought of as a global GotFocus and LostFocus for the entire control.
+<P>
+Now that you know about all four of the main focus events, let's
+take a closer look at the order in which they occur.
+<P>
+The ch17ctlD and ch17ctlE controls in the ch17tst1 project group
+use debug.print statements to trace the sequence of events. The
+ch17ctlD control has no constituent controls. The ch17ctlE control
+contains two constituent text box controls. Form frmTest3 contains
+both of these controls. When you run the project and display this
+form, then tab between the controls, the results are quite interesting.
+The most interesting result shown here relates to the EnterFocus
+event.
+<BLOCKQUOTE>
+<PRE>
+D:EnterFocus        ' Form is first loaded here.
+Form: D: GotFocus         ' Focus is initially at ch17ctlD control.
+D:GotFocus
+E:EnterFocus        ' Tab to the ch17ctlE control.
+D:LostFocus
+D:ExitFocus
+Form: D: LostFocus
+Form: E: GotFocus
+E:Text1:GotFocus
+E:Text1:LostFocus         ' Tab to 2nd text box on ch17ctlE control
+E:Text2:GotFocus
+D:EnterFocus        ' Tab to the ch17ctlD control
+E:Text2:LostFocus
+E:ExitFocus
+Form: E: LostFocus
+Form: D: GotFocus
+D:GotFocus
+D:LostFocus               ' Close the form
+D:ExitFocus
+</PRE>
+</BLOCKQUOTE>
+<P>
+As you can see, the EnterFocus event occurs as soon as you tab
+to a control. It not only occurs before the GotFocus event for
+the control or its constituents, it occurs before the LostFocus
+or ExitFocus events of the controls losing the focus!
+<H3><A NAME="TheCanGetFocusProperty">
+The CanGetFocus Property</A></H3>
+<P>
+This property indicates whether an ActiveX control can receive
+the focus. If you set it to False, everything you have read here
+on focus events immediately becomes irrelevant, since they will
+never occur.
+<P>
+You can only set this property to False on user-drawn controls
+or controls that only contain constituent controls that cannot
+receive the focus (the Timer control, for example).
+<H3><A NAME="TheAccessKeysProperty">
+The AccessKeys Property</A></H3>
+<P>
+Access keys (which are also sometimes called accelerator keys)
+allow you to jump directly to a control by pressing an alt-key
+combination. From the developer's perspective, an access key can
+be specified in two ways. For some controls the control caption
+is underscored by preceding it with an ampersand character. For
+controls that do not have captions, it is common to set the caption
+for a Label control that precedes the target control in the tab
+order.
+<P>
+Thus to set Alt-A as the accelerator for a command button, you
+might set the caption to &amp;A Button, which will result in the
+button displaying: <U>A</U> Button.
+<P>
+For a Text control, you would set a Label control ahead of it
+in the tab order and set its caption in the same way. For example,
+it would set it to &amp;A Textbox, which will result in <U>A</U>
+Textbox. As a control author, it makes sense to ask what a control
+must to do internally in order to support this capability.
+<P>
+A first step is obviously to specify which keys should be the
+access keys for a control. There are two ways to specify an access
+key for a Visual Basic-authored control:
+<UL>
+<LI>You can set the caption of a constituent control as an accelerator
+(for example, setting an accelerator key for a constituent command
+button or Label control).
+<LI>You can add the character to the AccessKeys property. This
+property contains a string of characters that will all act as
+AccessKeys for your control.
+</UL>
+<P>
+The characters in this process can be upper or lower case. Either
+way both the shifted and unshifted character will be considered
+an access key. How the control reacts to the accelerator depends
+on the ForwardFocus property.
+<H3><A NAME="TheForwardFocusProperty">
+The ForwardFocus Property</A></H3>
+<P>
+When a Label control has an accelerator key specified, the focus
+is set to the next control in the tab order when the key is pressed.
+You can make your ActiveX control exhibit this same behavior (forwarding
+the focus to the next control) by setting the ForwardFocus property
+for the control to True. 
+<P>
+When this property is False, the behavior of accelerator keys
+depends on whether the control is user-drawn or contains constituent
+controls. If it is user-drawn, the focus goes to the control itself.
+Otherwise it goes to either the first constituent control (for
+access keys specified by the AccessKeys property) or the constituent
+control associated with the accelerator. 
+<P>
+When this property is True, the focus always goes to the next
+control on the container. This happens whether the access key
+is specified in the AccessKeys property or by a constituent control.
+The interaction between the AccessKey and ForwardFocus properties
+can be seen in Table 17.3.<BR>
+<P>
+<CENTER><B>Table 17.3:&nbsp;Summary of AccessKey and ForwardFocus
+Characteristics</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80% CELLPADDING=3>
+<TR VALIGN=TOP><TD>
+<B>In Access Keys?</B></TD><TD><B>Access Key for Constituent Control?</B>
+</TD><TD>
+
+<B>ForwardFocus?</B></TD><TD>
+
+<B>Result</B>
+</TD></TR>
+<TR VALIGN=TOP><TD><CENTER>No</TD><TD><CENTER>Yes</TD><TD><CENTER>No
+</TD><TD>Focus goes to next Constituent control or the control itself (if user-drawn). AccessKeyPress event is not triggered.
+</TD></TR>
+<TR VALIGN=TOP><TD><CENTER>No</TD><TD><CENTER>Yes</TD><TD><CENTER>Yes
+</TD><TD>Focus goes to the next control on the container (not the next constituent control). 
+</TD></TR>
+<TR VALIGN=TOP><TD><CENTER>Yes</TD><TD><CENTER>No</TD><TD><CENTER>No
+</TD><TD>No effect if focus is already a constituent control. Otherwise focus goes to the first constituent control or the control itself (if user-drawn). AccessKeyPress event is triggered.
+</TD></TR>
+<TR VALIGN=TOP><TD><CENTER>Yes</TD><TD><CENTER>No</TD><TD><CENTER>Yes
+</TD><TD>Focus goes to the next control on the container (not the next constituent control).
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheAccessKeyPressedEvent">
+The AccessKeyPressed Event</A></H3>
+<P>
+This event is triggered to indicate that an access key has been
+pressed. It only occurs when the ForwardFocus is False.
+<P>
+It is triggered when the user chooses an access key that is in
+the list specified by the AccessKeys property (it does not trigger
+for access keys specified by constituent controls).
+<P>
+It is also triggered when the DefaultCancel property is True (more
+on this later) and the control is set by the developer to be the
+default or cancel button for the form. Refer to the DefaultCancel
+property description for more details.
+<H3><A NAME="WorkingwithAccessKeys">
+Working with Access Keys</A></H3>
+<P>
+As you have seen, there are many permutations possible between
+use of AccessKeys, constituent controls, ForwardFocus, and CanGetFocus.
+Let's look at the most useful and realistic scenarios:
+<P>
+Label style controls: Set the access keys using the AccessKeys
+property based on developer property settings. Set CanGetFocus
+to False and ForwardFocus to True.
+<P>
+User-drawn controls that receive the focus: Set the access keys
+using the AccessKeys property based on developer property settings.
+Set CanGetFocus to True and ForwardFocus to False. Indicate the
+focus state based on the GotFocus event. Perform actions based
+on the AccessKeyPressed event.
+<P>
+Controls made up of constituent controls: Access keys can be set
+in either the AccessKeys property or using the constituent controls.
+Keys should be chosen by the developer using your control. CanGetFocus
+is, of course, True (required for this type of control). Set ForwardFocus
+to False to allow tabbing within the control itself.
+<P>
+You should never hard code the access key values into the control
+itself. Always provide a way for the developer using your control
+to select their own access keys. You wouldn't want someone dictating
+that part of the user interface for you, right?
+<P>
+Also, be sure to provide some visual indication of which access
+keys are set for your control.
+<H3><A NAME="TheDefaultCancelProperty">
+The DefaultCancel Property</A></H3>
+<P>
+The DefaultCancel property is used to indicate to the container
+that your control can act as a default or cancel button. If the
+container supports this capability, it will add the Default and
+Cancel properties to the extender to allow the developer to set
+your control to be the Default or Cancel control for the container.
+If the control is the Default or Cancel button for a container,
+the AccessKeyPress event will trigger when the user presses the
+Enter key (with keycode 13) or the Escape key (with keycode 27)
+depending on the setting chosen.
+<P>
+Curiously enough, once the DefaultCancel property is set, the
+Enter key will always be detected if Enter is pressed while the
+control has the focus. This mimics the behavior of the standard
+command button, which is clicked by the Enter key even if its
+Default property is False.
+<H2><A NAME="TransparentControls"><FONT SIZE=5 COLOR=#FF0000>
+Transparent Controls</FONT></A></H2>
+<P>
+Visual Basic 5.0 almost provides excellent support for transparency
+in all or part of your control. Transparency is turned on by setting
+the control's BackStyle property to 0. Why do I say almost? Because,
+as you will soon see, there are some minor problems with the way
+transparency is implemented under Windows 95.
+<P>
+When the BackStyle property is set to 1 (opaque), the control
+appears as a rectangular area and no part of the container shows
+through. If the BackStyle property is set to 0 (transparent),
+portions of the control become transparent. Those areas of the
+control that are transparent have the following characteristics:
+<UL>
+<LI>The container that holds the control determines the appearance
+of the transparent areas. In other words: the container shows
+through the control.
+<LI>Mouse events on the transparent area go to the container,
+not the control. This includes MouseUp, MouseDown, and MouseMove
+events, as well as generated Click and DblClick events.
+</UL>
+<P>
+Transparent areas in a control are specified according to the
+following rules:
+<UL>
+<LI>All non-transparent constituent controls are opaque.
+<LI>If you assign a bitmap into the MaskPicture property of a
+control, all areas in that bitmap that are not the color specified
+in the MaskColor property are opaque. The MaskColor property should
+always be set to white or black if you want your control to work
+correctly under Windows 95. Windows 95 handles transparency internally
+using monochrome masking. This means that during the masking process
+the MaskColor value is converted to either black or white, and
+the MaskPicture image is converted to monochrome. The only way
+to reliably set both properties is thus to use black or white
+as the MaskColor property and a monochrome bitmap as the MaskPicture
+property.
+<LI>Transparent areas in a transparent control (such as a Label
+or Shape control with the BackStyle property set to 0) are transparent.
+Opaque areas of these controls are opaque except for Label controls
+that are using a non-TrueType font.
+</UL>
+<P>
+These rules suggest a number of useful scenarios for control transparency.
+<H3><A NAME="TransparentConstituentBasedControls">
+Transparent Constituent-Based Controls</A></H3>
+<P>
+This type of control is made of up constituent controls where
+you want the container background to appear between the controls.
+To accomplish this, simply set the UserControl's BackStyle property
+to 0-Transparent.
+<P>
+This type of control is useful when you wish to use a control
+to effectively group a limited number of controls along with a
+defined functionality, and you expect these controls to appear
+on top of a container that has a complex pattern or image (a map,
+for example).
+<P>
+You should not take this approach as an easy way to always use
+the container's background color. This is because transparency
+increases the overhead of your control both in terms of increased
+resources and decreased performance. If you simply want to follow
+the container's background color, you should detect changes to
+the BackColor property of the Ambient object and adjust your control's
+background color accordingly. You'll see how this is done in Chapter
+19.
+<H3><A NAME="OddlyShapedControls">
+Oddly Shaped Controls</A></H3>
+<P>
+If you wish your control to have a non-rectangular shape, you
+have three choices. 
+<OL>
+<LI>You can place an opaque Shape control on your control to define
+the shape of the control. You can then draw on the area covered
+by the Shape control using standard drawing techniques. Constituent
+controls will continue to appear as you would expect. The catch
+to this approach is that the Shape control is drawn after the
+UserControl's Paint event, making it much more difficult to implement
+user-drawn controls. You can subclass the control and perform
+your drawing after default processing of the Paint event (post-default
+subclassing). This approach is shown in the OvalTest.vbp sample
+project on the CD-ROM that comes with the book. This particular
+example uses the dwsbc32d.ocx demo subclassing control from Desaware's
+SpyWorks. I would probably use Desaware's in-process dwSpyvb.dll
+code component subclasser for a more efficient solution in a real
+application. You'll read more about this component in Chapter
+22.
+<LI>You can define a bitmap to set into the MaskPicture property
+for the control. Only bitmaps (.BMP, .DIB, .GIF, and .JPG) are
+supported for this purpose. You cannot use metafiles or icons.
+The MaskColor property determines which color is transparent.
+This approach is fairly efficient but suffers from the inability
+to maintain a quality mask as the control is resized. Keep in
+mind that the MaskColor setting must be white if you wish for
+the transparency features of your control to work correctly on
+Windows 95. The Microsoft documentation recommends that you only
+use monochrome bitmaps for the MaskPicture property under Windows
+95. This is because light colors will also be mapped to white
+and considered transparent, making it difficult to determine ahead
+of time which areas will be transparent when you use a color bitmap.
+<LI>You can use the SetWindowRgn function to create an arbitrarily
+shaped region for the control's window. This is demonstrated by
+the OvalTst2.vbp project, which contains the following code in
+the control module:
+</OL>
+<BLOCKQUOTE>
+<PRE>
+Private Declare Function CreateEllipticRgn Lib &quot;gdi32&quot; (ByVal X1 As Long,
+ByVal _ Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
+Private Declare Function SetWindowRgn Lib &quot;user32&quot; (ByVal hWnd As Long,
+ByVal _ hRgn As Long, ByVal bRedraw As Long) As Long
+
+Private Sub UserControl_Resize()
+    Dim hr&amp;, dl&amp;
+    Dim usew&amp;, useh&amp;
+    usew&amp; = ScaleWidth / Screen.TwipsPerPixelX
+    useh&amp; = ScaleHeight / Screen.TwipsPerPixelY
+    hr&amp; = CreateEllipticRgn(0, 0, usew, useh)
+    dl&amp; = SetWindowRgn(hWnd, hr, True)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This approach is perhaps the most efficient of the three, but
+it does require a good understanding of creation of Region objects
+using the Win32 API. This subject is covered in depth in Chapter
+7 of the <I>Visual Basic 5.0 Programmer's Guide to the Win32 API</I>.
+<H3><A NAME="LabelStyleBasedControls">
+Label Style-Based Controls</A></H3>
+<P>
+By far the easiest way to implement a Label style transparent
+control is to use one or more constituent transparent Label controls.
+There are two main disadvantages with this approach:
+<UL>
+<LI>It only works with TrueType fonts. Transparent Label controls
+do not mask properly with bitmap fonts.
+<LI>You are limited to the capabilities of Label controls. Thus
+you cannot mix such things as fonts, styles, and colors in a single
+control.
+</UL>
+<P>
+The way to deal with this situation adds a bit of complexity but
+is infinitely flexible. It is based on the idea that the opaque
+areas of the control can be defined by the MaskPicture property,
+and that this property can be defined at runtime. 
+<P>
+The lblTest.vbp project demonstrates a simple approach to this
+problem. The control contains an invisible picture control that
+has its AutoRedraw property set to True and its Visible property
+set to 0. This keeps the Picture control invisible but at the
+same time forces it to allocate a bitmap that saves the contents
+of the control at all times. Text is drawn into this Picture control
+using API functions. In this example the text output is placed
+in a Timer event as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Declare Function TextOut Lib &quot;gdi32&quot; Alias &quot;TextOutA&quot; (ByVal hdc As Long, 
+_ ByVal x As Long, ByVal y As Long, ByVal lpString As String, ByVal nCount As Long) _ As Long
+
+Private Sub Timer1_Timer()
+   Static counter&amp;
+   Dim t$
+   counter = counter + 1
+   t$ = &quot;Elapsed &quot; &amp; counter &amp; &quot; seconds&quot;
+   Picture1.Cls
+   Call TextOut(Picture1.hdc, 0, 0, t$, Len(t$))
+   MaskPicture = Picture1.Image
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The default background color for the Picture control and the MaskColor
+property for the UserControl are both set to white in this example,
+so the example will work correctly on Windows 95. The Picture1.Cls
+command sets the entire Picture control to the current background
+color.
+<P>
+The TextOut command draws text onto the Picture1 control using
+the default text color-black in this case. The Win32 API includes
+a number of extremely flexible text output functions that can
+perform various types of text alignment and even word-wrap. These
+are also covered in the <I>Visual Basic Programmer's Guide to
+the Win32 API</I>.
+<P>
+Once the text is drawn, the MaskPicture property is set to the
+current image of the Picture1 control. In this example control,
+the text will show up as blue because that is the background color
+of the control itself. What in effect has happened is that only
+those pixels in the control that contain text are opaque and thus
+show the background color of the control instead of that of the
+container. Blue is a dark color and is unlikely to be mapped into
+white with regard to transparency under Windows 95.
+<P>
+The control also has the following code in the Click event:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_Click()
+   Line (0, 0)-(ScaleWidth, ScaleHeight), 0, BF
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+When you click on the text itself (it may take a few tries, because
+the text is quite small), the entire control will be filled with
+black. But because the mask defines only the text areas as opaque,
+only those areas will be colored black. This will appear as if
+the text has simply changed color.
+<P>
+This approach can be extended to the creation of arbitrary masks
+and drawing at runtime. If you choose to take this approach, there
+are a number of techniques you can use to reduce the overhead
+involved in using a separate Picture control with a persistent
+bitmap. You can set the AutoRedraw property to False when it is
+not in use to eliminate the extra bitmap. You can also use more
+advanced API techniques to create a bitmap dynamically as needed
+and load it into the MaskPicture property directly (the OleCreatePictureIndirect
+OLE API function is used to do this).
+<H3><A NAME="BitmapBasedControls">
+Bitmap-Based Controls</A></H3>
+<P>
+You may have wondered why you would ever want to use a color bitmap
+in the MaskPicture property of a control to specify the mask.
+After all, a monochrome bitmap would do as well; you only need
+two pixels to specify the mask and opaque areas.
+<P>
+The elegance of this approach is that you can use the same bitmap
+in the MaskPicture and Picture properties of a control. The MaskColor
+property then allows you to specify a single color in the image
+as transparent. Of course, you can only use this approach reliably
+if you know that your control will only run under Windows NT,
+since only NT is able to handle arbitrary MaskColor property values
+and color bitmaps.
+<P>
+The ch17ctlG.ctl control in the ch17test1 project demonstrates
+how you can combine the techniques described here to achieve a
+variety of transparency effects. Keep in mind that transparent
+controls should not be configured as control containers.
+<P>
+The TranTest.vbp sample project can be found in the ch17 directory
+on the CD-ROM that comes with this book. This program allows you
+to experiment with transparency using different types of bitmaps
+and different MaskColor property values. I encourage you to experiment
+with it under both Windows 95 and Windows NT.
+<H2><A NAME="OtherPropertiesandMethods"><FONT SIZE=5 COLOR=#FF0000>
+Other Properties and Methods</FONT></A></H2>
+<P>
+The remaining UserControl properties and events are either identical
+in their behavior to what you are accustomed to on forms or are
+so clearly described in the Microsoft documentation that I'm hard
+pressed to find anything else to say. In this section, I'll review
+those properties, methods, and events that deserve a few additional
+comments and are not covered more thoroughly in the chapters that
+follow.
+<P>
+The following properties are covered elsewhere in this book:
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=40%>
+<TR VALIGN=TOP><TD WIDTH=152><B>Property</B></TD><TD WIDTH=88><CENTER><B>Chapter</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=152>Ambient</TD><TD WIDTH=88><CENTER>18</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=152>AsyncRead</TD><TD WIDTH=88><CENTER>19</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=152>CancelAsyncRead</TD><TD WIDTH=88><CENTER>19</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=152>CanPropertyChange</TD><TD WIDTH=88><CENTER>19</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=152>Extender</TD><TD WIDTH=88><CENTER>18</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=152>HyperLink</TD><TD WIDTH=88><CENTER>21</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=152>PropertyPages</TD><TD WIDTH=88><CENTER>20</CENTER>
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheAlignableProperty">
+The Alignable Property</A></H3>
+<P>
+When this property is set to True, a container may add an Align
+property to the Extender object for the control. The container
+will then relocate the control in the container based on the alignment
+selected by the developer without any further action on your part.
+You may, if you wish, check the Align property in the Extender
+object to add your own alignment characteristics.
+<H3><A NAME="TheControlContainerandContainedControlsProperties">
+The ControlContainer and ContainedControls Properties</A></H3>
+<P>
+When you set this property to True, a developer using your control
+can place additional controls on yours at design time. Visual
+Basic does most of the work to support this capability.
+<P>
+You can access controls the developer has placed on your control
+using the ContainedControls collection. This collection can be
+accessed once the control is sited. You cannot add or remove controls
+from this collection.
+<P>
+Some containers do not support the interfaces needed to support
+container controls. These containers will raise an error when
+you try to access the ContainedControls property.
+<P>
+Avoid making control containers out of controls that contain visible
+constituent controls. It works, but the results can be quite strange
+depending on where the developer places additional controls.
+<P>
+Container controls involve quite a bit of overhead. It may be
+tempting to come up with container controls that perform organizational
+tasks such as rearranging or resizing controls that are placed
+on them. It is much more efficient to perform these tasks using
+code on a form than to use specialized container controls.
+<H3><A NAME="TheEditAtDesignTimeProperty">
+The EditAtDesignTime Property</A></H3>
+<P>
+Setting this property to True makes it possible for a developer
+to actually activate and use your control within the container's
+design time. It enables the Edit command on the control's context
+menu (the menu that appears when you right-click on the control).
+<P>
+Normally, when a developer places your control on a form or container
+at design time, the entire control is treated as one unit. Clicking
+on the control selects the entire control and brings up sizing
+boxes so the control can be sized and positioned. This is all
+managed by the container. No user interface events are triggered
+in your control's code. The container intercepts all mouse and
+keystroke events before they get to your control.
+<P>
+When the EditAtDesignTime property is True and the developer selects
+the Edit context menu command, your control becomes active even
+though the container is at design time. User interface events
+are received by your control and need to be handled appropriately.
+Note that the UserMode property of the Ambient object will correctly
+show that the container is in design mode. The ch17ctlf sample
+control in the ch17tst1 program group demonstrates this. 
+<P>
+Any events your control raises in the container in this mode will
+be ignored.
+<H3><A NAME="TheEnabledProperty">
+The Enabled Property</A></H3>
+<P>
+When you disable a UserControl object, the constituent controls
+are disabled as well, but they won't take on the appearance of
+a disabled control unless you explicitly disable them as well.
+This is identical to what happens when you disable a form. Chapter
+18 includes further discussion on this property.
+<H3><A NAME="TheEventsFrozenProperty">
+The EventsFrozen Property </A></H3>
+<P>
+There are certain times in the life of a container when it is
+not able to receive events from controls. A classic example of
+this is that Visual Basic forms cannot receive events while a
+Visual Basic MsgBox command is displaying a message box.
+<P>
+There are some controls that can generate events while events
+in the container are frozen. A Timer control is a good example
+of this.
+<P>
+When this property is True, any events raised by your control
+will be ignored by the container.
+<P>
+What do you do if the event you want to raise is important and
+cannot simply be discarded?
+<P>
+You can queue the event and raise it later when events are reenabled.
+<P>
+You can define some standard ways for the control to respond to
+the event and allow the developer to select one to use during
+those times when events are frozen. How can you detect when events
+are unfrozen? Visual Basic does not provide an easy way to do
+this, though you could poll the EventsFrozen property using a
+timer. Desaware's SpyWorks also provides an easy way for your
+control to be notified when the container's EventsFrozen property
+changes. Events are always frozen when a container is in design
+mode.
+<H3><A NAME="ThePaletteModeProperty">
+The PaletteMode Property</A></H3>
+<P>
+In addition to the options available to forms and controls in
+general, ActiveX controls can be set to use the palette of the
+container or set to use no palette at all.
+<H3><A NAME="TheParentProperty">
+The Parent Property</A></H3>
+<P>
+This property allows you to access the control's container. It
+is similar to the Container and Parent properties on the UserControl's
+Extender object, except that it is always available. You can use
+this property to determine the container your control is running
+in (see the description of this property in the Visual Basic 5.0
+readme file for a summary of containers). Refer to the section
+in <A HREF="ch18.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch18.htm" >Chapter 18</A> titled &quot;Terrible Evil Things You Should Never
+Do&quot; for a summary of things that you should not do with this
+property.
+<H3><A NAME="TheParentControlsProperty">
+The ParentControls Property </A></H3>
+<P>
+This property is a collection of the other controls that are in
+the container that contains your control. You cannot add or remove
+controls from this collection. This property is useful for those
+controls intended to help manage other controls on a form. For
+example: you could use it to create a tool that would align controls
+or assign them all the same color.
+<P>
+Not every container supports this property.
+<H3><A NAME="ThePublicProperty">
+The Public Property</A></H3>
+<P>
+When the Public property is True, the control is exposed for use
+by other applications. It is possible to create private ActiveX
+controls to use within executables or within other ActiveX controls.
+<P>
+The issues to consider when deciding whether to make an ActiveX
+control public or private are the same as those you consider when
+deciding to make a class private or expose it through an ActiveX
+DLL code component.
+<H3><A NAME="TheRightToLeftProperty">
+The RightToLeft Property</A></H3>
+<P>
+When your control is running on a version of Windows that supports
+right-to-left formatting (such as Hebrew or Arabic Windows), this
+property will change the direction of text output on the control.
+If you wish to support this capability, you should set this property
+based on the AmbientProperties RightToLeft property.
+<H3><A NAME="TheToolBoxBitmapProperty">
+The ToolBoxBitmap Property</A></H3>
+<P>
+Select a 16 x 15 pixel bitmap that will appear in the container's
+toolbox to represent the control.
+<P>
+The upper left pixel defines the transparent color for the control
+(the background of the toolbox will show through any parts of
+the bitmap set to this color). I usually use a distinct color
+such as green to represent the background so I don't make a color
+transparent by accident.
+<P>
+Now that we've reviewed the UserControl object, we'll move on
+to the remaining ones: the Ambient and Extender objects.
+<HR>
+
+<CENTER><P><A HREF="ch16.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch16.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch18.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch18.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

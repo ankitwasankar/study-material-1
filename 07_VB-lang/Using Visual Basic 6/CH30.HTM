@@ -1,0 +1,682 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 30 -- Database Basics and the Data Control</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch29.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch29/ch29.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch31.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch31/ch31.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 30 -<BR>
+Database Basics and the Data Control</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Understanding Databases</A>
+	<UL>
+		<LI><A HREF="#Heading2">Understanding Database Terminology</A>
+	</UL>
+	<LI><A HREF="#Heading3">Working with the Intrinsic Data Control</A>
+	<UL>
+		<LI><A HREF="#Heading4">Connecting the Intrinsic Data Control to a Database</A>
+	</UL>
+	<LI><A HREF="#Heading5">Creating Database-Bound Forms with the Data Form Wizard</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Understanding Databases</H2>
+<P>In simplest terms, a database is a collection of information. The most common
+example of a database is a phone book, which is a collection of names, addresses,
+and phone numbers. Each line in a phone book is a <I>record</I> that contains the
+information for a single person or family. The entire set of records--that is, all
+the listings in the book--is a <I>table</I>. Another important characteristic a phone
+book has in common with most databases is that information is presented in a specific
+order--in the case of the phone book, alphabetically by last name.</P>
+<P>Computer databases are similar in concept to phone books in that they provide
+a way to store and retrieve information easily and quickly. Computers actually can
+use two basic types of databases--<I>flat-file</I> and <I>relational</I>. A phone
+book is an example of a flat-file database. This means that a single record stores
+all the <I>fields</I>, or discrete data, for each entry, and a single table contains
+all the records for the database (see Figure 30.1).</P>
+<P><A HREF="javascript:popUp('30fig01.gif')"><B>FIGURE 30.1</B></A> <I>Each unique
+instance of a collection of fields is called a record.</I></P>
+<P>By contrast, a relational database stores information in a number of tables related
+by a common field known as the <I>primary key</I>. For instance, you might have a
+Customer Information table that contains specific information about your customers,
+and you might have another table called Loans Outstanding that contains information
+about outstanding loans. Both tables contain a common field--Social Security Number.
+In a relational database, by keying on the Social Security Number field, you could
+produce a third table, Average Days to Pay, that's made of data from each of the
+other tables (see Figure 30.2).</P>
+<P><A HREF="javascript:popUp('30fig02.gif')"><B>FIGURE 30.2</B></A> <I>Relational
+databases are commonly used for large-scale applications.</I></P>
+<P>
+<H3><A NAME="Heading2"></A>Understanding Database Terminology</H3>
+<P>Thus far, you've seen a few terms, such as <I>record</I> and <I>field</I>, used
+to refer to different parts of a database. It's important that you understand a few
+more terms before learning about databases. Table 30.1 defines the key parts of a
+database.</P>
+<P>
+<H4>TABLE 30.1&#160;&#160;The Basic Elements of a Database</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Element</TD>
+		<TD ALIGN="LEFT">Description</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Database</TD>
+		<TD ALIGN="LEFT">A group of data tables that contain related information.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Table</TD>
+		<TD ALIGN="LEFT">A group of data records, each containing the same type of information. In the phone
+			book example, the book itself is a table.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Record</TD>
+		<TD ALIGN="LEFT">A single entry in a table, consisting of a number of data fields. In a phone book,
+			a record is one of the single-line entries.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Field</TD>
+		<TD ALIGN="LEFT">A specific piece of data contained in a record. In a phone book, at least four fields
+			can be identified: last name, first name, address, and phone number.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">A special type of table that contains the values of a key field or fields and contains
+			pointers to the location of the actual record. These values and pointers are stored
+			in a specific order and can be used to present data in that order. For the phone
+			book example, one index might be used to sort the information by last and first name;
+			another index might be used to sort the information by street address; and a third
+			might be used to sort the information by phone number.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Element</TD>
+		<TD ALIGN="LEFT">Description</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Query</TD>
+		<TD ALIGN="LEFT">A command, based on a specific set of conditions or criteria, designed to retrieve
+			a certain group of records from one or more tables or to perform an operation on
+			a table. For example, you would write a query that could show all the students in
+			a class whose last name begins with <I>S</I> and who have a grade point average of
+			more than 3.0.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Recordset</TD>
+		<TD ALIGN="LEFT">A group of records, created by a query, from one or more tables in a database. The
+			records in a recordset are typically a subset of all the records in a table. When
+			the recordset is created, the number of records and the order in which they're presented
+			can be controlled by the query that creates the recordset.</TD>
+	</TR>
+</TABLE>
+</P>
+<P>The Microsoft Jet database engine provides the means by which Visual Basic interacts
+with databases. You use it with Visual Basic to access databases and database functionality.
+The Jet engine is shared by Visual Basic, Microsoft Access, and other Microsoft products,
+and it lets you work with a wide variety of data types, including several types of
+text and numeric fields. These different data types give you a great deal of flexibility
+in designing database applications. Table 30.2 lists the data types available.</P>
+<P>
+<H4>TABLE 30.2&#160;&#160;Many Data Types Are Available with the Jet Database Engine</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Type</TD>
+		<TD ALIGN="LEFT">Description</TD>
+		<TD ALIGN="LEFT">Size/Range</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">Character strings</TD>
+		<TD ALIGN="LEFT">255 characters maximum</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Memo</TD>
+		<TD ALIGN="LEFT">Long character strings</TD>
+		<TD ALIGN="LEFT">Up to 1.2GB</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Byte</TD>
+		<TD ALIGN="LEFT">Integer (numeric data)</TD>
+		<TD ALIGN="LEFT">0 to 255</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Integer</TD>
+		<TD ALIGN="LEFT">Integer (numeric data)</TD>
+		<TD ALIGN="LEFT">-32,768 to 32,767</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Long</TD>
+		<TD ALIGN="LEFT">Integer (numeric data)</TD>
+		<TD ALIGN="LEFT">-2,147,483,648 to 2,147,483,647</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Counter</TD>
+		<TD ALIGN="LEFT">Long integer, automatically incremented</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Single</TD>
+		<TD ALIGN="LEFT">Real (numeric data)</TD>
+		<TD ALIGN="LEFT">-3.402823E38 to -1.401298E-45 for negative values and from 1.401298E-45 to 3.402823E38
+			for positive values</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Type</TD>
+		<TD ALIGN="LEFT">Description</TD>
+		<TD ALIGN="LEFT">Size/Range</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Double</TD>
+		<TD ALIGN="LEFT">Real (numeric data)</TD>
+		<TD ALIGN="LEFT">-1.79769313486232E308 to -4.94065645841247E-324 for negative values and from 4.94065645841247E-324
+			to 1.79769313486232E308</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Currency</TD>
+		<TD ALIGN="LEFT">Real (numeric data)</TD>
+		<TD ALIGN="LEFT">-922,337,203,685,477.5808 to 922,337,203,685,477.5807</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Yes/No</TD>
+		<TD ALIGN="LEFT">Logical/Boolean</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Date</TD>
+		<TD ALIGN="LEFT">Date and time values</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Binary</TD>
+		<TD ALIGN="LEFT">Binary data</TD>
+		<TD ALIGN="LEFT">Up to 1.2GB</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">OLE</TD>
+		<TD ALIGN="LEFT">OLE objects</TD>
+		<TD ALIGN="LEFT">Up to 1.2GB</TD>
+	</TR>
+</TABLE>
+</P>
+<P>As your database programming skills develop, you will be interacting with the
+Jet database engine on an abstract level. For now, the Jet engine will be relatively
+transparent to you because you will use the Data control to do your database work.
+This control works with the Jet database engine, which in turn works with the database.
+Whether a database is flat or relational isn't important for the time being because
+using the Data control during design time hides most of the inner workings of the
+database from you.</P>
+<P>
+<H2><A NAME="Heading3"></A>Working with the Intrinsic Data Control</H2>
+<P>The Data control is a link between the information in your database and the Visual
+Basic control that you use to display the information. As you set the Data control's
+properties, you tell it which database and what part of that database to access.
+By default, the Data control creates a <I>dynaset-type </I>recordset from one or
+more of the tables in your database. This means that the recordset is dynamic so
+that records within it are updated when the data from the original table is modified.</P>
+<P>The Data control also provides the navigation functions that your application
+will need to switch between records. By using these buttons, users can move to the
+first or last record in the recordset or to the next or previous record (see Figure
+30.3). The design of the buttons is somewhat intuitive in that they're similar to
+the buttons you might find on a VCR or CD player.</P>
+<P><A HREF="javascript:popUp('30fig03.gif')"><B>FIGURE 30.3</B></A> <I>The Data control
+displays the value of its Caption property between the navigation buttons.</I></P>
+<P><B>Use the Data control</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project and name it DataProj. Name the default form frmMain.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Download this project's code</STRONG></P>
+	<P>You can find the code for all the examples in this chapter at <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/info'" tppabs="http://www.mcp.com/info">http://www.mcp.com/info</A>.
+	When prompted, enter 078971633x for the ISBN and click the Search button. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Select the Data control from the Toolbox and draw a Data control on
+	the form.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Retain the default name of the Data control, Data1.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Add two TextBox controls to the form. Name one txtFirst and the other
+	txtLast. Position the Data and TextBox controls as shown in Figure 30.4.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Save the project as DataProj.vbp.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('30fig04.gif')"><B>FIGURE 30.4</B></A> <I>Use the Data
+control to access a database and to bind controls on a form to the fields of a database.</I></P>
+<P>
+<H3><A NAME="Heading4"></A>Connecting the Intrinsic Data Control to a Database</H3>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>The DatabaseName and Name properties</STRONG></P>
+	<P>The DatabaseName property isn't the same as the Name property. The Name property
+	specifies the name of the data control object and is used to reference the object
+	in code. The DatabaseName property, on the other hand, specifies the name of the
+	database file that the data control is accessing. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>After the Data control is on your form, you need to make the connection between
+it and the information in your database. This is done by setting the properties of
+the Data control.</P>
+<P>Although several properties can affect the way a Data control interacts with the
+database, only two properties are required to establish the link to a Jet database:
+DatabaseName and RecordSource. Specifying DatabaseName &quot;connects&quot; a Data
+control to a specific database, whereas RecordSource specifies a table within that
+database. After you set these two properties, the Data control is ready to retrieve,
+create, and edit information.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Creating Databases</STRONG></P>
+	<P>Creating a database from scratch in Visual Basic is an advanced skill. For now,
+	you're going to work with pre-existing database files made in the Microsoft Access
+	environment. The demonstration items in this chapter will reference the Access database
+	file Composer.mdb, available for download from <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/ info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/%20info'" tppabs="http://www.mcp.com/%20info">http://www.mcp.com/
+	info</A>. You can also use Biblio.mdb or Nwind.mdb, both included with Visual Basic,
+	with minor modifications to the steps in this chapter. 
+<HR>
+</P>
+
+</BLOCKQUOTE>
+
+<P><B>Attach a Data control to a database and table</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Select the Data control on the form frmMain in the project DataProj.vbp
+	created earlier.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Select the <B>DatabaseName</B> property in the Properties window (see
+	Figure 30.5).
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Select the database <B>Composer.mdb</B> from the DatabaseName dialog.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Select table <B>tblComposers</B> from the RecordSource property drop-down
+	list (see Figure 30.6).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('30fig05.gif')"><B>FIGURE 30.5</B></A> <I>When you select
+the DatabaseName property in the Properties window, an ellipsis appears to the right
+of the value area. Click the ellipsis to open the DatabaseName dialog.</I></P>
+<P><A HREF="javascript:popUp('30fig06.gif')"><B>FIGURE 30.6</B></A> <I>Assigning
+a database file to the Data control's DatabaseName property populates the RecordSource
+property's drop-down list with all the tables and queries in that database.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Assign a RecordSource before a DataField</STRONG></P>
+	<P>Be sure to have a table assigned to the Data control's RecordSource property before
+	you select a value for another control's DataField. If you don't have a table assigned
+	to the RecordSource property, you will get an error. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Select the <B>txtFirst</B> TextBox on the form.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>For the TextBox's DataSource property, select <B>Data1</B> in the Properties
+	window (see Figure 30.7).
+	<P>
+	<DT></DT>
+	<DD><B>7. </B>For the TextBox's DataField property, select <B>FirstName</B> (see
+	Figure 30.8).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('30fig07.gif')"><B>FIGURE 30.7</B></A> <I>The DataSource
+property lists all the Data controls on a form.</I></P>
+<P><A HREF="javascript:popUp('30fig08.gif')"><B>FIGURE 30.8</B></A> <I>All fields
+from the table assigned to the Data control's RecordSource property are displayed
+in the DataField drop-down list.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>8. </B>Assign the Data control Data1 to the DataSource property of the txtLastName
+	TextBox, just as you did for the txtFirstName TextBox.
+	<P>
+	<DT></DT>
+	<DD><B>9. </B>In the Properties window, select <B>LastName</B> for the DataField
+	property of the TextBox txtLastName (see Figure 30.9).
+	<P>
+	<DT></DT>
+	<DD><B>10. </B>Save and run the code (see Figure 30.10).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('30fig09.gif')"><B>FIGURE 30.9</B></A> <I>When you assign
+a field from a table to the DataField property of a TextBox, the contents of that
+field will appear in that TextBox on a record-by-record basis.</I></P>
+<P><A HREF="javascript:popUp('30fig10.gif')"><B>FIGURE 30.10</B></A> <I>You can move
+through the database's table by using the Data control's navigation buttons.</I></P>
+<P>In the preceding steps, you &quot;connected&quot; a database to a Data control
+and then selected a RecordSource for the control. Then you assigned that Data control
+to be a DataSource for two TextBoxes. You <I>bound</I> each TextBox to a field in
+the database (the Data control's RecordSource) by selecting a field for the TextBox's
+DataField property.</P>
+<P>If you want to add and bind more TextBoxes to the Data control, or if you want
+to add and bind a Label control, you follow the process enumerated earlier. Controls
+such as CheckBoxes and ListBoxes can also be bound to a Data control; however, the
+fields to which a CheckBox or ListBox is bound must contain data of type Boolean
+(see Table 30.3).</P>
+<P>
+<H4>TABLE 30.3&#160;&#160;Some Controls That Can Be Bound Only to Specific Data Types</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Control</TD>
+		<TD ALIGN="LEFT">Available Data Types</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Any data types. Editing is allowed.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Any data types. Editing isn't allowed.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Image</TD>
+		<TD ALIGN="LEFT">Displays graphics stored in the database but doesn't allow editing of the image.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Control</TD>
+		<TD ALIGN="LEFT">Available Data Types</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Picture</TD>
+		<TD ALIGN="LEFT">Displays graphics stored in the database and allows editing of the image.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CheckBox</TD>
+		<TD ALIGN="LEFT">Boolean data type only. This allows updating of the record.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Text data types. Editing is allowed on the selected record.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ComboBox</TD>
+		<TD ALIGN="LEFT">Text data types. Editing is allowed on the selected record.</TD>
+	</TR>
+</TABLE>
+</P>
+<P>Bound controls such as the TextBox can also be used to edit a record. To do this,
+the user simply edits the contents of the control while your program is running.
+When a different record is selected with the Data control's navigation buttons (or
+the form is closed), the information in the database is automatically updated to
+reflect the user's changes.</P>
+<P>
+<H2><A NAME="Heading5"></A>Creating Database-Bound Forms with the Data Form Wizard</H2>
+<P>Visual Basic provides a tool that lets you easily make forms that have controls
+bound to a database. Called the VB Data Form Wizard, it can be accessed from the
+<B>Add-Ins</B> menu. The Data Form Wizard creates a form that lets you browse a database,
+complete with text boxes, labels, and the ADO Data control. The ADO Data control
+is slightly different from the intrinsic Data control you used in the preceding section
+but will appear to work the same to users.</P>
+<P>When you installed the Visual Basic programming environment on your computer,
+the VB Data Form Wizard wasn't installed. You must attach it to the <B>Add-Ins</B>
+menu.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+	<P>
+<HR>
+<STRONG>Don't need the wizard anymore?</STRONG></P>
+	<P>To remove the wizard from the <U>A</U>dd-Ins menu, select VB 6 Data Form Wizard
+	in the Add-In Manager dialog and deselect the <U>L</U>oaded/Unloaded and Load on
+	<U>S</U>tartup check boxes. 
+<HR>
+</P>
+
+</BLOCKQUOTE>
+
+<P><B>Install the Data Form Wizard</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Choose <B>Add-In Manager</B> from the <B>Add-Ins</B> menu.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>In the Add-In Manager dialog, select <B>VB 6 Data Form Wizard</B> from
+	the list and select the <B>Loaded/Unloaded</B> check box (see Figure 30.11). Click
+	<B>OK</B>.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('30fig11.gif')"><B>FIGURE 30.11</B></A> <I>If you select
+<B>Load on Startup</B>, the VB Data Form Wizard will be added to the <B>Add-Ins</B>
+menu after the installation process.</I></P>
+<P>Now that you've attached the VB 6 Data Form Wizard to the Visual Basic IDE, you
+can use it in all your projects. You can now use the VB Data Form Wizard to create
+a form for the table tblWorks in the database file Composer.mdb.</P>
+<P><B>Create a bound form for a database table</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Choose <B>Data Form Wizard</B> from the <B>Add-Ins</B> menu.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Click <B>Next</B> in the Introduction dialog (see Figure 30.12).
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Download this project's code</STRONG></P>
+	<P>The form that these steps create is frmWorks, which is part of the project DataProj.vbp.
+	It's located at http://www. mcp.com/info. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><A HREF="javascript:popUp('30fig12.gif')"><B>FIGURE 30.12</B></A> <I>The Introduction
+dialog lets you load a profile of your common Data Form Wizard settings.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>3. </B>In the Database Type dialog, select Access and click Next.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>In the Database dialog, click the <B>Browse</B> button to see the Access
+	Database dialog. You can now select the database for which you want to make a form.
+	Locate Composer.mdb and click <B>Next</B>.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Name the form frmWorks. Select <B>Single Record</B> from the <B>Form
+	Layout</B> list, select <B>ADO Data Control</B> from the <B>Binding Type</B> options,
+	and click <B>Next</B> (see Figure 30.13).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('30fig13.gif')"><B>FIGURE 30.13</B></A> <I>You select
+the layout that you want the data form to take by choosing an option from the <B>Form
+Layout</B> list.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>6. </B>Select <B>tblWorks</B> from the <B>Record Source</B> drop-down list
+	(see Figure 30.14).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('30fig14.gif')"><B>FIGURE 30.14</B></A> <I>All tables
+and queries of the selected database are listed in the <B>Record Source</B> drop-down
+list. After you select the record source, the fields of the record source will appear
+in the <B>Available Fields</B> list.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>7. </B>Click the &gt;&gt; button and click <B>Next</B> (see Figure 30.15).
+	<P>
+	<DT></DT>
+	<DD><B>8. </B>Don't deselect any of the check boxes so that all data manipulation
+	controls are made available on your form (see Figure 30.16). Click <B>Next</B>.
+	<P>
+	<DT></DT>
+	<DD><B>9. </B>Save the settings you've just made by clicking the ellipsis button
+	(see Figure 30.17).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('30fig15.gif')"><B>FIGURE 30.15</B></A> <I>Any fields
+you select will appear on the data form. If you want only some fields, select them
+one at a time and click the &gt; button. To remove fields from the data form, click
+the &lt; and &lt;&lt; buttons.</I></P>
+<P><A HREF="javascript:popUp('30fig16.gif')"><B>FIGURE 30.16</B></A> <I>You can select
+a limited number of buttons to be on the data form by selecting or clearing the appropriate
+check boxes.</I></P>
+<P><A HREF="javascript:popUp('30fig17.gif')"><B>FIGURE 30.17</B></A> <I>Saving your
+settings in a profile can save you time during database program development.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>10. </B>Click <B>Finish</B>. A final Data Form Created dialog will appear;
+	click the <B>Don't Show This Dialog in the Future</B> check box if you don't want
+	to see this confirmation message in the future. Click <B>OK</B>.
+	<P>
+	<DT></DT>
+	<DD><B>11. </B>Save the code, remembering to change the name of the form to frmWorks.frm
+	to follow the Visual Basic naming convention for forms.
+	<P>
+	<DT></DT>
+	<DD><B>12. </B>Open the Project Properties dialog by selecting <B>DataProj Properties</B>
+	from the <B>Project</B> menu.
+	<P>
+	<DT></DT>
+	<DD><B>13. </B>Select the <B>frmWorks</B> form from the <B>Startup Object</B> drop-down
+	list (see Figure 30.18).
+	<P>
+	<DT></DT>
+	<DD><B>14. </B>Save and run the code (see Figure 30.19).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('30fig18.gif')"><B>FIGURE 30.18</B></A> <I>If you want
+a newly added form to be the startup form for your application, you must reset the
+Startup object.</I></P>
+<P><A HREF="javascript:popUp('30fig19.gif')"><B>FIGURE 30.19</B></A> <I>The data
+form created by the wizard allows you to add, update, delete, and refresh data from
+the table assigned to the value of the Data control's RecordSource property.</I></P>
+<P>You can use multiple Data controls on a form. Each Data control can be assigned
+a RecordSource from the same database or from different databases. You can also change
+a Data control's properties at runtime, but be advised that you will probably also
+have to change properties of the controls bound to the Data control.</P>
+<P>The Data control makes working with databases simple, but this is partly because
+it's rather limited. Database programming is a complete discipline itself. As data
+structures and business requirements become more complex, so will the programming.
+After a time, you might outgrow the Data control in favor of a more advanced technology
+known as ActiveX Data Objects (ADO). Regardless of your future plans, the Data control
+will serve you well in most aspects of your database programming activity, especially
+for simpler applications.</P>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch29.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch29/ch29.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch31.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch31/ch31.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A></P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

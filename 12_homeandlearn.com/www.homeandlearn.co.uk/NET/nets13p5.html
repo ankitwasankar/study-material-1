@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.uk/NET/nets13p5.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 07:21:38 GMT -->
+<HEAD>
+		<TITLE>Visual Basic .NET programming for Beginners - Getting at Values on other Forms</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-2.css">
+		<meta name="description" content="">
+		<meta itemprop="name" content="Home and Learn">
+		<meta itemprop="description" content="Free Visual Basic .NET Course">
+		<meta itemprop="image" content="../logo5.jpg">
+		<link rel="publisher" href="https://plus.google.com/104045712242599534737" />
+<link rel="author" href="https://plus.google.com/104045712242599534737" />
+		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="links.js"></SCRIPT>
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">Visual Basic .NET</SPAN> <SPAN class="Logo_Text">Course</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+<ul>
+<LI><a href="../index-2.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2010.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign.html">Web Design</a></LI>
+<LI><a href="../javascript/javascript.html">Javascript</a></LI>
+<LI><a href="vbNet.html">Visual Basic .NET</a> <B>&lt; &lt;</B></LI>
+<LI><a href="../php/php.html">Beginners PHP</a></LI>
+<LI><a href="../csharp/csharp.html">C# .NET</a></LI>
+<LI><a href="../java/java.html">Java for Beginners</a></LI>
+</ul>
+		
+</NAV> <SECTION ID="Wrapper"> <ARTICLE> <HEADER> 
+<H1 ID="Article">Getting at Values on other Forms</H1>
+</HEADER> <SECTION> 
+<p align="center"> 
+  <script language="JavaScript">
+				writeImageVB()
+			</script>
+</p>
+<p>This lesson follows on from the previous two lessons: <a href="nets13p3.html">How 
+  to create a second form</a></p>
+<p>&nbsp;</p>
+<p>The form with OK and Cancel buttons on it is not doing much good. We need it 
+  do some work for us. Let's turn the form into a Change Case dialogue box.</p>
+<p>Design a Form like the one in the following image (this is <b>frmSecond</b>):</p>
+<p align="center"><img src="images/vb_2010/aForm_p307.gif"></p>
+<p align="left">When you've designed your form, click back on Form1 and add a 
+  Textbox to it. When the button on Form1 is clicked, the dialogue box above will 
+  display. You can then select an option button to change the case to Upper, Lower 
+  or Proper case. This will happen when the OK button is clicked. Whatever text 
+  is in Texbox1 on Form1 will be changed accordingly.</p>
+<p>Double click the OK button on <b>frmSecond</b> to access the code. You should 
+  have the following:</p>
+<p align="center"><b>Me.DialogResult = DialogResult.OK</b></p>
+<p>If you want to refer to Texbox1 on Form1, you can't just do this:</p>
+<p align="center"><b>Form1.Textbox1.Text</b></p>
+<p>In previous version of VB, that code would be all right. You're saying &quot;Access 
+  the Text property of Textbox1 on Form1.&quot; The problem in VB.NET is that 
+  forms are Classes. They don't become objects until one is created from a Class. 
+  So the frmSecond Class knows nothing about Form1. It has no idea what it is.</p>
+<p>The solution is to create a textbox object variable on Form1, and assign Textbox1 
+  to this variable. But this variable has to be something that all Classes in 
+  the project can see.</p>
+<p>So add this near the top of your code window for Form1 (add it just below the 
+  Inherits System.Windows.Forms.Form line, or Public Class Form1):</p>
+<p align="center"><b>Public Shared tb As TextBox</b></p>
+<p>We're setting up a variable which we've called <b>tb</b>. A Textbox object 
+  is going to be stored in this variable. But notice that the variable is <b>Public 
+  Shared</b>. This way, <b>frmSecond</b> will be able to see the variable.</p>
+<p>In the Form Load event for Form1, add the following line:</p>
+<p align="center"><b>tb = Textbox1</b></p>
+<p>When Form1 loads, the textbox called Textbox1 will be assigned to the tb variable. 
+  Now Textbox1 can be seen by frmSecond.</p>
+<p>Go back to your code for the OK button on frmSecond. Add the following two 
+  lines at the top:</p>
+  
+<p class="indent_small_blue">Dim ChangeCase As String<br>
+  ChangeCase = Form1.tb.Text</p>
+  
+<p>We're setting up a String variable called ChangeCase. Whatever text is in Textbox1 
+  of Form1 will then be assigned to the ChangeCase variable. But notice that as 
+  soon as you type a full stop after Form1, the <b>tb</b> variable will be available 
+  in the pop up list:</p>
+<p align="center"><img src="images/vb_2010/aForm_p315.gif"></p>
+<p>The Public variable called tb holds a reference to Textbox1 on Form1. When 
+  you type a full stop after the tb, you get a list popping up. The list is all 
+  the Properties and Methods that are available to Textbox1. One of these is the 
+  Text property.</p>
+<p>We now only need to add the code that does the actual converting. So add this 
+  below the two lines you already have:</p>
+  
+<p class="indent_small_blue">Dim ChangeCase As String<br>
+  ChangeCase = Form1.tb.Text</p>
+  
+<p class="indent_small_blue">If optUpper.Checked Then</P>
+  <P class="indent_big_blue">ChangeCase = ChangeCase.ToUpper</P>
+  <P class="indent_small_blue">ElseIf optLower.Checked Then</P>
+  <P class="indent_big_blue">ChangeCase = ChangeCase.ToLower</P>
+  <P class="indent_small_blue">ElseIf optProper.Checked Then</P>
+  <P class="indent_big_blue">ChangeCase = StrConv(ChangeCase, VbStrConv.ProperCase)</P>
+  <P class="indent_small_blue">End If</p>
+<p class="indent_small_blue">Form1.tb.Text = ChangeCase</p>
+<p>The three options buttons on our form were called <b>optUpper</b>, <b>optLower</b> 
+  and <b>optProper</b>. In the code, we're using an If Statement to see which 
+  of these was selected. The one that was chosen will have its <b>Checked</b> 
+  property set to <b>True</b>. We then store into the variable <b>ChangeCase</b> 
+  the converted text from the textbox. The final line puts the converted text 
+  back into Textbox1 on Form1. But you're coding window should look like this:</p>
+<p align="center"><img src="images/vb_2010/aFormCode_p316.gif" border="1" alt="Change Case Code"></p>
+<p>Note that the DialogResult.OK line is the final line of the code. When you're 
+  writing your code, make sure that optUpper, optLower and optProper are changed 
+  to whatever you called your Radio Buttons.</p>
+<p>When you're finished adding the code, run your programme. Enter some text into 
+  Textbox1. Then click the button that brings up the Change Case Dialogue box. 
+  Select an option from the three available, and the click OK. The text in Textbox1 
+  should be converted.</p>
+<p>Setting and Getting value from one form to another can be quite a tricky process 
+  at first. But once you get the hang of it you'll find it's not too difficult.</p>
+<p>&nbsp;</p>
+<p>And that ends this section of this course. There's an awful lot more to learn 
+  about Windows Forms, and a bit of experimentation is needed before you become 
+  skilled in their use. But in a beginners course, you've learned enough to be 
+  going on with.</p>
+<p align="center"><a href='../bookshop/net.html'><img src='vbBanBorder.gif' alt='Buy our VB NET Book Here' border='0'/></a></p>
+</SECTION></ARTICLE> </SECTION> <FOOTER> 
+<P><A HREF="vbNet.html">Back to the VB NET Contents Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.uk/NET/nets13p5.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 07:21:38 GMT -->
+</HTML>
+

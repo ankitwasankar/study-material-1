@@ -1,0 +1,1841 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 21 -- ActiveX Controls and the Internet</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;21</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>ActiveX Controls and the Internet</FONT>
+</H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#TheHyperLinkObject">
+The HyperLink Object</A>
+<LI><A HREF="#ActiveXControlsonWebPages">
+ActiveX Controls on Web Pages</A>
+<LI><A HREF="#DownloadingSecurityandSigning">
+Downloading, Security, and Signing</A>
+<UL>
+<LI><A HREF="#ActiveXControlsandSecurity">
+ActiveX Controls and Security</A>
+<LI><A HREF="#TheSandBoxApproach">
+The SandBox Approach</A>
+<LI><A HREF="#ThequotTrustMequotApproach">
+The &quot;Trust Me&quot; Approach</A>
+<LI><A HREF="#SafetyFONTSIZEFACESymbolFONTFONTSIZESigningFONT">
+Safety <FONT SIZE=4 FACE="Symbol">&#185;</FONT>
+Signing</A>
+<LI><A HREF="#DistributingandDownloadingActiveXControls">
+Distributing and Downloading ActiveX Controls</A>
+<LI><A HREF="#MarkingControlsAsSafe">
+Marking Controls As Safe</A>
+<LI><A HREF="#SigningControls">
+Signing Controls</A>
+</UL>
+<LI><A HREF="#ThedwBannerControl">
+The dwBanner Control</A>
+<UL>
+<LI><A HREF="#Conclusion">
+Conclusion</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+In <A HREF="ch1.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch1.htm" >Chapter 1</A> I began by trying to disassociate ActiveX controls
+from the Internet. And for the past 20 chapters, almost the only
+mention of the Internet with regard to ActiveX controls has been
+the discussion of control limitations in <A HREF="ch16.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch16.htm" >Chapter 16</A> and the discussion
+of asynchronous property downloads in <A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 19</A>. I think that,
+more than anything, should prove my original point. The value
+of ActiveX components and controls has little to do with the Internet.
+<P>
+But we can't hide from the Internet features of ActiveX controls
+forever. Microsoft is heavily promoting Visual Basic for creating
+controls for use on the Internet and on intranets. And the truth
+is, if you are willing to accept the fact that not everyone will
+be able to use your controls, Visual Basic is an outstanding tool
+for creating these controls. You get excellent performance, short
+development times, small executables and, with the occasional
+aid of third-party tools, as much capability as with controls
+that are developed using other languages such as Visual C++. In
+fact, in some areas, VB controls are far superior to those created
+in Visual C++. For example, it is significantly easier to build
+a control using constituent controls with VB.
+<P>
+This chapter will focus on those aspects of ActiveX controls that
+relate specifically to the Internet:
+<UL>
+<LI>Their navigation ability when placed on browsers
+<LI>The mechanics of actually placing a control on a Web page
+<LI>Issues relating to downloading controls from Web sites
+</UL>
+<P>
+And perhaps along the way, I can dispel a few myths relating to
+the security of ActiveX controls.
+<H2><A NAME="TheHyperLinkObject"><FONT SIZE=5 COLOR=#FF0000>
+The HyperLink Object</FONT></A></H2>
+<P>
+The HyperLink object is accessible via the HyperLink property
+of the UserControl object. It has three methods: GoBack, GoForward,
+and NavigateTo. These methods only have an effect if the control
+is sited on a container that acts as a Web browser. They are ignored
+on all other containers.
+<P>
+The GoBack and GoForward methods are the equivalent of clicking
+on the Back and Forward buttons on the browser. The NavigateTo
+method is much more powerful. It takes three parameters: a target,
+a location, and a frame.
+<P>
+The target is the URL to jump to. This can be any location supported
+by the container, either local or on the network. The location
+parameter is optional and specifies the name of the file to load.
+If it is not specified, the default file for the site will be
+loaded. The frame parameter is also optional and specifies a frame
+to load at the specified target location.
+<P>
+This is demonstrated in the dwBanner control, which detects the
+Click event to jump to Desaware's Web site using the following
+code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_Click()
+   On Error GoTo NoHyper
+   UserControl.Hyperlink.NavigateTo &quot;<A HREF="javascript:if(confirm('http://www.desaware.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.desaware.com/'" tppabs="http://www.desaware.com/">http://www.desaware.com</A>&quot;
+NoHyper:
+   RaiseEvent Click
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+You should always have error trapping enabled when using the Hyperlink
+object, since an error may be raised if the container does not
+support Internet navigation.
+<P>
+Considering the emphasis Microsoft has placed on using ActiveX
+controls for the Internet, it is perhaps astonishing that between
+this short section and asynchronous properties, you now know everything
+you need to know about implementing Internet features in your
+control. Now let's look at what you need to do to actually place
+a control on a Web page.
+<H2><A NAME="ActiveXControlsonWebPages"><FONT SIZE=5 COLOR=#FF0000>
+ActiveX Controls on Web Pages</FONT></A></H2>
+<P>
+<A HREF="ch15.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch15.htm" >Chapter 15</A> included a quick introduction to HTML. You saw that
+HTML consists of tags and text. The tags, which are contained
+within triangular brackets, represent commands to the browser
+that affect its operation or text display. ActiveX controls are
+placed on a Web page using the OBJECT tag as shown below:
+<BLOCKQUOTE>
+<PRE>
+&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;New Page&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+&lt;BODY&gt;
+
+&lt;OBJECT ID=&quot;dwBanner1&quot; WIDTH=347 HEIGHT=39
+ CLASSID=&quot;CLSID: 63B8AFC0-8E9A-11D0-91BB-00AA0036005A&quot;&gt;
+    &lt;PARAM NAME=&quot;_ExtentX&quot; VALUE=&quot;9181&quot;&gt;
+    &lt;PARAM NAME=&quot;_ExtentY&quot; VALUE=&quot;1005&quot;&gt;
+    &lt;PARAM NAME=&quot;BackColor&quot; VALUE=&quot;16777088&quot;&gt;
+    &lt;PARAM NAME=&quot;FontSize&quot; VALUE=&quot;8.25&quot;&gt;
+    &lt;PARAM NAME=&quot;FontBold&quot; VALUE=&quot;-1&quot;&gt;
+    &lt;PARAM NAME=&quot;FontItalic&quot; VALUE=&quot;-1&quot;&gt;
+    &lt;PARAM NAME=&quot;BorderStyle&quot; VALUE=&quot;1&quot;&gt;
+    &lt;PARAM NAME=&quot;ScrollText&quot; VALUE=&quot;Visit Desaware's Web site at 
+	www.desaware.com for the coolest tools for VB developers. &quot;&gt;
+    &lt;PARAM NAME=&quot;XMargin&quot; VALUE=&quot;20&quot;&gt;
+    &lt;PARAM NAME=&quot;YMargin&quot; VALUE=&quot;6&quot;&gt;
+&lt;/OBJECT&gt;
+
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The CLASSID field represents the unique control identifier (CLSID)
+that is created when your control is compiled. ActiveX controls,
+like all ActiveX objects, have this unique identifier (also referred
+to as GUID). Note that the identifier shown in the above listing
+will not match the one for the actual dwBanner.ocx control, as
+the control was recompiled into its final version after this book
+went to press.
+<P>
+The browser expects all of the information from the OBJECT tag
+to the /OBJECT tag to be information defining the object. The
+PARAM NAME tags define the initial settings for the control's
+properties. These are the values that will be retrieved by the
+control during its ReadProperties event.
+<P>
+If this looks somewhat cryptic, I have good news for you. You
+will probably never actually write this kind of HTML code. Microsoft
+already provides several tools that automatically create this
+HTML text. Perhaps the easiest one to use is the ActiveX control
+pad, which can be downloaded from the Microsoft Web site (currently
+for free). This tool allows you to insert a control into an HTML
+file and edit the design-time properties interactively. FrontPage
+97&#153; and Microsoft Internet Studio&#153; both allow you to
+easily add ActiveX controls into Web pages and never worry about
+the HTML code that results.
+<P>
+If you do want your control to run on a Web page you must test
+it using a browser that supports it. I know this may seem like
+an odd statement, but I can't stress it enough. It is very easy
+to create controls that will run perfectly well in Visual Basic
+and other application containers, yet fail miserably on a Web
+browser. This is especially true if you use the Extender object.
+<H2><A NAME="DownloadingSecurityandSigning"><FONT SIZE=5 COLOR=#FF0000>
+Downloading, Security, and Signing</FONT></A></H2>
+<P>
+The most important issue with regard to using ActiveX controls
+on the Internet and on corporate intranets relates to the process
+of downloading controls from a Web site to your system. It is
+the subject that has perhaps raised the most controversy. To understand
+the nature of the controversy and Microsoft's approach to resolving
+it for ActiveX controls, let us begin with the issue of security.
+<H3><A NAME="ActiveXControlsandSecurity">
+ActiveX Controls and Security</A></H3>
+<P>
+As long as Web pages consisted of simple text and graphics, security
+was not really a concern. Displaying a text file or image is unlikely
+to cause harm to anyone's system. That's one of the reasons that
+e-mail is so safe and popular. When you receive an e-mail message
+from someone, you don't think of it as something that can corrupt
+your hard drive or erase your valuable data. But Web pages that
+contain nothing but simple text and graphics are boring.
+<P>
+Or at least that is what some people say. Personally, when I use
+the Web to retrieve information, I would much rather have Web
+pages that contain plain text and some graphics. While I do have
+a T1 line at work, I still access the Web using a 28.8k modem
+at home. The large bitmaps, cluttered backgrounds, and animations
+some developers place on their sites is a complete waste of time.
+But I digress&#133;
+<P>
+The point is that people did want more sophisticated content on
+Web pages. They wanted pages that can interact with the user,
+be programmed to display scrolling text or flashy animation, have
+complex display capabilities, or perform other operations on the
+user's system. Many of these capabilities require that the page
+be able to actually execute code on the system being used to view
+the page. The term active content is used to describe these types
+of elements.
+<P>
+The key phrase here is &quot;execute code on the system that is
+being used to view the page.&quot; What does it mean? It means
+that the system accessing the page downloads software and runs
+it.
+<P>
+Now, chances are that if you are a serious software developer
+or power user, you know that downloading software is potentially
+the most dangerous thing that you can do. It's not the downloading
+that is dangerous, but the fact that you may not know who wrote
+the software and what's in it. It could contain viruses or harmful
+side effects. That's one reason why most developers tend to stick
+with software from reputable companies (including shareware and
+freeware companies) and avoid the thousands of &quot;free&quot;
+programs that tend to be worth exactly what you pay for them.
+The other reason that serious developers avoid free programs,
+for those who are wondering, is that they tend to be unsupported.
+And unsupported software has a nasty tendency to end up costing
+far more in the long run than even the most expensive commercial
+software.
+<P>
+If you want Web pages to support active content, you are effectively
+talking about placing code on the page itself that can be run
+on the end-user's system. But unless your end user is a blithering
+idiot, he or she would never even consider allowing a Web browser
+to automatically download software from a page and run it on his
+or her system. How can you give users a guarantee that the software
+on a Web page is safe to run on a system? There are two philosophical
+approaches to solving this problem.
+<H3><A NAME="TheSandBoxApproach">
+The SandBox Approach</A></H3>
+<P>
+One answer is to look at the software itself. What if you created
+a language that was fundamentally safe to run? Such a language
+might have the following characteristics:
+<UL>
+<LI>It must not be able to make direct calls to operating system
+functions, since operating system functions have the potential
+to cause harm to a system.
+<LI>It must not be able to write to disk, or be allowed to do
+so only under tightly controlled circumstances.
+<LI>It may not access memory arbitrarily. This means it should
+not directly manipulate memory pointers, because doing so could
+allow it to interfere with other applications or with the operating
+system.
+</UL>
+<P>
+The language would probably not compile directly to the native
+code of the target machine. Instead, it would be interpreted (perhaps
+in much the same way as Visual Basic compiled to pseudocode, or
+P-Code, is interpreted by the VB runtime). This also means that
+software written in the language could run on any system that
+supported the P-Code interpreter. It would not be restricted to
+any one operating system or CPU type.
+<P>
+A program written in this language would obviously be seriously
+limited as compared to a typical application that has full access
+to the capabilities of its target system. But it would also be
+safe to run, since any ability to interfere with the system on
+which it is running has been eliminated. You can think of the
+program as running in a sandbox on the system-a safe area in which
+it can do anything it wants to without interfering with the rest
+of the system.
+<P>
+The Java scripting language is one such language. When a Java
+applet appears on a Web page, it is detected by the Web browser
+and sent to a Java virtual machine, which interprets and executes
+the Java code. The code is platform independent in that Java virtual
+machines exist for almost every operating system and platform.
+The Java language does not support pointers, so it is fundamentally
+unable to corrupt your system's memory. The virtual machine does
+not permit any unsafe operations or direct access to the operating
+system.
+<P>
+So, when you see a Java applet in a Web page, you basically don't
+have to worry about downloading it.
+<P>
+Now, keep in mind that I am not an Internet security expert. I'm
+sure someone out there will be glad to point out security holes
+in this approach. But, in a way, that is exactly the point. Any
+security breaches in this approach are holes that probably can
+and should be fixed. The fundamental approach is sound and works
+quite well. Most people don't think twice about allowing their
+browser to run Java applets on their Web browser.
+<H3><A NAME="ThequotTrustMequotApproach">
+The &quot;Trust Me&quot; Approach</A></H3>
+<P>
+Microsoft took a completely different approach with ActiveX controls.
+They decided that active content should have full access to all
+of the capabilities of the underlying system.
+<P>
+If the interpretation of Microsoft's actions that I proposed in
+<A HREF="ch2.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch2.htm" >Chapter 2</A>is correct, they really didn't have any choice. They
+made the decision to extend OLE controls for the Internet and
+rename the technology ActiveX. But COM and ActiveX technology
+was never designed to be sandboxed, and existing OLE controls
+were written in Visual C++, which is anything but a safe language.
+OLE control implementation relied on extensive access to underlying
+system calls. In fact, OLE itself had become part of the operating
+system.
+<P>
+You must always keep in mind that every ActiveX control is a true
+executable. It has full access to all of the resources and functionality
+of a system, limited only by the security settings on the system
+itself.
+<P>
+This gives an ActiveX control enormous flexibility and power.
+You can do virtually anything in a control that an application
+can do. But it also poses extreme danger. You could write an ActiveX
+control that, when downloaded, erased the user's disk or registry
+settings, making the system unusable and unbootable. I half expect
+any day now to hear about the first ActiveX control-based computer
+viruses, which use downloaded controls as a means for the virus
+to spread. Microsoft knew this, so they took another approach.
+<P>
+It is true that smart computer users would never allow arbitrary
+software to be downloaded and executed on their systems. But computer
+users obtain software all the time. They buy it in stores and
+they download it from reputable firms or other sources that are
+known to produce safe and reliable code. Since ActiveX controls
+are not designed to be safe, two things become essential:
+<UL>
+<LI>There must be a way for control authors to tell users if their
+control is safe to download.
+<LI>There must be a way for users to verify that a control is
+authored by a reputable, known, and otherwise trustworthy company
+or individual.
+</UL>
+<H3><A NAME="SafetyFONTSIZEFACESymbolFONTFONTSIZESigningFONT">
+Safety <FONT SIZE=4 FACE="Symbol">&#185;</FONT><FONT SIZE=4>
+Signing</FONT></A></H3>
+<P>
+There is a great deal of information available about distributing
+ActiveX controls on the Internet. There is the information included
+with Visual Basic that discusses how to use the setup wizard.
+There is the ActiveX Software Development Kit (SDK), which is
+available from Microsoft's Web site. There are numerous articles
+in magazines and other books. The subject can get very complex
+very quickly, especially when you start dealing with all of the
+variations available for installing and downloading controls.
+<P>
+I spent days wading through the information trying to understand
+it. I understood most of the ideas being presented (or at least,
+I thought I did), but somehow I couldn't quite figure out how
+to actually do the things that they were talking about. In other
+words, an article would describe at length how important it was
+to mark a control as &quot;safe for scripting&quot; or &quot;safe
+for initialization,&quot; but it wouldn't actually explain how
+to do it. Authors would talk about the advantages of code signing
+without explaining how to actually sign a control.
+<P>
+After extensive experimentation, I finally figured out what they
+were talking about. My intent here is not to cover every aspect
+of control downloading and security but to offer, in as clear
+a manner as possible, a concise and accurate explanation of the
+things you actually need to know as a VB programmer to create
+safe downloadable controls for Web pages.
+<P>
+To start out, you must understand there are three completely separate
+issues that need to be discussed:
+<UL>
+<LI>Making your control safe
+<LI>Marking your control as safe
+<LI>Identifying (signing) your control
+</UL>
+<H4>Make Your Control Safe</H4>
+<P>
+Making your control safe is the process you go through as a control
+author to make sure your control cannot harm an end user's system.
+There are two types of safety to consider:
+<UL>
+<LI>Is it safe to load your control onto a container no matter
+what initial property settings are specified?
+<LI>Is it safe to use your control in an application regardless
+of the control methods that are called and property settings that
+are assigned?
+</UL>
+<P>
+The first of these is called &quot;Safe for initialization.&quot;
+Your control is safe for initialization if it can accept any property
+settings during the ReadProperties event and not harm the system.
+For example, if your control has a property value that can change
+registry settings or manipulate the file system based on a property
+set during initialization, that control is not safe. Remember
+that a Web author can write anything they want as a PARAM field
+in HTML, so you can't assume that the property settings being
+read were written by your own control. Your control must be able
+to handle anything that comes its way.
+<P>
+The second type of control safety is called &quot;Safe for scripting.&quot;
+In addition to ActiveX control objects, Web pages can contain
+other content in the form of Java applets or VBScript applets
+(two different Web scripting languages). These applets are able
+to call control methods and set control properties. If your control
+can handle any possible method call and property setting safely,
+then it is safe for scripting. Be sure to test your control carefully.
+Let's say you have a method that can save information from the
+control in a specified path. This is not necessarily unsafe, but
+what will your control do if the path name is that of a system
+device? The wrong method parameter could interfere with the operation
+of that device. Or what if you had a property that let you set
+a registry key. If the registry key is hard coded into the control,
+this might be safe. But if it is a parameter to a control property,
+a mischievous Web script author could wreak havoc using your control.
+<P>
+Keep in mind that safety, in the context of an Internet control,
+is different from making a control safe for application developers.
+There are many situations where you will want your ActiveX controls
+to offer functionality that would not be safe on a Web page.
+<P>
+For example, Desaware's StorageTools product includes a registry
+manipulation ActiveX control that makes it as easy for VB developers
+to manipulate the registry as it is to manipulate their disk file
+system. The control is safe in the sense that it works properly,
+but since it gives developers full access to the system registry,
+it goes without saying that the developers could use the control
+to write illegal information to the registry if they so chose.
+But when they ship their application that uses the registry control,
+they will be assuring their customers that their program is safe
+to run, so there is no problem. The registry control is unsafe
+in that it is possible to use it in ways that can harm a system.
+Thus the control, while useful to application developers, is not
+marked as safe for scripting.
+<P>
+You will see later in this chapter that it is possible for a control
+to support two modes: A safe mode for use on Web pages and an
+unsafe mode for use by application developers.
+<H4>Marking Your Control</H4>
+<P>
+Once you have made your control safe for initialization and/or
+safe for scripting, the next step is to tell the end user which
+level of safety is supported by your control. This will be covered
+in depth later in this chapter. For now you need to be aware that
+there are two ways to mark a control as safe. One is to add information
+into the system registry that indicates the control is safe. The
+other is to add functionality to the control itself that lets
+the browser software request safe operation and determine if the
+control is safe.
+<P>
+When the browser downloads the control, it will try both of these
+methods to see if the control is safe. What it does with this
+information depends on the browser configuration. More on this
+later.
+<H4>Signing Your Control</H4>
+<P>
+Virtually every article that discusses ActiveX control safety
+also talks about code signing. It is easy to come away with the
+impression that code signing has something to do with code safety.
+In fact, they are completely different things.
+<P>
+Earlier in this chapter I made the point that there are two requirements
+for ActiveX controls to become a viable component for Internet
+download.
+<UL>
+<LI>There must be a way for control authors to tell users if their
+control is safe to download.
+<LI>There must be a way for users to verify that a control is
+authored by a reputable, known, and otherwise trustworthy company
+or individual.
+</UL>
+<P>
+You've already read that there is a way for authors to mark a
+control as safe, though I have not yet shown you how to do so.
+But the truth is that this is not a solution. You see, anybody
+can mark a control as safe. There is nothing in the process of
+marking a control as safe that actually verifies that the control
+is, in fact, safe. This raises an interesting question: How do
+you know that a control marked safe is actually safe to install
+and run? The answer is, you don't. You have to trust that the
+control's author is telling you the truth and is competent to
+create a safe control.
+<P>
+Your first reaction to this might be to say, &quot;Oh boy, are
+we in trouble now!&quot; But when you think about it, isn't this
+the situation you face any time you install software on your system?
+How do you know the application you purchased from Lotus or Borland
+or IBM won't harm your system? (I don't mention Microsoft here
+because, after all, they are your system.) You know it because
+by and large you trust them and their programmers. You know if
+you do have a problem you'll be able to contact someone there
+to help you resolve it.
+<P>
+The software industry is founded on trust and accountability.
+Let me stress that this trust can also be extended correctly to
+many shareware and freeware software vendors. There are many small
+companies, individual software authors, and consultants who write
+software that is just as good or better than the large commercial
+applications. But the key fact remains: before you use their software
+you should know who they are, either individually or by reputation.
+It's still a matter of trust.
+<P>
+As long as you only load controls from sites you trust, you have
+no problem. You can choose to trust the Web authors of that site
+that they will not use a downloaded control in a way that can
+harm your system. It doesn't even matter if the control is marked
+as safe, because for a control to cause harm it must not only
+permit harmful operations, but the Web author must also program
+a harmful operation for the control using property settings or
+scripts.
+<P>
+However, the very nature of the Web makes it easy to almost unintentionally
+end up in places you do not know and thus should not trust. As
+a site author you should always assume your site will fall into
+that category for at least some of your visitors. As a user, you
+can still safely see the pages and download controls from untrusted
+sites if you know the control is marked as safe and comes from
+a source that you can trust.
+<P>
+Whom you choose to trust is up to you. What code signing does
+is provide a mechanism that ensures you that the source of the
+control is exactly who it says. For example, if you obtain a control
+that says in its version information that it was developed by
+Desaware, it probably is. It could be a counterfeit-someone may
+have modified the control's resource information. But if the control
+uses code signing to specify that it is from Desaware, an encrypted
+digital certificate embedded in the control proves to you without
+any doubt that it was, in fact, developed and distributed by Desaware.
+This certificate is issued by one of a number of companies that
+specialize in providing software developers with encrypted certificates
+(discussed more later in this chapter). Whether you choose to
+trust Desaware's controls or not is, of course, your decision.
+<H3><A NAME="DistributingandDownloadingActiveXControls">
+Distributing and Downloading ActiveX Controls</A></H3>
+<P>
+So far you have found out about the existence of two separate
+technologies: one for marking controls as safe for initialization
+or scripting, the other for identifying that controls were authored
+by the person or company who claims to be the author. Later, we'll
+get to the subject of exactly how to mark controls as safe and
+sign them. For now, let's look at how these two technologies fit
+in to the downloading process from the perspectives of the end
+user, the site developer, and the control author.
+<H4>End User Security</H4>
+<P>
+Any browser that can act as a container for ActiveX controls has
+a number of security settings available. Microsoft Internet Explorer,
+which at this time provides the most thorough support for ActiveX
+controls, has three security settings that can be configured by
+the user:
+<UL>
+<LI>High-At this setting, the only controls that can be run are
+those marked as safe, signed with a certificate from a certificate-issuing
+authority that is acceptable by the user, and developed by a company
+acceptable by the user. There is a separate dialog box in Microsoft
+Explorer that lets you specify which certificate-issuing companies
+are acceptable. When the control is downloaded, the certificate
+is displayed. You can choose whether to accept the control and
+whether you would like to add the company that developed the control
+to your list of trusted control authors.
+<LI>Medium-At this setting, unsafe and unsigned controls can be
+downloaded. Explorer will display a certificate showing the author
+of the control and whether the control is safe for initialization
+and scripting. You then have the option of running the control
+or not.
+<LI>None-At this setting controls are downloaded and run automatically.
+One could conceivably use this setting in a corporate intranet
+situation that provided no access to outside sites. Otherwise,
+don't use this setting.
+</UL>
+<P>
+The digital certificate includes a hypertext link to the company
+that issued the certificate. It allows you to verify if the certificate
+is still valid. Explorer also allows you to disable future warnings
+for components from specific vendors or those who have digital
+certificates from specific authorizing companies.
+<H4>The Site Developer and/or Control Author</H4>
+<P>
+Adding automatic downloading to a Web page is trivial. All you
+need to do is add the CODEBASE option to the OBJECT tag.
+<BLOCKQUOTE>
+<PRE>
+&lt;OBJECT ID=&quot;dwBanner1&quot; WIDTH=324 HEIGHT=49
+   CLASSID=&quot;CLSID: 63B8AFC0-8E9A-11D0-91BB-00AA0036005A&quot;
+   CODEBASE=&quot;dwBanner.CAB#version=1,0,0,13&quot;&gt;
+   &lt;PARAM NAME=&quot;_ExtentX&quot; VALUE=&quot;8573&quot;&gt;
+   &lt;PARAM NAME=&quot;_ExtentY&quot; VALUE=&quot;1296&quot;&gt;
+   &lt;PARAM NAME=&quot;BackColor&quot; VALUE=&quot;16777088&quot;&gt;
+   &lt;PARAM NAME=&quot;BorderStyle&quot; VALUE=&quot;1&quot;&gt;
+   &lt;PARAM NAME=&quot;ScrollIncrement&quot; VALUE=&quot;3&quot;&gt;
+   &lt;PARAM NAME=&quot;ScrollText&quot; VALUE=&quot;Visit Desaware's Web site at 
+                http://www.desaware.com - The coolest tools for VB/VBA developers. &quot;&gt;
+   &lt;PARAM NAME=&quot;XMargin&quot; VALUE=&quot;20&quot;&gt;
+   &lt;PARAM NAME=&quot;YMargin&quot; VALUE=&quot;6&quot;&gt;
+&lt;/OBJECT&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The CODEBASE option tells the browser the name of the file to
+retrieve that contains the object and the version of the object
+it contains. The nice thing about this is, if the system already
+has an object with the specified CLSID with the current version
+or later, the browser will automatically use the existing object
+instead of downloading a new copy.
+<P>
+The .CAB file is a compressed cabinet file in a format specified
+by Microsoft. It is important that you realize you can download
+other types of files as well. You could, for example, place the
+.OCX file name directly on the line. The problem is that this
+does not take into account the possibility of dependencies. Most
+controls (and all VB-authored controls) depend on additional .DLLs
+in order to run correctly. The .CAB file contains an install information
+file with the extension .INF, which describes the list of dependencies
+and where the additional files can be located. You could have
+the CODEBASE line reference in the .INF file directly, but you
+cannot sign an .INF file, so the user would not be able to verify
+the source of the file.
+<P>
+The .CAB file can be created by a site developer but will typically
+be created by the control author. A .CAB file can (and should)
+have its own digital signature indicating whether it is safe to
+download. You should sign your controls as well. What counts is
+that the file specified in the CODEBASE line is signed.
+<P>
+Most VB programmers will use the Visual Basic setup wizard or
+third-party installation tool to create the .CAB files for their
+controls. They will also create a template for the OBJECT tag
+for the control, which can be added to HTML pages.
+<P>
+I won't go into any detail here on using the Visual Basic setup
+wizard. The Visual Basic documentation is adequate and the wizard
+is easy to use. But there are a number of issues you should consider
+when using the wizard. They relate to both control safety and
+control signing and will be covered as we continue.
+<H4>The .CAB Choice</H4>
+<P>
+The .INF file within a .CAB file can list additional files your
+control requires to run. If you are creating a control for Internet
+download, you will usually specify that the control be downloaded
+from Microsoft's Web site or your own. I would tend to recommend
+that you use Microsoft's. Why tie up your server's bandwidth downloading
+the large VB run-time support files?
+<P>
+You can include additional files in the .CAB file if you wish,
+but this increases the download time for the file. This approach
+is more common in intranets, where download times are less important.
+<P>
+The ActiveX SDK, available directly from Microsoft (check their
+Web site for current availability), includes tools to customize
+sites and a more detailed explanation of the .INF file format.
+It is possible to create .CAB files that support multiple operating
+systems. The initial .INF file contains a list of .CAB and operating
+system dependencies. The browser then loads the .CAB file needed
+for the target system. This does, however, result in two digital
+certificates being displayed (one for each .CAB file).
+<H3><A NAME="MarkingControlsAsSafe">
+Marking Controls As Safe</A></H3>
+<P>
+There are two approaches to marking a control as safe.
+<H4>The Registry Approach</H4>
+<P>
+This consists of adding entries in the registry that indicate
+that a particular control is safe. Back in <A HREF="ch6.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch6.htm" >Chapter 6</A>(an eternity
+ago), you saw how an ActiveX DLL is registered. Since an ActiveX
+control is just a specialized type of an ActiveX DLL, it should
+be no surprise that it is registered exactly the same way. Under
+your control's class ID, there is a key called Implemented Categories,
+which contains additional information about the control. Two new
+subkeys have been defined for this key to indicate the safety
+state of a control. If the control can be safely initialized,
+the subkey is
+<BLOCKQUOTE>
+<PRE>
+HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\<I>your control's CLSID</I>\
+Implemented Categories\{7DD95802-9882-11CF-9FA9-00AA006C42C4}&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+If the control can be safely scripted (programmed), the subkey
+is
+<BLOCKQUOTE>
+<PRE>
+HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\<I>your control's CLSID</I>\
+Implemented Categories\{7DD95801-9882-11CF-9FA9-00AA006C42C4}&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Visual Basic setup wizard allows you to specify that your
+control is safe. It includes entries in the .INF file for the
+control that add the specified safety settings into the registry.
+It goes without saying that you should never add these registry
+entries to any control you do not know is safe.
+<H4>The IObjectSafety Approach</H4>
+<P>
+The registry approach has two disadvantages.
+<UL>
+<LI>It requires an extra registry lookup any time the control
+is loaded to verify its safety.
+<LI>Controls using this approach must always be safe. You do not
+have the option of supporting unsafe operations without violating
+the trust expected of any control author who marks his or her
+code as safe.
+</UL>
+<P>
+IObjectSafety is a standard interface that allows any control
+to tell the system that it is safe. It also allows a control to
+support both safe and unsafe modes of operation, depending on
+the preference of the container.
+<P>
+Now, before going on, I must take a moment and stray from the
+subject. Because, you see, you cannot use the IObjectSafety technique
+using Visual Basic alone.
+<P>
+You've probably noticed that every now and then I discuss some
+aspect of creating controls or components that demonstrates a
+limitation in Visual Basic. This is not surprising. This book
+is intended, in part, to push the limits of what is possible using
+ActiveX technology, and every development environment has limits.
+In several places where this has occurred, I've also mentioned
+that you can overcome the limit using Desaware's SpyWorks package.
+In fact, it might seem an almost amazing coincidence that there
+just happens to be a SpyWorks solution for limitations that are
+described in this book.
+<P>
+It is obviously not a coincidence, but it is not a cheap advertising
+gimmick either. The way I see it, my responsibility in all of
+my Visual Basic-related books has always been to show you what
+can be done using Visual Basic. SpyWorks and Desaware's other
+tools have always been my way of extending Visual Basic so that
+VB programmers can go a step beyond to accomplish almost anything
+they could do using VC++ and other development tools.
+<P>
+The fact that limitations mentioned in the text often have an
+answer in SpyWorks is mostly due to the way they were both created.
+SpyWorks 5 is being written simultaneously with this book (and
+yes, for those who are wondering, for the five months of this
+project I have done virtually nothing but write, code, eat, and
+sleep-and precious little of the latter). Here's how it works.
+<P>
+Each chapter begins with research. I review the documentation
+and then start experimenting. Some of the experiments turn into
+code samples, others into text. I try to push the limits, to do
+things that differ from the samples provided with Visual Basic.
+And when I run into a fundamental limitation, I look to see whether
+I can solve the problem by adding a new feature to SpyWorks. In
+fact, the majority of the new features for SpyWorks 5 are direct
+results of issues or limitations I discovered while working on
+this book.
+<P>
+Once I understood the issues relating to control marking, I decided
+that IObjectSafety is too important to just ignore. And despite
+the fact that it requires SpyWorks, I decided to document it briefly
+here.
+<P>
+The work is done by a SpyWorks component called dwAXExt.dll, the
+Desaware ActiveX extension component. This component defines an
+object called DWCONTROLHOOK, which is used to add new interfaces
+to controls. You may ask, why not use the Implements statement
+to do so? Because the Implements statement works with IDispatch-compatible
+interfaces, and IObjectSafety is not compatible with ActiveX automation.
+The SpyWorks component also defines a new IDispatch interface
+called IdwObjectSafety, which is used to communicate with your
+control.
+<P>
+The following listing shows the steps needed to implement the
+interface:
+<BLOCKQUOTE>
+<PRE>
+Implements IdwObjectSafety
+Dim dwActiveX As DwAXExt.DWCONTROLHOOK
+
+Private Sub UserControl_Initialize()
+    Set dwActiveX = New DWCONTROLHOOK
+    Call dwActiveX.Initialize(Me)
+End Sub
+
+Private Sub IdwObjectSafety_GetInterfaceSafetyOptions(pIID As Long, _
+    SupportedOptions As Long, EnabledOptions As Long)
+    EnabledOptions = dwSafeToInitialize Or dwSafeToProgram
+End Sub
+
+Private Function IdwObjectSafety_SetInterfaceSafetyOptions(pIID As _
+    Long, ByVal OptionMask As Long, ByVal EnabledOptions As Long) _
+    As Long
+    IdwObjectSafety_SetInterfaceSafetyOptions = True
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+The dwActiveX.Initialize method tells the SpyWorks component to
+hook into the control. If it sees that the control implements
+the IdwObjectSafety interface, it exposes the standard IObjectSafety
+interface to the outside world.
+<P>
+A container that requires safe operation, such as an Internet
+browser, will call the SetInterfaceSafetyOptions function to request
+that the control enter safe mode. This occurs right after the
+control is initialized and well before the ReadProperties event.
+The OptionMask parameter contains bits that define what type of
+safety is being requested (safe for initialization or safe for
+scripting). The EnabledOption parameter indicates the desired
+safety value for each type. For example: a container might request
+that your control only be safe for initialization, in which case
+it will not request safe for scripting.
+<P>
+The GetInterfaceSafetyOptions function allows the container to
+determine the current setting of the control. The pIID parameter
+will not typically be used by VB programmers but is supported
+for future situations where you may wish to control safety for
+individual interfaces. A more detailed explanation of these functions
+and possible parameter values is included in the SpyWorks documentation.
+<P>
+The important thing from a control author's view point is that
+you can detect the safety state requested by the container and
+store the current safety state in a module-level variable. You
+can then disable dangerous operations if the control has been
+requested to be safe. This is ideal for adapting existing controls
+for the Internet and saves you from having one Internet-safe version,
+and another for use in applications.
+<P>
+As a side effect, this approach eliminates an extra registry access.
+The container loads the control. If it sees that the control is
+safe, it proceeds to initialize it and site it on the Web page.
+Otherwise, it terminates the control.
+<H3><A NAME="SigningControls">
+Signing Controls</A></H3>
+<P>
+The intent of a code signature is to prove that a control comes
+from a particular source. To understand how this works, you need
+to know just a little bit about a technology called <I>public</I>
+<I>key</I> <I>encryption</I>.
+<P>
+Encryption works by scrambling text using an encoding algorithm
+and a key. With regular encryption, both the sender and the receiver
+need the same key. The sender encodes the message using his or
+her copy of the key. The message can then be read only by someone
+who has the same key.
+<P>
+Public key encryption uses two different keys, a private key and
+a public key. When a person encodes a message with his private
+key, anyone who has the public key can then read the message.
+But messages encoded with the public key can only be read by someone
+who has the private key. How does this work? I haven't the faintest
+idea. With the overwhelming rate of technology change all software
+developers face, it is necessary now and then to do some filtering.
+It is enough for me to know at this time that public key encryption
+works as advertised. Verisign's Web site (www.verisign.com) has
+additional information on the subject.
+<P>
+How does public key encryption work in this case? Well, if you
+create a document using a private key that can only be decoded
+using a public key, a successful decoding with the public key
+proves that the document was created by a specific private key.
+If you use Desaware's public key to decode a document that claims
+to be from Desaware, and it decodes successfully, you know that
+it was, in fact, created by Desaware. This assumes, of course,
+that Desaware has kept its private key secret.
+<P>
+Let's follow the complete sequence you and your end users go through
+to implement ActiveX control signing.
+<H4>Obtain the Certificate</H4>
+<P>
+First go to a company that issues digital certificates. As a VB
+control author you will probably go to Verisign Inc. (www.verisign.com)
+because they issue certificates designed specifically to work
+with ActiveX controls. By the time you read this Microsoft may
+have arrangements with other companies as well, so you should
+check Microsoft's Web site first and read the latest about ActiveX
+control signing.
+<P>
+Whichever issuing authority you deal with will provide a way to
+apply for your digital certificate online. You'll be asked for
+basic identification information. Verisign provides two types
+of certificates, one for individual software developers and one
+for companies. The individual one cost $20 per year at the time
+this book went to press. The business certificate cost $400. Verisign's
+Web site defines the steps they go through to verify who you are.
+For example, they check the Dunn &amp; Bradstreet number for businesses.
+The intent is that when an end user sees a business certificate
+he has a level of confidence that the issuing company has, in
+fact, verified it was issued to a real business.
+<P>
+You will also provide the issuing authority with a private password
+to be used, along with the information you provided to create
+a private and public key. The private key will be saved in a file
+with the extension .PVK. You must keep the private key secret.
+The public key will be sent to the issuing authority.
+<P>
+The issuing authority then checks your application and performs
+certain steps to make sure you are who you say you are. They then
+create a digital certificate and send it to you via e-mail. This
+certificate contains your public key and is, in turn, encrypted
+using their private key. This means anyone can use the issuing
+authority's public key to obtain your company's public key. 
+<P>
+Consider the example of the dwBanner control, which you will see
+shortly. Let's say Verisign is the issuing authority and you have
+their public key. (Microsoft Explorer does have this key to use
+in verifying ActiveX controls.) When you successfully decode a
+certificate they have created, you know that it is, in fact, from
+them. When you pull Desaware's public key from the certificate,
+you have their assurance the key is from Desaware, because they
+obtained it from Desaware and went to the trouble of verifying
+that the company is who they say they are. Not only do you know
+you have a valid key from Desaware, but you have certain assurances
+from Verisign about the legitimacy of the corporation. If you
+believe that any company who passes their screening is trustworthy
+for software downloads, you could tell Explorer that you will
+automatically accept any control signed with one of their certificates.
+<H4>Sign a Control</H4>
+<P>
+As an author, you receive from Verisign a digital certificate,
+which has the extension .SPC. To sign a control you use a program
+called SignCode.exe, which is available from Microsoft and is
+part of the ActiveX SDK. This program takes both your private
+key and the certificate. The SignCode program first runs a cryptographic
+algorithm to come up with a <I>digest</I> of the file you are
+signing. This is a large number similar to a checksum, except
+that the odds of two files producing the same value are extremely
+small. This value is encrypted with your private key. This value
+and the certificate information is then added to the file. You
+can sign .OCX files and .CAB files.
+<P>
+Let's continue with the dwBanner example to see what happens with
+a signed control once the browser has downloaded it. The browser
+extracts the certificate and sees that it is issued by Verisign.
+It uses Verisign's public key to decode the certificate and extract
+Desaware's public key. It then runs the same cryptographic algorithm
+on the file that was used during the signing process. This produces
+a new digest value that must agree with the one stored in the
+certificate. But to see the one stored in the certificate, the
+browser must use Desaware's public key. If the value it decodes
+matches the one just generated by the browser, you know several
+things:
+<UL>
+<LI>That the control was, in fact, developed by Desaware
+<LI>That Desaware does exist, based on the confirmation done by
+Verisign
+<LI>That the control has not been modified since Desaware signed
+it
+</UL>
+<P>
+That last part is very important. If anyone tries to tamper with
+a file, the digest value produced when the browser scans the file
+will differ from the one stored in the certificate. In fact, this
+use of code signing has nothing to do with the Internet. You can
+sign any control and use the ChkTrust.exe program (also part of
+the Microsoft ActiveX SDK) to verify that a control has not been
+tampered with.
+<H4>Conclusion</H4>
+<P>
+Here is a summary of the steps you need to go through to sign
+your controls.
+<UL>
+<LI>Check www.microsoft.com to obtain a list of issuing authorities
+that handle ActiveX control certification. Be sure you obtain
+a certificate for ActiveX controls-there are many other types
+of certificates and digital signatures available!
+<LI>Apply for a certificate using the issuing authority's Web
+site. You will receive an .SPC file from them with the certificate
+to go along with the private key .PVK file created during the
+application process.
+<LI>Obtain the SignCode.exe program from Microsoft (check the
+ActiveX SDK).
+<LI>Use the SignCode program to digitally sign your .OCX file
+and the .CAB file that is created, using the Visual Basic setup
+wizard or another installation tool.
+</UL>
+<H2><A NAME="ThedwBannerControl"><FONT SIZE=5 COLOR=#FF0000>
+The dwBanner Control</FONT></A></H2>
+<P>
+The dwBanner control is an example of a control designed specifically
+for the Internet. It is a simple scrolling banner or marquee control
+that is an early edition of the dwBanner control included (with
+full source code) in Desaware's ActiveX Gallimaufry. This is a
+new collection of VB-authored controls with source code that are
+both useful and educational. The control is, as far as I know,
+safe to initialize and safe for scripting. The compiled version
+included on your CD-ROM is signed. Remember that any version you
+compile will not be signed with Desaware's certificate.
+<P>
+There are two HTML pages in the sample directories you can use
+to load the control. The dwBanner.htm file in the ch21 sample
+directory will display the control on a Web page if you have a
+version of the control already registered. You can register the
+control using the regsvr32 program, but if you take this approach
+the control will not be marked as safe. The dwBanner.htm file
+in the ch21\swsetup directory will install and register the control
+using the .CAB file in that directory. This file is signed and
+will mark the control as safe in the registry.
+<P>
+The dwBanner control demonstrates many of the techniques you've
+seen in earlier chapters and demonstrates the steps you should
+take when creating a commercial quality control.
+<P>
+In this section we will walk through the code step-by-step. The
+characteristics of the control will become apparent as you read
+the code descriptions. You should be warned that this control
+does make use of some intermediate level Windows API techniques.
+All of the API functions used are described in my book, the Visual
+Basic 5.0 Programmer's Guide to the Win32 API, so I won't be going
+into an in-depth explanation of how they work.
+<P>
+The API declarations are found in standard module dwBanner.bas
+shown in Listing 21.1.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 21.1:&nbsp;File dwBanner.bas<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Desaware's ActiveX Gallimaufry
+' Simple scrolling banner control
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Type RECT
+        Left As Long
+        Top As Long
+        Right As Long
+        Bottom As Long
+End Type
+
+' DrawText() Format Flags
+Public Const DT_TOP = &amp;H0
+Public Const DT_LEFT = &amp;H0
+Public Const DT_CENTER = &amp;H1
+Public Const DT_RIGHT = &amp;H2
+Public Const DT_VCENTER = &amp;H4
+Public Const DT_BOTTOM = &amp;H8
+Public Const DT_WORDBREAK = &amp;H10
+Public Const DT_SINGLELINE = &amp;H20
+Public Const DT_EXPANDTABS = &amp;H40
+Public Const DT_TABSTOP = &amp;H80
+Public Const DT_NOCLIP = &amp;H100
+Public Const DT_EXTERNALLEADING = &amp;H200
+Public Const DT_CALCRECT = &amp;H400
+Public Const DT_NOPREFIX = &amp;H800
+Public Const DT_INTERNAL = &amp;H1000
+
+
+
+' API functions
+Declare Function GetClientRect Lib &quot;user32&quot; (ByVal hWnd As Long, lpRect _
+As RECT) As Long
+Declare Function CreateRectRgnIndirect Lib &quot;gdi32&quot; (lpRect As RECT) As Long
+Declare Function DeleteObject Lib &quot;gdi32&quot; (ByVal hObject As Long) As Long
+Declare Function DrawText Lib &quot;user32&quot; Alias &quot;DrawTextA&quot; (ByVal hdc As _
+Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal _
+wFormat As Long) As Long
+Declare Function SelectClipRgn Lib &quot;gdi32&quot; (ByVal hdc As Long, ByVal hRgn _
+As Long) As Long
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The functions will be described briefly as they appear. Listing
+21.2 lists the variable declarations for the control.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 21.2:&nbsp;Variable, Property, and Event Declarations
+from File dwBanner.ctl<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Desaware's ActiveX Gallimaufry
+' Simple scrolling banner control
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+' dwBanner.ocx
+' Desaware's ActiveX Gallimaufry
+' Copyright &#169; 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+'Default Property Values:
+Const m_def_ScrollEnabled = True
+Const m_def_ScrollIncrement = 2
+Const m_def_AutoSizeFont = True
+
+'Property Variables:
+Dim m_ScrollEnabled As Boolean
+Dim m_ScrollText As String
+Dim m_ScrollIncrement As Integer
+Dim m_XMargin As Integer   ' Minimum horizontal margin
+Dim m_YMargin As Integer   ' Minimum vertical margin
+Dim m_ReplaceText As String   ' Replacement string at runtime
+Dim m_AutoSizeFont As Boolean ' Font should always be autosized
+
+' Internal variables
+Dim m_TextClippingRegion As Long    ' Clipping region for text
+Dim m_TextUpper As Integer          ' Upper location for text drawing
+Dim m_TextTotalWidth As Long        ' Length of total text
+Dim m_CurrentXOffset As Long        ' Current offset to left for display
+Dim Cliprc As RECT
+Dim m_Initializing As Boolean       ' Properties are being read
+
+Public Enum dwBorderStyle
+   dwNone = 0
+   dwSingle = 1
+End Enum
+
+'Event Declarations:
+Event Click() 'MappingInfo=UserControl,UserControl,-1,Click
+Event DblClick() 'MappingInfo=UserControl,UserControl,-1,DblClick
+Event MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+   'MappingInfo=UserControl,UserControl,-1,MouseDown
+Event MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+   'MappingInfo=UserControl,UserControl,-1,MouseMove
+Event MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+   'MappingInfo=UserControl,UserControl,-1,MouseUp
+Event CycleComplete()   ' Indicates that a cycle has completed
+
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,BackColor
+Public Property Get BackColor() As OLE_COLOR
+   BackColor = UserControl.BackColor
+End Property
+
+Public Property Let BackColor(ByVal New_BackColor As OLE_COLOR)
+   UserControl.BackColor() = New_BackColor
+   PropertyChanged &quot;BackColor&quot;
+   UserControl.Refresh
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,ForeColor
+Public Property Get ForeColor() As OLE_COLOR
+   ForeColor = UserControl.ForeColor
+End Property
+
+Public Property Let ForeColor(ByVal New_ForeColor As OLE_COLOR)
+   UserControl.ForeColor() = New_ForeColor
+   PropertyChanged &quot;ForeColor&quot;
+   UserControl.Refresh
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,Enabled
+Public Property Get Enabled() As Boolean
+   Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal New_Enabled As Boolean)
+   UserControl.Enabled() = New_Enabled
+   PropertyChanged &quot;Enabled&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,Font
+Public Property Get Font() As Font
+   If Ambient.UserMode Then
+      Err.Raise 393
+   End If
+   Set Font = UserControl.Font
+End Property
+
+Public Property Set Font(ByVal New_Font As Font)
+   If (Not m_Initializing) And Ambient.UserMode Then
+      Err.Raise 382
+   End If
+   Set UserControl.Font = New_Font
+   PropertyChanged &quot;Font&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+' This version does not support Transparency
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,BackStyle
+'Public Property Get BackStyle() As Integer
+'   BackStyle = UserControl.BackStyle
+'End Property
+
+'Public Property Let BackStyle(ByVal New_BackStyle As Integer)
+'   UserControl.BackStyle() = New_BackStyle
+'   PropertyChanged &quot;BackStyle&quot;
+'End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,BorderStyle
+
+Public Property Get BorderStyle() As dwBorderStyle
+   BorderStyle = UserControl.BorderStyle
+End Property
+
+Public Property Let BorderStyle(ByVal New_BorderStyle As dwBorderStyle)
+   If New_BorderStyle &gt; 1 Or New_BorderStyle &lt; 0 Then
+      Err.Raise 380
+   End If
+   UserControl.BorderStyle() = New_BorderStyle
+   PropertyChanged &quot;BorderStyle&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+Public Property Get FontUnderline() As Boolean
+   FontUnderline = UserControl.FontUnderline
+End Property
+
+Public Property Let FontUnderline(ByVal New_FontUnderline As Boolean)
+   UserControl.FontUnderline() = New_FontUnderline
+   PropertyChanged &quot;FontUnderline&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,FontSize
+Public Property Get FontSize() As Single
+   FontSize = UserControl.FontSize
+End Property
+
+Public Property Let FontSize(ByVal New_FontSize As Single)
+   UserControl.FontSize() = New_FontSize
+   PropertyChanged &quot;FontSize&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,FontName
+Public Property Get FontName() As String
+   FontName = UserControl.FontName
+End Property
+
+Public Property Let FontName(ByVal New_FontName As String)
+   UserControl.FontName() = New_FontName
+   PropertyChanged &quot;FontName&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,FontItalic
+Public Property Get FontItalic() As Boolean
+   FontItalic = UserControl.FontItalic
+End Property
+
+Public Property Let FontItalic(ByVal New_FontItalic As Boolean)
+   UserControl.FontItalic() = New_FontItalic
+   PropertyChanged &quot;FontItalic&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,FontBold
+Public Property Get FontBold() As Boolean
+   FontBold = UserControl.FontBold
+End Property
+
+Public Property Let FontBold(ByVal New_FontBold As Boolean)
+   UserControl.FontBold() = New_FontBold
+   PropertyChanged &quot;FontBold&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+
+Public Property Get XMargin() As Integer
+   XMargin = m_XMargin
+End Property
+
+Public Property Let XMargin(ByVal vNewValue As Integer)
+   If vNewValue &gt;= UserControl.ScaleWidth Then
+      ' Invalid property value
+      Err.Raise 380
+   End If
+   m_XMargin = vNewValue
+   PropertyChanged &quot;XMargin&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+Public Property Get YMargin() As Integer
+   YMargin = m_YMargin
+End Property
+
+Public Property Let YMargin(ByVal vNewValue As Integer)
+   If vNewValue &gt;= UserControl.ScaleHeight Then
+      ' Invalid property value
+      Err.Raise 380
+   End If
+   m_YMargin = vNewValue
+   PropertyChanged &quot;YMargin&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=Timer1,Timer1,-1,Interval
+Public Property Get Interval() As Long
+   Interval = Timer1.Interval
+End Property
+
+Public Property Let Interval(ByVal New_Interval As Long)
+   Timer1.Interval() = New_Interval
+   PropertyChanged &quot;Interval&quot;
+End Property
+
+Public Property Get ScrollEnabled() As Boolean
+   ScrollEnabled = m_ScrollEnabled
+End Property
+
+Public Property Let ScrollEnabled(ByVal New_ScrollEnabled As Boolean)
+   m_ScrollEnabled = New_ScrollEnabled
+   PropertyChanged &quot;ScrollEnabled&quot;
+   If Ambient.UserMode Then Timer1.Enabled = ScrollEnabled
+End Property
+
+Public Property Get ScrollIncrement() As Integer
+   ScrollIncrement = m_ScrollIncrement
+End Property
+
+Public Property Let ScrollIncrement(ByVal vNewValue As Integer)
+   If vNewValue &gt; 20 Then
+      Err.Raise 380
+   End If
+   m_ScrollIncrement = vNewValue
+   PropertyChanged &quot;ScrollIncrement&quot;
+End Property
+
+
+Public Property Get ScrollText() As String
+   ScrollText = m_ScrollText
+End Property
+
+Public Property Let ScrollText(ByVal New_Text As String)
+   m_ScrollText = New_Text &amp; &quot; &quot;
+   PropertyChanged &quot;Text&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+   UserControl.Refresh
+End Property
+
+Public Property Get ReplaceText() As String
+   If Not Ambient.UserMode Then
+      Err.Raise 393
+   End If
+   ReplaceText = m_ReplaceText
+End Property
+
+Public Property Let ReplaceText(ByVal New_Text As String)
+   If Not Ambient.UserMode Then
+      Err.Raise 382
+   End If
+   m_ReplaceText = New_Text
+   PropertyChanged &quot;ReplaceText&quot;
+End Property
+
+Public Property Get AutoSizeFont() As Boolean
+   AutoSizeFont = m_AutoSizeFont
+End Property
+
+Public Property Let AutoSizeFont(ByVal vNewValue As Boolean)
+   m_AutoSizeFont = vNewValue
+   PropertyChanged &quot;AutoSizeFont&quot;
+   If Not m_Initializing Then CalculateTextMetrics
+End Property
+
+'Initialize Properties for User Control
+Private Sub UserControl_InitProperties()
+   m_ScrollEnabled = m_def_ScrollEnabled
+   m_ScrollIncrement = m_def_ScrollIncrement
+   m_AutoSizeFont = m_def_AutoSizeFont
+   On Error GoTo InitNoExtender
+   ' Default text to developer assigned name
+   m_ScrollText = Ambient.DisplayName &amp; &quot; &quot;
+   'Set Font = Ambient.Font
+   PropertyChanged &quot;ScrollText&quot;
+InitNoExtender:
+End Sub
+
+'Load property values from storage
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   m_Initializing = True
+   UserControl.BackColor = PropBag.ReadProperty(&quot;BackColor&quot;, &amp;H8000000F)
+   UserControl.ForeColor = PropBag.ReadProperty(&quot;ForeColor&quot;, &amp;H80000012)
+   UserControl.Enabled = PropBag.ReadProperty(&quot;Enabled&quot;, True)
+   'Set Font = PropBag.ReadProperty(&quot;Font&quot;)
+   FontName = PropBag.ReadProperty(&quot;FontName&quot;, &quot;Arial&quot;)
+   FontSize = PropBag.ReadProperty(&quot;FontSize&quot;, 8)
+   FontBold = PropBag.ReadProperty(&quot;FontBold&quot;, False)
+   FontItalic = PropBag.ReadProperty(&quot;FontItalic&quot;, False)
+   ' UserControl.BackStyle = PropBag.ReadProperty(&quot;BackStyle&quot;, 1)
+   UserControl.BorderStyle = PropBag.ReadProperty(&quot;BorderStyle&quot;, 0)
+   Timer1.Interval = PropBag.ReadProperty(&quot;Interval&quot;, 100)
+   m_ScrollEnabled = PropBag.ReadProperty(&quot;ScrollEnabled&quot;, m_def_ScrollEnabled)
+   m_ScrollIncrement = PropBag.ReadProperty(&quot;ScrollIncrement&quot;, _
+   m_def_ScrollIncrement)
+   m_ScrollText = PropBag.ReadProperty(&quot;ScrollText&quot;, &quot;&quot;)
+   m_XMargin = PropBag.ReadProperty(&quot;XMargin&quot;, 0)
+   m_YMargin = PropBag.ReadProperty(&quot;YMargin&quot;, 0)
+   m_AutoSizeFont = PropBag.ReadProperty(&quot;AutoSizeFont&quot;, True)
+   m_Initializing = False
+End Sub
+
+'Write property values to storage
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+
+   Call PropBag.WriteProperty(&quot;BackColor&quot;, UserControl.BackColor, &amp;H8000000F)
+   Call PropBag.WriteProperty(&quot;ForeColor&quot;, UserControl.ForeColor, &amp;H80000012)
+   Call PropBag.WriteProperty(&quot;Enabled&quot;, UserControl.Enabled, True)
+   'Call PropBag.WriteProperty(&quot;Font&quot;, Font)
+   Call PropBag.WriteProperty(&quot;FontName&quot;, FontName, &quot;Arial&quot;)
+   Call PropBag.WriteProperty(&quot;FontSize&quot;, FontSize, 8)
+   Call PropBag.WriteProperty(&quot;FontBold&quot;, FontBold, False)
+   Call PropBag.WriteProperty(&quot;FontItalic&quot;, FontItalic, False)
+   ' Call PropBag.WriteProperty(&quot;BackStyle&quot;, UserControl.BackStyle, 1)
+   Call PropBag.WriteProperty(&quot;BorderStyle&quot;, UserControl.BorderStyle, 0)
+   Call PropBag.WriteProperty(&quot;Interval&quot;, Timer1.Interval, 100)
+   Call PropBag.WriteProperty(&quot;ScrollEnabled&quot;, m_ScrollEnabled, _
+   m_def_ScrollEnabled)
+   Call PropBag.WriteProperty(&quot;ScrollIncrement&quot;, m_ScrollIncrement, _
+   m_def_ScrollIncrement)
+   Call PropBag.WriteProperty(&quot;ScrollText&quot;, m_ScrollText, &quot;&quot;)
+   Call PropBag.WriteProperty(&quot;XMargin&quot;, m_XMargin, 0)
+   Call PropBag.WriteProperty(&quot;YMargin&quot;, m_YMargin, 0)
+   Call PropBag.WriteProperty(&quot;AutoSizeFont&quot;, m_AutoSizeFont, True)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Let's take a closer look at the control's properties. The following
+properties represent straightforward mappings of standard properties
+to the UserControl object:
+<UL>
+<LI>BackColor
+<LI>ForeColor
+<LI>Enabled
+<LI>BorderStyle
+</UL>
+<P>
+Their implementation should be quite familiar to you by now.
+<P>
+The Font property is handled in a slightly different way from
+what you've seen before. The default font is the font set for
+the UserControl object by the control author at design time. The
+ambient font is not used at all in this case. Individual settings
+for font characteristics are exposed as the FontName, FontBold,
+FontItalic, and FontSize properties. They are persisted as separate
+properties in order to make control scripting easier-they appear
+as properties of the control itself instead of properties of an
+internal object. This also avoids a bug with earlier versions
+of the ActiveX control pad, which is not able to save Font objects
+into an HTML page.
+<P>
+The Font object is accessible at design time so the developer
+using the control can change the settings using the single Font
+dialog box. However, at runtime the Font object is not accessible.
+This is because this control needs to know immediately if any
+font value has changed. You can't detect changes to properties
+of the Font object unless you are using the Ambient Font object,
+which triggers the PropertyChanged event when any of its properties
+are changed. You can detect changes to the individual font properties
+if they are exposed as they are here. Changes to the font invoke
+the following line:
+<P>
+   If Not m_Initializing Then CalculateTextMetrics
+<P>
+The CalculateTextMetrics function calculates the size of the font
+and the margins in order to be sure the text appears correctly.
+It also restarts the scrolling operation. Attempting to set a
+font size too large to display causes the font size to automatically
+be reduced. No error is raised in this situation.
+<P>
+The following properties relate to the operation of the banner
+control:
+<UL>
+<LI>Interval-Controls the interval between scroll operations.
+Maps to the Interval property of a constituent Timer control.
+<LI>ScrollIncrement-Controls how many pixels the text scrolls
+to the left after each interval elapses.
+<LI>XMargin-Twice the margin between the right and left borders
+of the control and where the text appears.
+<LI>YMargin-Twice the margin between the right and left borders
+of the control and where the text appears.
+<LI>ScrollEnabled-Used to start and stop the scrolling operation.
+Maps to the Enabled property of a constituent Timer control.
+<LI>ScrollText-The text to scroll. The text will scroll continuously.
+An extra space is automatically added to this text when the property
+is set to ensure spacing between one rendition of the string and
+the next. You can add additional strings to increase the spacing.
+<LI>ReplaceText-A new string that will replace the currently scrolling
+string. When this property is set, the current string is scrolled
+completely off the banner, after which the ReplaceText string
+is automatically assigned to the ScrollText property.
+<LI>AutoSizeFont-When True, the current font is automatically
+resized to fill the available control height (the total control
+height minus the YMargin value).
+</UL>
+<P>
+Listing 21.3 shows how the various control events and methods
+are implemented.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 21.3:&nbsp;dwBanner Control Events and Methods<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,Refresh
+Public Sub Refresh()
+   UserControl.Refresh
+End Sub
+
+Private Sub Timer1_Timer()
+   Call DrawTheText(UserControl.hdc)
+End Sub
+
+Private Sub UserControl_Click()
+   On Error GoTo NoHyper
+   UserControl.Hyperlink.NavigateTo &quot;<A HREF="javascript:if(confirm('http://www.desaware.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.desaware.com/'" tppabs="http://www.desaware.com/">http://www.desaware.com</A>&quot;
+NoHyper:
+   RaiseEvent Click
+End Sub
+
+Private Sub UserControl_DblClick()
+   RaiseEvent DblClick
+End Sub
+
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X _
+As Single, Y As Single)
+   RaiseEvent MouseDown(Button, Shift, X, Y)
+End Sub
+
+Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X _
+As Single, Y As Single)
+   RaiseEvent MouseMove(Button, Shift, X, Y)
+End Sub
+
+Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X _
+As Single, Y As Single)
+   RaiseEvent MouseUp(Button, Shift, X, Y)
+End Sub
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,hWnd
+Public Property Get hWnd() As Long
+   hWnd = UserControl.hWnd
+End Property
+
+Private Sub UserControl_Resize()
+   CalculateTextMetrics
+End Sub
+
+Private Sub UserControl_Paint()
+   Call DrawTheText(UserControl.hdc)
+End Sub
+
+Private Sub UserControl_Show()
+   CalculateTextMetrics
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Most of the events and methods are quite straightforward. Refresh
+maps directly to the UserControl object. The Paint event and Timer
+event call the DrawTheText function. This function takes a device
+context as a parameter to allow for future enhancements. The CalculateTextMetrics
+function is called for the first time after the control window
+is placed on the container during the Show event. This ensures
+that the window-based calculations are accurate. 
+<P>
+The Click event will navigate the browser to Desaware's Web site
+if the control is contained in a browser. This line is included
+for demonstration purposes only. In the commercial version of
+this control, the Click event triggers normally. The developer
+can then attach whatever operation they wish to the Click event
+using their choice of scripting language. Listing 21.4 shows the
+functions that implement the scrolling.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 21.4:&nbsp;The Control Implementation Code<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+'--------------------------------------
+'
+'   Private functions used internally
+
+' Calculate the variables needed to draw text
+Private Sub CalculateTextMetrics()
+   Dim TxtHeight As Integer
+   InitializeClippingRegion
+   If m_TextClippingRegion = 0 Then
+      ' Unable to draw text, just exit
+      Exit Sub
+   End If
+   TxtHeight = UserControl.TextHeight(m_ScrollText)
+   If TxtHeight &gt; Cliprc.Bottom - Cliprc.Top Or m_AutoSizeFont Then
+      ' Font size is too large at runtime, shrink it
+      If Ambient.UserMode Then Call AdjustFontSize
+      TxtHeight = UserControl.TextHeight(m_ScrollText)
+   End If
+   m_TextUpper = Cliprc.Top + (Cliprc.Bottom - Cliprc.Top - TxtHeight) \ 2
+   
+   m_TextTotalWidth = UserControl.TextWidth(m_ScrollText)
+   If Ambient.UserMode Then
+      m_CurrentXOffset = -(Cliprc.Right - Cliprc.Left)    
+      ' Start off to the right
+      Timer1.Enabled = m_ScrollEnabled
+   End If
+   UserControl.Refresh
+End Sub
+
+
+' Initialize the clipping region
+Private Sub InitializeClippingRegion()
+   If m_TextClippingRegion &lt;&gt; 0 Then
+      ' Delete existing region
+      Call DeleteObject(m_TextClippingRegion)
+   End If
+   Call GetClientRect(UserControl.hWnd, Cliprc)
+   ' Shrink rectangle
+   Cliprc.Left = Cliprc.Left + m_Xmargin \ 2
+   Cliprc.Right = Cliprc.Right - m_XMargin \ 2
+   Cliprc.Top = Cliprc.Top + m_Ymargin \ 2
+   Cliprc.Bottom = Cliprc.Bottom - m_YMargin \ 2
+   If Cliprc.Right &gt; Cliprc.Left And Cliprc.Bottom &gt; Cliprc.Top Then
+      ' Drawing region is legal
+      m_TextClippingRegion = CreateRectRgnIndirect(Cliprc)
+   End If
+End Sub
+
+
+' Adjust the font size to maximum height possible
+' If RetrieveOnly is True, only returns largest possible font size
+Private Function AdjustFontSize(Optional ByVal RetrieveOnly As Boolean = False)
+   Dim targetheight&amp;
+   Dim targetpoints&amp;
+   targetheight = (Cliprc.Bottom - Cliprc.Top - 1) * Screen.TwipsPerPixelY
+   targetpoints = targetheight / 20
+   UserControl.Font.Size = targetpoints
+   If targetpoints &lt; 8 Then
+      ' Windows font selection trick
+      UserControl.Font.Name = UserControl.Font.Name
+      UserControl.Font.Size = targetpoints
+   End If
+      
+End Function
+
+' Uses the hdc because future versions will offer
+' transparency
+Private Function DrawTheText(ByVal hdc As Long) As Long
+   Dim drawrc As RECT
+   Static ReplaceMarker As Long
+   Static ReplacePending As Boolean
+   If m_TextClippingRegion = 0 Then Exit Function
+   If m_TextTotalWidth = 0 Then
+      Exit Function
+   End If
+   Call SelectClipRgn(hdc, m_TextClippingRegion)
+   Call GetClientRect(UserControl.hWnd, drawrc)
+   drawrc.Top = m_TextUpper
+   drawrc.Left = Cliprc.Left - m_CurrentXOffset
+   Do
+      Call DrawText(hdc, m_ScrollText, -1, drawrc, DT_SINGLELINE Or DT_NOPREFIX)
+      If Not Ambient.UserMode Then Exit Do
+      ' Exit loop if any text is on the way
+      drawrc.Left = drawrc.Left + m_TextTotalWidth
+      If ReplacePending And drawrc.Left &gt; ReplaceMarker Then
+         ' Follow by plenty of spaces to clear any garbage
+         Call DrawText(hdc, Space$(Len(m_ScrollText)), -1, drawrc, _
+                       DT_SINGLELINE Or DT_NOPREFIX)
+         Exit Do  ' Replacement pending
+      End If
+   Loop While drawrc.Left &lt; drawrc.Right
+   If m_ReplaceText &lt;&gt; &quot;&quot; And Not ReplacePending Then
+      ' Initialize replacement text
+      ReplaceMarker = drawrc.Left - 1
+      ReplacePending = True
+   End If
+   Call SelectClipRgn(hdc, 0) ' Clear clipping region
+   If Ambient.UserMode Then
+      ' Scrolling only happens at runtime
+      m_CurrentXOffset = m_CurrentXOffset + m_ScrollIncrement
+      If ReplacePending Then ReplaceMarker = ReplaceMarker - m_ScrollIncrement
+      If m_CurrentXOffset &gt; m_TextTotalWidth Then
+         m_CurrentXOffset = 0
+         RaiseEvent CycleComplete
+         If ReplacePending And ReplaceMarker &lt;= Cliprc.Left + _
+            m_ScrollIncrement Then
+            ReplaceMarker = 0
+            ReplacePending = False
+            m_ScrollText = m_ReplaceText
+            m_ReplaceText = &quot;&quot;
+            CalculateTextMetrics
+         End If
+      End If
+   End If
+End Function
+
+Public Sub AboutBox()
+   On Error GoTo AlreadyVisible
+   frmAboutBox.Show vbModal
+   Set frmAboutBox = Nothing
+AlreadyVisible:
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The CalculateTextMetrics function begins by initializing the clipping
+region for the control. A clipping region masks the portion of
+the control that can actually be drawn. This is the mechanism
+used to allow the margins to work. The clipping region is set
+to the area in which the text should appear. The drawing function
+then draws text onto the entire control area, relying on Windows
+to clip the text that is outside of the clipping region.
+<P>
+The font size is then adjusted, if necessary, using the AdjustFontSize
+function. This function calculates the desired font size based
+on the current screen resolution in twips. There are 1440 twips
+per inch and 72 twips per point, so each point represents 20 twips.
+If the font size is smaller than 8 points, the size is sent and
+the font name is set again along with the size. This is a trick
+that helps Windows choose the best font at smaller sizes.
+<P>
+The total width of the scrolling text is calculated and the initial
+text position is set all the way to the right of the control.
+<P>
+The real work is done by the DrawTheText function. Each time it
+is called, it scrolls the text the number of pixels to the left
+specified by the ScrollIncrement property. A loop is used to draw
+the text repeatedly if there is room in the control for more than
+one copy of the text. This routine also handles text replacement
+if the ReplaceText property is set. At design time only a single
+copy of the ScrollText property is drawn, and scrolling is disabled.
+<P>
+As you can see, the control does not interfere with the registry,
+the container, the file system, or other windows in the system.
+I can't see any way that calling the control's methods or properties
+can cause any of these things to happen either during initialization
+or design time. Thus, this control can legitimately be marked
+as safe.
+<P>
+The control also implements a property page and an About Box.
+The code for those elements can be found on the CD-ROM that comes
+with this book. You'll find a test program that demonstrates use
+of the control as well.
+<P>
+There is room for improvement with this control, including the
+use of the ScrollWindow function to improve the scrolling performance.
+But that will have to wait for a later version of the control.
+<H3><A NAME="Conclusion">
+Conclusion</A></H3>
+<P>
+The dwBanner control is perhaps the only example in this book
+that can be considered a complete control. It meets all of the
+requirements for a commercial quality ActiveX control, except
+that testing of the version included here was very limited due
+to the tight production schedule on this book.
+<P>
+Here is a brief summary of the key tasks you must perform when
+authoring an ActiveX control. While I have made some attempt to
+place them in a logical order, you should not read this sequence
+as anything more than a suggested approach.
+<UL>
+<LI>Define the user interface. Unless your control is invisible
+at runtime, it will have a user interface. Don't forget to consider
+the keyboard interface as well as the mouse interface, especially
+for graphic intensive controls.
+<LI>Define the programmatic interface. Before you write your first
+line of code, you should list the properties, methods, and events
+of the control and how you expect them to interact. 
+<LI>Implement the property procedures. Remember to change property
+types from variants to specific data types unless you clearly
+need to use a variant. Variants are slower and less efficient
+than other data types and require more sophisticated error checking.
+<LI>Map properties to the UserControl object and constituent controls.
+Some of your control's public properties and methods will simply
+reference properties and methods of the UserControl object or
+constituent controls. Remember that a single public member of
+your control can map to more than one constituent control.
+<LI>Add data validation to properties. Raise errors on any attempt
+to set a property to an illegal value. Remember that Visual Basic
+does not provide automatic verification for enumerated types;
+you must test their values yourself.
+<LI>Add runtime/design time characteristics to properties and
+methods. Raise errors on attempts to set a property at an invalid
+time. For example: try to set a property at runtime that you wish
+to be read-only at runtime.
+<LI>Implement property initialization and persistence. Verify
+the values of all default values for properties.
+<LI>Define property pages. You should implement property pages
+for all of your control's properties, since you can never assume
+that a container will provide a property browser for setting your
+control properties.
+<LI>Implement events. Remember that you can map UserControl events
+or events from constituent controls to the public events of your
+control.
+<LI>Assign descriptions, standard procedure IDs, and property
+pages for properties, methods, and events. The descriptions you
+set will appear in the object browser for your control. Standard
+procedure IDs (also known as Dispatch IDs) are used to notify
+the container to implement property-specific behavior. Under Visual
+Basic, this is especially critical for the Enabled property.
+<LI>Implement drawing code if necessary. Controls that are entirely
+made up of constituent controls may not require additional drawing
+operations, whereas with user-drawn controls, drawing may represent
+the bulk of the work.
+<LI>Create and set a toolbar bitmap.
+<LI>Create the About Box.
+<LI>Create a help file and assign help contexts.
+<LI>Test, test, test!
+<LI>Verify operation on target containers. This is especially
+critical if you make use of the Extender object, which differs
+from one container to the next. Visual Basic itself is one of
+the most sophisticated containers  you will use. Most other containers
+will be less capable. Be sure that your control fails gracefully
+when container functionality is missing.
+</UL>
+<P>
+This concludes our discussion of ActiveX controls for the Internet.
+We'll return to the subject of Internet- and intranet-based components
+in Part 4, where we discuss ActiveX documents. But first, now
+that you know all of the fundamentals of control development,
+it's time to shoot for the stratosphere and cover some of the
+more advanced techniques that can be incorporated into your controls.
+<HR>
+
+<CENTER><P><A HREF="ch20.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch20.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch22.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch22.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

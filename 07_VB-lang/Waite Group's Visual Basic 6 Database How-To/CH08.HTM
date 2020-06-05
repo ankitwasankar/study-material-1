@@ -1,0 +1,4888 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Visual Basic 6 Database How-To -- Ch 8 -- Using ActiveX Data Objects</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="sams.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/sams.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"></H1>
+
+<H1 ALIGN="CENTER">Visual Basic 6 Database How-To</H1>
+<CENTER>
+<P><A HREF="ch07.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch07/ch07.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch09.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch09/ch09.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1></H1>
+<H1 ALIGN="CENTER">- 8 -<BR>
+Using ActiveX Data Objects</H1>
+
+<UL>
+	<LI>How Do I...
+	<UL>
+		<LI><A HREF="#Browse a SQL Server database ...">8.1 Browse a SQL Server database
+		with the ADO Data control?</A>
+		<LI><A HREF="#Create and delete records ...">8.2 Create and delete records in a SQL
+		Server database using the ADO Data control?</A>
+		<LI><A HREF="#Retrieve results from a SQL ...">8.3 Retrieve results from a SQL Server
+		using ActiveX Data Objects?</A>
+		<LI><A HREF="#Alter data using ActiveX Data Objects?">8.4 Alter data using ActiveX
+		Data Objects?</A>
+		<LI><A HREF="#Perform a transaction...">8.5 Perform a transaction using ActiveX Data
+		Objects?</A>
+		<LI><A HREF="#Execute a SQL Server ...">8.6 Execute a SQL Server stored procedure
+		using ActiveX Data Objects?</A>
+		<LI><A HREF="#Execute a parameterized SQL ...">8.7 Execute a parameterized SQL Server
+		stored procedure with ActiveX Data Objects?</A>
+		<LI><A HREF="#Create and modify SQL Server ...">8.8 Create and modify SQL Server
+		objects with ActiveX Data Objects?</A>
+		<LI><A HREF="#Execute batch updates ...">8.9 Execute batch updates with ActiveX Data
+		Objects?</A>
+		<LI><A HREF="#Make remote updates ...">8.10 Make remote updates to data with ActiveX
+		Data Objects?</A>
+		<LI><A HREF="#Build a middle-tier business ...">8.11 Build a middle-tier business
+		object using ActiveX Data Objects?</A>
+		<LI><A HREF="#Incorporate a business object ...">8.12 Incorporate a business object
+		into Microsoft Transaction Server?</A>
+		<LI><A HREF="#Handle ActiveX Data Objects errors?">8.13 Handle ActiveX Data Objects
+		errors?</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<H3></H3>
+<P>Universal Data Access, OLE DB, ActiveX Data Objects...what do they all mean? Recently
+developers have been hit with another new wave of technology terms. Microsoft has
+once again pushed forward the frontier of data access.</P>
+<P><I>Universal Data Access</I>, referred to as UDA from here forward, is Microsoft's
+term for the idea that a developer should be able to use one data access method for
+any data source he is querying. ODBC was a great step forward. For the first time,
+no matter what relational database the application needed to talk to, you only needed
+to learn one API. The problem with ODBC is that it was aimed directly at relational
+databases and other sources of data did not fit its model very well. Instead of trying
+to tack functionality on to ODBC so that it could handle other data sources as well
+as it did relational databases, Microsoft decided to do things right and start from
+scratch. They built OLE DB without having to make any compromises to the existing
+architecture.</P>
+<P>OLE DB is a COM-based interface between data providers and client applica-tions.
+Data providers can be anything from relation databases to spread sheets to file systems.
+Like RDO was to the ODBC API, Microsoft knew it needed to create an easy-to-use object
+layer on top of OLE DB; thus ActiveX Data Objects were born.</P>
+<P>ADO is the interface into OLE DB so that VB can reap the benefits of UDA. Got
+that? This chapter covers ADO from its simplest form, using the ADO Data control,
+to more complex forms, such as building three-tier applications using Microsoft Transaction
+Server.</P>
+<P>This chapter makes a few assumptions:</P>
+
+<UL>
+	<LI>4 You need access to a SQL Server with the sample database pubs installed on
+	it.
+	<P>
+	<LI>4 A few of the samples require an ODBC datasource--pubs--set up to connect to
+	that server and database. One of the first data providers Microsoft released was
+	a data provider that sat on top of ODBC. Any database accessible to ODBC is accessible
+	to ADO.
+	<P>
+	<LI>4 For How-To 8.12, you will need Microsoft Transaction Server. It is available
+	from Microsoft as part of the NT Server Option Pack.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>CONNECTING TO OTHER DATABASES</STRONG></B><STRONG> </STRONG></P>
+
+	<P>All the How-Tos in this chapter use a Microsoft SQL Server, but ADO is not constrained
+	to one database vender or even just databases. The &quot;Provider&quot; parameter
+	of the connection string indicates which OLE DB data provider should be used. ADO
+	2.0 ships with several data providers including Jet, Oracle, and Microsoft Directory
+	Services. Connecting to a different data provider is as easy as changing the connection
+	string. For example, a typical connection string for an Access database would be
+	&quot;Provider=Microsoft.Jet.OLEDB.3.51;Data Source=mydb.mdb&quot;. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>8.1 Browse a SQL Server Database with the ADO Data Control</H4>
+<P>This How-To shows the quickest and simplest way to get up and running using ADO,
+the ADO Data control.</P>
+<P>
+<H4>8.2 Create and Delete Records in a SQL Server Database Using the ADO Data Control</H4>
+<P>With a little extra code you can insert and delete records using the ADO Data
+control. This How-To shows you how.</P>
+<P>
+<H4>8.3 Retrieve Results from a SQL Server Using ActiveX Data Objects</H4>
+<P>Retrieve data without the use of the ADO Data control in this How-To.</P>
+<P>
+<H4>8.4 Alter Data Using ActiveX Data Objects</H4>
+<P>This How-To shows you how to update, insert, and delete records using ADO.</P>
+<P>
+<H4>8.5 Perform a Transaction Using ActiveX Data Objects</H4>
+<P>Most business applications require them; this How-To shows you how to perform
+a transaction in ADO.</P>
+<P>
+<H4>8.6 Execute a SQL Server Stored Procedure Using ActiveX Data Objects</H4>
+<P>You can increase the performance of your ADO applications by using stored procedures.
+In this How-To you learn how to use SQL Server stored procedures with ADO.</P>
+<P>
+<H4>8.7 Execute a Parameterized SQL Server Stored Procedure with ActiveX Data Objects</H4>
+<P>Some stored procedures have return values and output parameters. This How-To shows
+you what you need to know to handle parameterized stored procedures.</P>
+<P>
+<H4>8.8 Create and Modify SQL Server Objects with ActiveX Data Objects</H4>
+<P>The ADO object model does not let you modify SQL Server objects. This How-To shows
+you how to get around it.</P>
+<P>
+<H4>8.9 Execute Batch Updates with ActiveX Data Objects</H4>
+<P>Saving many changes at once can increase performance. This How-To shows you how.</P>
+<P>
+<H4>8.10 Make Remote Updates to Data with ActiveX Data Objects</H4>
+<P>In this How-To you will learn how to best update a Recordset using ADO when connections
+and bandwidth are limited.</P>
+<P>
+<H4>8.11 Build a Middle-Tier Business Object Using ActiveX Data Objects</H4>
+<P>Move up to three-tier development in this How-To, where you learn how to build
+a middle-tier business object using ADO.</P>
+<P>
+<H4>8.12 Incorporate a Business Object into Microsoft Transaction Server</H4>
+<P>When scalability becomes a problem, MTS is your answer. This How-To shows you
+how to take a middle-tier business component and tune it for Microsoft Transaction
+Server.</P>
+<P>
+<H4>8.13 Handle ActiveX Data Objects Errors</H4>
+<P>This How-To shows you what to do when things do go wrong.</P>
+<P>
+<H2>8.1 How do I...</H2>
+<H3><A NAME="Browse a SQL Server database ..."></A><B>Browse a SQL Server database
+with the ADO Data control?</B></H3>
+<P><B>Problem</B></P>
+<P>My data is on SQL Server database. What is an easy way to get to get the data
+using ADO?</P>
+<P><B>Technique</B></P>
+<P>Like the Visual Basic Data control and the RemoteData control, the ADO Data control
+gives you a &quot;no code&quot; solution for data access. The difference lies in
+the data access method. The Visual Basic Data control uses the Jet Engine, the RemoteData
+control uses RDO, and the ADO Data control uses Microsoft's newest data access methodology,
+ActiveX Data Objects.</P>
+<P>The technique to use the ADO Data control is very similar to its predecessors:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Draw an ADO Data control on your form and set the ConnectionString
+	and RecordSource properties.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add controls to the form to display the columns in the record source
+	and set their DataSource and DataField properties.
+	<P>
+</DL>
+
+<P>In just a couple of steps, and no lines of code, an application with the ability
+to browse and edit the database is born. All the data access is handled by the ADO
+Data control.</P>
+<P><B>Steps</B></P>
+<P>Load and run ADODC.vbp. Figure 8.1 shows the ADODC application in action. Change
+the ConnectionString property of the ADO Data Control on frmMain to match your user
+and password, and then run the application. You can use the application to browse
+and edit the Authors table in the pubs database.</P>
+<P><A HREF="javascript:popUp('08fig01.gif')"><B>Figure 8.1.</B></A><B> </B><I>The
+Authors form using an ADO Data control.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new Standard EXE project, and change the Project Name to ADODC
+	in the Project Properties dialog box. Rename the default form frmMain.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Using Project | Components, add the Microsoft ADO Data Control 6.0
+	to the project. Add an ADO Data Control to frmMain along with the other controls
+	listed in Table 8.1. Arrange the controls to match Figure 8.1 <BR>
+	and set all the properties according to Table 8.1. Change the ConnectionString property
+	of the ADO Data Control to match your user and password.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.1. Objects and properties for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Authors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ADO Data control</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Authors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Align</TD>
+		<TD ALIGN="LEFT">2 - vbAlignBottom</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">ConnectionString</TD>
+		<TD ALIGN="LEFT">DSN=pubs;User Id=sa;Password=password</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">RecordSource</TD>
+		<TD ALIGN="LEFT">authors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtFirstName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">au_fname</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtLastName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">au_lname</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtAddress</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">address</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtCity</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">city</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtState</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">state</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtZip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">zip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtPhone</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">phone</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CheckBox control</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">chkContract</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Contract</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">contract</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblFirstName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">First</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblLastName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Last</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblAddress</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Address</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblCity</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">City</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblState</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">State</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblZip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Zip Code</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPhone</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Phone</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+<P><B>How It Works</B></P>
+<P>The ADO Data control does all the work in this application. Use the navigation
+buttons to move through the records and use the bound controls to edit and view the
+data.</P>
+<P><B>Comments</B></P>
+<P>This application is drag-and-drop programming at its best. With no code, a fully
+function application enables the user to edit and view a Recordset using ADO.</P>
+<P>
+<H2>8.2 How do I...</H2>
+<H3><A NAME="Create and delete records ..."></A><B>Create and delete records in a
+SQL Server database using the ADO Data control?</B></H3>
+<P><B>Problem</B></P>
+<P>Viewing and editing existing records is nice, but my users need to do more. How
+do I create and delete records using the ADO Data control?</P>
+<P><B>TECHNIQUE</B><BR>
+<BR>
+Creating an application to view and edit existing records is really easy and it requires
+no code at all. Unfortunately, the user's requirements are seldom that simple. The
+next obvious step is to grant the user the ability to add and delete records.</P>
+<P>To add a record using the ADO Data control:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Use the AddNew method of the ADO Data control's Recordset property
+	to create a new blank row in the row buffer.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Use the Update method of the ADO Data control's Recordset property
+	to save the new row to the database.
+	<P>
+</DL>
+
+<P>The Recordset's Delete method is used to delete a record. However, the Delete
+method will not refresh the window with a valid record. You must move the ADO Data
+control to a new valid row. This How-To uses the convention of moving to the previous
+row when deleting.</P>
+<P><B>Steps</B></P>
+<P>Open ADODC2.vbp and change the ConnectionString property of the ADO Data Control
+on frmMain to match your user and password, then run. This is almost the same application
+from the first How-To. The changes are listed in the steps below.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Starting with the finished product of How-To 8.1, add the controls
+	and menu items specified in Table 8.2. Use Figure 8.2 to help place the new controls.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('08fig02.gif')"><B>Figure 8.2.</B></A><B> </B><I>The
+new and improved Authors form.</I></P>
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.2. New objects and properties for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtId</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">adodc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">au_id</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name lblId</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption Id</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Menu item</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">mnuFile</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;File</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Menu item</TD>
+		<TD ALIGN="LEFT">Name mnuNew</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption &amp;New</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Indent</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Menu item</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">mnuSave</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption &amp;Save</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Indent</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Enabled</TD>
+		<TD ALIGN="LEFT">False</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Menu item</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">mnuExit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption E&amp;xit</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Indent</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Menu item</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">mnuEdit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;Edit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Menu item</TD>
+		<TD ALIGN="LEFT">Name mnuDelete</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption &amp;Delete</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Indent</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add Option Explicit to the declarations section of the form if it is
+	not already there.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the form. This sub checks to see if a new
+	record has been added; if it has been added, the sub attempts to save the new record
+	and disable the Save menu selection.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Save()
+    `if we need to save then save it
+    If adodc.Recordset.EditMode = adEditAdd Then
+        On Error GoTo SaveFailure:
+        adodc.Recordset.Update
+        On Error GoTo 0
+        `don't need to save so disable that menu
+        mnuSave.Enabled = False
+    End If
+SaveDone:
+    Exit Sub
+SaveFailure:
+    MsgBox Err.Number &amp; vbCrLf &amp; Err.Description
+    Resume SaveDone
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Adding the code adds the new empty row to the row buffer.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub mnuNew_Click()
+    adodc.Recordset.AddNew
+    `so we can save that new record
+    mnuSave.Enabled = True
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Create the mnuSave_Click event procedure. It just calls the Save sub.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub mnuSave_Click()
+    Save
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>If the user tries to exit after adding a new row, check to see if she
+	wants to save it in the mnuExit_Click event procedure.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub mnuExit_Click()
+    If adodc.Recordset.EditMode = adEditAdd Then
+        If MsgBox(&quot;Do you want to save?&quot;, vbYesNo) = vbYes Then
+            Save
+        End If
+    End If
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Finally, add the code to delete a row.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub mnuDelete_Click()
+    On Error GoTo DeleteFailure:
+    adodc.Recordset.Delete
+    `current row is now invalid so move back one
+    adodc.Recordset.MovePrevious
+    `if we are before the beginning go to the first
+    If adodc.Recordset.BOF Then
+        adodc.Recordset.MoveFirst
+    End If
+DeleteDone:
+    Exit Sub
+DeleteFailure:
+    MsgBox Err.Number &amp; vbCrLf &amp; Err.Description
+    Resume DeleteDone
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>Like the previous How-To, this one relies on the ADO Data control to do much of
+the work. You can use the AddNew, Update, and Delete methods of the Recordset object
+to supplement the ADO Data control's basic functionality to build a simple data manipulation
+application.</P>
+<P><B>Comments</B></P>
+<P>The ADO Data control is nice for quick and easy applications, but this How-To
+shows that you quickly have to move up to manipulating ADO programmatically to get
+any advanced features. The rest of this chapter's How-To's focus on using ADO's objects
+directly without the ADO Data control.</P>
+<P>
+<H2>8.3 How do I...</H2>
+<H3><A NAME="Retrieve results from a SQL ..."></A><B>Retrieve results from a SQL
+Server using ActiveX Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>I want to get at my data without using a bound control. How do I retrieve results
+from SQL Server using ActiveX Data Objects?</P>
+<P><B>Technique</B></P>
+<P>The ADO Connection and Recordset objects provide direct access to data in ADO.
+If you have programmed in either DAO or RDO, the ADO objects will seem strangely
+familiar. Most DAO and RDO objects have counterparts in ADO, but one with significant
+difference.</P>
+<P>The biggest difference between ADO and its predecessors is the flat nature of
+the ADO object model. RDO also has an rdoRecordset object, which is the child of
+an rdoConnection, which is the child of an rdoEnvironment, which is the child of
+the rdoEngine. RDO and DAO are very hierarchical; to get to a recordset, you must
+also have all the parent objects. ADO does not require the overhead of the hierarchy.
+To retrieve results from a data source, all you need is a connection and a recordset.</P>
+<P>The steps to get data from SQL Server are listed below:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create and open a connection.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Create and open a recordset with the connection as a parameter.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Close the recordset.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Close the connection.
+	<P>
+</DL>
+
+<P><B>Steps</B></P>
+<P>Open the ListAuthors.vbp project. Before running the project you will have to
+change the username (User Id=), password (Password=), and server name (Location=)
+parameters of the connection string. The connection is opened in the Form_Load event
+of frmAuthors. The Authors form, shown in Figure 8.3, shows a list of authors and
+their addresses.</P>
+<P><A HREF="javascript:popUp('08fig03.gif')"><B>Figure 8.3.</B></A><B> </B><I>The
+Authors form shows a list of authors.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>A NOTE ON CONNECTION STRINGS </STRONG></B></P>
+
+	<P>It is often hard to remember the exact syntax for connection strings, but the
+	ADO Data control has an excellent wizard for building and testing connection strings.
+	Simply add the ADO Data control to your project, right-click on the control and select
+	ADODC properties, then click the Build button next to the Use Connection String option.
+	When you're finished creating and testing the connection string, cut and paste it
+	from the text box and remove the ADO Data control from your project. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE project, add a reference to Microsoft ActiveX
+	Data Objects 2.0 Library, and add the Microsoft Windows Common Controls 6.0 component.
+	Change the Project Name to ListAuthors and the Name of the default form to frmAuthors,
+	and save the project.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add the object and set the properties according to Table 8.3.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.3. New objects and properties for frmAuthors.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Authors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListView</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">listAuthors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">View</TD>
+		<TD ALIGN="LEFT">3 - lvwReport</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">LabelEdit</TD>
+		<TD ALIGN="LEFT">1 - lvwManual</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the columns listed in Table 8.4 to the ListView control using the
+	Column Headers property page.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.4. Column Headers for listAuthors.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>COLUMN</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>WIDTH</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">2000</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Address</TD>
+		<TD ALIGN="LEFT">2000</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">City</TD>
+		<TD ALIGN="LEFT">1440</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">State</TD>
+		<TD ALIGN="LEFT">500</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Zip</TD>
+		<TD ALIGN="LEFT">700</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following procedure. The Form_Load event/property opens the
+	Connection object, opens the Recordset object, and fills the ListView control with
+	the names and address from the Authors table. Remember to change the connection string
+	for the Connection object's Open method.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    Dim cn As Connection
+    Dim rs As Recordset
+    Dim NewItem As ListItem
+    `open the connection
+    Set cn = New Connection
+    cn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password;&quot; _
+        + &quot;Location=WINEMILLER;Database=pubs&quot;
+    `could have also just specified an ODBC DSN like below
+    `cn.Open &quot;DSN=pubs&quot;
+    `now open the recordset
+    Set rs = New Recordset
+    rs.Open &quot;authors&quot;, cn, adOpenForwardOnly, adLockReadOnly
+    Do Until rs.EOF
+        Set NewItem = listAuthors.ListItems.Add(, rs(&quot;au_id&quot;), _
+            rs(&quot;au_lname&quot;) &amp; &quot;, &quot; &amp; rs(&quot;au_fname&quot;))
+        NewItem.SubItems(1) = rs(&quot;address&quot;)
+        NewItem.SubItems(2) = rs(&quot;city&quot;)
+        NewItem.SubItems(3) = rs(&quot;state&quot;)
+        NewItem.SubItems(4) = rs(&quot;zip&quot;)
+        rs.MoveNext
+    Loop
+    `close and clean up
+    rs.Close
+    cn.Close
+    Set rs = Nothing
+    Set cn = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>HOW IT WORKS</B><BR>
+<BR>
+The code in Form_Load is typical for an ADO data retrieval operation.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Instance the Connection object.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Call the Connection object's Open method.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Instance the Recordset object.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Call the Recordset object's Open method, using the Connection object
+	as a parameter.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Move through the Recordset until the EOF method returns a True.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Call the Recordset object's Close method.
+	<P>
+	<DT></DT>
+	<DD><B>7. </B>Call the Connection object's Close method.
+	<P>
+	<DT></DT>
+	<DD><B>8. </B>Set the Recordset and Connection objects to Nothing.
+	<P>
+</DL>
+
+<P>Opening connections is an expensive operation, so in most applications it is far
+better to keep a connection as a module or global level variable. The rules change
+when Microsoft Transaction Server is added to the pot; How-To 8.12 explains why you
+should open and close a connection in each call when using Microsoft Transaction
+Server.</P>
+<P><B>Comments</B></P>
+<P>In most applications you will probably want to keep a Connection object at the
+global or module level. This will save you from creating the object each time an
+operation is performed.</P>
+<P>
+<H2>8.4 How do I...</H2>
+<H3><A NAME="Alter data using ActiveX Data Objects?"></A><B>Alter data using ActiveX
+Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>Now that I know how to get to my data using ADO, I want to change it. How do I
+alter data using ActiveX Data Objects?</P>
+<P><B>Technique</B></P>
+<P>ADO provides two basic means for altering data: the Connection object's Execute
+method and the Recordset object. Using the Execute method, you can use SQL queries
+and commands such as UPDATE, INSERT, and DELETE. The Recordset object exposes corresponding
+methods with its Update, AddNew, and Delete methods.</P>
+<P>How-To 8.3 uses a forward-only, read-only cursor because it only needs to display
+data. This How-To uses keyset cursors with optimistic locking. This type of cursor
+allows updates and deletes to the recordset.</P>
+<P><B>Steps</B></P>
+<P>Open the ListAuthors2.vbp. As with How-To 8.3, you will need to update the connection
+string used to open the connection in the Form_Load before you can run it. This project
+is typical of many applications where you select from a list of objects and the objects'
+properties are displayed in a separate part of the window. There you can delete,
+edit, and add new records.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE, and change the Project Name to ListAuthors2.
+	Change the default form name to frmAuthors and save the project.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add a reference to the Microsoft ActiveX Data Objects 2.0 Library and
+	add the Microsoft Windows Common Controls 6.0.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Using Table 8.5, add the required objects to the form and set their
+	properties. Use Figure 8.4 as a guide to lay out the position of the controls.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('08fig04.gif')"><B>Figure 8.4.</B></A><B> </B><I>The
+Authors form.</I></P>
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.5. Objects and properties for frmAuthors.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Authors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdNew</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">New</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdDelete</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Delete</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdUpdate</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Update</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CheckBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">chkExecute</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Use Execute</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListView</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">listAuthors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">View</TD>
+		<TD ALIGN="LEFT">3 - lvwReport</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">LabelEdit</TD>
+		<TD ALIGN="LEFT">1 - lvwManual</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtId</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtFirstName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtLastName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtAddress</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtCity</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtState</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtZip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtPhone</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CheckBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">chkContract</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Contract</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblId</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Id</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblFirstName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">First</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblLastName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Last</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblAddress</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Address</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblCity</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">City</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblState</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">State</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblZip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Zip Code</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPhone</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Phone</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the columns listed in Table 8.6 to the ListView control using the
+	Column Headers property page.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.6. Column headers for listAuthors.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>COLUMN</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Width</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">2000</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Address</TD>
+		<TD ALIGN="LEFT">2000</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">City</TD>
+		<TD ALIGN="LEFT">1440</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">State</TD>
+		<TD ALIGN="LEFT">500</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Zip</TD>
+		<TD ALIGN="LEFT">700</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add following code to the declarations section of frmAuthors.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Private mConn As Connection
+`has something changed
+Private mbNeedSave As Boolean
+`are we working with a new record
+Private mbNewRecord As Boolean
+`keep track of the current record
+Private msCurrentRecord As String</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>The Form_Load event looks much like the one from How-To 8.3. This <BR>
+	version does not close the connection because it will be used later. Add <BR>
+	a Form_Load event with the following code. Remember to change the <BR>
+	con-nection string to match your setup.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    Dim rs As Recordset
+    Dim NewItem As ListItem
+    `open the connection
+    Set mConn = New Connection
+    mConn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password&quot; _
+        + &quot;Location=WINEMILLER;Database=pubs&quot;
+    `could have also just specified an ODBC DSN like below
+    `mConnOpen &quot;DSN=pubs&quot;
+    `now open the recordset
+    Set rs = New Recordset
+    rs.Open &quot;authors&quot;, mConn, adOpenForwardOnly, adLockReadOnly
+    Do Until rs.EOF
+        Set NewItem = listAuthors.ListItems.Add(, rs(&quot;au_id&quot;), _
+            rs(&quot;au_lname&quot;) &amp; &quot;, &quot; &amp; rs(&quot;au_fname&quot;))
+        NewItem.SubItems(1) = rs(&quot;address&quot;)
+        NewItem.SubItems(2) = rs(&quot;city&quot;)
+        NewItem.SubItems(3) = rs(&quot;state&quot;)
+        NewItem.SubItems(4) = rs(&quot;zip&quot;)
+        rs.MoveNext
+    Loop
+    `close and clean up
+    rs.Close
+    Set rs = Nothing
+    `set the first item
+    listAuthors_ItemClick listAuthors.ListItems(1)
+End Sub
+</PRE>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Now add the Form_Unload event. This event closes the mConn and sets
+	the object to Nothing.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Unload(Cancel As Integer)
+    mConn.Close
+    Set mConn = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>When the data fields change, the mbNeedSave flag is set and the cmdUpdate
+	button is enabled. Add the following code to capture when <BR>
+	a change happens.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub RecordChanged()
+    mbNeedSave = True
+    cmdUpdate.Enabled = True
+End Sub
+Private Sub chkContract_Click()
+    RecordChanged
+End Sub
+Private Sub txtAddress_Change()
+    RecordChanged
+End Sub
+Private Sub txtCity_Change()
+    RecordChanged
+End Sub
+Private Sub txtFirstName_Change()
+    RecordChanged
+End Sub
+Private Sub txtId_Change()
+    RecordChanged
+End Sub
+Private Sub txtLastName_Change()
+    RecordChanged
+End Sub
+Private Sub txtPhone_Change()
+    RecordChanged
+End Sub
+Private Sub txtState_Change()
+    RecordChanged
+End Sub
+Private Sub txtZip_Change()
+    RecordChanged
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>The New button clears the data and sets the mbNewRecord flag. Add the
+	cmdNew_Click event.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdNew_Click()
+    `clear screen
+    txtId.Text = &quot;&quot;
+    txtFirstName.Text = &quot;&quot;
+    txtLastName.Text = &quot;&quot;
+    txtAddress.Text = &quot;&quot;
+    txtCity.Text = &quot;&quot;
+    txtState.Text = &quot;&quot;
+    txtZip.Text = &quot;&quot;
+    txtPhone.Text = &quot;&quot;
+    chkContract.Value = vbChecked
+    `set flags
+    mbNewRecord = True
+    mbNeedSave = True
+    `nothing to delete
+    cmdDelete.Enabled = False
+    `no record selected
+    Set listAuthors.SelectedItem = Nothing
+    `start the user off in the right place
+    txtId.SetFocus
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Add the code to handle the update. The Update function does most of
+	the hard work in the application. Based on the value of the chkExecute checkbox,
+	it either uses the Connection object's Execute method, or the Recordset object's
+	AddNew and Update methods.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdUpdate_Click()
+    UpdateRecord
+End Sub
+Private Function UpdateRecord() As Boolean
+    Dim sCmd As String
+    Dim rs As Recordset
+    If mbNewRecord Then
+        `try to insert
+        If chkExecute.Value = vbChecked Then
+            `use the execute method of the connection
+            sCmd = &quot;insert into authors &quot; _
+                &quot;(au_id,au_fname,au_lname,address&quot; _
+                + &quot;,city,state,zip,phone,contract)&quot;
+            sCmd = sCmd + &quot; values (&quot;
+            sCmd = sCmd + &quot;`&quot; + txtId.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,'&quot; + txtFirstName.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,'&quot; + txtLastName.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,'&quot; + txtAddress.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,'&quot; + txtCity.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,'&quot; + txtState.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,'&quot; + txtZip.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,'&quot; + txtPhone.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,&quot; &amp; IIf(chkContract.Value = vbChecked _
+               1, 0)
+            sCmd = sCmd + &quot;)&quot;
+            On Error GoTo UpdateFailed:
+            mConn.Execute sCmd
+            On Error GoTo 0
+        Else
+            `use a Recordset Object to add it
+            Set rs = New Recordset
+            On Error GoTo UpdateFailed
+            rs.Open &quot;select * from authors where au_id = `&quot; 
+                + txtId.Text + &quot;`&quot;, mConn, adOpenKeyset, _
+                adLockOptimistic
+            rs.AddNew
+            rs!au_id = txtId.Text
+            rs!au_fname = txtFirstName.Text
+            rs!au_lname = txtLastName.Text
+            rs!address = txtAddress.Text
+            rs!city = txtCity.Text
+            rs!State = txtState.Text
+            rs!zip = txtZip.Text
+            rs!phone = txtPhone.Text
+            rs!contract = (chkContract.Value = vbChecked)
+            rs.Update
+            On Error GoTo 0
+            rs.Close
+            Set rs = Nothing
+        End If
+        `no longer dealing with a new record
+        mbNewRecord = False
+        `add the new item to the list
+        Dim NewItem As ListItem
+        Set NewItem = listAuthors.ListItems.Add(, txtId.Text, _
+            txtLastName.Text &amp; &quot;, &quot; &amp; txtFirstName.Text)
+        NewItem.SubItems(1) = txtAddress.Text
+        NewItem.SubItems(2) = txtCity.Text
+        NewItem.SubItems(3) = txtState.Text
+        NewItem.SubItems(4) = txtZip.Text
+        Set listAuthors.SelectedItem = NewItem
+    Else
+        `try to update
+        If chkExecute.Value = vbChecked Then
+            `use the execute method of the connection
+            sCmd = &quot;update authors&quot;
+            sCmd = sCmd + &quot; set &quot;
+            sCmd = sCmd + &quot;au_id = `&quot; + txtId.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,au_fname = `&quot; 
+            sCmd = sCmd + txtFirstName.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,au_lname = `&quot; + txtLastName.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,address = `&quot; + txtAddress.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,city = `&quot; + txtCity.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,state = `&quot; + txtState.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,zip = `&quot; + txtZip.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,phone = `&quot; + txtPhone.Text + &quot;`&quot;
+            sCmd = sCmd + &quot;,contract = &quot; &amp; _
+                IIf(chkContract.Value = vbChecked, 1, 0)
+            sCmd = sCmd + &quot; where au_id = `&quot; &quot;`&quot;
+            sCmd = sCmd + msCurrentRecord + &quot;`&quot;
+            On Error GoTo UpdateFailed:
+            mConn.Execute sCmd
+            On Error GoTo 0
+        Else
+            `use a Recordset Object to make the changes
+            Set rs = New Recordset
+            On Error GoTo UpdateFailed
+            rs.Open &quot;select * from authors where au_id = `&quot; _
+                + msCurrentRecord + &quot;`&quot;, mConn, adOpenKeyset _
+                , adLockOptimistic
+            `only update the primary key if it's changed
+            `ADO acts like it's been updated even if the new
+            `value is the same as the old so only set if it's
+            `really changed
+            If rs(&quot;au_id&quot;) &lt;&gt; txtId.Text Then
+                rs!au_id = txtId.Text
+            End If
+            rs!au_fname = txtFirstName.Text
+            rs!au_lname = txtLastName.Text
+            rs!address = txtAddress.Text
+            rs!city = txtCity.Text
+            rs!State = txtState.Text
+            rs!zip = txtZip.Text
+            rs!phone = txtPhone.Text
+            rs!contract = (chkContract.Value = vbChecked)
+            rs.Update
+            On Error GoTo 0
+            rs.Close
+            Set rs = Nothing
+        End If
+        `update the item in the list
+        Dim OldItem As ListItem
+        Set OldItem = listAuthors.ListItems.Item(msCurrentRecord)
+        OldItem.Key = txtId.Text
+        OldItem.Text = txtLastName.Text &amp; &quot;, &quot; &amp; txtFirstName.Text
+        OldItem.SubItems(1) = txtAddress.Text
+        OldItem.SubItems(2) = txtCity.Text
+        OldItem.SubItems(3) = txtState.Text
+        OldItem.SubItems(4) = txtZip.Text
+    End If
+    `no longer need save
+    mbNeedSave = False
+    cmdUpdate.Enabled = False
+    cmdDelete.Enabled = True
+    UpdateRecord = True
+UpdateComplete:
+    Exit Function
+UpdateFailed:
+    ShowADOError
+    GoTo UpdateComplete
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Create the cmdDelete_Click event. Like the Update function used previously,
+	the cmdDelete_Click event uses the Execute or Delete methods based on the value of
+	the chkExecute checkbox.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdDelete_Click()
+    If chkExecute.Value = vbChecked Then
+        Dim sCmd As String
+        sCmd = &quot;delete from authors where au_id = `&quot; _
+            + msCurrentRecord + &quot;`&quot;
+        On Error GoTo DeleteFailed
+        mConn.Execute sCmd
+        On Error GoTo 0
+    Else
+        Dim rs As Recordset
+        `now open the recordset
+        Set rs = New Recordset
+        On Error GoTo DeleteFailed
+        rs.Open &quot;select * from authors where au_id = `&quot; _
+            + msCurrentRecord + &quot;`&quot;, mConn, adOpenKeyset _
+            adLockOptimistic
+        Do Until rs.EOF
+            rs.Delete
+            rs.MoveNext
+        Loop
+        On Error GoTo 0
+    End If
+    `remove the item from the list
+    listAuthors.ListItems.Remove msCurrentRecord
+    mbNeedSave = False
+    cmdUpdate.Enabled = False
+    listAuthors_ItemClick listAuthors.SelectedItem
+DeleteComplete:
+    Exit Sub
+DeleteFailed:
+    ShowADOError
+    GoTo DeleteComplete
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>12. </B>As an item is selected in the listAuthors control, the listAuthors_ItemClick
+	event checks to see if the current record <BR>
+	needs to be saved, and then it refreshes the detail controls.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub listAuthors_ItemClick(ByVal Item As ComctlLib.ListItem)
+    Dim rs As Recordset
+    Set rs = New Recordset
+    If mbNeedSave Then
+        If Not UpdateRecord() Then
+            Set listAuthors.SelectedItem = _
+                listAuthors.ListItems.Item(msCurrentRecord)
+            Exit Sub
+        End If
+    End If
+    `now open the recordset
+    Set rs = New Recordset
+    rs.Open &quot;select * from authors where au_id = `&quot; + Item.Key + _
+       &quot;`&quot; 
+        , mConn, adOpenForwardOnly, adLockReadOnly
+    Do Until rs.EOF
+        `update the listview in case it's changed
+        Item.Text = rs(&quot;au_lname&quot;) &amp; &quot;, &quot; &amp; rs(&quot;au_fname&quot;)
+        Item.SubItems(1) = rs(&quot;address&quot;)
+        Item.SubItems(2) = rs(&quot;city&quot;)
+        Item.SubItems(3) = rs(&quot;state&quot;)
+        Item.SubItems(4) = rs(&quot;zip&quot;)
+        `fill the edit controls
+        txtId.Text = rs(&quot;au_id&quot;)
+        txtFirstName.Text = rs(&quot;au_fname&quot;)
+        txtLastName.Text = rs(&quot;au_lname&quot;)
+        txtAddress.Text = rs(&quot;address&quot;)
+        txtCity.Text = rs(&quot;city&quot;)
+        txtState.Text = rs(&quot;state&quot;)
+        txtZip.Text = rs(&quot;zip&quot;)
+        txtPhone.Text = rs(&quot;phone&quot;)
+        chkContract.Value = IIf(rs(&quot;contract&quot;), vbChecked _
+           vbUnchecked)
+        rs.MoveNext
+    Loop
+    rs.Close
+    Set rs = Nothing
+    mbNeedSave = False
+    cmdUpdate.Enabled = False
+    cmdDelete.Enabled = True
+    msCurrentRecord = txtId.Text
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>13. </B>Finally, add the sub that displays the errors reported by ADO.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub ShowADOError()
+    `spin through the errors collection and
+    `display the constructed error message
+    Dim ADOError As Error
+    Dim sError As String
+    For Each ADOError In mConn.Errors
+        sError = sError + ADOError.Number &amp; &quot; - &quot; &amp; _
+            ADOError.Description _
+            + vbCrLf
+    Next ADOError
+    MsgBox sError
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The ListAuthors2 project shows two ways of altering data using ADO. Based on the
+Use Execute option, it uses the Execute method to send SQL statements, or it uses
+the AddNew, Delete, and Update methods of the Recordset object.</P>
+<P><B>Comments</B></P>
+<P>The changes to the database in How-To 8.4 were very simple; insert a record, delete
+a record, and update a record. Often, multiple changes must occur at the same time,
+and if one fails, none of the remaining changes should commit. How-To 8.5 shows you
+how to wrap up your changes into a transaction where all the changes succeed or fail
+together.</P>
+<P>Many operations in ADO can be performed multiple ways. In most cases the performance
+difference is negligible, unless the operation is performed in a loop. Generally,
+deciding which method to use is a matter of preference and a matter of which method
+can get the job done in the easiest manner possible for the developer. However, many
+companies today are moving to three-tier applications. In a three-tier application,
+an application developer manipulates the database through objects instead of executing
+SQL statements. Using the object model to perform data manipulation might help you
+get acclimated to using objects instead of SQL.</P>
+<P>
+<H2>8.5 How do I...</H2>
+<H3><A NAME="Perform a transaction..."></A><B>Perform a transaction using ActiveX
+Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>Now I know how to make changes to data, but several things must change together.
+If one fails, they should all fail. How do I perform a transaction using ActiveX
+Data Objects?</P>
+<P><B>Technique</B></P>
+<P>A transaction ensures that all changes within the transaction either succeed or
+fail together. The classic example of an application that requires transactions is
+a financial application in which money can be transferred from one account to another.
+Without transactions, if the debit is successful, but the credit is not, the customer
+has lost money. If the debit fails and the credit is successful, the institution
+loses money. Neither one is good if the company wants to stay in business for a long
+time.</P>
+<P>In ADO, the BeginTrans, CommitTrans, and RollbackTrans methods of the Connection
+object provide the means to do transactions. The steps to perform a transaction are
+outlined below:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Call BeginTrans.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Make all changes on the same connection where the BeginTrans was called.
+	Check each change to make sure it is successful.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>If all changes were successful, call CommitTrans. If any change failed,
+	call RollbackTrans.
+	<P>
+</DL>
+
+<P><B>Steps</B></P>
+<P>Open the Transaction.vbp. You will need to update the connection string in the
+Form_Load event. Change the username (User Id=), password (Password=), and server
+name (Location=) parameters. Figure 8.5 shows the Transfer Funds application. Two
+lists are displayed; select accounts in the To and From lists, enter an amount, and
+press the Transfer button to move money from one account to another.</P>
+<P><A HREF="javascript:popUp('08fig05.gif')"><B>Figure 8.5.</B></A><B> </B><I>The
+Transfer Funds application.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Use SQL Enterprise Manager or ISQL/w to run the Accounts.sql script
+	in your pubs database. This script creates a new table, Accounts, and test data for
+	this How-To.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Create a new Standard EXE. Change the Project Name to Transaction and
+	rename the default form frmMain.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add a reference to the Microsoft ActiveX Data Objects 2.0 Library.
+	Add the Microsoft Windows Common Controls 6.0 and the Microsoft Masked Edit Control
+	6.0.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Use Table 8.7 to add the objects and set the properties for frmMain.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.7. Objects and properties for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Transfer Funds</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListView</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">listFrom</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">View</TD>
+		<TD ALIGN="LEFT">3 - lvwReport</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">LabelEdit</TD>
+		<TD ALIGN="LEFT">1 - lvwManual</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListView</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">listTo</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">View</TD>
+		<TD ALIGN="LEFT">3 - lvwReport</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">LabelEdit</TD>
+		<TD ALIGN="LEFT">1 - lvwManual</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblAmount</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Amount</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">MaskEdBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">maskedAmount</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Mask</TD>
+		<TD ALIGN="LEFT">####.##</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdTransfer</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Transfer</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>For each of the ListViews, add a column for Customer and Balance using
+	the Column Headers tab of the ListView properties dialog box.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code to the Declarations section of frmMain.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Private mConn As Connection</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>The Form_Load and Form_Unload events open and close the connection.
+	Change the connection string of the Open method to connect to your server.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    `open the connection
+    Set mConn = New Connection
+    mConn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password&quot; _
+        + &quot;;Location=WINEMILLER;Database=pubs&quot;
+    RefreshLists
+End Sub
+Private Sub Form_Unload(Cancel As Integer)
+    mConn.Close
+    Set mConn = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Add the RefreshLists procedure. This procedure fills the two ListView
+	controls with the list of account holders and their balances.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub RefreshLists()
+    `refresh the lists with acount holders and balances
+    Dim NewItem As ListItem
+    Dim rs As Recordset
+    Set rs = New Recordset
+    listFrom.ListItems.Clear
+    listTo.ListItems.Clear
+    rs.Open &quot;Accounts&quot;, mConn, adOpenForwardOnly, adLockReadOnly
+    Do Until rs.EOF
+        Set NewItem = listFrom.ListItems.Add(, &quot;k&quot; &amp; rs(&quot;AccountId&quot;) _
+            , rs(&quot;Name&quot;))
+        NewItem.SubItems(1) = Format(rs(&quot;Balance&quot;), &quot;$0.00&quot;)
+        Set NewItem = listTo.ListItems.Add(, &quot;k&quot; _
+            &amp; rs(&quot;AccountId&quot;), rs(&quot;Name&quot;))
+        NewItem.SubItems(1) = Format(rs(&quot;Balance&quot;), &quot;$0.00&quot;)
+        rs.MoveNext
+    Loop
+    rs.Close
+    Set rs = Nothing
+End Sub
+</PRE>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Finally, add the cmdTransfer_Click event.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdTransfer_Click()
+    Dim lRowsAffected As Long
+    Dim sError As String
+    Dim sCmd As String
+    Dim rs As Recordset
+    If vbYes = MsgBox(&quot;Transfer &quot; _
+        &amp; Format(Val(maskedAmount.Text), &quot;$0.00&quot;) _
+        &amp; &quot; from &quot; &amp; listFrom.SelectedItem.Text _
+        &amp; &quot; to &quot; &amp; listTo.SelectedItem.Text &amp; &quot;.&quot;, vbYesNo) Then
+        mConn.BeginTrans
+        On Error GoTo TransferFailure
+        `use the Connection's execute method
+        sCmd = &quot;update Accounts&quot;
+        sCmd = sCmd + &quot; set Balance = Balance - &quot; 
+        sCmd = sCmd + maskedAmount.Text
+        `only do the update if the from account has enough money
+        sCmd = sCmd + &quot; where balance &gt;= &quot; &amp; maskedAmount.Text
+        sCmd = sCmd + &quot; and AccountId = &quot; _
+            &amp; Right(listFrom.SelectedItem.Key _
+            , Len(listFrom.SelectedItem.Key) - 1)
+        mConn.Execute sCmd, lRowsAffected
+        If lRowsAffected = 0 Then
+            sError = &quot;Insufficient funds.&quot;
+            GoTo TransferFailure
+        End If
+        `or use the Recordset's methods
+        Set rs = New Recordset
+        rs.Open &quot;select * from Accounts where AccountId = &quot; _
+            &amp; Right(listTo.SelectedItem.Key _
+            , Len(listTo.SelectedItem.Key) - 1), mConn, _
+            adOpenDynamic
+                , adLockPessimistic
+        rs!Balance = rs(&quot;Balance&quot;) + Val(maskedAmount.Text)
+        rs.Update
+        `ok so far, commit it
+        mConn.CommitTrans
+        rs.Close
+    End If
+TransferDone:
+    On Error GoTo 0
+    Set rs = Nothing
+    RefreshLists
+    Exit Sub
+TransferFailure:
+    `something bad happened so rollback the transaction
+    mConn.RollbackTrans
+    Dim ADOError As Error
+    For Each ADOError In mConn.Errors
+        sError = sError &amp; ADOError.Number &amp; &quot; - &quot; &amp; _
+             ADOError.Description + vbCrLf
+    Next ADOError
+    MsgBox sError
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The beginning of the cmdTransfer_Click event calls the BeginTrans method. If an
+error occurs or the originating account has insufficient funds, the transaction is
+rolled back. Two methods of data manipulation are used during the transaction: the
+Connection object's Execute method and the Recordset object's Update method. There
+are no restrictions on mixing and matching data manipulation methods during a transaction,
+as long as they are all done on the same connection. If all the updates are successful,
+the transaction is committed and the display is refreshed.</P>
+<P><B>Comments</B></P>
+<P>Transactions are an indispensable tool for the database application developer.
+However when you begin to use transactions, you add a new level of complexity to
+your application. One of the biggest problems with transactions is that they easily
+lead to deadlocks.</P>
+<P>A deadlock occurs when two connections try to make changes to resources the other
+holds. There are a couple of strategies you can use to reduce the chance of a deadlock.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Reduce the time of the transaction. Move all string manipulation and
+	other processing outside of the transaction. In this How-To, reduce the chances of
+	a deadlock by moving the code that assembles the UPDATE so that it is before the
+	BeginTrans.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Do transactions in the same order if possible. If all transactions
+	start by changing the Orders table and then the Inventory table, there will never
+	be a situation in which one transaction holds the Orders table, but wants the Inventory
+	table, and another transaction holds the Inventory table, but wants the Orders table.
+	<P>
+</DL>
+
+<H2>8.6 How do I...</H2>
+<H3><A NAME="Execute a SQL Server ..."></A><B>Execute a SQL Server stored procedure
+using ActiveX Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>My company uses stored procedures to increase performance and to encapsulate objects
+in the database. How do I execute a SQL Server?</P>
+<P><B>Technique</B></P>
+<P>Stored Procedures in ADO are very straight forward--if there are no parameters.
+Simply change the Options parameter of the Recordset object's Open method to adCmdStoredProc.
+This tells ADO the Source argument is a stored procedure. If you leave off the Options
+parameter, ADO will still work correctly, but it will have to do a little extra processing
+to figure out with what it is dealing. For the best performance, always use the Options
+parameter to tell ADO what type of command it is performing.</P>
+<P>This How-To also introduces a new technique for creating a Recordset. As with
+most things in ADO, there are a couple of ways to tackle the problem of creating
+a Recordset. The Connection object's Execute method returns a Recordset if one is
+generated by the CommandText parameter. The Recordset returned from the Execute method
+is the same as a manually created Recordset that was specified as forward-only and
+read-only.</P>
+<P><B>Steps</B></P>
+<P>Open the StoredProcedure.vbp. Change the connection string in the Form_Load event
+of frmMain and run the application. The Stored Procedures application shown in Figure
+8.6 displays two possible lists, based on which option is selected. If Title Author
+is selected, the book titles become the parents in the TreeView; otherwise, the authors
+are the parents.</P>
+<P><A HREF="javascript:popUp('08fig06.gif')"><B>Figure 8.6.</B></A><B> </B><I>The
+Stored Procedures application.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Use SQL Enterprise Manager or ISQL/w to run the Stored Procedures.sql
+	script in your pubs database. This script creates two new stored procedures in the
+	pubs database: GetAuthorTitleList and GetTitleAuthorList.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Create a new Standard EXE. Change the Project Name to StoredProcedure
+	and rename the default form to frmMain.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add a reference to the Microsoft ActiveX Data Objects 2.0 Library and
+	add the Microsoft Windows Common Controls 6.0.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Use Table 8.8 to add the objects and set the properties for frmMain.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.8. Objects and properties for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Stored Procedure</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TreeView</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">treeResults</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">OptionButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">optTitleAuthor</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Title Author</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">OptionButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">optAuthorTitle</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Author Title</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Like the other How-To's in this chapter, the declarations section,
+	the Form_Load event, and the Form_Unload event handle the Connection object.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Private mConn As Connection
+Private Sub Form_Load()
+    `open the connection
+    Set mConn = New Connection
+    mConn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password&quot;
+        + &quot;;Location=WINEMILLER;Database=pubs&quot;
+    RefreshList
+End Sub
+Private Sub Form_Unload(Cancel As Integer)
+    mConn.Close
+    Set mConn = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Now add the code to call RefreshList when the OptionButtons change.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub optAuthorTitle_Click()
+    RefreshList
+End Sub
+Private Sub optTitleAuthor_Click()
+    RefreshList
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Finally add the RefreshList procedure.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub RefreshList()
+    Dim rs As Recordset
+    Dim NewNode As Node
+    treeResults.Nodes.Clear
+    If optTitleAuthor.Value = True Then
+        `sort by titles
+        Dim sLastTitle As String
+        `use the Execute method to generate the Recordset
+        `works the same as adOpenForwardOnly, adLockReadOnly
+        Set rs = mConn.Execute(&quot;GetTitleAuthorList&quot;, , _
+             adCmdStoredProc)
+        Do Until rs.EOF
+            If sLastTitle &lt;&gt; rs(&quot;title&quot;) Then
+                `need a new parent
+                sLastTitle = rs(&quot;title&quot;)
+                Set NewNode = treeResults.Nodes.Add(, , _
+                    rs(&quot;title&quot;) , rs(&quot;title&quot;))
+                NewNode.Expanded = True
+            End If
+            `add the child
+            treeResults.Nodes.Add sLastTitle, tvwChild _
+                , sLastTitle + rs(&quot;au_lname&quot;) &amp; &quot;, &quot; &amp; _
+                rs(&quot;au_fname&quot;) _
+                , rs(&quot;au_lname&quot;) &amp; &quot;, &quot; &amp; rs(&quot;au_fname&quot;)
+            rs.MoveNext
+        Loop
+    Else
+        `sort by authors
+        Dim sLastAuthor As String
+        Set rs = New Recordset
+        rs.Open &quot;GetAuthorTitleList&quot;, mConn, adOpenForwardOnly _
+            , adLockReadOnly, adCmdStoredProc
+        Do Until rs.EOF
+            If sLastAuthor &lt;&gt; rs(&quot;au_lname&quot;) &amp; &quot;, &quot; &amp; _
+                rs(&quot;au_fname&quot;) Then
+                `need a new parent
+                sLastAuthor = rs(&quot;au_lname&quot;) &amp; &quot;, &quot; &amp; _
+                    rs(&quot;au_fname&quot;)
+                Set NewNode = treeResults.Nodes.Add(, , _
+                    sLastAuthor , sLastAuthor)
+                NewNode.Expanded = True
+            End If
+            `add the child
+            treeResults.Nodes.Add sLastAuthor, tvwChild, _
+                sLastAuthor + rs(&quot;title&quot;), rs(&quot;title&quot;)
+            rs.MoveNext
+        Loop
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>HOW IT WORKS</B><BR>
+<BR>
+The RefreshList procedure opens a Recordset from a stored procedure almost exactly
+like a normal SELECT. The only difference is the adCmdStoredProc parameter. This
+parameter tells ADO the Source parameter is a stored procedure and tells ADO to do
+what it needs to do for stored procedures. Additionally RefreshList shows an alternative
+way to create a Recordset by using the Execute method.</P>
+<P><B>Comments</B></P>
+<P>Of course this is the simple case. In most applications, stored procedures without
+any parameters are few and far between. How-To 8.7 addresses the problem of dealing
+with stored procedures with input and output parameters.</P>
+<P>
+<H2>8.7 How do I...</H2>
+<H3><A NAME="Execute a parameterized SQL ..."></A><B>Execute a parameterized SQL
+Server stored procedure with ActiveX Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>Some of the stored procedures I use have parameters and return values. How do
+I execute a parameterized SQL Server Stored Procedure with ActiveX Data Objects?</P>
+<P><B>Technique</B></P>
+<P>Parameterized, SQL Server-stored procedures are enabled through the use of ADO's
+Command and Parameter objects. The steps for executing a parameterized SQL Server
+stored procedure are outlined in the following numbered list:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a Command object and set its ActiveConnection, CommandText,
+	and CommandType properties.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>For each input parameter, output parameter, or return value, use the
+	Command object's CreateParameter method to create and populate a Parameter object.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Append the new Parameter objects to the Command object's Parameters
+	collection.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Call the Command object's Execute method. If you are expecting a Recordset
+	object from the stored procedure, the Execute method <BR>
+	returns a Recordset object.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>After this, the Recordset is completely fetched out or closed. The
+	return value and output parameters are available.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>A NOTE ON STORED PROCEDURES AND ADO </STRONG></B></P>
+
+	<P>Keep in mind that Command and Parameter objects do not need to be used for stored
+	procedures with no output parameters or return values. You can open a Recordset with
+	the adCmdText Option parameter and build the stored procedure call yourself in Transact
+	SQL. This saves the overhead of creating Command and Parameter objects. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Steps</B></P>
+<P>Open the ParameterStoredProcedure.vbp, change the connection string in the Form_Load
+event, and run. The Royalty List application, shown in Figure 8.7, displays a list
+of royalties. Selecting a royalty displays the list of authors and titles to which
+that royalty was paid.</P>
+<P><A HREF="javascript:popUp('08fig07.gif')"><B>Figure 8.7.</B></A><B> </B><I>The
+Royalty List application.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Use SQL Enterprise Manager or ISQL/w to run the AuthorTitleByRoyalty.sql
+	script in your pubs database. This script creates <BR>
+	a new stored procedure in the pubs database, AuthorTitleByRoyalty.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Create a new Standard EXE. Change the Project Name to ParameterStoredProcedure
+	and rename the default form to frmMain.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add a reference to the Microsoft ActiveX Data Objects 2.0 Library and
+	add the Microsoft Windows Common Controls 6.0.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Use Table 8.9 to add the objects and set the properties for frmMain.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.9. Objects and properties for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Royalty List</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstRoyalty</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblRoyalty</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Royalty</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblWorks</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Authors and Titles</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListView</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">listWorks</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">View</TD>
+		<TD ALIGN="LEFT">3 - lvwReport</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">LabelEdit</TD>
+		<TD ALIGN="LEFT">1 - lvwManual</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the columns listed in Table 8.10 to the ListView control using
+	the Column Headers property page.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.10. Column Headers for listWorks.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>COLUMN</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Width</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">2000</TD>
+	</TR>
+	<TR>
+		<TD>TITLE</TD>
+		<TD>2000</TD>
+	</TR>
+	</TABLE>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the Declarations section, Form_Load event, and Form_Unload event
+	to handle the Connection object. Remember to change the connection string in the
+	Form_Load event for your server, user, and password.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Private mConn As Connection
+Private Sub Form_Load()
+    `open the connection
+    Set mConn = New Connection
+    mConn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password&quot; _
+        + &quot;;Location=WINEMILLER;Database=pubs&quot;
+    FillRoyalty
+End Sub
+Private Sub Form_Unload(Cancel As Integer)
+    mConn.Close
+    Set mConn = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the FillRoyalty procedure. This procedure fills the ListBox control
+	with all the possible royalty values.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub FillRoyalty()
+    `fill the list with the royalty values
+    Dim rs As Recordset
+    lstRoyalty.Clear
+    Set rs = mConn.Execute(&quot;select distinct royaltyper from&quot; _
+        &quot;titleauthor&quot; , , adCmdText)
+    Do Until rs.EOF
+        lstRoyalty.AddItem rs(&quot;royaltyper&quot;)
+        rs.MoveNext
+    Loop
+    rs.Close
+    Set rs = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Finally add the lstRoyalty_Click event to display the list of authors
+	and titles.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub lstRoyalty_Click()
+    `display a list of authors and titles at the selected royalty 
+    `level
+    Dim rs As Recordset
+    Dim cmd As Command
+    Dim param As adodb.Parameter
+    Dim NewItem As ListItem
+    Set cmd = New Command
+    cmd.ActiveConnection = mConn
+    cmd.CommandText = &quot;AuthorTitleByRoyalty&quot;
+    cmd.CommandType = adCmdStoredProc
+    `now build the parameter list
+    `The stored procedure returns a true or false if there were 
+    `results
+    Set param = cmd.CreateParameter(&quot;Return&quot;, adBoolean _
+        , adParamReturnValue, , 0)
+    cmd.Parameters.Append param
+    `The input parameter
+    Set param = cmd.CreateParameter(&quot;percentage&quot;, adInteger _
+        , adParamInput, , Val(lstRoyalty.Text))
+    cmd.Parameters.Append param
+    `The output parameter, the number of rows as reported by 
+    `@@ROWCOUNT
+    Set param = cmd.CreateParameter(&quot;numrows&quot;, adInteger, _
+        adParamOutput)
+    cmd.Parameters.Append param
+    `clear the list
+    listWorks.ListItems.Clear
+    `cmd execute generates the Recordset for us then it's
+    `business as usual
+    Set rs = cmd.Execute
+    Do Until rs.EOF
+        Set ListItem = listWorks.ListItems.Add(, , _
+           rs(&quot;au_lname&quot;) &amp; &quot;, &quot; &amp; rs(&quot;au_fname&quot;))
+        ListItem.SubItems(1) = rs(&quot;title&quot;)
+        rs.MoveNext
+    Loop
+    rs.Close
+    Set rs = Nothing
+    Set NewItem = Nothing
+    `use the return value and output parameter to display a 
+    `message
+    If cmd(&quot;Return&quot;) = True Then
+        MsgBox &quot;This stored procedure returned &quot; _
+            &amp; cmd(&quot;numrows&quot;) _
+            &amp; &quot; rows as reported by @@ROWCOUNT&quot;
+    Else
+        MsgBox &quot;No rows were found.&quot;
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The AuthorTitleByRoyalty stored procedure takes one input parameter and sends
+back one output parameter and a return value. After setting up the Command object,
+the lstRoyalty_Click event specifies all the parameters of the stored procedure.
+When the Recordset is completely fetched and closed, the return value and output
+parameter are available through the Command object. Those values are then used to
+display a message to the user.</P>
+<P><B>Comments</B></P>
+<P>Stored procedures can greatly enhance the performance of most SQL Server operations
+in addition to providing you with a way to encapsulate and hide data. SQL server
+checks the syntax and precompiles stored procedures so those steps are eliminated
+when the stored procedure is called instead of straight Transact SQL. For operations
+that take minutes or more to return, the overhead for syntax checking and compiling
+is relatively small, but on smaller operations that return quickly and are called
+often the savings are substantial.</P>
+<P>
+<H2>8.8 How do I...</H2>
+<H3><A NAME="Create and modify SQL Server ..."></A><B>Create and modify SQL Server
+objects with ActiveX Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>I need to do data definition through ADO. How do I create and modify SQL Server
+objects with ActiveX Data Objects?</P>
+<P><B>Technique</B></P>
+<P>Unlike DAO, ADO does not have any way through the object model to modify SQL Server
+objects. There is no Tables collection to which you can add; however, that does not
+prevent you from sending Transact SQL using the Connection object's Execute method
+and adCmdText in the Options Parameter.</P>
+<P>Using Transact SQL, you can create, alter, and drop tables, devices, stored procedures,
+or anything you can do with SQL Enterprise manager. Appendix A has a full summary
+of SQL syntax including all the commands necessary to create and modify tables.</P>
+<P><B>Steps</B></P>
+<P>Open and run the AlterObjects.vbp. Remember to change the connection string in
+the Form_Load event. Figure 8.8 shows the Alter Objects application. The three buttons
+create, alter, and drop a sample table in the pubs database.</P>
+<P><A HREF="javascript:popUp('08fig08.gif')"><B>Figure 8.8.</B></A><B> </B><I>The
+Alter Objects application.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new Standard EXE. Change the Project Name to AlterObjects,
+	rename the default form to frmMain, and add a reference to the Microsoft ActiveX
+	Data Objects 2.0.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Use Table 8.11 to add the objects and set the properties for frmMain.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.11. Objects and properties for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Alter Objects</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdCreate</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Create</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdAlter</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Alter</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdDrop</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Drop</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the Declarations section, the Form_Load event, and the Form_Unload
+	event to handle the Connection object.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Private mConn As Connection
+Private Sub Form_Load()
+    `open the connection
+    Set mConn = New Connection
+    mConn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password&quot; 
+        + &quot;;Location=WINEMILLER;Database=pubs&quot;
+End Sub
+Private Sub Form_Unload(Cancel As Integer)
+    mConn.Close
+    Set mConn = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Finally, add the code behind the buttons.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdAlter_Click()
+    `alter the sample table
+    Dim sCmd As String
+    sCmd = &quot;alter table HowToSample808 add MoreStuff CHAR(40) &quot;
+    sCmd = sCmd + &quot;NULL&quot;
+    mConn.Execute sCmd, , adCmdText
+End Sub
+Private Sub cmdCreate_Click()
+    `create the sample table
+    Dim sCmd As String
+    sCmd = &quot;create table HowToSample808 (SampleId INTEGER NOT &quot;
+    sCmd = sCmd + &quot;NULL&quot;
+    sCmd = sCmd + &quot;, Stuff CHAR(40) NOT NULL)&quot;
+    mConn.Execute sCmd, , adCmdText
+End Sub
+Private Sub cmdDrop_Click()
+    `drop the sample table
+    Dim sCmd As String
+    sCmd = &quot;drop table HowToSample808&quot;
+    mConn.Execute sCmd, , adCmdText
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>Each of the CommandButton Click events assemble the Transact SQL commands for
+the database modifications and send them using the Connection object's Execute method.
+By using adCmdText for the Options parameter, any command the server understands
+can be sent to the server for processing.</P>
+<P><B>Comments</B></P>
+<P>Using the Execute method to do this opens a whole new realm of possibilities.
+Sometimes object models can be restrictive, as the designer does not foresee every
+use that might come about. Microsoft has left the door open so you can talk directly
+to the database, and you can use any command the database understands.</P>
+<P>This power does not come without risks. Many companies might not want application
+developers with direct access to the database. Fortunately, SQL Server does have
+strong support for security, and most applications will not log in as the system
+administrator as this How-To does.</P>
+<P>
+<H2>8.9 How do I...</H2>
+<H3><A NAME="Execute batch updates ..."></A><B>Execute batch updates with ActiveX
+Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>I want to make many changes to a recordset and apply all the changes at once.
+How do I execute batch updates with ActiveX Data Objects?</P>
+<P><B>Technique</B></P>
+<P>The Recordset object's UpdateBatch method applies multiple changes at once. There
+are three steps to performing a batch update with ADO:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open a recordset with the LockType parameter set to adLockBatchOptimistic.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Move through the recordset making all the changes required.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Call the Recordset object's UpdateBatch method.
+	<P>
+</DL>
+
+<P><B>Steps</B></P>
+<P>Load the BatchUpdate.vbp, change the connection string in the Form_Load event
+to match your setup, and run the application. The Authors application, displayed
+in Figure 8.9, shows a list of authors and their addresses. Double-clicking on an
+author presents the Edit Author dialog box, shown in Figure 8.10. After all changes
+are complete, click the Apply Changes button to perform the batch update.</P>
+<P><A HREF="javascript:popUp('08fig09.gif')"><B>Figure 8.9.</B></A><B> </B><I>The
+Authors application enables batch updates.</I></P>
+<P><A HREF="javascript:popUp('08fig10.gif')"><B>Figure 8.10.</B></A><B> </B><I>You
+can change names and address information using the Edit Authors dialog box.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new Standard EXE. Change the Project Name to BatchUpdate,
+	rename the default form to frmMain, and add a reference to the Microsoft ActiveX
+	Data Objects 2.0.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Using the Components dialog box, add Microsoft Windows Common Controls
+	6.0.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Use Table 8.12 to add the objects and set the properties for frmMain.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.12. Objects and properties for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Authors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListView</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">listAuthors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">View</TD>
+		<TD ALIGN="LEFT">3 - lvwReport</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">LabelEdit</TD>
+		<TD ALIGN="LEFT">1 - lvwManual</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdApply</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Apply Changes</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Use Table 8.13 to add the columns for listAuthors.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.13. Column Headers for listAuthors.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>COLUMN</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Width</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Last</TD>
+		<TD ALIGN="LEFT">1440</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">First</TD>
+		<TD ALIGN="LEFT">1440</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Address</TD>
+		<TD ALIGN="LEFT">2000</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">City</TD>
+		<TD ALIGN="LEFT">1440</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">State</TD>
+		<TD ALIGN="LEFT">500</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Zip</TD>
+		<TD ALIGN="LEFT">700</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>In the Declarations section of frmMain, set Option Explicit and add
+	the declaration for mConn.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Private mConn As Connection</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>In the Form_Load event, the connection is opened and the ListView control
+	is filled with the author table data. Remember to change the connection string on
+	mConn's Open method to match your configuration.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    Dim rs As Recordset
+    Dim NewItem As ListItem
+    `open the connection
+    Set mConn = New Connection
+    mConn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password&quot; 
+        + &quot;;Location=WINEMILLER;Database=pubs&quot;
+    `fill the list
+    Set rs = mConn.Execute(&quot;authors&quot;, , adCmdTable)
+    Do Until rs.EOF
+        Set NewItem = listAuthors.ListItems.Add(, rs(&quot;au_id&quot;) _
+            , rs(&quot;au_lname&quot;))
+        NewItem.SubItems(1) = rs(&quot;au_fname&quot;)
+        NewItem.SubItems(2) = rs(&quot;address&quot;)
+        NewItem.SubItems(3) = rs(&quot;city&quot;)
+        NewItem.SubItems(4) = rs(&quot;state&quot;)
+        NewItem.SubItems(5) = rs(&quot;zip&quot;)
+        rs.MoveNext
+    Loop
+    rs.Close
+    Set rs = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>The Form_Unload event closes the connection and unloads the frmDetails.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Unload(Cancel As Integer)
+    Unload frmDetails
+    Set frmDetails = Nothing
+    mConn.Close
+    Set mConn = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>In the listAuthors_DblClick event, show the Edit Authors dialog box
+	with all the author information. If the user clicks OK, update listAuthors.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub listAuthors_DblClick()
+    `fill the detail screen
+    frmDetails.txtLastName.Text = listAuthors.SelectedItem.Text
+    frmDetails.txtFirstName.Text = listAuthors.SelectedItem.SubItems(1)
+    frmDetails.txtAddress.Text = listAuthors.SelectedItem.SubItems(2)
+    frmDetails.txtCity.Text = listAuthors.SelectedItem.SubItems(3)
+    frmDetails.txtState.Text = listAuthors.SelectedItem.SubItems(4)
+    frmDetails.txtZip.Text = listAuthors.SelectedItem.SubItems(5)
+    frmDetails.OK = False
+    frmDetails.Show vbModal
+    If frmDetails.OK = True Then
+        `user hit OK, update the list
+        listAuthors.SelectedItem.Text = frmDetails.txtLastName.Text
+        listAuthors.SelectedItem.SubItems(1) = frmDetails.txtFirstName.Text
+        listAuthors.SelectedItem.SubItems(2) = frmDetails.txtAddress.Text
+        listAuthors.SelectedItem.SubItems(3) = frmDetails.txtCity.Text
+        listAuthors.SelectedItem.SubItems(4) = frmDetails.txtState.Text
+        listAuthors.SelectedItem.SubItems(5) = frmDetails.txtZip.Text
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Add the code to apply the changes.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdApply_Click()
+    Dim rs As Recordset
+    Set rs = New Recordset
+    `to do a batch update be sure to open with adLockBatchOptimistic
+    rs.Open &quot;authors&quot;, mConn, adOpenKeyset, _
+        adLockBatchOptimistic _
+        , adCmdTable
+    Do Until rs.EOF
+        rs(&quot;au_lname&quot;) = listAuthors.ListItems((rs(&quot;au_id&quot;))).Text
+        rs(&quot;au_fname&quot;) = listAuthors.ListItems((rs(&quot;au_id&quot;))).SubItems(1)
+        rs(&quot;address&quot;) = listAuthors.ListItems((rs(&quot;au_id&quot;))).SubItems(2)
+        rs(&quot;city&quot;) = listAuthors.ListItems((rs(&quot;au_id&quot;))).SubItems(3)
+        rs(&quot;state&quot;) = listAuthors.ListItems((rs(&quot;au_id&quot;))).SubItems(4)
+        rs(&quot;zip&quot;) = listAuthors.ListItems((rs(&quot;au_id&quot;))).SubItems(5)
+        rs.MoveNext
+    Loop
+    `update batch commits all the changes
+    rs.UpdateBatch
+    rs.Close
+    Set rs = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Add a new form and name it frmDetails. Use Table 8.14 to add the objects
+	and set properties for frmDetails.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.14. Objects and properties for frmDetails.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Edit Authors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtFirstName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtLastName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtAddress</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtCity</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtState</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtZip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblFirstName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">First</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblLastName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Last</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblAddress</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Address</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblCity</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">City</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblState</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">State</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblZip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Zip Code</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdOK</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">OK</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdCancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Finally, add the code for frmDetails.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Public OK As Boolean
+Private Sub cmdCancel_Click()
+    Hide
+End Sub
+Private Sub cmdOK_Click()
+    OK = True
+    Hide
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The Edit Details dialog box enables the user to change the names and addresses
+of the authors, but does not change the database. All changes are collected till
+the Apply Changes button is pressed. The Recordset object is opened again, this time
+with adLockBatchOptimistic in the LockType parameter. Next, the application makes
+all the changes and calls the UpdateBatch method to apply all the changes.</P>
+<P><B>Comments</B></P>
+<P>Batch updates are often a way to squeeze more performance from a database operation.
+There is inherent overhead each time an update is performed. By using a batch update,
+that overhead cost is paid only once instead of at each separate update.</P>
+<P>
+<H2>8.10 How do I...</H2>
+<H3><A NAME="Make remote updates ..."></A><B>Make remote updates to data with ActiveX
+Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>My application will be running over the Web, where server connections and bandwidth
+are expensive. I want to minimize the server connections and bandwidth requirements.
+How do I make remote updates to data with ActiveX Data Objects?</P>
+<P><B>Technique</B></P>
+<P>ADO was designed with the Web in mind, and by using client side cursors, RDS enables
+an application to retrieve data, modify the data, and update the server using only
+one round trip. There are several steps required to enable this:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open the connection using a remote provider. The connection string
+	below uses the MS Remote provider to open an ODBC datasource.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Dim conn As Connection
+Set conn = New Connection
+conn.Open &quot;Provider=MS Remote;Remote Server=http://www.myserver.com&quot; _
+    + &quot;;Remote Provider=MSDASQL;DSN=pubs&quot;</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>A NOTE ON HTTP ADDRESSES </STRONG></B></P>
+
+	<P>The Remote Server parameter in the ConnectionString expects an http address for
+	the server. On a local network the http address is simply http://<I>myserver</I>.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Set the Recordset object's CursorLocation property to adUseClient.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Open the Recordset using adOpenStatic for the CursorType parameter
+	and adLockBatchOptimistic for the LockType parameter.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>After all the changes are collected, create a new Connection object
+	using the same ConnectionString property that is used in the first Connection.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Create a new Recordset object. Open it using the original Recordset
+	as the Source parameter and the new Connection object as the ActiveConnection parameter.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Call the second Recordset object's UpdateBatch method.
+	<P>
+</DL>
+
+<P><B>STEPS</B><BR>
+<BR>
+Open the ADODC.vbp, change the connection string in the Form_Load event to match
+your server, user, and password. The form, shown in Figure 8.11, is visually the
+same as the form in How-To 8.1, except this form uses a client-side cursor.</P>
+<P>This How-To is a modification of How-To 8.1. If you have completed How-To 8.1,
+you can start from where it left off, or you can use the completed How-To 8.1 project
+from the CD.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Clear the ConnectionString and RecordSource properties of the ADO Data
+	control.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('08fig11.gif')"><B>Figure 8.11.</B></A><B> </B><I>The
+New Authors application uses a client-side cursor.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>2. </B>Add the following code to frmMain to load the RecordSet in Form_Load
+	event and update it in the Form_Unload event.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    Dim conn As Connection
+    Dim rs As Recordset
+    `open the connection
+    Set conn = New Connection
+    conn.Open &quot;Provider=MS Remote&quot; _
+        + &quot;;Remote Server=http://winemiller&quot; _
+        + &quot;;Remote Provider=MSDASQL;DSN=pubs&quot;
+    `fill the list
+    Set rs = New Recordset
+    rs.CursorLocation = adUseClient
+    rs.Open &quot;authors&quot;, conn, adOpenStatic _
+        , adLockBatchOptimistic, adCmdTable
+    Set adodc.Recordset = rs
+End Sub
+Private Sub Form_Unload(Cancel As Integer)
+    Dim rs As Recordset
+    Dim conn As Connection
+    `open the connection
+    Set conn = New Connection
+    Set rs = New Recordset
+    On Error GoTo UpdateFailure
+    conn.Open &quot;Provider=MS Remote; _
+       + &quot;Remote Server=http://winemiller&quot; _
+       + &quot;;Remote Provider=MSDASQL;DSN=pubs&quot;
+    rs.Open adodc.Recordset, conn
+    rs.UpdateBatch
+    On Error GoTo 0
+UpdateDone:
+    Exit Sub
+UpdateFailure:
+    ShowADOError conn
+    GoTo UpdateDone
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the ShowADOError procedure to display any errors that occur during
+	the update.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub ShowADOError(pConn As Connection)
+    `spin through the errors collection and
+    `display the constructed error message
+    Dim ADOError As Error
+    Dim sError As String
+    For Each ADOError In pConn.Errors
+        sError = sError &amp; ADOError.Number &amp; &quot; - &quot; 
+        sError = ADOError.Description + vbCrLf
+    Next ADOError
+    MsgBox sError
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>First, in the Form_Load event, a client-side recordset is opened and assigned
+to the ADO Data control's Recordset property. The user can make changes to all the
+records, moving back and forth through the entire recordset. When the form unloads,
+another Recordset object is created with the changes from the first. The UpdateBatch
+method commits the changes to the database.</P>
+<P><B>Comments</B></P>
+<P>Remote updates work great for single user applications, but open the window for
+concurrency problems if there is more than one user. If multiple users are running
+applications that perform remote updates, the second user (and any subsequent users)
+will get an error if he tries to update a record that has been changed since he first
+opened the recordset.</P>
+<P>
+<H2>8.11 How do I...</H2>
+<H3><A NAME="Build a middle-tier business ..."></A><B>Build a middle-tier business
+object using ActiveX Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>Our company has decided to move our applications to a three-tier architecture.
+How do I build a middle-tier business object using ActiveX Data Objects?</P>
+<P><B>Technique</B></P>
+<P>Remote updates work well where the application is small and concurrency is not
+a big issue; however, as applications and number of users grow, a new paradigm for
+application development becomes attractive. Three-tier applications typically move
+the data access and business rules from the client back to the server. This enables
+thin clients, sometimes just a browser, and easy deployment when it comes time to
+make changes.</P>
+<P>Any data access method can be used to build middle-tier components, but ADO in
+particular is a good choice because of its ability to query almost anything and its
+light footprint.</P>
+<P>When designing middle-tier objects there are several questions that must be answered:</P>
+
+<UL>
+	<LI>4<B> </B>What objects will be exposed? Some companies choose to build an object
+	for each physical database table, whereas others expose logical objects where several
+	physical database tables are combined into one logical entity.
+	<P>
+	<LI>4<B> </B>What functions should those objects perform? Deletes, updates, and inserts
+	are the first functions that come to mind, but that might not be appropriate in all
+	circumstances. Imagine a medical application where a delete is not allowed, but a
+	strikeout is.
+	<P>
+	<LI>4<B> </B>Is there a standard to which you should adhere? Many companies have
+	guidelines about the type of interface a middle-tier component should have. If you
+	are just starting your migration to three-tier, this might be where you should start.
+	Defining this standard up-front will save time in the long run as other developers
+	begin to use and build the middle-tier components.
+	<P>
+	<LI>4<B> </B>Do you plan to use Microsoft Transaction Server? Transaction Server
+	is not necessary to deploy three-tier applications, but provides many benefits to
+	applications that use it. The middle-tier component in this How-To is written with
+	Transaction Server in mind, but does not require MTS. You will see why some of the
+	unusual techniques used in this sample make sense in the next How-To.
+</UL>
+
+<P><B>Steps</B></P>
+<P>Open the ThreeTier.vbg project group. Change the connection string in the Class_Initialize
+event of cAuthor to match your user, server, and password. Run the application. The
+UITier application, shown in Figure 8.12, is very similar to some of the other How-To's
+in this chapter. But, there is one important difference: there is no data access
+code in the application. All the data access is done through the MiddleTier.dll.</P>
+<P><A HREF="javascript:popUp('08fig12.gif')"><B>Figure 8.12.</B></A><B> </B><I>The
+UITier application uses a middle-tier component for data access.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new ActiveX DLL. Change the project name to MiddleTier. Rename
+	the default class from Class1 to cAuthor.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add a reference to Microsoft ActiveX Data Objects 2.0 Library.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code for the Declarations section, the Class_Initialize
+	event, and the Class_Terminate events. Remember to change the ConnectionString parameter
+	on mConn's Open method to your configuration.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Private mConn As Connection
+Private Sub Class_Initialize()
+    Set mConn = New Connection
+    mConn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password&quot; _
+        + &quot;;Location=WINEMILLER;Database=pubs&quot;
+End Sub
+Private Sub Class_Terminate()
+    mConn.Close
+    Set mConn = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the method to handle retrieving a list.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Function GetList(Optional psWhere As String) As Object
+    `return a recordset to the client as object so she doesn't
+    `even need to have a reference to ADO to use this object
+    Dim sCmd As String
+    Dim rs As Recordset
+    sCmd = &quot;select * from authors&quot;
+    `if she wanted a restricted list give it to her
+    If Len(psWhere) &gt; 0 Then
+        sCmd = sCmd + &quot; where &quot; + psWhere
+    End If
+    Set rs = New Recordset
+    rs.CursorLocation = adUseClient
+    rs.Open sCmd, mConn, adOpenForwardOnly, adLockReadOnly _
+        , adCmdText
+    Set GetList = rs
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the DeleteAuthor method. Given the author's ID, it constructs a
+	delete statement and executes the delete. Notice that the DeleteAuthor method does
+	not return a True or False indicating success or failure. Instead, if there is a
+	problem, it raises an error. The reason for this is explained in How-To 8.13.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Sub DeleteAuthor(psau_id As String)
+    `build delete string
+    Dim sCmd As String
+    sCmd = &quot;delete authors&quot;
+    sCmd = sCmd + &quot; where au_id = `&quot; + psau_id + &quot;`&quot;
+    `use execute to do the delete
+    On Error GoTo DeleteError:
+    mConn.Execute sCmd
+    Exit Sub
+DeleteError:
+    Err.Raise vbObjectError, , &quot;Error deleting&quot;
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>The UpdateAuthor method is next. Like the DeleteAuthor method, it also
+	indicates failure through a raised error instead of a return value. By now you may
+	have noticed something unusual about this class: there are no properties except the
+	connection; everything is passed as a parameter! Each time an application calls a
+	method or sets a property, one round trip must be made across the network, and that
+	is assuming early binding. When a DLL is in process on the same machine, that hit
+	is seldom noticeable, but in an environment where your middle-tier is running on
+	a server that might not even be in the same country, the performance hit is definitely
+	noticeable. This is perhaps the most important lesson to learn when building middle-tier
+	components: They are not objects for holding data, rather they are objects for doing
+	work.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Sub UpdateAuthor(psau_id As String, psau_lname As String _
+    , psau_fname As String, psphone As String _
+    , psaddress As String _
+    , pscity As String, psstate As String, pszip As String _
+    , pbcontract As Boolean)
+    `build udpate string
+    Dim sCmd As String
+    sCmd = &quot;update authors &quot;
+    sCmd = sCmd + &quot; set&quot;
+    sCmd = sCmd + &quot; au_lname = `&quot; + psau_lname + &quot;`&quot;
+    sCmd = sCmd + &quot;,au_fname = `&quot; + psau_fname + &quot;`&quot;
+    sCmd = sCmd + &quot;,phone = `&quot; + psphone + &quot;`&quot;
+    sCmd = sCmd + &quot;,address = `&quot; + psaddress + &quot;`&quot;
+    sCmd = sCmd + &quot;,city = `&quot; + pscity + &quot;`&quot;
+    sCmd = sCmd + &quot;,state = `&quot; + psstate + &quot;`&quot;
+    sCmd = sCmd + &quot;,zip = `&quot; + pszip + &quot;`&quot;
+    sCmd = sCmd + &quot;,contract = &quot; &amp; IIf(pbcontract, 1, 0)
+    sCmd = sCmd + &quot; where au_id = `&quot; + psau_id + &quot;`&quot;
+    `use execute to do the update
+    On Error GoTo UpdateError
+    mConn.Execute sCmd
+    Exit Sub
+UpdateError:
+    Err.Raise vbObjectError, , &quot;Error updating&quot;
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Finally, add the method to insert a new author.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Sub NewAuthor(psau_id As String, psau_lname As String _
+    , psau_fname As String, psphone As String _
+    , psaddress As String _
+    , pscity As String, psstate As String, pszip As String _
+    , pbcontract As Boolean)
+    `build insest string
+    Dim sCmd As String
+    sCmd = &quot;insert authors (au_id, au_lname, au_fname , &quot;
+    sCmd = sCmd + &quot;phone , address&quot;
+    sCmd = sCmd + &quot;, city, state, zip, contract)&quot;
+    sCmd = sCmd + &quot; values &quot;
+    sCmd = sCmd + &quot;(`&quot; + psau_id + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psau_lname + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psau_fname + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psphone + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psaddress + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + pscity + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psstate + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + pszip + &quot;`&quot;
+    sCmd = sCmd + &quot;,&quot; &amp; IIf(pbcontract, 1, 0)
+    sCmd = sCmd + &quot;)&quot;
+    `use execute to do the insert
+    On Error GoTo InsertError
+    mConn.Execute sCmd
+    Exit Sub
+InsertError:
+    Err.Raise vbObjectError, , &quot;Error inserting&quot;
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Now it is time to create the user interface level of the application.
+	Using File | Add Project, add a new Standard EXE to the project group. Change the
+	project name to UITier, change the default form name to frmMain, and save. When you
+	are prompted to save the project group file, save it as ThreeTier.vbg.
+	<P>
+	<DT></DT>
+	<DD><B>9. </B>Using the Project | References menu item, add references to Microsoft
+	ActiveX Data Objects Recordset 2.0 Library and the MiddleTier project.
+	<P>
+	<DT></DT>
+	<DD><B>10. </B>Using Table 8.15, add the objects for frmMain.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.15. Objects and properties for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Authors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListView</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">listAuthors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">View</TD>
+		<TD ALIGN="LEFT">3 - lvwReport</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">LabelEdit</TD>
+		<TD ALIGN="LEFT">1 - lvwManual</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdNew</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">New</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdDelete</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Delete</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdEdit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Edit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdExit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Exit</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Table 8.16 lists the columns and widths for the listAuthors ListView
+	control.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.16. Column Headers for listAuthors.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>COLUMN</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Width</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Last</TD>
+		<TD ALIGN="LEFT">1000</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">First</TD>
+		<TD ALIGN="LEFT">1000</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Address</TD>
+		<TD ALIGN="LEFT">2000</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">City</TD>
+		<TD ALIGN="LEFT">1440</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">State</TD>
+		<TD ALIGN="LEFT">500</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Zip</TD>
+		<TD ALIGN="LEFT">700</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Phone</TD>
+		<TD ALIGN="LEFT">1440</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Contract</TD>
+		<TD ALIGN="LEFT">700</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>12. </B>Add the Declarations section, the Form_Load event, and the Form_Unload
+	event. This code takes care of creating and destroying the mAuthors object and filling
+	the ListView control.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Private mAuthors As cAuthor
+Private Sub Form_Load()
+    `fill the list with all the authors
+    Dim rs As Recordset
+    Dim NewItem As ListItem
+    Set mAuthors = New cAuthor
+    Set rs = mAuthors.GetList()
+    Do Until rs.EOF
+        Set NewItem = listAuthors.ListItems.Add(, rs(&quot;au_id&quot;), _
+            rs(&quot;au_lname&quot;))
+        NewItem.SubItems(1) = rs(&quot;au_fname&quot;)
+        NewItem.SubItems(2) = rs(&quot;address&quot;)
+        NewItem.SubItems(3) = rs(&quot;city&quot;)
+        NewItem.SubItems(4) = rs(&quot;state&quot;)
+        NewItem.SubItems(5) = rs(&quot;zip&quot;)
+        NewItem.SubItems(6) = rs(&quot;phone&quot;)
+        NewItem.SubItems(7) = rs(&quot;contract&quot;)
+        rs.MoveNext
+    Loop
+End Sub
+Private Sub Form_Unload(Cancel As Integer)
+    Set mAuthors = Nothing
+    Unload frmDetails
+    Set frmDetails = Nothing
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>13. </B>Now, add the following code for the cmdDelete_Click event. The application
+	tells the middle-tier component to delete the selected author. If it is successful,
+	then it updates the list; otherwise it displays the trapped error.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdDelete_Click()
+    `delete the current author
+    On Error GoTo DeleteError
+    mAuthors.DeleteAuthor listAuthors.SelectedItem.Key
+    listAuthors.ListItems.Remove listAuthors.SelectedItem.Key
+    Exit Sub
+DeleteError:
+    MsgBox Err.Number + &quot; - &quot; + Err.Description
+    Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>14. </B>The cmdEdit_Click event displays the Edit Authors dialog box, and
+	if the user clicks OK, the event attempts to update the selected author's record
+	through the middle-tier component. Like the cmdDelete_Click event, if the update
+	is successful, the UI is updated; otherwise the trapped error is displayed.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdEdit_Click()
+    With frmDetails
+        `fill the detail screen
+        .txtId.Text = listAuthors.SelectedItem.Key
+        .txtId.Locked = True
+        .txtId.BackColor = vbButtonFace
+        .txtLastName.Text = listAuthors.SelectedItem.Text
+        .txtFirstName.Text = listAuthors.SelectedItem.SubItems(1)
+        .txtAddress.Text = listAuthors.SelectedItem.SubItems(2)
+        .txtCity.Text = listAuthors.SelectedItem.SubItems(3)
+        .txtState.Text = listAuthors.SelectedItem.SubItems(4)
+        .txtZip.Text = listAuthors.SelectedItem.SubItems(5)
+        .txtPhone.Text = listAuthors.SelectedItem.SubItems(6)
+        .chkContract.Value = _
+            IIf(listAuthors.SelectedItem.SubItems(7) = &quot;True&quot; _
+            , vbChecked, vbUnchecked)
+        `show the edit dialog
+        .OK = False
+        .Caption = &quot;Edit Author&quot;
+        .Show vbModal
+        If .OK = True Then
+            `user hit OK, update the database
+            On Error GoTo EditError
+            mAuthors.UpdateAuthor .txtId.Text, .txtLastName.Text _
+                , .txtFirstName.Text, .txtPhone.Text, _
+                 .txtAddress.Text _
+                , .txtCity.Text, .txtState.Text, .txtZip.Text _
+                , .chkContract.Value = vbChecked
+            On Error GoTo 0
+            `update successfull change ui
+            listAuthors.SelectedItem.Text = .txtLastName.Text
+            listAuthors.SelectedItem.SubItems(1) = _
+                .txtFirstName.Text
+            listAuthors.SelectedItem.SubItems(2) = _
+                .txtAddress.Text
+            listAuthors.SelectedItem.SubItems(3) = .txtCity.Text
+            listAuthors.SelectedItem.SubItems(4) = .txtState.Text
+            listAuthors.SelectedItem.SubItems(5) = .txtZip.Text
+            listAuthors.SelectedItem.SubItems(6) = .txtPhone.Text
+            listAuthors.SelectedItem.SubItems(7) = _
+                (.chkContract.Value = vbChecked)
+        End If
+    End With `frmDetails
+    Exit Sub
+EditError:
+    MsgBox Err.Number + &quot; - &quot; + Err.Description
+    Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>15. </B>Add the cmdNew_Click event. It looks very similar to the cmdEdit_Click
+	event, except that the txtId field is not locked when creating a new record.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+	<PRE>Private Sub cmdNew_Click()
+    With frmDetails
+        `fill the detail screen
+        .txtId.Text = &quot;&quot;
+        .txtId.Locked = False
+        .txtId.BackColor = vbWindowBackground
+        .txtLastName.Text = &quot;&quot;
+        .txtFirstName.Text = &quot;&quot;
+        .txtAddress.Text = &quot;&quot;
+        .txtCity.Text = &quot;&quot;
+        .txtState.Text = &quot;&quot;
+        .txtZip.Text = &quot;&quot;
+        .txtPhone.Text = &quot;&quot;
+        .chkContract.Value = vbUnchecked
+        `show new dialog
+        .OK = False
+        .Caption = &quot;New Author&quot;
+        .Show vbModal
+        If .OK = True Then
+            `user hit OK, update the database
+            On Error GoTo NewError
+            mAuthors.NewAuthor .txtId.Text, .txtLastName.Text _
+                , .txtFirstName.Text, .txtPhone.Text, _
+                .txtAddress.Text _
+                , .txtCity.Text, .txtState.Text, .txtZip.Text _
+                , .chkContract.Value = vbChecked
+            On Error GoTo 0
+            `update successfull change ui
+            Dim NewItem As ListItem
+            Set NewItem = listAuthors.ListItems.Add( _
+                .txtId.Text 
+                , .txtLastName.Text)
+            NewItem.SubItems(1) = .txtFirstName.Text
+            NewItem.SubItems(2) = .txtAddress.Text
+            NewItem.SubItems(3) = .txtCity.Text
+            NewItem.SubItems(4) = .txtState.Text
+            NewItem.SubItems(5) = .txtZip.Text
+            NewItem.SubItems(6) = .txtPhone.Text
+            NewItem.SubItems(7) = (.chkContract.Value = vbChecked)
+        End If
+    End With `frmDetails
+    Exit Sub
+NewError:
+    MsgBox Err.Number + &quot; - &quot; + Err.Description
+    Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>16. </B>Round out frmMain by adding a couple of miscellaneous procedures to
+	activate the cmdEdit_Click event when the listAuthors control is double-clicked and
+	unload the form when cmdExit is clicked.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub listAuthors_DblClick()
+    cmdEdit_Click
+End Sub
+Private Sub cmdExit_Click()
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>17. </B>Next add a new form to the project. Change its name to frmDetails.
+	Use Table 8.17 and Figure 8.13 to add the objects for frmDetails.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('08fig13.gif')"><B>Figure 8.13.</B></A><B> </B><I>The
+Details dialog box is used to edit and create authors.</I></P>
+
+
+<BLOCKQUOTE>
+	<H4>Table 8.17. Objects and properties for frmDetails.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtId</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtFirstName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtLastName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtAddress</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtCity</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtState</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtZip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtPhone</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CheckBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">chkContract</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Contract</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblId</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Id</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblFirstName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">First</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblLastName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Last</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblAddress</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Address</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblCity</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">City</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblState</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">State</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblZip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Zip Code</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPhone</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Phone</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>18. </B>Finally, add the following code to frmDetails so that the application
+	can tell if the user clicked the OK button.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Public OK As Boolean
+Private Sub cmdCancel_Click()
+    Hide
+End Sub
+Private Sub cmdOK_Click()
+    OK = True
+    Hide
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The UITier application collects and displays data, but passes off all the work
+to the MiddleTier.dll. The UITier application could be replaced with DHTML, and no
+changes would be needed for the data access. Likewise, the underlying table structure
+could change, business rules could be added and deleted, and the UITier application
+would not have to change.</P>
+<P><B>Comments</B></P>
+<P>This How-To created a middle-tier component that would do its job of hiding the
+underlying data access and any business rules from the application, but scalability
+would be questionable. For each object created there would be a new database connection,
+and for each application using the object, there would be a separate instance of
+the object. The next logical step for any three-tier application is to try and reap
+the benefits of using Microsoft Transaction Server.</P>
+<P>
+<H2>8.12 How do I...</H2>
+<H3><A NAME="Incorporate a business object ..."></A><B>Incorporate a business object
+into Microsoft Transaction Server?</B></H3>
+<P><B>Problem</B></P>
+<P>I have a three-tier application in which I am experiencing scalability problems.
+How do I incorporate a business object into Microsoft Transaction Server?</P>
+<P><B>Technique</B></P>
+<P>MTS can greatly enhance the scalability of middle-tier components. There are two
+benefits to using MTS that most impact middle-tier components: object reuse and connection
+pools.</P>
+<P>If MTS knows that an object has completed all the work that needs to be done and
+it is stateless, MTS will reuse that object. So, many applications using the cAuthor
+class from How-To 8.11 could all be using the same instance of that class. This saves
+time on the creation and destruction of objects, and it saves memory because only
+a few objects need to be instantiated instead of one for each client.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>WHAT DO YOU MEAN BY STATELESS? </STRONG></B></P>
+
+	<P>An object is said to be <I>stateless</I> if there are no properties that must
+	stay the same between calls. If the cAuthor class from How-To 8.11 kept the author's
+	name and other properties from one call to the next, it would be <I>statefull</I>.
+	MTS could not reuse that object for different clients because each client would need
+	the instance of cAuthor with their values intact. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The second benefit is the <I>connection pools</I>. MTS keeps a pool of database
+connections open. When an MTS object needs a new connection, MTS gives the object
+one of the connections that is already open. Many objects share the same connection
+without knowledge of this fact.</P>
+<P>There are only a couple of things that an object needs to do to enjoy these benefits:</P>
+
+<UL>
+	<LI>4 Tell MTS when the object is complete and if it was successful. Keep MTS informed,
+	and MTS can reuse the object in addition to providing transactions. MTS provides
+	an ObjectContext; use the SetAbort or SetComplete methods of the ObjectContext to
+	indicate that object is complete but unsuccessful, or complete and successful.
+	<P>
+	<LI>4<B> </B>Open a new connection on each call instead of holding them open. This
+	enables MTS to grant connections and share them between objects.
+</UL>
+
+<P><B>Steps</B></P>
+<P>This How-To uses the complete How-To 8.11 project and modifies it to take advantage
+of MTS. If you have completed How-To 8.11, you can use your finished project as a
+starting point, or you can copy the completed How-To 8.11 project from the CD and
+start from there.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open the MiddleTier.vbp and a reference to Microsoft Transaction Server
+	Type Library.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Change the NewAuthor procedure to tell MTS when it is done and to open
+	the connection each time it's called. The changes are listed below in bold.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Sub NewAuthor(psau_id As String, psau_lname As String _
+    , psau_fname As String, psphone As String _
+    , psaddress As String _
+    , pscity As String, psstate As String, pszip As String _
+    , pbcontract As Boolean)
+    Dim Conn As Connection
+<B>    Set Conn = New Connection</B>
+<B>    Conn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=</B>password<B>&quot; _</B>
+<B>        + &quot;;Location=WINEMILLER;Database=pubs&quot;</B>
+    `build insest string
+    Dim sCmd As String
+    sCmd = &quot;insert authors (au_id, au_lname, au_fname , &quot;
+    sCmd = sCmd + &quot;phone , address&quot;
+    sCmd = sCmd + &quot;, city, state, zip, contract)&quot;
+    sCmd = sCmd + &quot; values &quot;
+    sCmd = sCmd + &quot;(`&quot; + psau_id + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psau_lname + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psau_fname + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psphone + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psaddress + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + pscity + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psstate + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + pszip + &quot;`&quot;
+    sCmd = sCmd + &quot;,&quot; &amp; IIf(pbcontract, 1, 0)
+    sCmd = sCmd + &quot;)&quot;
+    `use execute to do the insert
+    On Error GoTo InsertError
+    <B>Conn</B>.Execute sCmd
+<B>    GetObjectContext().SetComplete</B>
+    Exit Sub
+InsertError:
+<B>    GetObjectContext().SetAbort</B>
+    Err.Raise vbObjectError, , &quot;Error inserting&quot;
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Next, change the UpdateAuthor procedure the same way. Again, all the
+	changes are listed in bold.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Sub UpdateAuthor(psau_id As String, psau_lname As String _
+    , psau_fname As String, psphone As String _
+    , psaddress As String _
+    , pscity As String, psstate As String, pszip As String _
+    , pbcontract As Boolean)
+<B>    Dim Conn As Connection</B>
+<B>    Set Conn = New Connection</B>
+<B>    Conn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=</B>password<B>&quot; _</B>
+<B>        + &quot;;Location=WINEMILLER;Database=pubs&quot;</B>
+    `build udpate string
+    Dim sCmd As String
+    sCmd = &quot;update authors &quot;
+    sCmd = sCmd + &quot; set&quot;
+    sCmd = sCmd + &quot; au_lname = `&quot; + psau_lname + &quot;`&quot;
+    sCmd = sCmd + &quot;,au_fname = `&quot; + psau_fname + &quot;`&quot;
+    sCmd = sCmd + &quot;,phone = `&quot; + psphone + &quot;`&quot;
+    sCmd = sCmd + &quot;,address = `&quot; + psaddress + &quot;`&quot;
+    sCmd = sCmd + &quot;,city = `&quot; + pscity + &quot;`&quot;
+    sCmd = sCmd + &quot;,state = `&quot; + psstate + &quot;`&quot;
+    sCmd = sCmd + &quot;,zip = `&quot; + pszip + &quot;`&quot;
+    sCmd = sCmd + &quot;,contract = &quot; &amp; IIf(pbcontract, 1, 0)
+    sCmd = sCmd + &quot; where au_id = `&quot; + psau_id + &quot;`&quot;
+    `use execute to do the update
+    On Error GoTo UpdateError
+    <B>Conn</B>.Execute sCmd
+<B>    GetObjectContext().SetComplete</B>
+    Exit Sub
+UpdateError:
+<B>    GetObjectContext().SetAbort</B>
+    Err.Raise vbObjectError, , &quot;Error updating&quot;
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Now change the DeleteAuthor method.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Sub DeleteAuthor(psau_id As String)
+<B>    Dim Conn As Connection</B>
+<B>    Set Conn = New Connection</B>
+<B>    Conn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=</B>password<B>&quot; _</B>
+<B>        + &quot;;Location=WINEMILLER;Database=pubs&quot;</B>
+    `build delete string
+    Dim sCmd As String
+    sCmd = &quot;delete authors&quot;
+    sCmd = sCmd + &quot; where au_id = `&quot; + psau_id + &quot;`&quot;
+    `use execute to do the delete
+    On Error GoTo DeleteError:
+    <B>Conn</B>.Execute sCmd
+<B>    GetObjectContext().SetComplete</B>
+    Exit Sub
+DeleteError:
+<B>    GetObjectContext().SetAbort</B>
+    Err.Raise vbObjectError, , &quot;Error deleting&quot;
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Change the GetList method to include the new code.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Function GetList(Optional psWhere As String) As Object
+<B>    Dim Conn As Connection</B>
+<B>    Set Conn = New Connection</B>
+<B>    Conn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=</B>password<B>&quot; _</B>
+<B>        + &quot;;Location=WINEMILLER;Database=pubs&quot;</B>
+    `return a record set to the client as object so he doesn't
+    `even need to have a reference to ADO to use this object
+    Dim sCmd As String
+    Dim rs As Recordset
+    sCmd = &quot;select * from authors&quot;
+    `if they wanted a restricted list give it to them
+    If Len(psWhere) &gt; 0 Then
+        sCmd = sCmd + &quot; where &quot; + psWhere
+    End If
+    Set rs = New Recordset
+    rs.CursorLocation = adUseClient
+    On Error GoTo GetListError:
+    rs.Open sCmd, <B>Conn</B>, adOpenForwardOnly, adLockReadOnly, _
+        adCmdText
+    Set GetList = rs
+<B>    GetObjectContext().SetComplete</B>
+    Exit Function
+GetListError:
+<B>    GetObjectContext().SetAbort</B>
+    Err.Raise vbObjectError, , &quot;Error getting list&quot;
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Finally, remove the mConn variable from the Declarations section and
+	delete the Class_Initialize and Class_Terminate events. Compile the new DLL and fix
+	any errors.
+	<P>
+	<DT></DT>
+	<DD><B>7. </B>Using Microsoft Management Console, create a new MTS package and add
+	the MiddleTier.dll to the package so that your package and objects appear like Figure
+	8.14.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('08fig14.gif')"><B>Figure 8.14.</B></A><B> </B><I>The
+MiddleTier.cAuthors component configured in MTS.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>8. </B>If you are running MTS on a separate machine, use dcomcnfg.exe to tell
+	the local machine to create the MiddleTier.cAuthor component on the MTS server. Load
+	the UITier.vbp project and run it. Without any changes to the user interface tier,
+	the application now runs under MTS.
+	<P>
+</DL>
+
+<P><B>How It Works</B></P>
+<P>Like How-To 8.11, the UI does very little work, and the MiddleTier.dll does the
+data access. However, now the middle-tier is optimized for MTS. By using the SetAbort
+and SetComplete methods of the ObjectContext, MTS knows when the object is completed
+and stateless so it can be reused. MTS can also hand out connections as needed because
+the middle-tier opens a connection for each call. MTS can immediately reuse those
+connections after the call is complete.</P>
+<P><B>Comments</B></P>
+<P>The MiddleTier.dll is now a highly scalable middle-tier component. Because this
+particular application would probably spend only a little time within the middle-tier's
+code, compared to the user's time typing and browsing, hundreds of clients could
+be serviced using probably only a small number of actual objects.</P>
+<P>The only thing lacking in the cAuthor class is some really nice error reporting;
+&quot;Error getting list&quot; does not really help much. How-To 8.13 shows you how
+to handle ADO errors.</P>
+<P>
+<H2>8.13 How do I...</H2>
+<H3><A NAME="Handle ActiveX Data Objects errors?"></A><B>Handle ActiveX Data Objects
+errors?</B></H3>
+<P><B>Problem</B></P>
+<P>To make my application more robust and easier to debug, I need to deal with and
+report to the user ADO errors. How do I handle ActiveX Data Objects errors?</P>
+<P><B>TECHNIQUE</B> <BR>
+<BR>
+ADO reports errors through the Connection object's Errors collection. The values
+from the last Error object in the Error's collection will also be repeated in Visual
+Basic's Err object. Typical error handling looks something like the code below. Before
+calling on an ADO object's methods or properties, use On Error Goto. Depending on
+the level of the application, you can then either raise an error or display a message
+to the user. This code below comes from a middle-tier component and raises an error
+for the UI tier to display.</P>
+
+
+<BLOCKQUOTE>
+	<PRE>`open the connection
+On Error GoTo InitializeError
+mConn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password;&quot;<B> _</B>
+    + &quot;Location=WINEMILLER;Database=pubs&quot;
+Exit Sub
+InitializeError:
+Err.Raise aeInitializeError, , FormatError(mConn<B> _</B>
+    , &quot;An error occurred while making the database connection.&quot;)</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>Steps</B></P>
+<P>This How-To uses the complete How-To 8.11 project and modifies it to better deal
+with and report ADO errors. If you have completed How-To 8.11, you can use your finished
+project as a starting point, or you can copy the completed How-To 8.11 project from
+the CD and start from there.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open the MiddleTier.vbp and add the following code to the cAuthor class.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function FormatError(pConn
+ As Connection, psAdditionalMessage<B> _</B>
+    As String) As String
+`start it with any message passed in
+    Dim Error As Error
+    Dim sTemp As String
+    If Len(psAdditionalMessage) &gt; 0 Then
+        sTemp = psAdditionalMessage + vbCrLf
+    End If
+    `spin through the errors collection and add in all those 
+    `errors
+    For Each Error In pConn.Errors
+        sTemp = sTemp + Error.Source + &quot; reported &quot; _
+            &amp; Error.Number<B> _</B>
+            &amp; &quot; - &quot; + Error.Description + vbCrLf
+    Next Error
+    FormatError = sTemp
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add the following enumeration to the Declarations section of cAuthor.
+	By providing meaningful error codes, a UI tier developer could decide how critical
+	the error is.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Enum cAuthorErrors
+    aeInsertError = (vbObjectError + 1)
+    aeUpdateError = (vbObjectError + 2)
+    aeDeleteError = (vbObjectError + 3)
+    aeFillError = (vbObjectError + 4)
+    aeInitializeError = (vbObjectError + 5)
+End Enum</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add error handling to the Class_Initialize procedure. Changes are highlighted
+	in bold.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Class_Initialize()
+    Set mConn = New Connection
+<B>    `open the connection</B>
+<B>    On Error GoTo InitializeError</B>
+    mConn.Open &quot;Provider=SQLOLEDB.1;User ID=sa;Password=password&quot;<B> _</B>
+        + &quot;;Location=WINEMILLER;Database=pubs&quot;
+<B>    Exit Sub</B>
+<B>InitializeError:</B>
+<B>    Err.Raise aeInitializeError, , FormatError(mConn _</B>
+<B>        , &quot;An error occurred while making the database _</B>
+<B>           connection.&quot;)</B>
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Make similar changes to the GetList, UpdateAuthor, DeleteAuthor, and
+	NewAuthor procedures. Again changes are highlighted in bold. In addition, each function
+	also has a chance to introduce an error. Those are also highlighted in bold. You
+	can use those errors to see the results of the error handling.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Sub NewAuthor(psau_id As String, psau_lname As String _
+    , psau_fname As String, psphone As String _
+    , psaddress As String _
+    , pscity As String, psstate As String, pszip As String _
+    , pbcontract As Boolean)
+    `build insest string
+    Dim sCmd As String
+    sCmd = &quot;insert <B>s</B>authors (au_id, au_lname, au_fname , &quot;
+    sCmd = sCmd + &quot;phone , address&quot;
+    sCmd = sCmd + &quot;, city, state, zip, contract)&quot;
+    sCmd = sCmd + &quot; values &quot;
+    sCmd = sCmd + &quot;(`&quot; + psau_id + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psau_lname + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psau_fname + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psphone + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psaddress + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + pscity + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + psstate + &quot;`&quot;
+    sCmd = sCmd + &quot;,'&quot; + pszip + &quot;`&quot;
+    sCmd = sCmd + &quot;,&quot; &amp; IIf(pbcontract, 1, 0)
+    sCmd = sCmd + &quot;)&quot;
+    `use execute to do the insert
+    On Error GoTo InsertError
+    mConn.Execute sCmd
+    Exit Sub
+InsertError:
+<B>    Err.Raise aeInsertError, , FormatError(mConn _</B>
+<B>        , &quot;An error occured while inserting the author.&quot;)</B>
+End Sub
+Public Sub UpdateAuthor(psau_id As String, psau_lname As String _
+    , psau_fname As String, psphone As String _
+    , psaddress As String _
+    , pscity As String, psstate As String, pszip As String _
+    , pbcontract As Boolean)
+    `build udpate string
+    Dim sCmd As String
+    sCmd = &quot;u<B>dp</B>ate authors &quot;
+    sCmd = sCmd + &quot; set&quot;
+    sCmd = sCmd + &quot; au_lname = `&quot; + psau_lname + &quot;`&quot;
+    sCmd = sCmd + &quot;,au_fname = `&quot; + psau_fname + &quot;`&quot;
+    sCmd = sCmd + &quot;,phone = `&quot; + psphone + &quot;`&quot;
+    sCmd = sCmd + &quot;,address = `&quot; + psaddress + &quot;`&quot;
+    sCmd = sCmd + &quot;,city = `&quot; + pscity + &quot;`&quot;
+    sCmd = sCmd + &quot;,state = `&quot; + psstate + &quot;`&quot;
+    sCmd = sCmd + &quot;,zip = `&quot; + pszip + &quot;`&quot;
+    sCmd = sCmd + &quot;,contract = &quot; &amp; IIf(pbcontract, 1, 0)
+    sCmd = sCmd + &quot; where au_id = `&quot; + psau_id + &quot;`&quot;
+    `use execute to do the update
+    On Error GoTo UpdateError
+    mConn.Execute sCmd
+    Exit Sub
+UpdateError:
+<B>    Err.Raise aeUpdateError, , FormatError(mConn _</B>
+<B>        , &quot;An error occured while updating the author.&quot;)</B>
+End Sub
+Public Sub DeleteAuthor(psau_id As String)
+    `build delete string
+    Dim sCmd As String
+    sCmd = &quot;delete authors<B>x</B>&quot;
+    sCmd = sCmd + &quot; where au_id = `&quot; + psau_id + &quot;`&quot;
+    `use execute to do the delete
+    On Error GoTo DeleteError:
+    mConn.Execute sCmd
+    Exit Sub
+DeleteError:
+<B>    Err.Raise aeDeleteError, , FormatError(mConn _</B>
+<B>        , &quot;An error occured while deleting the author.&quot;)</B>
+End Sub
+Public Function GetList(Optional psWhere As String) As Object
+    `return a record set to the client as object so they don't
+    `even need to have a reference to ADO to use this object
+    Dim sCmd As String
+    Dim rs As Recordset
+    sCmd = &quot;<B>z</B>select * from authors&quot;
+    `if they wanted a restricted list give it to them
+    If Len(psWhere) &gt; 0 Then
+        sCmd = sCmd + &quot; where &quot; + psWhere
+    End If
+    Set rs = New Recordset
+    rs.CursorLocation = adUseClient
+    On Error GoTo GetListError
+    rs.Open sCmd, mConn, adOpenForwardOnly, adLockReadOnly, _
+        adCmdText
+    Set GetList = rs
+    Exit Function
+GetListError:
+<B>    Err.Raise aeFillError, , FormatError(mConn _</B>
+<B>        , &quot;An error occured while getting the list of authors.&quot;)</B>
+</PRE>
+	<P>End Function</P>
+
+</BLOCKQUOTE>
+
+<P><B>How It Works</B></P>
+<P>The On Error Goto statements trap the ADO errors. Each procedure then uses the
+FormatError function to raise another error that a top-level component can display
+to the user. Figure 8.15 shows a sample of the error message generated by FormatError.</P>
+<P><A HREF="javascript:popUp('08fig15.gif')"><B>Figure 8.15.</B></A><B> </B><I>The
+formatted error message generated by FormatError.</I></P>
+<P><B>Comments</B></P>
+<P>Consistent and thorough error handling is a must for creating robust applications
+and components. Often, error handling is the last thing that is added to an application.
+By taking the time up front to develop a consistent and required approach to error
+handling, it will become second nature and save you time in the long run as your
+code starts to debug itself instead of being debugged by your customers.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch07.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch07/ch07.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch09.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch09/ch09.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,4641 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Visual Basic 6 Database How-To -- Ch 4 -- Designing and Implementing a Database</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="sams.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/sams.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"></H1>
+
+<H1 ALIGN="CENTER">Visual Basic 6 Database How-To</H1>
+<CENTER>
+<P><A HREF="ch03.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch03/ch03.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch05.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch05/ch05.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1></H1>
+<H1 ALIGN="CENTER">- 4 -<BR>
+Designing and Implementing a Database</H1>
+
+<UL>
+	<LI>How Do IÖ
+	<UL>
+		<LI><A HREF="#Create a new database?">Create a new database?</A>
+		<LI><A HREF="#Define tables and fields?">Define tables and fields?</A>
+		<LI><A HREF="#Define the primary key and other indexes?">Define the primary key and
+		other indexes?</A>
+		<LI><A HREF="#Define relations between tables?">Define relations between tables?</A>
+		<LI><A HREF="#Use the Jet database engine ...">Use the Jet database engine ...</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+<BR>
+No amount of Visual Basic coding skill can overcome the problems of a poorly designed
+database. This chapter introduces some fundamental principles of relational database
+design. You'll see how you can use Visual Basic code to create databases and database
+objects, including tables, fields, indexes, and relationships. You'll also see how
+you can use the properties of these database objects to enforce business rules for
+your application.</P>
+<P>
+<H4>4.1 Create a New Database</H4>
+<P>Creating a database with Data Access Object (DAO) code can be done with a single
+method. This How-To shows you how.</P>
+<P>
+<H4>4.2 Define Tables and Fields</H4>
+<P>Every database design starts with tables and fields. This How-To examines time-tested
+principles of table design and demonstrates how you can use DAO code to create your
+database objects.</P>
+<P>
+<H4>4.3 Define the Primary Key and Other Indexes</H4>
+<P>Indexes are the key to establishing relationships between tables and improving
+database application performance. This How-To introduces several types of indexes
+and shows you how to create indexes with Visual Basic code.</P>
+<P>
+<H4>4.Define Relations Between Tables</H4>
+<P>This How-To shows you how to use Visual Basic to create the relations for your
+database.</P>
+<P>
+<H4>4.5 Use the Jet Database Engine to Enforce Business Rules</H4>
+<P>There are two ways to enforce business rules in your database applications. You
+can write Visual Basic code to enforce your rules, or you can build the rules right
+into the database schema. This How-To shows you how to use the properties of the
+objects in your database to enforce business rules.</P>
+<P>
+<H2>4.1 How do I...</H2>
+<H3><A NAME="Create a new database?"></A><B>Create a new database?</B></H3>
+<P><B>Problem</B></P>
+<P>My application needs to create a database at a location chosen by the user. How
+can I do this with Visual Basic?</P>
+<P><B>Technique</B></P>
+<P>The <TT>CreateDatabase</TT> method of the <TT>Workspace</TT> object creates a
+database and returns a database object you can use in your application. The <TT>CreateDatabase</TT>
+method takes three arguments:</P>
+
+<UL>
+	<LI><TT>name</TT>. The database name. VB appends <TT>mdb</TT> if you do not supply
+	an extension. You can also use a UNC name in the form \\<I>server</I>\<I>share</I>\<I>path</I>\<I>file</I>
+	if your network supports it.
+	<P>
+	<LI><TT>locale</TT>. The language used for the sort order. You can also use the <TT>locale</TT>
+	argument to create a password-protected database by appending a password string to
+	the locale constant. Locale constants are shown in Table 4.1.
+	<P>
+	<LI><TT>option</TT>. An optional constant or a combination of constants you can use
+	to specify a database version or to encrypt the database. If you want to specify
+	a version and encrypt the database, use the bitwise <TT>Or</TT> operator to combine
+	the constants. <TT>Option</TT> constants are shown in Table 4.2.
+</UL>
+
+<H4>Table 4.1. Locale constants for the CreateDatabase method.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CONSTANT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Collating Order</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangGeneral</TT></TD>
+		<TD ALIGN="LEFT">Western European: English, German, French, Portuguese, Italian, and modern Spanish</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangArabic</TT></TD>
+		<TD ALIGN="LEFT">Arabic</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangChineseSimplified</TT></TD>
+		<TD ALIGN="LEFT">Simplified Chinese</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangChineseTraditional</TT></TD>
+		<TD ALIGN="LEFT">Traditional Chinese</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangCyrillic</TT></TD>
+		<TD ALIGN="LEFT">Russian</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangCzech</TT></TD>
+		<TD ALIGN="LEFT">Czech</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangDutch</TT></TD>
+		<TD ALIGN="LEFT">Dutch</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangGreek</TT></TD>
+		<TD ALIGN="LEFT">Greek</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangHebrew</TT></TD>
+		<TD ALIGN="LEFT">Hebrew</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangHungarian</TT></TD>
+		<TD ALIGN="LEFT">Hungarian</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangIcelandic</TT></TD>
+		<TD ALIGN="LEFT">Icelandic</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangJapanese</TT></TD>
+		<TD ALIGN="LEFT">Japanese</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangKorean</TT></TD>
+		<TD ALIGN="LEFT">Korean</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangNordic</TT></TD>
+		<TD ALIGN="LEFT">Nordic languages (Microsoft Jet database engine version 1.0 only)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangNorwDan</TT></TD>
+		<TD ALIGN="LEFT">Norwegian and Danish</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangPolish</TT></TD>
+		<TD ALIGN="LEFT">Polish</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangSlovenian</TT></TD>
+		<TD ALIGN="LEFT">Slovenian</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangSpanish</TT></TD>
+		<TD ALIGN="LEFT">Traditional Spanish</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangSwedFin</TT></TD>
+		<TD ALIGN="LEFT">Swedish and Finnish</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangThai</TT></TD>
+		<TD ALIGN="LEFT">Thai</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbLangTurkish</TT></TD>
+		<TD ALIGN="LEFT">Turkish</TD>
+	</TR>
+</TABLE>
+
+<H4>Table 4.2. Options constants for the CreateDatabase method.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CONSTANT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>DESCRIPTION</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbEncrypt</TT></TD>
+		<TD ALIGN="LEFT">Creates an encrypted database</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbVersion10</TT></TD>
+		<TD ALIGN="LEFT">Creates a database that uses the Microsoft Jet database engine version 1.0 file format</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbVersion11</TT></TD>
+		<TD ALIGN="LEFT">Creates a database that uses the Microsoft Jet database engine version 1.1 file format</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbVersion20</TT></TD>
+		<TD ALIGN="LEFT">Creates a database that uses the Microsoft Jet database engine version 2.0 file format</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>dbVersion30</TT></TD>
+		<TD ALIGN="LEFT">(Default) Creates a database that uses the Microsoft Jet database engine version
+			3.0 file format (compatible with version 3.51)</TD>
+	</TR>
+</TABLE>
+</P>
+<P><B>Steps</B></P>
+<P>Open and run HT401.VBP. Click the Create Database button. Choose a directory and
+filename using the common dialog, and click Save to create the database, as shown
+in Figure 4.1.</P>
+<P><A HREF="javascript:popUp('04fig01.gif')"><B>Figure 4.1.</B></A><I> Creating a
+database.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new Standard EXE project, and save it as HT401.VBP. Create
+	the objects and properties listed in Table 4.3, and save the form as FCreateDB.frm.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 4.3. Objects and properties for the Database Creator form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>FCreateDB</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Create Database</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommonDialog</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>dlgCreateDB</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdCreate</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Create Database</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add <TT>Option Explicit</TT> to the declarations section.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Create the <TT>GetDBName()</TT> function. This function sets up the
+	Common Dialog control with the appropriate filters and flags and returns the file
+	selected by the user as the return value of the function.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Function GetDBName() As String</TT>
+<TT>` Get the desired name using the common dialog</TT>
+On Error GoTo ProcError
+<TT>    Dim strFileName As String</TT>
+<TT>    ` set up the file save dialog file types</TT>
+<TT>    dlgCreateDB.DefaultExt = &quot;mdb&quot;</TT>
+<TT>    dlgCreateDB.DialogTitle = &quot;Create Database&quot;</TT>
+<TT>    dlgCreateDB.Filter = &quot;VB Databases (*.mdb)|*.mdb&quot;</TT>
+<TT>    dlgCreateDB.FilterIndex = 1</TT>
+<TT>    ` set up flags</TT>
+<TT>    dlgCreateDB.Flags = _</TT>
+<TT>    cdlOFNHideReadOnly Or _</TT>
+<TT>    cdlOFNOverwritePrompt Or _</TT>
+<TT>    cdlOFNPathMustExist</TT>
+<TT>    ` setting CancelError means the control will</TT>
+<TT>    ` raise an error if the user clicks Cancel</TT>
+<TT>    dlgCreateDB.CancelError = True</TT>
+<TT>    ` show the SaveAs dialog</TT>
+<TT>    dlgCreateDB.ShowSave</TT>
+<TT>    ` get the selected name</TT>
+<TT>    strFileName = dlgCreateDB.filename</TT>
+<TT>    ` dialog prompted for overwrite,</TT>
+<TT>    ` so kill file if it exists</TT>
+<TT>    On Error Resume Next</TT>
+<TT>    Kill strFileName</TT>
+<TT>ProcExit:</TT>
+<TT>    GetDBName = strFileName</TT>
+<TT>    Exit Function</TT>
+<TT>ProcError:</TT>
+<TT>    strFileName = &quot;&quot;</TT>
+<TT>    Resume ProcExit</TT>
+<TT>End Function</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>4. </B>Create the <TT>CreateDB()</TT> procedure. This procedure takes a filename
+	as a parameter and creates a database using the <TT>CreateDatabase</TT> method of
+	the <TT>Workspace</TT> object.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub CreateDB(strDBName As String)</TT>
+<TT>` create the database</TT>
+<TT>    Dim db As Database</TT>
+<TT>    ` if desired, you can specify a version or encrypt</TT>
+<TT>    ` the database as the optional third parameter to</TT>
+<TT>    ` the CreateDatabase method</TT>
+<TT>    Set db = DBEngine(0).CreateDatabase(strDBName, dbLangGeneral)</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5.</B> Add the following code as the <TT>cmdCreateDB_Click</TT> event procedure.
+	This procedure calls the <TT>GetDBName</TT> function to obtain a filename and passes
+	it to <TT>CreateDB</TT> to create the database.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdCreateDB_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>    Screen.MousePointer = vbHourglass</TT>
+<TT>    Dim strDBName As String</TT>
+<TT>    strDBName = GetDBName()</TT>
+<TT>    If Len(strDBName) &gt; 0 Then</TT>
+<TT>        CreateDB strDBName</TT>
+<TT>    End If</TT>
+<TT>ProcExit:</TT>
+<TT>    Screen.MousePointer = vbDefault</TT>
+<TT>    Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>    MsgBox Err.Description</TT>
+<TT>    Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>Two simple procedures--<TT>GetDBName</TT> and <TT>CreateDB</TT>--do all the work.
+The first obtains a filename from the user via the Common Dialog control, and the
+second creates the database using the filename provided.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>THE SQL </STRONG></B><STRONG><I><TT>CREATE DATABASE</TT></I><B> STATEMENT</B>
+	</STRONG></P>
+
+	<P>Some database engines provide a CREATE DATABASE statement as a command in their
+	SQL dialects. Jet, however, does not. Although you can create tables, fields, indexes,
+	relationships, and queries using Jet SQL, you must use the CreateDatabase method
+	to create. 
+<HR>
+</P>
+
+</BLOCKQUOTE>
+
+<P><B>Comments</B></P>
+<P>You might be able to avoid creating a database in code by using a model database.
+If you will be distributing an application that will always use the same database
+structure, you can create an empty version of the database and have the setup program
+install the empty model.</P>
+<P>Although this approach will work in many cases, two common scenarios preclude
+the use of this technique:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>If the database schema is not constant, a model will serve little or
+	no purpose.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>If the database must be secured at the installation point, you will
+	need to have your code create the database using the account that will be the database
+	owner. Although you can change the owner of database objects, you cannot change the
+	owner of the database itself. See Chapter 11, &quot;The Windows Registry and State
+	Information,&quot; for additional information about working with secured databases.
+	<P>
+</DL>
+
+<H2>4.2 How do I...</H2>
+<H3><A NAME="Define tables and fields?"></A><B>Define tables and fields?</B></H3>
+<P><B>Problem</B></P>
+<P>I need a database that is flexible, accurate, and reliable. How do I design my
+table and column structure to ensure that this is what I get?</P>
+<P><B>Technique</B></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>RECORDS AND ROWS--FIELDS AND COLUMNS</STRONG></B><STRONG> </STRONG></P>
+
+	<P>The terms <I>row</I> and <I>record</I> are interchangeable, as are the terms <I>column</I>
+	and<I> field</I>. Referring to tables in terms of rows and columns is the generally
+	accepted terminology for most literature on database design and for most database
+	engines, except Jet. The Data Access Objects (DAO) object model and most of the Visual
+	Basic documentation use the terms <I>record</I> and <I>field</I>. This kind of variation
+	in terminology doesn't stop at the database design level. Most server databases,
+	for example, describe the data returned by a query as a <I>result set</I>, whereas
+	the Jet engine named its object a <TT>Recordset</TT>. Don't let the terminology confuse
+	you. Whether you are dealing with records, rows, columns, or fields, the concepts
+	are still the same. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Building a database structure is a process of examining the data that is useful
+and necessary for an application, and then breaking it down into a relatively simple
+row-and-column format. You should understand two points about tables and columns
+that are the essence of any database:</P>
+
+<UL>
+	<LI>Tables store data about an object.
+	<P>
+	<LI>An object, in this case, could be something tangible (such as a physical object)
+	or intangible (such as an idea), but the primary consideration is that a table must
+	contain data about only one thing.
+	<P>
+	<LI>Columns contain the attributes of the object.
+	<P>
+	<LI>Just as a table contains data about a single type of object, each column should
+	contain only one item of data about that object. If, for example, you're creating
+	a table of addresses, there's no point in having a single column contain the city,
+	state, and postal code when it is just as easy to create three columns and record
+	each attribute separately.
+</UL>
+
+<P>The simplest model for any database is a flat table. The trouble with flat files
+is that they waste storage space and are problematic to maintain. Table 4.4 shows
+a flat table design that could be used to store information about students and classes
+at a school</P>
+<P>
+<H4>Table 4.4. A flat table.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>STUDENT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>ADVISOR</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>COURSE1</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>DESCRIPTION1</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>INSTRUCTOR1</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>COURSE2</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>DESCRIPTION2</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>INSTRUCTOR2</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">B. Williams</TD>
+		<TD ALIGN="LEFT">H. Andrews</TD>
+		<TD ALIGN="LEFT">VB1</TD>
+		<TD ALIGN="LEFT">Intro to VB</TD>
+		<TD ALIGN="LEFT">C. MacDonald</TD>
+		<TD ALIGN="LEFT">DAO1</TD>
+		<TD ALIGN="LEFT">Intro to DAO</TD>
+		<TD ALIGN="LEFT">S. Garrett</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">L. Duncan</TD>
+		<TD ALIGN="LEFT">P. Lowell</TD>
+		<TD ALIGN="LEFT">DAO1</TD>
+		<TD ALIGN="LEFT">Intro to DAO</TD>
+		<TD ALIGN="LEFT">S. Garrett</TD>
+		<TD ALIGN="LEFT">SQL1</TD>
+		<TD ALIGN="LEFT">Jet SQL</TD>
+		<TD ALIGN="LEFT">K. Olson</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">H. Johnson</TD>
+		<TD ALIGN="LEFT">W. Smith</TD>
+		<TD ALIGN="LEFT">API1</TD>
+		<TD ALIGN="LEFT">API Basics</TD>
+		<TD ALIGN="LEFT">W. Smith</TD>
+		<TD ALIGN="LEFT">OOP1</TD>
+		<TD ALIGN="LEFT">VB Objects</TD>
+		<TD ALIGN="LEFT">T. Carter</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">F. Norris</TD>
+		<TD ALIGN="LEFT">J. Carter</TD>
+		<TD ALIGN="LEFT">VB1</TD>
+		<TD ALIGN="LEFT">Intro to VB</TD>
+		<TD ALIGN="LEFT">C. MacDonald</TD>
+		<TD ALIGN="LEFT">API1</TD>
+		<TD ALIGN="LEFT">API Basics</TD>
+		<TD ALIGN="LEFT">W. Smith</TD>
+	</TR>
+</TABLE>
+</P>
+<P>Several problems arise with this flat table:</P>
+
+<UL>
+	<LI><I>Repeating groups</I>. The course ID, description, and instructor are repeated
+	for each course. If a student wanted to take a third course, you would need to modify
+	the table design. Although you could add columns for Course3, Course4, and so on,
+	no matter how many columns you initially add, one day a student might need one more.
+	Additionally, in most cases all the extra columns would be a waste of storage. What
+	is required is a means of associating a student with any number of courses.
+	<P>
+	<LI><I>Inconsistent data</I>. If after entering the data, you discover that the SQL1
+	course should be titled &quot;Transact-SQL&quot; rather than &quot;Jet SQL,&quot;
+	you would need to examine two columns in each row to make all the necessary changes.
+	You should be able to update this by changing only a single entry.
+	<P>
+	<LI><I>Delete anomalies</I>. If you want to remove S. Garrett's Intro to DAO course
+	from the course list, you would need to delete two students, two advisors, and one
+	additional instructor to do it. The data for each of these objects (students, advisors,
+	instructors, and courses) should be independent of each other.
+	<P>
+	<LI><I>Insert anomalies</I>. Imagine that the department head wants to add a new
+	course titled &quot;Advanced Client/Server Programming&quot; but has not yet created
+	a schedule or even assigned an instructor. What do you enter in the other columns
+	to record this information? You need to be able to add rows for each of the objects
+	independently of the others.
+</UL>
+
+<P>The solution to these problems is a technique known in relational database parlance
+as <I>normalization</I>. <I>Normalization</I> is the process of taking a wide table
+with lots of columns but few rows and redesigning it as several narrow tables with
+fewer columns but more rows. A properly normalized design enables you to use storage
+space efficiently, eliminate redundant data, reduce or eliminate inconsistent data,
+and ease the data maintenance burden.</P>
+<P>Several forms of normalization will be discussed shortly, but one cardinal rule
+absolutely must be followed:</P>
+<P><B>YOU MUST BE ABLE TO RECONSTRUCT THE ORIGINAL FLAT VIEW OF THE DATA.</B></P>
+<P>If you violate this rule, you will have defeated the purpose of normalizing the
+design.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NORMALIZATION IS <I>NOT</I> A PANACEA</STRONG></B><STRONG> </STRONG></P>
+
+	<P>Don't be misled into thinking that all database design woes can be cured with
+	proper normalization. In fact, the opposite can be true. Taken to extremes, normalization
+	can cause as many problems as it cures. Although you might be able to cure every
+	type of data anomaly that could possibly occur, you will send performance on a downward
+	spiral if your design requires more than two or three relational joins in a query
+	to reconstruct a flat view of your data.<BR>
+	<BR>
+	Consider this scenario:<BR>
+	<BR>
+	You are designing a customer database. It's a well-known fact that in the United
+	States, a postal zip code defines a specific city and state, and a nine-digit zip
+	code defines a specific delivery point. You could, then, store only a zip code in
+	the customer table and eliminate the city and state columns that would typically
+	be required. However, every time the city and state needed to be retrieved, the database
+	engine would have to perform an additional join. This might or might not be acceptable
+	in your situation.<BR>
+	<BR>
+	Now take this scenario to an additional level of detail. It's also true that although
+	millions of people live in the United States, there are a limited number of first
+	and last names and only 26 possible middle initials. Theoretically, you could create
+	a foreign key column in place of the normal last name column and do the same for
+	the first name. This level of normalization, however, steps into the realm of the
+	ridiculous. It is pointless complexity that adds no real benefit for data accuracy.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Forms of Normalization</B></P>
+<P>Relational database theorists have divided normalization into several rules, called
+<I>normal forms</I>:</P>
+
+<UL>
+	<LI><I>First normal form</I>. No repeating groups.
+	<P>
+	<LI><I>Second normal form</I>. No nonkey attributes depend on a portion of the primary
+	key.
+	<P>
+	<LI><I>Third normal form</I>. No attributes depend on other nonkey attributes.
+</UL>
+
+<P>Additionally, for a database to be in second normal form, it must be in first
+normal form, and so on. Fourth and fifth normal forms also exist, but these are rarely
+applied. In fact, it might be practical at times to violate even the first three
+forms of normalization (see the sidebar &quot;Normalization Is <I>Not</I> a Panacea&quot;).</P>
+<P><B>First Normal Form</B></P>
+<P>First normal form requires that a table does not contain repeating groups. A repeating
+group is a set of columns, such as the <TT>CourseID</TT>, <TT>Description</TT>, and
+<TT>Instructor</TT> columns in Table 4.4. Repeating groups are removed by creating
+a separate table from the columns that repeat.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>If you have a set of columns with names
+	that end in numbers, such as the <TT>CourseID1</TT> and <TT>CourseID2</TT> columns
+	in the example, it's a clear sign that you have encountered repeating groups. At
+	this point, you need to think about removing the columns to a separate table. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Table 4.5 is a revised version of the sample table, with the repeating groups
+for the course moved to their own table. (Note that in this table and the following
+several tables, primary key columns have been put in bold type. The primary key concept
+is explained a little later in the chapter.)</P>
+<P>
+<H4>Table 4.5. First normal form.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>STUDENTS</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>STUDENTCOURSES</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><B><TT>SCStID</TT></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><TT>StID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><TT>SCCourseID</TT></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StName</TT></TD>
+		<TD ALIGN="LEFT"><TT>SCCourseDesc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StAdvisorName</TT></TD>
+		<TD ALIGN="LEFT"><TT>SCCourseInstrName</TT></TD>
+	</TR>
+</TABLE>
+</P>
+<P>The repeating group has been eliminated by creating a second table. The student
+can now enroll in any number of courses (including no courses). Although the repeating
+group is gone, we can still reconstruct the original table by joining the two via
+the new <TT>SCStID</TT> column in the StudentCourses table. This column is a foreign
+key that matches the value of the <TT>StID</TT> column in the Students table.</P>
+<H4><B>TABLE AND COLUMN NAMING CONVENTIONS</B></H4>
+<P>A naming convention has been applied to these table and column names:
+
+<UL>
+	<LI>Names are restricted to 30 characters and can contain only letters, numbers,
+	and the underscore character. A letter must be the first character. The 30-character
+	limit provides compatibility with Microsoft SQL Server. The other restrictions eliminate
+	the need to use square brackets as delimiters around column names in SQL statements
+	and VB code.
+	<P>
+	<LI>Tables are named using the plural form of the objects they represent.
+	<P>
+	<LI>Columns are named to represent the attribute they record.
+	<P>
+	<LI>Each table is assigned a unique column name prefix. With the addition of a prefix
+	to the column names, all columns within the name space of a database have a unique
+	name. This eliminates the need to fully qualify the column with the table name in
+	SQL statements.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>Naming conventions have an annoying tendency to start religious wars among programmers,
+	but nearly all programmers will--perhaps grudgingly--admit their usefulness. You
+	can adopt this convention or any other convention that suits you or your company.
+	What's important is not the particular convention you choose but that you choose
+	one and follow it faithfully.
+
+</BLOCKQUOTE>
+
+<P><B>Second Normal Form</B></P>
+<P>Second normal form requires that no nonkey attributes depend on a portion of the
+primary key. To understand this rule, you need to understand the concept of a primary
+key. A <I>primary key</I> is a column, or set of columns, in a table that uniquely
+identifies a single record. The primary key for a table is most often an arbitrary
+value, such as an autoincrement column (Jet refers to this as a counter), although
+the primary key can be any type of data.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>Proceed with caution if you decide
+	to use anything other than an arbitrary value as the primary key for a table. Even
+	seemingly reliable data such as a social security number can fail if used as a primary
+	key. An arbitrary value provided by the database engine is guaranteed to be unique
+	and independent of the data in the table. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Second normal form really applies only to tables in which the primary key is defined
+by two or more columns. The essence is that if certain columns can be identified
+by only part of the primary key, they must be in their own table. The StudentCourses
+table in Table 4.5 violates second normal form because the course information can
+be identified without using the <TT>SCStID</TT> column. Table 4.6 shows the same
+data reorganized so that it meets the requirements for second normal form.</P>
+<P>
+<H4>Table 4.6. Second normal form.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>STUDENTS</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>STUDENTCOURSES</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>COURSES</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><B><TT>SCStID</TT></B></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><TT>StID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><TT>SCCourseID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><TT>CourseID</TT></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StName</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>CourseDesc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StAdvisorName</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>CourseInstrName</TT></TD>
+	</TR>
+</TABLE>
+</P>
+<P>The partial dependence on the primary key has been eliminated by moving the course
+information to its own table. The relationship between students and courses has at
+last revealed itself to be a many-to-many relationship (see the following section,&quot;Advanced
+Design Techniques&quot;). Each student can take many courses, and each course can
+have many students. The StudentCourses table now contains only the two foreign keys
+to Students and Courses.</P>
+<P><B>Third Normal Form</B></P>
+<P>Third normal form requires that no attributes depend on other nonkey attributes.
+This means that all the columns in the table contain data about the entity that is
+defined by the primary key. The columns in the table must contain data about only
+one thing. Like second normal form, this is used to remove columns that belong in
+their own table.</P>
+<P>Table 4.7 shows a revised version of these tables, with a few columns added to
+help illustrate third normal form.</P>
+<P>
+<H4>Table 4.7. Detail columns added.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>STUDENTS </I><TT>StID</TT></B></TD>
+		<TD WIDTH="134" ALIGN="LEFT"><B><I>STUDENTCOURSES </I><TT>SCStID SCCourseID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><I>COURSES </I><TT>CourseID</TT></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StFirstName</TT></TD>
+		<TD WIDTH="134" ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>CourseDesc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StLastName</TT></TD>
+		<TD WIDTH="134" ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>CourseInstrName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StAddress</TT></TD>
+		<TD WIDTH="134" ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>CourseInstrPhone</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StCity</TT></TD>
+		<TD WIDTH="134" ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StState</TT></TD>
+		<TD WIDTH="134" ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StZIP</TT></TD>
+		<TD WIDTH="134" ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StAdvisorName</TT></TD>
+		<TD WIDTH="134" ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StAdvisorPhone</TT></TD>
+		<TD WIDTH="134" ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+</TABLE>
+</P>
+<P>To complete the normalization, we need to look for columns that are not dependent
+on the primary key of the table. In the Students table, we have two data items about
+the student's advisor: the name and phone number. The balance of the data pertains
+only to the student and so is appropriate in the Students table. The advisor information,
+however, is not dependent on the student. If the student leaves the school, the advisor
+and the advisor's phone number remain the same. The same logic applies to the instructor
+information in the Courses table. The data for the instructor is not dependent on
+the primary key <TT>CourseID</TT> because the instructor is unaffected if the course
+is dropped from the curriculum (unless school officials fire the instructor when
+they drop the course). Table 4.8 shows the revised schema in third normal form.</P>
+<P>
+<H4>Table 4.8. Third normal form.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>STUDENTS<BR>
+			</I><TT>StID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><I>ADVISORS<BR>
+			</I><TT>AdvID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><I>INSTRUCTORS<BR>
+			</I><TT>InstrID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><I>STUDENTCOURSES<BR>
+			</I><TT>SCStID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><I>COURSES<BR>
+			</I><TT>CourseID</TT><I><BR>
+			</I><TT>SCCourseID</TT></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StAdvID</TT></TD>
+		<TD ALIGN="LEFT"><TT>AdvFirst</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrFirst</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>CourseInstrID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StFirst</TT></TD>
+		<TD ALIGN="LEFT"><TT>AdvLast</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrLast</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>CourseDesc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StLast</TT></TD>
+		<TD ALIGN="LEFT"><TT>AdvPhone</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrPhone</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StAddress</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StCity</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StState</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>StZIP</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+</TABLE>
+</P>
+<P>The database is now in third normal form:</P>
+
+<UL>
+	<LI>It is in first normal form because there are no repeating groups in any table.
+	<P>
+	<LI>It is in second normal form because it is in first normal form and because there
+	are no nonkey attributes that depend on a portion of the primary key in any table.
+	<P>
+	<LI>It is in third normal form because it is in first and second normal form and
+	because no attributes depend on other nonkey attributes in any table.
+</UL>
+
+<P><B>Advanced Design Techniques</B></P>
+<P>Look again at Table 4.8. You can see two types of relationships between tables:</P>
+
+<UL>
+	<LI><I>One-to-many</I>. A row in one table can have zero or more related rows in
+	another table. The relationship between advisors and students, for example, is a
+	one-to-many relationship. Any advisor can have no students, one student, or more
+	than one student.
+	<P>
+	<LI><I>Many-to-many</I>. Rows in one table can have many related rows in a second
+	table, and the second table can have many related rows in the first table. The relationship
+	between students and courses is a many-to-many relationship. Each student can be
+	enrolled in zero or more courses, and each course can have zero or more students
+	enrolled.
+</UL>
+
+<P>A third possible type of relationship exists between tables: a one-to-one relationship.
+Table 4.8 reveals a possible use of a one-to-one relational design. Both the Advisors
+table and the Instructors table contain identical lists of columns. In a real-world
+database, each of these tables would contain additional columns specific to the role
+of advisor or instructor and would also contain additional information about the
+individual faculty member who has that role. If you examine Table 4.4, you will notice
+that faculty members can act in both roles--as advisors and instructors. Table 4.9
+shows a more detailed view of the advisor and instructor data.</P>
+<P>
+<H4>Table 4.9. Advisors and instructors.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>ADVISORS</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>INSTRUCTORS</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><TT>AdvID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><TT>InstrID</TT></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AdvFirst</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrFirst</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AdvLast</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrLast</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AdvPhone</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrPhone</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AdvGradeLevel</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrSpecialty</TT></TD>
+	</TR>
+</TABLE>
+</P>
+<P>For this example, it is assumed that advisors handle students by grade level (undergraduate
+or graduate) and that instructors have a specialty area that they teach. For example,
+in a computer science department, an instructor might specialize in teaching classes
+related to a particular language.</P>
+<P>Much of the data in these two tables is shared. You could duplicate the columns
+in both tables, or you could further subdivide these tables, as shown in Table 4.10.</P>
+<P>
+<H4>Table 4.10. The school faculty.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>FACULTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>ADVISORS</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>INSTRUCTORS</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><TT>FacID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><TT>AdvFacID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><TT>InstrFacID</TT></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FacFirst</TT></TD>
+		<TD ALIGN="LEFT"><TT>AdvGradeLevel</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrSpecialty</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FacLast</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FacPhone</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+</TABLE>
+</P>
+<P>The columns that are shared by both tables have been removed to the Faculty table.
+The Advisors and Instructors tables now contain only a foreign key to the faculty
+table and the columns that relate specifically to the role of advisor or instructor.
+The foreign key columns in this case also act as the primary key for these tables
+because there must be one (and only one) row in the Faculty table for any advisor
+or instructor. This is a one-to-one relationship. The Advisors and Instructors tables
+define extensions to the Faculty table for subsets of the data in that table.</P>
+<P>Designing the tables so that they use the shared Faculty table allows for the
+reuse of the code required to manage that data and common querying of all members
+of the school staff.</P>
+<P>The design of the database for the mythical school is nearly complete, but one
+set of data is still missing. All but the smallest of organizations generally employ
+a hierarchical management structure. If the school is a large university, it probably
+has several campuses, each of which have several colleges. Each college is probably
+further divided into several departments, and even those departments might be subdivided.
+The trouble with hierarchical organizations is that you often can't know in advance
+how many levels will exist within the hierarchy. A solution to this problem does
+exist, however. Table 4.11 expands the view of the faculty information.</P>
+<P>
+<H4>Table 4.11. The school faculty.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>FACULTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>DEPARTMENTS</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><TT>FacID</TT></B></TD>
+		<TD ALIGN="LEFT"><B><TT>DeptID</TT></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FacDeptID</TT></TD>
+		<TD ALIGN="LEFT"><TT>DeptName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FacFirst</TT></TD>
+		<TD ALIGN="LEFT"><TT>DeptParentDeptID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FacLast</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FacPhone</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+</TABLE>
+</P>
+<P>A foreign key to the Departments table has been added to the Faculty table. This
+enables a faculty member to be assigned to a department. The Departments table has
+three columns: <TT>DeptID</TT>, the primary key; <TT>DeptName</TT>, the department
+name; and the key to establishing the hierarchical relationship, the <TT>DeptParentDeptID</TT>
+column. This column is a foreign key, but the key points back into the Departments
+table. This relationship might be easier to understand if you look at some sample
+data, as shown in Table 4.12.</P>
+<P>
+<H4>Table 4.12. The Departments table.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I><TT>DEPTID</TT></I></B></TD>
+		<TD ALIGN="LEFT"><B><I><TT>DEPTNAME</TT></I></B></TD>
+		<TD ALIGN="LEFT"><B><I><TT>DEPTPARENTDEPTID</TT></I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">1</TD>
+		<TD ALIGN="LEFT">Minnesota State University</TD>
+		<TD ALIGN="LEFT"><TT>Null</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">2</TD>
+		<TD ALIGN="LEFT">Institute of Technology</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">3</TD>
+		<TD ALIGN="LEFT">College of Liberal Arts</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">4</TD>
+		<TD ALIGN="LEFT">College of Medicine</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">5</TD>
+		<TD ALIGN="LEFT">Department of Internal Medicine</TD>
+		<TD ALIGN="LEFT">4</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">6</TD>
+		<TD ALIGN="LEFT">Oncology Department</TD>
+		<TD ALIGN="LEFT">5</TD>
+	</TR>
+</TABLE>
+</P>
+<P>Looking at the sample data, you can see that the College of Medicine is directly
+under the university, the Department of Internal Medicine is under the College of
+Medicine, and the Oncology Department is under the Department of Internal Medicine.
+This type of structure can be reassembled as a flat table using a self-join. In a
+self-join, a table is included twice in the same query.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>The TreeView control is an excellent
+	choice as a tool for displaying hierarchical data. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Creating Tables and Columns with Visual Basic</B></P>
+<P>A well-designed database schema is critical, but that's only half the work of
+creating a database. You still need to create the actual database objects. You can
+use two methods to create database objects in a Jet database:</P>
+
+<UL>
+	<LI><I>SQL statements</I>. You can use SQL <TT>CREATE TABLE</TT> and <TT>ALTER TABLE</TT>
+	statements to create tables. Using a SQL statement is fast and easy, but it limits
+	the control you have over the database objects. Many of the properties available
+	for tables and columns cannot be set using SQL alone. You can also use the SQL <TT>DROP</TT>
+	statement to delete tables. Chapter 3, &quot;Creating Queries with SQL,&quot; provides
+	detailed instructions for using SQL statements to create database objects.
+	<P>
+	<LI><I>Data Access Objects</I>. The <TT>TableDef</TT> object and <TT>TableDefs</TT>
+	collection are used to create tables, and the <TT>Field</TT> object and <TT>Fields</TT>
+	collection are used to create columns. In this How-To, you use DAO code to create
+	database objects. Using the <TT>Delete</TT> method of the <TT>TableDefs</TT> collection
+	is also demonstrated.
+	<P>
+	<LI>Creating a table with DAO code is a three-step process:
+</UL>
+
+
+<DL>
+	<DD><B>1. </B>Create the <TT>TableDef</TT> object by using the <TT>CreateTableDef</TT>
+	method.<BR>
+	<BR>
+	<B>2. </B>Create the <TT>Field</TT> objects by using the <TT>CreateField</TT> method,
+	and add them to the <TT>TableDef</TT> object using the <TT>Append</TT> method.<BR>
+	<BR>
+	<B>3. </B>Add the <TT>TableDef</TT> object to the collection by using the <TT>Append</TT>
+	method.
+	<P>
+</DL>
+
+<P><B>Steps</B></P>
+<P>Open and run project HT402.vbp. A sample database based on the tables shown in
+Table 4.8 and Table 4.10 has been created and saved as HT402.mdb. You can open the
+sample database and inspect it, or you can create a new database by using the File
+| New menu command. First, create the Students, Courses, and StudentCourses tables
+(as shown in Table 4.8) and then create the Faculty, Advisors, and Instructors tables
+(as shown in Table 4.10). To create the tables, select Table | Add. Figure 4.2 shows
+the Create TableDef form with the Students table in progress.</P>
+<P><A HREF="javascript:popUp('04fig02.gif')"><B>Figure 4.2.</B></A><I> Creating the
+Students table.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>This example and the two examples that
+	follow in How-To 4.3 and How-To 4.4 use the Microsoft Windows Common Dialog 6.0,
+	the Microsoft Windows Common Controls 6.0, and the Microsoft DAO 3.51 Object Library
+	components. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project called HT402.vbp. Add BMain.bas to the project.
+	This standard module contains procedures to open an existing database and create
+	a new database. These procedures are based in large part on the example presented
+	in How-To 4.1.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add frmMain.frm to the project. This is based on a form created by
+	the VB Application Wizard. The wizard-generated code manages the split view for the
+	tree and list panes of the main form. For simplicity, a considerable amount of the
+	wizard-generated code was removed. The right pane supports only the report view,
+	and all the toolbar buttons and menu controls were removed, along with their associated
+	event procedures. Menu controls and associated code were then added for the File
+	and Table menus. Table 4.13 shows the menu controls that were added for the example.
+	In the declarations section, an object variable is declared for the <TT>CDBExplorer</TT>
+	class:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private mcdbExp As CDBExplorer</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<H4>Table 4.13. Menu controls for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>NAME</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;File</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuFileOpen</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Open</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuFileNew</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;New</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuFileBar1</TT></TD>
+		<TD ALIGN="LEFT"><TT>-</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuFileClose</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Close</TT></TD>
+	</TR>
+	</TABLE>
+<BR>
+	
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>Because of space limitations, all the
+	wizard-generated code that manages the split Explorer view for the left and right
+	panes of the main form has not been included here. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>The following code controls the File menu for the main form. The <TT>mnuFileOpen_Click</TT>
+	and <TT>mnuFileNew_Click</TT> event procedures call routines in BMain.bas to open
+	or create a database and then create and initialize the <TT>mcdbExp</TT> object variable.
+	When initialized using the <TT>ExploreDatabase</TT> method, the <TT>CDBExplorer</TT>
+	class accepts a database name, a reference to a TreeView control, and a reference
+	to a ListView control as parameters. Code within the class then handles most of the
+	management of the tree and list panes of the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileOpen_Click()</TT>
+<TT>` open a database</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Dim strDBName As String</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  strDBName = GetOpenDBName(dlgCommonDialog)</TT>
+<TT>  If Len(strDBName) Then</TT>
+<TT>    Set mcdbExp = Nothing</TT>
+<TT>    Set mcdbExp = New CDBExplorer</TT>
+<TT>    mcdbExp.ExploreDatabase strDBName, tvTreeView, lvListView</TT>
+<TT>  End If</TT>
+<TT>  ` no node is selected by default, so we</TT>
+<TT>  ` select the root node here</TT>
+<TT>  SelectRootNode</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+  MsgBox Err.Description
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuFileNew_Click()</TT>
+<TT>` create a new database</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Dim strDBName As String</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  ` get the filename</TT>
+<TT>  strDBName = GetNewDBName(dlgCommonDialog)</TT>
+<TT>  ` kill it if it exists</TT>
+<TT>  ` note that GetDBName prompts to confirm overwrite</TT>
+<TT>  On Error Resume Next</TT>
+<TT>  Kill strDBName</TT>
+<TT>  ` create the database</TT>
+<TT>  CreateDB strDBName</TT>
+<TT>  ` explore it</TT>
+<TT>  Set mcdbExp = New CDBExplorer</TT>
+<TT>  mcdbExp.ExploreDatabase strDBName, tvTreeView, lvListView</TT>
+<TT>  SelectRootNode</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuFileClose_Click()</TT>
+<TT>  `unload the form</TT>
+<TT>  Unload Me</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>4. </B>The following code passes the <TT>Expand</TT> and <TT>NodeClick</TT>
+	events for the tree pane on to the <TT>CDBExplorer</TT> class:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub tvTreeView_Expand(ByVal Node As ComctlLib.Node)</TT>
+<TT>` Expand the node</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  ` the class does the work</TT>
+<TT>  mcdbExp.ExpandNode Node</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub tvTreeView_NodeClick(ByVal Node As ComctlLib.Node)</TT>
+<TT>` Display the properties of the selected node in the listview</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  ` the class does the work</TT>
+<TT>  mcdbExp.ListProperties Node</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5.</B> Add the CDBExplorer.cls class module to the project. Code in this class
+	module does most of the work of mapping database objects to nodes in the tree pane
+	of the form. This was developed as a class module to provide a degree of isolation
+	between the database engine and the user interface in the form. The class presents
+	a hierarchical view of a database, including tables, fields, indexes, queries, and
+	relationships in a tree.
+	<P>
+	<DT></DT>
+	<DD>The class works by examining the <TT>Expand</TT> and <TT>NodeClick</TT> events
+	of a TreeView control. When a node in the tree is expanded, the class populates that
+	branch of the tree (empty dummy nodes are initially written to unexpanded nodes so
+	that the node will be expandable on the form). After a node is selected by the user,
+	the class determines what database object is associated with the node by examining
+	the position of the node in the tree; then the class displays the properties of the
+	associated object in the list pane. The property list works by iterating the <TT>Properties</TT>
+	collection common to all DAO objects (except collections) and adding them as items
+	in the ListView control. In this How-To, <TT>mnuTableAdd</TT> and <TT>mnuTableDelete</TT>
+	call the <TT>AddTable</TT> and <TT>DeleteTable</TT> methods of the class. These methods
+	add or remove a <TT>TableDef</TT> object and refresh the <TT>TableDefs</TT> branch
+	of the tree on <TT>frmMain</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Sub AddTable()</TT>
+<TT>  Load frmCreateTableDef</TT>
+<TT>  Set frmCreateTableDef.Database = mdb</TT>
+<TT>  frmCreateTableDef.Show vbModal</TT>
+<TT>  ` refresh the tabledefs node</TT>
+<TT>  ExpandNode mtvw.Nodes(&quot;TableDefs&quot;)</TT>
+<TT>End Sub</TT>
+<TT>Public Sub DeleteTable(strTableDefName As String)</TT>
+<TT>  ` delete the TableDef</TT>
+<TT>  mdb.TableDefs.Delete strTableDefName</TT>
+<TT>  ` refresh the tree</TT>
+<TT>  ExpandNode mtvw.Nodes(&quot;TableDefs&quot;)</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>Because of the length of the code in
+	the <TT>CDBExplorer</TT> class, it was not possible to present all of it here. Source
+	code comments in the class and the CDBExplorer.html file included in the project
+	as a related file on the CD-ROM provide additional details about the class. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add a new form to the project and save it as frmCreateTableDef.frm.
+	Add the objects and properties shown in Table 4.14. Except for <TT>lblTableDefName</TT>,
+	<TT>txtTableDefName</TT>, and the <TT>cmd</TT> command button array, all controls
+	should be drawn within the <TT>fraFields</TT> frame.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 4.14. frmCreateTableDef objects and properties.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>VALUE</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>frmCreateTableDef</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Create TableDef</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>BorderStyle</TT></TD>
+		<TD ALIGN="LEFT"><TT>3-Fixed Dialog</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblTableDefName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Table Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtTableDefName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Frame</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>fraFields</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Fields</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblFieldName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtFieldName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblFieldType</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Data Type</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ComboBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboFieldDataType</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>2-Dropdown List</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblFieldSize</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Field &amp;Size</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtFieldSize</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdAdd</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Add</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ListView</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lvwFields</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmd</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>OK</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Default</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmd</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the following code to the declarations section. The database object
+	is used to create the <TT>TableDef</TT> object. The two constants are indexes into
+	the <TT>cmd</TT> CommandButton control array.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+<TT>` database object</TT>
+<TT>Private mdb As Database</TT>
+<TT>` command button array index constants</TT>
+<TT>Private Const cmdOK = 0</TT>
+<TT>Private Const cmdCancel = 1</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>8. </B>Add the <TT>Form_Load</TT> event procedure. This procedure populates
+	the field type list, sets up the list view headers, and disables the frame and OK
+	button. The frame is enabled after a table name is provided. OK is enabled when a
+	table name is provided and at least one field has been added to the field list.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Load()</TT>
+<TT>` set up form</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  ` set up fields controls</TT>
+<TT>  cmdAdd.Enabled = False</TT>
+<TT>  ` fill the data types combo</TT>
+<TT>  With cboFieldDataType</TT>
+<TT>    ` Note: not all field types are</TT>
+<TT>    ` included here</TT>
+<TT>    .Clear</TT>
+<TT>    .AddItem &quot;Boolean&quot;</TT>
+<TT>    .AddItem &quot;Counter&quot;</TT>
+<TT>    .AddItem &quot;Date/Time&quot;</TT>
+<TT>    .AddItem &quot;Long Integer&quot;</TT>
+<TT>    .AddItem &quot;Text&quot;</TT>
+<TT>    .AddItem &quot;Memo&quot;</TT>
+<TT>  End With</TT>
+<TT>  cboFieldDataType.Text = &quot;Text&quot;</TT>
+<TT>  ` set up list view</TT>
+<TT>  lvwFields.View = lvwReport</TT>
+<TT>  With lvwFields.ColumnHeaders</TT>
+<TT>    .Add , &quot;Name&quot;, &quot;Name&quot;</TT>
+<TT>    .Item(&quot;Name&quot;).Width = 2000</TT>
+<TT>    .Add , &quot;Type&quot;, &quot;Data Type&quot;</TT>
+<TT>    .Add , &quot;Size&quot;, &quot;Size&quot;</TT>
+<TT>  End With</TT>
+<TT>  ` disable the entire fields frame</TT>
+<TT>  fraFields.Enabled = False</TT>
+<TT>  ` disable OK button</TT>
+<TT>  cmd(cmdOK).Enabled = False</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>9. </B>Add the <TT>cboFieldDataType_Click</TT> procedure. This enables or
+	disables the field size text box, depending on the type of field selected.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cboFieldDataType_Click()</TT>
+<TT>  If cboFieldDataType.Text = &quot;Text&quot; Then</TT>
+<TT>    lblFieldSize.Enabled = True</TT>
+<TT>    txtFieldSize.Enabled = True</TT>
+<TT>  Else</TT>
+<TT>    txtFieldSize.Text = &quot;&quot;</TT>
+<TT>    lblFieldSize.Enabled = False</TT>
+<TT>    txtFieldSize.Enabled = False</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>10. </B>Add the <TT>cmdAdd_Click</TT> event procedure. This procedure uses
+	the data in the FieldName, DataType, and Size controls to add the field to the field
+	list in the ListView control. It then enables the OK button and returns focus to
+	the FieldName control.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdAdd_Click()</TT>
+` add to the listview
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  Dim li As ListItem</TT>
+<TT>  Dim strFieldName As String</TT>
+<TT>  Dim strFieldDataType As String</TT>
+<TT>  strFieldName = txtFieldName.Text</TT>
+<TT>  strFieldDataType = cboFieldDataType.Text</TT>
+<TT>  Set li = lvwFields.ListItems.Add _</TT>
+<TT>    (, strFieldName, strFieldName)</TT>
+<TT>  With li</TT>
+<TT>    .SubItems(1) = strFieldDataType</TT>
+<TT>    ` only add size if applicable</TT>
+<TT>    If strFieldDataType = &quot;Text&quot; Then</TT>
+<TT>      .SubItems(2) = txtFieldSize.Text</TT>
+<TT>    Else</TT>
+<TT>      .SubItems(2) = &quot;N/A&quot;</TT>
+<TT>    End If</TT>
+<TT>  End With</TT>
+<TT>  ` prep for new entry</TT>
+<TT>  txtFieldName.Text = &quot;&quot;</TT>
+<TT>  txtFieldName.SetFocus</TT>
+<TT>  ` enable the OK button</TT>
+<TT>  cmd(cmdOK).Enabled = True</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>11. </B>Add the <TT>Change</TT> event procedures for the <TT>txtTableDefName</TT>
+	and <TT>txtFieldName</TT> controls. These enable or disable other controls on the
+	form based on the current values.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub txtTableDefName_Change()</TT>
+<TT>` Enable/disable controls</TT>
+<TT>  cmd(cmdOK).Enabled = False</TT>
+<TT>  fraFields.Enabled = False</TT>
+<TT>  If Len(txtTableDefName) &gt; 0 Then</TT>
+<TT>    fraFields.Enabled = True</TT>
+<TT>    If lvwFields.ListItems.Count &gt; 0 Then</TT>
+<TT>      cmd(cmdOK).Enabled = True</TT>
+<TT>    End If</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub txtFieldName_Change()</TT>
+<TT>  If Len(txtFieldName.Text) &gt; 0 Then</TT>
+<TT>    cmdAdd.Enabled = True</TT>
+<TT>  Else</TT>
+<TT>    cmdAdd.Enabled = False</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>12. </B>Add the <TT>cmd_Click</TT> event procedure. This procedure adds the
+	table if OK is chosen or unloads the form if Cancel is chosen.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmd_Click(Index As Integer)</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  Select Case Index</TT>
+<TT>    Case cmdOK</TT>
+<TT>      ` add the table</TT>
+<TT>      AddTable</TT>
+<TT>    Case cmdCancel</TT>
+<TT>      ` just unload the form</TT>
+<TT>  End Select</TT>
+<TT>  Unload Me</TT>
+<TT>ProcExit:</TT>
+  Screen.MousePointer = vbDefault
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>13. </B>Create the <TT>AddTable</TT> procedure. <TT>AddTable</TT> creates
+	the <TT>TableDef</TT> object, then extracts the field information from the ListView
+	to create and add each <TT>Field</TT> object. After the fields have been added to
+	the table, the table is added to the database using the <TT>Append</TT> method of
+	the <TT>TableDefs</TT> collection.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub AddTable()</TT>
+<TT>  Dim li As ListItem</TT>
+<TT>  Dim td As TableDef</TT>
+<TT>  Dim fld As Field</TT>
+<TT>  Dim lngType As Long</TT>
+<TT>  Dim strFieldName As String</TT>
+<TT>  Dim strFieldDataType As String</TT>
+<TT>  Set td = mdb.CreateTableDef(txtTableDefName.Text)</TT>
+<TT>  ` add the fields</TT>
+<TT>  For Each li In lvwFields.ListItems</TT>
+<TT>    ` get the name</TT>
+<TT>    strFieldName = li.Text</TT>
+<TT>    ` get the data type</TT>
+<TT>    strFieldDataType = li.SubItems(1)</TT>
+<TT>    Select Case strFieldDataType</TT>
+<TT>      Case &quot;Boolean&quot;</TT>
+<TT>        lngType = dbBoolean</TT>
+<TT>      Case &quot;Counter&quot;</TT>
+<TT>        lngType = dbLong</TT>
+<TT>      Case &quot;Date/Time&quot;</TT>
+<TT>        lngType = dbDate</TT>
+<TT>      Case &quot;Long Integer&quot;</TT>
+<TT>        lngType = dbLong</TT>
+<TT>      Case &quot;Text&quot;</TT>
+<TT>        lngType = dbText</TT>
+<TT>      Case &quot;Memo&quot;</TT>
+<TT>        lngType = dbMemo</TT>
+<TT>    End Select</TT>
+<TT>    ` check field type</TT>
+<TT>    If lngType = dbText Then</TT>
+<TT>      ` text, create with size</TT>
+<TT>      Set fld = td.CreateField _</TT>
+<TT>        (strFieldName, dbText, CInt(li.SubItems(2)))</TT>
+<TT>    Else</TT>
+<TT>      ` other, create without size</TT>
+<TT>      Set fld = td.CreateField(strFieldName, lngType)</TT>
+<TT>      If strFieldDataType = &quot;Counter&quot; Then</TT>
+<TT>        fld.Attributes = fld.Attributes Or dbAutoIncrField</TT>
+<TT>      End If</TT>
+<TT>    End If</TT>
+<TT>    td.Fields.Append fld</TT>
+<TT>    Set fld = Nothing</TT>
+<TT>  Next  ` ListItem</TT>
+<TT>  ` append the tabledef</TT>
+<TT>  mdb.TableDefs.Append td</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>14. </B>Add the <TT>Database</TT> property. This is used by the <TT>AddTable</TT>
+	procedure and must be set before the form is shown.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Property Set Database(db As DAO.Database)</TT>
+<TT>  Set mdb = db</TT>
+<TT>End Property</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>The <TT>AddTable</TT> procedure in <TT>frmCreateTableDef</TT> is the critical
+procedure for this How-To. This routine creates the table using the name provided
+on the form, then iterates the items in the list to create and append the fields.
+When all the fields have been added, the table is appended to the database. The balance
+of the code on the form serves only to manage and coordinate the user interface.</P>
+<P><B>Comments</B></P>
+<P>Much of the code provided on the CD-ROM supports the main Explorer form and class
+module, but the code in <TT>frmCreateTableDef</TT> does all the work of creating
+a table and its fields. It is helpful, but not necessary, to fully understand the
+code in the class module and the wizard-generated code in the main form.</P>
+<P>The sample application is not limited to creating the sample database described
+in this How-To. You can inspect or modify any Jet database using the project.</P>
+<P>
+<H2>4.3 How do I...</H2>
+<H3><A NAME="Define the primary key and other indexes?"></A><B>Define the primary
+key and other indexes?</B></H3>
+<P><B>Problem</B></P>
+<P>I know that a primary key is an important component in a proper relational database
+design and that indexes can significantly improve database performance. How do I
+choose fields to index and create the indexes for those fields?</P>
+<P><B>Technique</B></P>
+<P>Database indexes can be broadly grouped into two categories:</P>
+
+<UL>
+	<LI><I>Constraints</I>. The primary key and other unique indexes place constraints
+	on the data that can be entered into the columns bound to the indexes.
+	<P>
+	<LI><I>Performance indexes</I>. Some, perhaps most, indexes are added strictly for
+	performance reasons. An index speeds access to data by enabling the database engine
+	to more quickly retrieve rows from the tables. (Of course, the additional performance
+	gain for the query operation occurs at the expense of modifying the index during
+	the insert, update, and delete operations.)
+</UL>
+
+<P>Many developers consider indexes--particularly indexes that act as constraints--to
+be part of the database schema or overall table design. In reality, however, indexes
+serve only to enforce the constraints that must be applied to the data. The constraints,
+or rules, form the database design. Indexes serve as a tool to implement those constraints.
+It is possible (although not recommended) to create tables that do not have primary
+keys or unique indexes and still have a fully functional relational design, but it
+is much more efficient to have the database engine enforce rules at that level.</P>
+<P>Establishing indexes on tables is a two-step process. First you must determine
+what columns need to be indexed and the type of indexes the columns require, and
+then you must create the indexes using the properties and methods provided by the
+database engine.</P>
+<P><B>Constraints</B></P>
+<P>In How-To 4.2, you learned about primary keys and relationships between tables,
+including one-to-many, many-to-many, and one-to-one relationships. Although you can
+create a table without a primary key, this technique is not recommended. In most
+situations, it is also recommended that an arbitrary value, such as a number provided
+by the database engine, be used as the primary key. For those tables that act as
+the junction table of a many-to-many relationship between tables, the combination
+of the two foreign key columns typically acts as the primary key. In a one-to-one
+relationship, the foreign key column alone is the primary key. Only one primary key
+can be defined for a table, although you can define additional unique indexes.</P>
+<P>A primary key imposes some constraints on the data in the columns included in
+the index:</P>
+
+<UL>
+	<LI>Each entry in the index must be unique. For single-column indexes, every value
+	in the column must be unique. In multiple-column indexes, each combination of values
+	must be unique.
+	<P>
+	<LI>Every column in the index must contain a value. You cannot have nulls in columns
+	included in the primary key.
+</UL>
+
+<P><B>Indexing for Performance</B></P>
+<P>In addition to imposing constraints on your data, indexes can be added strictly
+to improve performance. The database engine can optimize <TT>SELECT</TT> queries
+if it has useful indexes available. Determining what constitutes a useful index can
+be more of an art than a science, but the following guidelines are appropriate in
+most situations:</P>
+
+<UL>
+	<LI>Index foreign key columns. These are almost always excellent candidates for indexes.
+	<P>
+	<LI>Index columns that are frequently used for restrictive criteria in the <TT>WHERE</TT>
+	clause of <TT>SELECT</TT> queries.
+	<P>
+	<LI>Index columns that are used for sorting in the <TT>ORDER BY</TT> clause of <TT>SELECT</TT>
+	queries.
+	<P>
+	<LI>If you frequently do multiple field sorts, create a multiple field index ordered
+	using the same order used in the sort. Sorts are normally ascending but can be descending.
+</UL>
+
+<P>To obtain the best performance in your own applications, you should experiment
+with various indexing strategies and use profiling techniques to determine which
+indexes provide the greatest advantage.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>WHEN NOT TO INDEX</STRONG></B><STRONG> </STRONG></P>
+
+	<P>Don't think that you can index every column to gain optimum performance. Although
+	indexes accelerate data retrieval, they slow inserts, updates, and deletes because
+	the database engine not only has to update the tables but also must update the indexes.<BR>
+	<BR>
+	Additionally, the database engine might not find all indexes useful, especially on
+	small tables. If you have tables with very few rows (such as lookup tables of coded
+	values, tables of United States states, and the like), it is likely that the database
+	engine can perform a table scan (read every row in the table) faster than it can
+	find a row using an index.<BR>
+	<BR>
+	Finally, some situations can force a table scan, in which case all indexes are ignored.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Defining Indexes</B></P>
+<P>Indexes are created by using the <TT>CreateIndex</TT> method of the <TT>TableDef</TT>
+object in a three-step process:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Call <TT>CreateIndex</TT> to create an <TT>Index</TT> object.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Create the fields in the index by using the <TT>CreateField</TT> method,
+	and then use the <TT>Append</TT> method to add them to the <TT>Fields</TT> collection
+	of the index.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Use the <TT>Append</TT> method of the <TT>Indexes</TT> collection to
+	add the index to the <TT>TableDef</TT> object.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B>NOTE</B> If you think this process looks remarkably similar to that of creating
+	a table using DAO code, you're right--the processes are nearly identical.
+<HR>
+</P>
+
+</BLOCKQUOTE>
+
+<P><B>Steps</B></P>
+
+<P>Open and run HT403.vbp. You can create the indexes shown in Table 4.15 by choosing
+the Index | Add command and using the form shown in Figure 4.3.</P>
+<P><A HREF="javascript:popUp('04fig03.gif')"><B>Figure 4.3.</B></A><I> The Create
+Index form.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>The database file HT403.mdb contains
+	the tables without the indexes. Also included is HT403A.mdb. This is the same file
+	with all the indexes already created for you. You can examine this file with the
+	Explorer form if you don't want to create all the indexes shown in Table 4.15. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>Table 4.15. Indexes in HT403.mdb.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>TABLE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>INDEX</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTIES</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>FIELDS</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Advisors</TD>
+		<TD ALIGN="LEFT"><TT>apkAdvisors</TT></TD>
+		<TD ALIGN="LEFT"><TT>Primary</TT></TD>
+		<TD ALIGN="LEFT"><TT>AdvFacID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Courses</TD>
+		<TD ALIGN="LEFT"><TT>apkCourses</TT></TD>
+		<TD ALIGN="LEFT"><TT>Primary</TT></TD>
+		<TD ALIGN="LEFT"><TT>CourseID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>idxCourseIstrID</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>CourseInstrID</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Faculty</TD>
+		<TD ALIGN="LEFT"><TT>apkFaculty</TT></TD>
+		<TD ALIGN="LEFT"><TT>Primary</TT></TD>
+		<TD ALIGN="LEFT"><TT>FacID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>idxFacLast</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>FacLast</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Instructors</TD>
+		<TD ALIGN="LEFT"><TT>apkInstructors</TT></TD>
+		<TD ALIGN="LEFT"><TT>Primary</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrFacID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">StudentCourses</TD>
+		<TD ALIGN="LEFT"><TT>apkStudentCourses</TT></TD>
+		<TD ALIGN="LEFT"><TT>Primary</TT></TD>
+		<TD ALIGN="LEFT"><TT>SCStID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>SCCourseID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>idxSCStID</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>SCStID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>idxSCCourseID</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>SCCourseID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Students</TD>
+		<TD ALIGN="LEFT"><TT>apkStudents</TT></TD>
+		<TD ALIGN="LEFT"><TT>Primary</TT></TD>
+		<TD ALIGN="LEFT"><TT>StID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>idxStAdvID</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>StAdvID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>idxStLast</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>StLast</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>idxStState</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>StState</TT></TD>
+	</TR>
+</TABLE>
+</P>
+<P>The indexes shown in Table 4.15 are recommended based on the guidelines listed
+in this How-To. Each table has a primary key, all foreign key columns are indexed,
+and several additional columns are indexed as likely candidates for use as query
+selection or sort columns.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>INDEX NAMES</STRONG></B><STRONG> </STRONG></P>
+
+	<P>The following naming convention was used to determine the index names shown in
+	Table 4.15: 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<UL>
+	<LI>Primary keys are named using the prefix <I>apk</I>, followed by the table name.
+	This convention provides forward compatibility if the database is later upsized to
+	a database server such as SQL Server or Oracle. With remote server tables, the Jet
+	engine assumes that the first index in an alphabetical list is the primary key. The
+	<I>apk</I> prefix places the primary key first in the list.
+	<P>
+	<LI>Unique nonprimary indexes use the prefix <I>udx</I>, followed by the name of
+	the indexed column or columns. (No unique, nonprimary indexes are present in Table
+	4.15.)
+	<P>
+	<LI>Other indexes use the prefix <I>idx</I>, followed by the column name or names.
+</UL>
+
+<P>This project is an extended version of the project developed in How-To 4.2. Code
+was added to the main form and class module to launch <TT>frmCreateIndex</TT>, which
+handles the balance of the code to create indexes.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE project, and save it as HT403.vbp. Add BMain.bas
+	to the project. This module contains code used to open or create a new database and
+	is based largely on the code developed in How-To 4.1.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add <TT>frmMain</TT> to the project. This form is based on an Explorer-style
+	form generated by the VB Application Wizard. The wizard form was modified for this
+	project, as described in How-To 4.2. In addition to the modifications added for How-To
+	4.2, the menu controls in Table 4.16 were added to create the Index menu.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 4.16. The Index menu controls.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>NAME</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuIndex</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Index</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuIndexAdd</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Add</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuIndexDelete</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Delete</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Three event procedures support the Index menu. The top-level menu <TT>mnuIndex_Click</TT>
+	event enables or disables the delete command based on the currently selected object.
+	The add command calls on the services of the <TT>CDBExplorer</TT> class via the <TT>mcdbExp</TT>
+	module-level object variable to create a new index, and the delete command uses the
+	same object to delete an index.
+	<P>
+</DL>
+
+<PRE></PRE>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuIndex_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  If mcdbExp Is Nothing Then</TT>
+<TT>    ` no database open</TT>
+<TT>    mnuIndexAdd.Enabled = False</TT>
+<TT>    mnuIndexDelete.Enabled = False</TT>
+<TT>  Else</TT>
+<TT>    ` enable add</TT>
+<TT>    mnuIndexAdd.Enabled = True</TT>
+<TT>    ` only enable delete if an Index is selected</TT>
+<TT>    If mcdbExp.NodeType(tvTreeView.SelectedItem) = _</TT>
+<TT>      &quot;Index&quot; Then</TT>
+<TT>      mnuIndexDelete.Enabled = True</TT>
+<TT>    Else</TT>
+<TT>      mnuIndexDelete.Enabled = False</TT>
+<TT>    End If</TT>
+<TT>  End If</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuIndexAdd_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  mcdbExp.AddIndex</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuIndexDelete_Click()</TT>
+<TT>` Note: mnuIndex_Click already determined</TT>
+<TT>` that an index is selected in the tree</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Dim strTableDefName As String</TT>
+<TT>  Dim strIndexName As String</TT>
+<TT>  ` get the index name</TT>
+<TT>  strIndexName = tvTreeView.SelectedItem.Text</TT>
+<TT>  ` get its parent table name</TT>
+<TT>  strTableDefName = tvTreeView.SelectedItem.Parent.Parent.Text</TT>
+<TT>  mcdbExp.DeleteIndex strTableDefName, strIndexName</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>4. </B>Add the CDBExplorer.cls class module to the project. This is the same
+	class as that developed in How-To 4.2, with methods added to support creating and
+	deleting indexes. The class manages the population of the items in the tree and list
+	views of the Explorer-style main form. Additional information about the class module
+	can be found in CDBExplorer.html, which is included as a related file in the project
+	on the CD. The two procedures added to this class to support the creation and deletion
+	of indexes are the <TT>AddIndex</TT> and <TT>DeleteIndex</TT> methods. <TT>AddIndex</TT>
+	uses the frmCreateIndex form to create the index, but it first attempts to determine
+	whether the current item in the tree is located within the branch of a table. If
+	so, it passes the table name to the index creation form, saving the user a step in
+	data entry. The <TT>DeleteIndex</TT> method accepts a table name and an index name
+	as parameters and constructs a call to the <TT>Delete</TT> method of the <TT>Indexes</TT>
+	collection of the appropriate <TT>TableDef</TT> object. Both procedures also refresh
+	the tree.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Sub AddIndex()</TT>
+<TT>  Dim obj As Object</TT>
+<TT>  Set obj = GetDAOObjectFromNode(mtvw.SelectedItem)</TT>
+<TT>  Select Case TypeName(obj)</TT>
+<TT>    Case &quot;TableDef&quot;</TT>
+<TT>      ` initialize the form with a table name</TT>
+<TT>      frmCreateIndex.Initialize mdb, obj.Name</TT>
+<TT>    Case &quot;Indexes&quot;</TT>
+<TT>      frmCreateIndex.Initialize _</TT>
+<TT>        mdb, mtvw.SelectedItem.Parent.Text</TT>
+<TT>    Case &quot;Index&quot;</TT>
+<TT>      frmCreateIndex.Initialize mdb, _</TT>
+        mtvw.SelectedItem.Parent.Parent.Text
+<TT>    Case &quot;Field&quot;</TT>
+<TT>      ` if it's a table field, get the table name</TT>
+<TT>      ` the great-grandparent node tells the type</TT>
+<TT>      If mtvw.SelectedItem.Parent.Parent.Parent.Text _</TT>
+<TT>        = &quot;TableDefs&quot; Then</TT>
+<TT>        ` get the name from the grandparent node</TT>
+<TT>        frmCreateIndex.Initialize _</TT>
+<TT>          mdb, _</TT>
+<TT>          mtvw.SelectedItem.Parent.Parent.Text</TT>
+<TT>      Else</TT>
+<TT>        frmCreateIndex.Initialize mdb</TT>
+<TT>      End If</TT>
+<TT>    Case Else</TT>
+<TT>      frmCreateIndex.Initialize mdb</TT>
+<TT>  End Select</TT>
+<TT>  frmCreateIndex.Show vbModal</TT>
+<TT>  ` check cancel flag</TT>
+<TT>  If Not frmCreateIndex.Cancelled Then</TT>
+<TT>    ` expand the tabledef node</TT>
+<TT>    ExpandNode _</TT>
+<TT>      mtvw.Nodes(frmCreateIndex.TableDefName)</TT>
+<TT>    ` now expand the index node for the tabledef</TT>
+<TT>    ExpandNode _</TT>
+<TT>      mtvw.Nodes(frmCreateIndex.TableDefName &amp; &quot;Indexes&quot;)</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Public Sub DeleteIndex( _</TT>
+<TT>  strTableDefName As String, _</TT>
+<TT>  strIndexName As String)</TT>
+<TT>  ` delete the index from the indexes collection of the</TT>
+<TT>  ` tabledef provided</TT>
+<TT>  mdb.TableDefs(strTableDefName).Indexes.Delete strIndexName</TT>
+<TT>  ` refresh the tree</TT>
+<TT>  ExpandNode mtvw.Nodes(strTableDefName &amp; &quot;Indexes&quot;)</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5.</B> Add a new form to the project, create the objects and properties shown
+	in Table 4.17, and save the form as frmCreateIndex.frm.
+	<P>
+</DL>
+
+<H4>Table 4.17. Objects and properties of frmCreateIndex.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>VALUE</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>frmCreateIndex</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Create Index</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>BorderStyle</TT></TD>
+		<TD ALIGN="LEFT"><TT>3-Fixed Dialog</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblTableDefName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Table Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ComboBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboTableDefName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>2-Dropdown List</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblIndexName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Index Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtIndexName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Frame</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>fraIndex</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Draw the following controls within the <TT>fraIndex</TT> frame:</TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblFieldName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Field Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ComboBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboFieldName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>2-Dropdown List</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdAddField</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Add</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblFields</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Field &amp;List</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ListBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lstFields</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CheckBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>chkPrimary</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Primary</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CheckBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>chkUnique</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Unique</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Draw the following two command buttons below the <TT>fraIndex</TT> frame at the lower-right
+			corner of the form:</TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmd</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>OK</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Default</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmd</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+	</TR>
+</TABLE>
+</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>Figure 4.3, which appears at the beginning
+	of this section, shows the visual layout of the completed form. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code to the declarations section of the form. Several
+	module-level variables are created. The database object <TT>mdb</TT> is used to create
+	the index. The <TT>mblnCancel</TT> flag is used to mark that the user cancelled the
+	addition of the index. Several flag variables are used to control when the OK button
+	should be enabled or disabled--each of the flags must be true before OK can be enabled
+	and the index created. The <TT>mstrTableDefName</TT> variable stores the name of
+	the table in which the index was created so that when control returns to the class
+	module and the main form, the proper collection can be refreshed. Finally, the two
+	constants are the indexes into the <TT>cmd</TT> CommandButton control array.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+<TT>` database object</TT>
+<TT>Private mdb As Database</TT>
+<TT>` cancel flag</TT>
+<TT>Private mblnCancel As Boolean</TT>
+<TT>` flags for controlling the OK button</TT>
+<TT>Private mblnHasTableDefName As Boolean</TT>
+<TT>Private mblnHasIndexName As Boolean</TT>
+<TT>Private mblnHasFields As Boolean</TT>
+<TT>` tabledefname for property get</TT>
+<TT>Private mstrTableDefName As String</TT>
+<TT>` command button array constants</TT>
+<TT>Private Const cmdOK = 0</TT>
+<TT>Private Const cmdCancel = 1</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>7. </B>Add the <TT>Initialize</TT> method. This procedure is used when the
+	form is loaded, but before it is shown, to set up module-level variables and populate
+	controls on the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Sub Initialize( _</TT>
+<TT>  db As DAO.Database, _</TT>
+  Optional strTableDefName As String = &quot;&quot;)
+<TT>  ` initialize the form</TT>
+<TT>  ` NOTE: must be called before the form is shown</TT>
+<TT>  Set mdb = db</TT>
+<TT>  ` populate the table combo</TT>
+<TT>  GetTables</TT>
+<TT>  ` set an initial table name if provided</TT>
+<TT>  If strTableDefName &lt;&gt; &quot;&quot; Then</TT>
+<TT>    cboTableDefName.Text = strTableDefName</TT>
+<TT>    ` fill the field list</TT>
+<TT>    GetFields (strTableDefName)</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>8. </B>Add the public <TT>TableDefName</TT> and <TT>Cancelled</TT> properties.
+	These are used after the form is dismissed and control returns to the main form and
+	class to determine which, if any, branch of the tree should be refreshed.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Property Get TableDefName() As String</TT>
+<TT>  TableDefName = mstrTableDefName</TT>
+<TT>End Property</TT>
+<TT>Public Property Get Cancelled() As Boolean</TT>
+<TT>  Cancelled = mblnCancel</TT>
+<TT>End Property</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>9. </B>The <TT>EnableOK</TT> and <TT>EnableIndex</TT> procedures check several
+	flags and enable or disable the OK button and the index frame, based on the current
+	status of the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub EnableOK()</TT>
+<TT>  If mblnHasTableDefName _</TT>
+<TT>    And mblnHasIndexName And mblnHasFields Then</TT>
+<TT>    cmd(cmdOK).Enabled = True</TT>
+<TT>  Else</TT>
+<TT>    cmd(cmdOK).Enabled = False</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub EnableIndex()</TT>
+<TT>  If mblnHasTableDefName And mblnHasIndexName Then</TT>
+<TT>    fraIndex.Enabled = True</TT>
+<TT>  Else</TT>
+<TT>    fraIndex.Enabled = False</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>10. </B>Add the <TT>GetTables</TT> and <TT>GetFields</TT> procedures. These
+	routines populate the table and field list combo boxes.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub GetTables()</TT>
+<TT>` fill the table list combo</TT>
+<TT>  Dim td As TableDef</TT>
+<TT>  With cboTableDefName</TT>
+<TT>    ` clear what (if anything) is there</TT>
+<TT>    .Clear</TT>
+<TT>    For Each td In mdb.TableDefs</TT>
+<TT>      ` check for system table</TT>
+<TT>      If (td.Attributes And dbSystemObject) = 0 Then</TT>
+<TT>        ` not a system table, add it</TT>
+<TT>        .AddItem td.Name</TT>
+<TT>      End If</TT>
+<TT>    Next  ` TableDef</TT>
+<TT>  End With</TT>
+<TT>End Sub</TT>
+<TT>Private Sub GetFields(strTableDefName As String)</TT>
+<TT>` fill the field list combo</TT>
+<TT>  Dim fld As Field</TT>
+<TT>  With cboFieldName</TT>
+<TT>    ` clear it</TT>
+<TT>    .Clear</TT>
+<TT>    For Each fld In mdb.TableDefs(strTableDefName).Fields</TT>
+<TT>      ` add it</TT>
+<TT>      .AddItem fld.Name</TT>
+<TT>    Next  ` Field</TT>
+  End With
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>11. </B>Add the <TT>Form_Load</TT> event procedure. This routine performs
+	some initial setup of the controls on the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Load()</TT>
+<TT>` set up controls</TT>
+<TT>  ` disabled until a name is set and</TT>
+<TT>  ` at list one field is in the field list</TT>
+<TT>  cmd(cmdOK).Enabled = False</TT>
+<TT>  ` disabled until a field is chosen</TT>
+<TT>  cmdAddField.Enabled = False</TT>
+<TT>  ` disable the entire fraIndex frame</TT>
+<TT>  ` until a table and index name are chosen</TT>
+<TT>  fraIndex.Enabled = False</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>12. </B>The <TT>Click</TT> and <TT>Change</TT> event procedures for the table
+	name, IndexName, FieldName, and CheckBox controls set module-level variables and
+	enable or disable the index frame and OK button depending on the status of the data.
+	Before the index frame is enabled, a table name and an index name must be provided.
+	To create an index, at least one field must have been added.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cboTableDefName_Click ()</TT>
+<TT>` set up controls and status</TT>
+<TT>  ` copy it to the module-level variable</TT>
+<TT>  ` for later property get</TT>
+<TT>  mstrTableDefName = cboTableDefName.Text</TT>
+<TT>  ` text it and set flags</TT>
+<TT>  If mstrTableDefName &lt;&gt; &quot;&quot; Then</TT>
+<TT>    ` enable the Index frame</TT>
+<TT>    mblnHasTableDefName = True</TT>
+<TT>  Else</TT>
+<TT>    mblnHasTableDefName = False</TT>
+<TT>  End If</TT>
+<TT>  EnableIndex</TT>
+<TT>  EnableOK</TT>
+<TT>End Sub</TT>
+<TT>Private Sub txtIndexName_Change()</TT>
+<TT>` set control and status flags</TT>
+<TT>  If txtIndexName.Text &lt;&gt; &quot;&quot; Then</TT>
+<TT>    mblnHasIndexName = True</TT>
+<TT>  Else</TT>
+<TT>    mblnHasIndexName = False</TT>
+<TT>  End If</TT>
+<TT>  EnableIndex</TT>
+<TT>  EnableOK</TT>
+<TT>End Sub</TT>
+<TT>Private Sub cboFieldName_Click()</TT>
+<TT>` enable/disable add field button</TT>
+<TT>  If cboFieldName.Text &lt;&gt; &quot;&quot; Then</TT>
+<TT>    ` enable the add field button</TT>
+<TT>    cmdAddField.Enabled = True</TT>
+<TT>  Else</TT>
+<TT>    cmdAddField.Enabled = False</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub chkPrimary_Click()</TT>
+<TT>` if it's primary, it must be unique</TT>
+<TT>` set control status to indicate the</TT>
+<TT>` user doesn't need to deal with the</TT>
+<TT>` unique check box if primary is set</TT>
+<TT>  If chkPrimary Then</TT>
+<TT>    chkUnique = 1</TT>
+<TT>    chkUnique.Enabled = False</TT>
+<TT>  Else</TT>
+<TT>    chkUnique.Enabled = True</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>13. </B>Create the <TT>Click</TT> event procedure for the <TT>cmdAddField</TT>
+	button. This code adds the current field in the combo box to the list, removes it
+	from the combo box, and returns the focus to the combo box.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdAddField_Click()
+<TT>` add to list and remove from combo</TT>
+<TT>  lstFields.AddItem cboFieldName.Text</TT>
+<TT>  cboFieldName.RemoveItem cboFieldName.ListIndex</TT>
+<TT>  ` set status flag</TT>
+<TT>  mblnHasFields = True</TT>
+<TT>  EnableOK</TT>
+<TT>  ` return to field name combo</TT>
+<TT>  cboFieldName.SetFocus</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>14. </B>Add the <TT>cmd_Click</TT> event procedure. This procedure creates
+	the index if the OK button is clicked, or it unloads the form (setting the Cancelled
+	flag) if the Cancel button is clicked.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmd_Click(Index As Integer)</TT>
+<TT>` add the index or unload the form</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  Select Case Index</TT>
+<TT>    Case cmdOK</TT>
+<TT>      ` add the index</TT>
+<TT>      CreateIndex</TT>
+<TT>      ` set cancel flag</TT>
+<TT>      mblnCancel = False</TT>
+<TT>      Unload Me</TT>
+<TT>    Case cmdCancel</TT>
+<TT>      ` set cancel flag and unload</TT>
+<TT>      mblnCancel = True</TT>
+<TT>      Unload Me</TT>
+<TT>  End Select</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>15. </B>Add the <TT>CreateIndex</TT> procedure. This code creates the index
+	object by reading the data entered on the form. The index is created by first calling
+	the <TT>CreateIndex</TT> method, then looping through the fields in the list box,
+	calling <TT>CreateField</TT> and <TT>Append</TT> for each. Finally, the <TT>Append</TT>
+	method adds the index to the table.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub CreateIndex()</TT>
+<TT>` create the index</TT>
+<TT>` called only from cmd(cmdOK) click</TT>
+<TT>  Dim td As TableDef</TT>
+<TT>  Dim idx As Index</TT>
+<TT>  Dim fld As Field</TT>
+<TT>  Dim intListIndex As Integer</TT>
+<TT>  ` get a reference to the tabledef and</TT>
+<TT>  ` create the index</TT>
+<TT>  Set td = mdb.TableDefs(cboTableDefName.Text)</TT>
+<TT>  Set idx = td.CreateIndex(txtIndexName.Text)</TT>
+<TT>  ` add the fields</TT>
+<TT>  For intListIndex = 0 To lstFields.ListCount - 1</TT>
+<TT>    lstFields.ListIndex = intListIndex</TT>
+<TT>    Set fld = idx.CreateField(lstFields.Text)</TT>
+<TT>    idx.Fields.Append fld</TT>
+<TT>    Set fld = Nothing</TT>
+<TT>  Next  ` item in list</TT>
+<TT>  ` set primary or unique flags</TT>
+<TT>  If chkPrimary = 1 Then</TT>
+<TT>    idx.Primary = True</TT>
+<TT>  ElseIf chkUnique = 1 Then</TT>
+<TT>    idx.Unique = True</TT>
+<TT>  End If</TT>
+<TT>  ` append the index</TT>
+<TT>  td.Indexes.Append idx</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<H3><B>HOW IT WORKS</B></H3>
+<P>Although additional code was added to the main Explorer form to coordinate the
+user interface, the <TT>CreateIndex</TT> procedure in <TT>frmCreateIndex</TT> does
+all the work of creating the index objects in this example. The procedure extracts
+the data provided on the form to create an index, adds the fields from the list box,
+and then appends the index to the <TT>Indexes</TT> collection of the selected table.</P>
+<P>The only information that must be provided to the form is supplied by the <TT>Initialize</TT>
+procedure as the <TT>db</TT> parameter. The optional <TT>strTableDefName</TT> parameter
+is a convenience added for the benefit of the users (so that they don't need to select
+the table name again if they have already chosen one on the Explorer form). Because
+the interaction between the forms takes place through a public interface, this form
+could be plugged into any database management application.</P>
+<P><B>Comments</B></P>
+<P>If you worked through this How-To and How-To 4.2, you probably discovered that
+the procedures for creating an index using DAO code are nearly identical to those
+for creating a table. As you will see in the next How-To, the procedure for creating
+a relation is also very similar.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>ANOTHER WAY TO CREATE AN INDEX</STRONG></B><STRONG> </STRONG></P>
+
+	<P>You can use SQL statements rather than DAO code to create indexes for your tables.
+	Constraints can be created using the <TT>CREATE TABLE</TT> statement or the <TT>ALTER
+	TABLE...ADD CONSTRAINT</TT> statement. Indexes can also be created using the <TT>CREATE
+	INDEX</TT> statement. SQL statements are simple to use and require only a single
+	line of code to execute, but they do not expose all the available properties of an
+	index. Chapter 2, &quot;Accessing a Database with Data Access Objects,&quot; provides
+	the details of using SQL statements to create and manage database objects. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>
+<H2>4.How do I...</H2>
+<H3><A NAME="Define relations between tables?"></A><B>Define relations between tables?</B></H3>
+<P><B>Problem</B></P>
+<P>I know that if I define relations for my database, the Jet engine will enforce
+referential integrity. How do I define relations with Visual Basic?</P>
+<P><B>Technique</B></P>
+<P>Like indexes, defined relationships are a tool you can use to enforce rules and
+improve application performance. How-To 4.2 described the different types of relationships
+between tables: one-to-one, one-to-many, and many-to-many. Building the database
+schema with related tables is only the first step. You also need to enforce those
+relationships. The best way to do that is to let the database engine do it for you
+by creating <TT>Relation</TT> objects.</P>
+<P>Defining a <TT>Relation</TT> enforces three rules to maintain referential integrity
+between tables:</P>
+
+<UL>
+	<LI>No row on the many side of a relationship may reference a primary key value on
+	the one side that does not exist.
+	<P>
+	<LI>No row on the one side of a relationship can be deleted if related rows exist
+	on the many side.
+	<P>
+	<LI>The primary key values on the one side cannot be changed if related rows exist
+	on the many side.
+</UL>
+
+<P><B>Creating the Relation</B></P>
+<P>Creating a <TT>Relation</TT> object with DAO code is similar to creating a table
+or index. The creation is carried out in four steps:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Use the <TT>CreateRelation</TT> method to obtain a reference to a <TT>Relation</TT>
+	object.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Assign the <TT>Table</TT> and <TT>ForeignTable</TT> properties.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Create and add each of the <TT>Field</TT> objects to the <TT>Fields</TT>
+	collection of the <TT>Relation</TT> object. For each field, you must set the <TT>Name</TT>
+	and <TT>ForeignName</TT> properties.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Add the <TT>Relation</TT> to the <TT>Relations</TT> collection of the
+	database by using the <TT>Append</TT> method.
+	<P>
+</DL>
+
+<P>In addition to creating the relationship and adding the fields, you can specify
+some additional properties that affect how the database engine treats the relationship:</P>
+
+<UL>
+	<LI><I>Cascading updates</I>. If cascading updates are specified, changes to the
+	primary key values on the one side of a relationship are propagated through the related
+	records on the many side.
+	<P>
+	<LI><I>Cascading deletes</I>. If cascading deletes are specified, deleting a record
+	on the one side of a relationship will also delete all records on the many side.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>BE CAREFUL WITH CASCADING UPDATES AND DELETES</STRONG></B><STRONG> </STRONG></P>
+
+	<P>The concept of specifying cascading updates and deletes seems powerful and convenient
+	at first glance, but it can be dangerous if not used with caution. Consider the following
+	scenario:<BR>
+	<BR>
+	You have a lookup table of United States states that includes the state name and
+	two-letter postal code. A unique index is defined on the postal code so that it can
+	be used as the one side of a relationship. This table is then used to enforce that
+	any value entered for a state as part of a set of address columns in another table
+	is valid. This setup is good so far--the database engine will now validate any state
+	postal code entered in the database. If, however, you created this relationship with
+	cascading updates and deletes, you could inadvertently change every address in one
+	state to another state with a single update, or delete every address in a state with
+	a single delete. If you were to run the query <TT>DELETE</TT> <TT>FROM</TT> <TT>States;</TT>,
+	you would delete every row in your database that has a state column!<BR>
+	<BR>
+	This is a somewhat contrived and extreme example. But the point is that by using
+	cascading updates and deletes, you hand off work to the database engine, and you
+	might forget later that the database engine is doing the work for you. An alternative
+	to this approach is to define the relationship without specifying cascading updates
+	or deletes. When you try to perform an operation that violates referential integrity
+	constraints, a trappable error will be raised. You can then examine that error and
+	decide whether to cancel the change or manually perform the cascade by running additional
+	update or delete queries. See Chapter 3, &quot;Creating Queries with SQL,&quot; for
+	additional information on building and executing update or delete queries. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>In addition to specifying cascading updates and deletes, you can also indicate
+that the relationship is one-to-one or one-to-many. Don't let yourself be confused
+by the difference. One-to-one relationships are really just a special case of one-to-many
+relationships. Instead of allowing multiple rows on the many side, the database engine
+allows only one. Many-to-many relationships are defined using two one-to-many relationships.</P>
+<H4><B>STEPS</B></H4>
+<P>Open and run project HT404.vbp. Open the database HT404.mdb. You can use the Relation
+| Add menu command to create the relationships shown in Table 4.18. Figure 4.4 shows
+the form used to create a relationship.</P>
+<P><A HREF="javascript:popUp('04fig04.gif')"><B>Figure 4.4.</B></A><I> The Create
+Relation form.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>File HT404A.mdb is identical to HT404.mdb
+	except that all the relations have already been created for you. If you do not want
+	to create all the relationships shown in the table, you can open HT404A.mdb and inspect
+	the objects using the Explorer form. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>Table 4.18. Relations in HT404.mdb.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>NAME</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>TABLE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>FOREIGN TABLE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>FIELD NAME</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>FOREIGN NAME</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>TYPE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>CASCADE</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>fkAdvFacID</TT></TD>
+		<TD ALIGN="LEFT">Faculty</TD>
+		<TD ALIGN="LEFT">Advisors</TD>
+		<TD ALIGN="LEFT"><TT>FacID</TT></TD>
+		<TD ALIGN="LEFT"><TT>AdvFacID</TT></TD>
+		<TD ALIGN="LEFT">1-1</TD>
+		<TD ALIGN="LEFT">Deletes</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>fkInstrFacID</TT></TD>
+		<TD ALIGN="LEFT">Faculty</TD>
+		<TD ALIGN="LEFT">Instructors</TD>
+		<TD ALIGN="LEFT"><TT>FacID</TT></TD>
+		<TD ALIGN="LEFT"><TT>InstrFacID</TT></TD>
+		<TD ALIGN="LEFT">1-1</TD>
+		<TD ALIGN="LEFT">Deletes</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>fkCourse-</TT></TD>
+		<TD ALIGN="LEFT">Instructors</TD>
+		<TD ALIGN="LEFT">Courses</TD>
+		<TD ALIGN="LEFT"><TT>InstrFacID</TT></TD>
+		<TD ALIGN="LEFT"><TT>CourseInstrID</TT></TD>
+		<TD ALIGN="LEFT">1-Many</TD>
+		<TD ALIGN="LEFT">N/A</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>InstrID</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>fkSCStID</TT></TD>
+		<TD ALIGN="LEFT">Students</TD>
+		<TD ALIGN="LEFT">StudentCourses</TD>
+		<TD ALIGN="LEFT"><TT>StID</TT></TD>
+		<TD ALIGN="LEFT"><TT>SCStID</TT></TD>
+		<TD ALIGN="LEFT">1-Many</TD>
+		<TD ALIGN="LEFT">N/A</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>fkSCCourseID</TT></TD>
+		<TD ALIGN="LEFT">Courses</TD>
+		<TD ALIGN="LEFT">StudentCourses</TD>
+		<TD ALIGN="LEFT"><TT>CourseID</TT></TD>
+		<TD ALIGN="LEFT"><TT>SCCourseID</TT></TD>
+		<TD ALIGN="LEFT">1-Many</TD>
+		<TD ALIGN="LEFT">N/A</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>fkStAdvID</TT></TD>
+		<TD ALIGN="LEFT">Advisors</TD>
+		<TD ALIGN="LEFT">Students</TD>
+		<TD ALIGN="LEFT"><TT>AdvFacID</TT></TD>
+		<TD ALIGN="LEFT"><TT>StAdvID</TT></TD>
+		<TD ALIGN="LEFT">1-Many</TD>
+		<TD ALIGN="LEFT">N/A</TD>
+	</TR>
+</TABLE>
+</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE project and save it as HT404.vbp. Add BMain.bas
+	to the project. This module contains code derived from the example in How-To 4.1
+	used to open or create a database.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add frmMain.frm to the project. This is the same form used for How-To
+	4.3. Add the menu controls shown in Table 4.19 for the Relation menu.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 4.19. The Relation menu controls.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>NAME</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuRelation</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Relation</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuRelationAdd</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Add</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>mnuRelationDelete</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Delete</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Three event procedures control the Relation menu. The top-level <TT>mnuRelation_Click</TT>
+	event procedure determines which of the other menu controls should be enabled based
+	on the currently selected object in the TreeView control on the form. The <TT>Add</TT>
+	command uses the <TT>mcdbExp</TT> object to show the form used to create a relationship
+	and update the TreeView control. The <TT>Delete</TT> command calls on the <TT>DeleteRelation</TT>
+	method of the <TT>mcdbExp</TT> object to delete the currently selected relationship.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub mnuRelation_Click()
+<TT>On Error GoTo ProcError</TT>
+<TT>  If mcdbExp Is Nothing Then</TT>
+<TT>    ` no database open</TT>
+<TT>    mnuRelationAdd.Enabled = False</TT>
+<TT>    mnuRelationDelete.Enabled = False</TT>
+<TT>  Else</TT>
+<TT>    ` enable add</TT>
+<TT>    mnuRelationAdd.Enabled = True</TT>
+<TT>    ` only enable delete if an Index is selected</TT>
+<TT>    If mcdbExp.NodeType(tvTreeView.SelectedItem) = _</TT>
+<TT>      &quot;Relation&quot; Then</TT>
+<TT>      mnuRelationDelete.Enabled = True</TT>
+<TT>    Else</TT>
+<TT>      mnuRelationDelete.Enabled = False</TT>
+<TT>    End If</TT>
+<TT>  End If</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuRelationAdd_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  mcdbExp.AddRelation</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuRelationDelete_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Dim strRelationName As String</TT>
+<TT>  ` get the name</TT>
+<TT>  strRelationName = tvTreeView.SelectedItem.Text</TT>
+<TT>  mcdbExp.DeleteRelation strRelationName</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>4. </B>Add the class module CDBExplorer.cls to the project. This is the same
+	class module used in How-To 4.3, but with code added to support creating and deleting
+	relationships in the database. The <TT>AddRelation</TT> method loads, initializes,
+	and shows <TT>frmCreateRelation</TT> and then refreshes the node in the Explorer
+	form tree for relationships. The <TT>DeleteRelation</TT> method takes the name of
+	a <TT>Relation</TT> object as a parameter and deletes the <TT>Relation</TT> object
+	from the <TT>Relations</TT> collection of the database.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Sub AddRelation()</TT>
+<TT>` load the form to create a relation</TT>
+<TT>  Load frmCreateRelation</TT>
+<TT>  ` pass it the database reference</TT>
+<TT>  Set frmCreateRelation.Database = mdb</TT>
+<TT>  frmCreateRelation.Show vbModal</TT>
+<TT>  ` refresh the tabledefs node</TT>
+<TT>  ExpandNode mtvw.Nodes(&quot;Relations&quot;)</TT>
+<TT>End Sub</TT>
+<TT>Public Sub DeleteRelation(strRelationName As String)</TT>
+<TT>` delete a relation</TT>
+<TT>  ` delete it</TT>
+<TT>  mdb.Relations.Delete strRelationName</TT>
+<TT>  ` refresh the relations node</TT>
+<TT>  ExpandNode mtvw.Nodes(&quot;Relations&quot;)</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5.</B> Add a new form to the project, create the objects and properties shown
+	in Table 4.20, and save the form as frmCreateRelation.frm.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 4.20. Objects and properties of frmCreateRelation.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>VALUE</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>frmCreateRelation</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Create Relation</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Border Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>3-Fixed Dialog</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblTableDefName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Table</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ComboBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboTableDefName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>2-Dropdown List</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblForeignTableDefName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Foreign Table</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ComboBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboForeignTableDefName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>2-Dropdown List</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Frame</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>fraRelation</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Relation</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Draw the following controls within the <TT>fraRelation</TT> frame:</TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblRelationName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Relation Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtRelationName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblFieldName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Field Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ComboBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboFieldName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>2-Dropdown List</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblForeignName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Foreign Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ComboBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboForeignName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>2-Dropdown List</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblOneTo</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>One To:</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Line</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Line1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>OptionButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>optOneTo</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>One</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>OptionButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>optOneTo</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Many</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblReferentialIntegrity</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Referential Integrity</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Line</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Line2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CheckBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>chkRef</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Cascade Updates</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CheckBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>chkRef</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Cascade Deletes</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Draw the following two command buttons at the bottom right of the form below the
+			<TT>fraRelation</TT> frame:</TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmd</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>OK</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Default</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmd</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+	<P>Figure 4.4 shows the visual design of the form at runtime.</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code to the declarations section of the form. Module-level
+	variables are defined to store the database object, the table and foreign table names,
+	and the field name and foreign name properties.
+	<P>
+	<DT></DT>
+	<DD>Three pairs of constants are also defined as indexes into the three control arrays
+	on the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+<TT>` database</TT>
+<TT>Private mdb As Database</TT>
+<TT>` table</TT>
+<TT>Private mstrTableDefName As String</TT>
+<TT>` foreign table</TT>
+<TT>Private mstrForeignTableDefName As String</TT>
+<TT>` relation name</TT>
+<TT>Private mstrRelationName As String</TT>
+<TT>` field name</TT>
+<TT>Private mstrFieldName As String</TT>
+<TT>` foreign name</TT>
+<TT>Private mstrForeignName As String</TT>
+<TT>` control array constants</TT>
+<TT>Private Const optOneToOne = 0</TT>
+<TT>Private Const optOneToMany = 1</TT>
+<TT>Private Const chkRefCascadeUpdates = 0</TT>
+<TT>Private Const chkRefCascadeDeletes = 1</TT>
+<TT>Private Const cmdOK = 0</TT>
+<TT>Private Const cmdCancel = 1</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>7. </B>Add the <TT>Database</TT> property procedure. This property is used
+	to enable the <TT>CDBExplorer</TT> class to pass a database object to the form. After
+	the database has been provided, the table and foreign table combo boxes are populated
+	with lists of table names.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Property Set Database(db As DAO.Database)</TT>
+<TT>` set database object and set up form</TT>
+<TT>  ` assign the database object</TT>
+<TT>  Set mdb = db</TT>
+<TT>  ` populate the table combo boxes</TT>
+<TT>  GetTables cboTableDefName</TT>
+<TT>  GetTables cboForeignTableDefName</TT>
+<TT>End Property</TT>
+</PRE>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Add the <TT>EnableOK</TT> and <TT>EnableRelation</TT> procedures. These
+	procedures examine the current state of the data on the form to determine whether
+	the <TT>fraRelation</TT> frame and the OK button should be enabled or disabled.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub EnableOK()</TT>
+<TT>` to create a relation, you need the following</TT>
+<TT>` a table name</TT>
+<TT>` a foreign table name</TT>
+<TT>` a relation name</TT>
+<TT>` a field name</TT>
+<TT>` a foreign name for the field</TT>
+<TT>` additionally, CreateRelation will fail if the</TT>
+` field data types do not match correctly
+<TT>  If mstrTableDefName = &quot;&quot; Or _</TT>
+<TT>      mstrForeignTableDefName = &quot;&quot; Or _</TT>
+<TT>      mstrRelationName = &quot;&quot; Or _</TT>
+<TT>      mstrFieldName = &quot;&quot; Or _</TT>
+<TT>      mstrForeignName = &quot;&quot; Then</TT>
+<TT>    cmd(cmdOK).Enabled = False</TT>
+<TT>  Else</TT>
+<TT>    cmd(cmdOK).Enabled = True</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub EnableRelation()</TT>
+<TT>` enable/disable the relation frame</TT>
+<TT>  If _</TT>
+<TT>      mstrTableDefName = &quot;&quot; Or _</TT>
+<TT>      mstrForeignTableDefName = &quot;&quot; _</TT>
+<TT>      Then</TT>
+<TT>    fraRelation.Enabled = False</TT>
+<TT>  Else</TT>
+<TT>    fraRelation.Enabled = True</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>9. </B>Add the <TT>GetTables</TT> and <TT>GetFields</TT> procedures. These
+	procedures populate a combo box with a list of tables or fields by examining the
+	<TT>TableDefs</TT> collection of the database or the <TT>Fields</TT> collection of
+	a table.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub GetTables(cbo As ComboBox)</TT>
+<TT>` fill the table list combo</TT>
+<TT>  Dim td As TableDef</TT>
+<TT>  With cbo</TT>
+<TT>    ` clear what (if anything) is there</TT>
+<TT>    .Clear</TT>
+<TT>    For Each td In mdb.TableDefs</TT>
+<TT>      ` check for system table</TT>
+<TT>      If (td.Attributes And dbSystemObject) = 0 Then</TT>
+<TT>        ` not a system table, add it</TT>
+<TT>        .AddItem td.Name</TT>
+<TT>      End If</TT>
+<TT>    Next  ` TableDef</TT>
+<TT>  End With</TT>
+<TT>End Sub</TT>
+<TT>Private Sub GetFields(cbo As ComboBox, strTableDefName As String)</TT>
+<TT>` fill the field list combo</TT>
+<TT>  Dim fld As Field</TT>
+<TT>  With cbo</TT>
+<TT>    ` clear it</TT>
+<TT>    .Clear</TT>
+<TT>    For Each fld In mdb.TableDefs(strTableDefName).Fields</TT>
+<TT>      ` add it</TT>
+<TT>      .AddItem fld.Name</TT>
+<TT>    Next  ` Field</TT>
+<TT>  End With</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>10. </B>Add the <TT>Form_Load</TT> event procedure. The relation frame and
+	OK button are disabled by this procedure.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Load()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  ` disable the relations frame</TT>
+<TT>  fraRelation.Enabled = False</TT>
+<TT>  ` disable the OK button</TT>
+<TT>  cmd(cmdOK).Enabled = False</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>11. </B>Add the <TT>Click</TT> event procedures for the <TT>cboTableDefName</TT>
+	and <TT>cboForeignTableDefName</TT> ComboBox controls. These procedures store the
+	values of the combo boxes in the module-level variables and call the <TT>GetFields</TT>
+	procedure to populate the field lists. They then call both <TT>EnableOK</TT> and
+	<TT>EnableRelation</TT> to enable or disable both the relationship frame container
+	and the OK button.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cboTableDefName_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  mstrTableDefName = cboTableDefName.Text</TT>
+<TT>  If mstrTableDefName &lt;&gt; &quot;&quot; Then</TT>
+<TT>    GetFields cboFieldName, mstrTableDefName</TT>
+<TT>  End If</TT>
+<TT>  EnableOK</TT>
+<TT>  EnableRelation</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub cboForeignTableDefName_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  mstrForeignTableDefName = cboForeignTableDefName.Text</TT>
+<TT>  If mstrForeignTableDefName &lt;&gt; &quot;&quot; Then</TT>
+<TT>    GetFields cboForeignName, mstrForeignTableDefName</TT>
+<TT>  End If</TT>
+<TT>  EnableOK</TT>
+<TT>  EnableRelation</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>12. </B>Add the <TT>Click</TT> events for the <TT>cboFieldName</TT> and <TT>cboForeignName</TT>
+	controls. The current values in the combo boxes are passed to the module-level variables,
+	and the <TT>EnableOK</TT> procedure is called to enable or disable the OK button.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cboFieldName_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  mstrFieldName = cboFieldName.Text</TT>
+<TT>  EnableOK</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub cboForeignName_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  mstrForeignName = cboForeignName.Text</TT>
+<TT>  EnableOK</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>13. </B>Add the <TT>txtRelation_Change</TT> event. This procedure passes the
+	contents of the text box to the module-level variable and calls the <TT>EnableOK</TT>
+	procedure to enable or disable the OK button.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub txtRelationName_Change()
+<TT>On Error GoTo ProcError</TT>
+<TT>  mstrRelationName = txtRelationName</TT>
+<TT>  EnableOK</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>14. </B>Add the <TT>cmd_Click</TT> procedure. This procedure either calls
+	the <TT>CreateRelation</TT> procedure and unloads the form, or it simply unloads
+	the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmd_Click(Index As Integer)</TT>
+<TT>` create the relation or unload</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  Select Case Index</TT>
+<TT>    Case cmdOK</TT>
+<TT>      ` create relation and unload</TT>
+<TT>      CreateRelation</TT>
+<TT>      Unload Me</TT>
+<TT>    Case cmdCancel</TT>
+<TT>      ` just unload</TT>
+<TT>      Unload Me</TT>
+<TT>  End Select</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>15. </B>Add the <TT>CreateRelation</TT> procedure. This procedure uses the
+	steps described earlier in this How-To to create the <TT>Relation</TT> object based
+	on the values saved in the module-level variables. The procedure calls <TT>CreateRelation</TT>,
+	creates and appends a <TT>Field</TT> object to the <TT>Fields</TT> collection, and
+	finally uses the <TT>Append</TT> method to add the <TT>Relation</TT> to the <TT>Relations</TT>
+	collection.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub CreateRelation()</TT>
+<TT>` create the relation</TT>
+<TT>` called only from cmd(cmdOK) click event</TT>
+<TT>  Dim rel As Relation</TT>
+<TT>  Dim fld As Field</TT>
+<TT>  Dim lngAttributes As Long</TT>
+<TT>  ` set up attributes</TT>
+<TT>  If optOneTo(optOneToOne) Then</TT>
+<TT>    lngAttributes = dbRelationUnique</TT>
+<TT>  End If</TT>
+<TT>  If chkRef(chkRefCascadeUpdates) Then</TT>
+<TT>    lngAttributes = lngAttributes Or dbRelationUpdateCascade</TT>
+<TT>  End If</TT>
+<TT>  If chkRef(chkRefCascadeDeletes) Then</TT>
+<TT>    lngAttributes = lngAttributes Or dbRelationDeleteCascade</TT>
+<TT>  End If</TT>
+<TT>  ` create the relation</TT>
+<TT>  Set rel = mdb.CreateRelation( _</TT>
+<TT>      mstrRelationName, _</TT>
+<TT>      mstrTableDefName, _</TT>
+<TT>      mstrForeignTableDefName, _</TT>
+<TT>      lngAttributes)</TT>
+<TT>  Set fld = rel.CreateField(mstrFieldName)</TT>
+<TT>  ` set the foreign name</TT>
+<TT>  fld.ForeignName = mstrForeignName</TT>
+<TT>  ` append the field to the relation</TT>
+<TT>  rel.Fields.Append fld</TT>
+<TT>  ` append the relation to the database</TT>
+<TT>  mdb.Relations.Append rel</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>If you've worked through the previous examples in this chapter, the method and
+the code used to create relationships will look quite familiar. Again, a single procedure--in
+this case, the <TT>CreateRelation</TT> procedure in <TT>frmCreateRelation</TT>--does
+all the real work of creating the relationship. Based on values entered by the user,
+the procedure creates the <TT>Relation</TT> object. It then adds the desired field
+and assigns the <TT>ForeignName</TT> property, and finally it appends the field and
+the relation to their respective collections. The rest of the code in the form coordinates
+the user interface.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>This example does not implement the
+	capability to create relationships with multiple fields. If you need to create such
+	a relationship, just repeat the code that creates and appends the field for each
+	field in the relationship. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Comments</B></P>
+<P>The Jet database engine also enables you to use SQL statements to create relationships
+between tables by using a <TT>CONSTRAINT</TT> clause in a <TT>CREATE TABLE</TT> or
+<TT>ALTER TABLE</TT> statement. See Chapter 3, &quot;Creating Queries with SQL,&quot;
+for details on using SQL statements to create relationships with SQL statements.</P>
+<P>
+<H2>4.5 How do I...</H2>
+<H3><A NAME="Use the Jet database engine ..."></A><B>Use the Jet database engine
+to enforce business rules?</B></H3>
+<P><B>Problem</B></P>
+<P>I need to make sure that certain rules are followed when data is entered into
+my database. How do I get the database engine to enforce these rules for me?</P>
+<P><B>Technique</B></P>
+<P>Various rules can be applied against tables and columns in a database:</P>
+
+<UL>
+	<LI>Values for columns can be restricted to a specific list of values, or the value
+	can be restricted by a formula. For example, a numeric column can be required to
+	be greater than zero.
+	<P>
+	<LI>Columns can require an entry.
+	<P>
+	<LI>Values for one column can be dependent on the values for another column.
+</UL>
+
+<P>The collective term for these types of restrictions on data is <I>business rules</I>.
+You can enforce rules in your database in two ways:</P>
+
+<UL>
+	<LI>Write Visual Basic code to examine the data and apply the rules before inserts,
+	updates, or deletes are completed.
+	<P>
+	<LI>Build the rules into the design of the tables and columns and let the database
+	engine enforce them for you.
+</UL>
+
+<P>Although in certain situations the rules will be too complex to be entered using
+the available properties for <TT>TableDef</TT> and <TT>Field</TT> objects, you should
+allow the database engine to enforce as many of your rules as it is capable of enforcing.</P>
+<P>If you have worked through the examples in How-To 4.2 through 4.4, you have already
+been enforcing some simple rules in your database:</P>
+
+<UL>
+	<LI>When a column is defined, the data type restricts the data that can be entered
+	in the column.
+	<P>
+	<LI>Defining a primary key or unique index restricts the data in a column to unique
+	entries.
+	<P>
+	<LI>Defining a relationship between tables restricts the values in foreign key columns
+	to the available values in the primary key from the table on the other side of the
+	relationship.
+</UL>
+
+<P>In addition to these constraints on data, you can specify an additional property
+for tables and three additional properties for columns that further restrict the
+data that can be entered:</P>
+
+<UL>
+	<LI>The <TT>Required</TT> property for <TT>Field</TT> objects can be used to disallow
+	<TT>Null</TT> values in the column. Setting this property to <TT>True</TT> means
+	that a value is required.
+	<P>
+	<LI>The <TT>ValidationRule</TT> property applies to both tables and columns and can
+	be used to force the data to conform to an expression. The partner of the <TT>ValidationRule</TT>
+	property is the <TT>ValidationText</TT> property. This property can be used to provide
+	the text of the error message that is generated when the rule is violated.
+	<P>
+	<LI>The <TT>AllowZeroLength</TT> property can be used to allow or disallow zero-length
+	strings as valid entries for a column. The Jet engine treats zero-length strings
+	and nulls separately. Developers can use the two to distinguish between values that
+	are unknown (most often using <TT>Null</TT>) and values that are known to be nothing
+	(using a zero-length string). For example, if a middle name column allows a zero-length
+	string, a <TT>Null</TT> would indicate that the data was not available, whereas a
+	zero-length string would indicate that the person has no middle name. Although this
+	is a potentially useful tool, the subtle difference between these values will probably
+	be lost on most users. Additionally, not all types of databases support this differentiation.
+</UL>
+
+<P><TT>Required</TT> and <TT>AllowZeroLength</TT> are both Boolean properties. If
+the <TT>Required</TT> property is set to <TT>True</TT>, <TT>Null</TT> values will
+not be allowed. If the <TT>AllowZeroLength</TT> property is set to <TT>True</TT>,
+the column will allow a zero-length string as a valid value.</P>
+<P>The <TT>ValidationRule</TT> property is a string and can be any valid Visual Basic
+expression. It cannot, however, contain a reference to a user-defined function, SQL
+aggregate functions, a query, or, in the case of a table, columns in another table.</P>
+<P>The <TT>ValidationText</TT> property can be any string expression and is provided
+as the description of the trappable error that results when the rule is violated.</P>
+<P><B>Steps</B></P>
+<P>Open and run project HT405 .vbp. The form shown in Figure 4.5 appears. Choose
+File | Open and open database HT405.mdb. This is the school database developed and
+refined in How-To 4.2 through How-To 4.4. Click the Add Rules button to apply the
+rules shown in Table 4.21 to the database.</P>
+<P><A HREF="javascript:popUp('04fig05.gif')"><B>Figure 4.5.</B></A><I> The Create
+Rules form.</I></P>
+<P>
+<H4>Table 4.21. Business rules for HT405.mdb.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>TABLE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>FIELD</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>VALUE</I></B></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Advisors</TD>
+		<TD ALIGN="LEFT"><TT>AdvGradeLevel</TT></TD>
+		<TD ALIGN="LEFT"><TT>Required</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Advisors</TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>ValidationRule</TT></TD>
+		<TD ALIGN="LEFT"><B><TT>IN</TT></B><TT> (<B>`Freshman', `Sophomore', `Junior',</B> <B>`Senior')</B></TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>ValidationText</TT></TD>
+		<TD ALIGN="LEFT"><TT>Grade level must be Freshman, Sophomore, Junior, or Senior</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Courses</TD>
+		<TD ALIGN="LEFT"><TT>CourseDesc</TT></TD>
+		<TD ALIGN="LEFT"><TT>Required</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Faculty</TD>
+		<TD ALIGN="LEFT"><TT>FacFirst</TT></TD>
+		<TD ALIGN="LEFT"><TT>Required</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>FacLast</TT></TD>
+		<TD ALIGN="LEFT"><TT>Required</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Students</TD>
+		<TD ALIGN="LEFT"><TT>StFirst</TT></TD>
+		<TD ALIGN="LEFT"><TT>Required</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Students</TD>
+		<TD ALIGN="LEFT"><TT>StLast</TT></TD>
+		<TD ALIGN="LEFT"><TT>Required</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+</TABLE>
+</P>
+<P>In addition to the field-level rules in Table 4.21, the following rule applies
+to the Students table:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>ValidationRule</TT>
+<TT>  IIf(</TT>
+<TT>    (</TT>
+<TT>      (Not IsNull([StAddress])) Or</TT>
+<TT>      (Not IsNull([StCity])) Or</TT>
+<TT>      (Not IsNull([StState])) Or</TT>
+<TT>      (Not IsNull([StZIP]))</TT>
+<TT>    ),</TT>
+<TT>    (</TT>
+<TT>      IIf(</TT>
+<TT>        (</TT>
+<TT>          (Not IsNull([StAddress])) And</TT>
+<TT>          (Not IsNull([StCity])) And</TT>
+<TT>          (Not IsNull([StState])) And</TT>
+<TT>          (Not IsNull([StZIP])</TT>
+<TT>         )</TT>
+<TT>       ), True, False)</TT>
+<TT>    ), True)</TT>
+<TT>ValidationText</TT>
+<TT>  If provided, the address must be complete. </TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This rather cumbersome-looking expression enforces the rule that if any of the
+address columns (<TT>StAddress</TT>, <TT>StCity</TT>, <TT>StState</TT>, <TT>StZIP</TT>)
+contain data, they all must contain data. Because Jet restricts the <TT>ValidationRule</TT>
+property to a single expression, the nested <TT>IIf</TT> statements must be used.
+The outer <TT>IIf</TT> returns <TT>True</TT> if any of the columns contains data;
+the inner <TT>IIf</TT> returns <TT>True</TT> only if they all contain data.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>A MISLEADING STATEMENT IN THE HELP FILE</STRONG></B><STRONG> </STRONG></P>
+
+	<P>The following statement appears in the Visual Basic help file topic for the <TT>ValidationRule</TT>
+	property:</P>
+	<PRE><TT>For an object not yet appended to the Fields collection, this </TT>
+<TT>property is read/write.</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<P>This would seem to imply that after the field has been created, the property can
+	no longer be assigned. In fact, the <TT>ValidationRule</TT> and <TT>ValidationText</TT>
+	properties for both tables and fields can be assigned after the objects have been
+	created, and the <TT>Required</TT> property can be assigned after a field has been
+	created--all as demonstrated in the sample application. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE project and name it HT405.vbp.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Change the name of <TT>Form1</TT> to <TT>frmMain</TT>, and create the
+	objects and properties shown in Table 4.22.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 4.22. Objects and properties for frmMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>VALUE</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>BorderStyle</TT></TD>
+		<TD ALIGN="LEFT"><TT>3-Fixed Dialog</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Create Rules</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommonDialog</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>dlg</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdAddRules</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Add Rules</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Menu</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;File</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Menu</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuFileOpen</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Open</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Shortcut</TT></TD>
+		<TD ALIGN="LEFT"><TT>Ctrl-O</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Menu</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuFileBar</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>-</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Menu</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuFileExit</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>E&amp;xit</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Shortcut</TT></TD>
+		<TD ALIGN="LEFT"><TT>Ctrl-Q</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the declarations section of the form:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+<TT>Private mdb As Database</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>4. </B>Add the <TT>cmdAddRules_Click</TT> event procedure. This procedure
+	calls the <TT>AddRules</TT> subroutine described here.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdAddRules_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  AddRules</TT>
+<TT>  MsgBox &quot;Rules Added&quot;</TT>
+<TT>  cmdAddRules.Enabled = False</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5. </B>Add the <TT>mnuFileOpen_Click</TT> procedure. This procedure calls
+	the <TT>GetOpenDBName</TT> function show next, opens the database using the filename
+	returned, and enables the <TT>cmdAddRules</TT> button.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileOpen_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Dim strDBName As String</TT>
+  Screen.MousePointer = vbHourglass
+<TT>  ` use the common dialog to get the db name</TT>
+<TT>  strDBName = GetOpenDBName(dlg)</TT>
+<TT>  If Len(strDBName) Then</TT>
+<TT>    Set mdb = DBEngine(0).OpenDatabase(strDBName)</TT>
+<TT>    cmdAddRules.Enabled = True</TT>
+<TT>  End If</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>6. </B>Create the <TT>mnuFileExit_Click</TT> event. This procedure unloads
+	the form, ending the application.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileExit_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Screen.MousePointer = vbHourglass</TT>
+<TT>  ` close the database and unload the form</TT>
+<TT>  mdb.Close</TT>
+<TT>  Unload Me</TT>
+<TT>ProcExit:</TT>
+<TT>  Screen.MousePointer = vbDefault</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox &quot;Error: &quot; &amp; Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>7. </B>Create the <TT>GetOpenDBName</TT> function. This function sets up the
+	Common Dialog control and returns the filename selected by the user as its return
+	value.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Function GetOpenDBName(dlg As CommonDialog) As String</TT>
+<TT>` Get the desired name using the common dialog</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Dim strFileName As String</TT>
+<TT>  ` set up the file save dialog file types</TT>
+<TT>  dlg.InitDir = App.Path</TT>
+<TT>  dlg.DefaultExt = &quot;mdb&quot;</TT>
+<TT>  dlg.DialogTitle = &quot;Open Database&quot;</TT>
+<TT>  dlg.Filter = &quot;VB Databases (*.mdb)|*.mdb&quot;</TT>
+<TT>  dlg.FilterIndex = 1</TT>
+<TT>  ` set up flags</TT>
+<TT>  dlg.Flags = _</TT>
+<TT>    cdlOFNHideReadOnly Or _</TT>
+<TT>    cdlOFNFileMustExist Or _</TT>
+<TT>    cdlOFNPathMustExist</TT>
+<TT>  ` setting CancelError means the control will</TT>
+<TT>  ` raise an error if the user clicks Cancel</TT>
+<TT>  dlg.CancelError = True</TT>
+<TT>  ` show the SaveAs dialog</TT>
+<TT>  dlg.ShowOpen</TT>
+<TT>  ` get the selected name</TT>
+<TT>  strFileName = dlg.filename</TT>
+<TT>ProcExit:</TT>
+<TT>  GetOpenDBName = strFileName</TT>
+<TT>  Exit Function</TT>
+<TT>ProcError:</TT>
+<TT>  strFileName = &quot;&quot;</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Function</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>8. </B>Create the <TT>AddRules</TT> routine. This routine assigns the <TT>Required</TT>,
+	<TT>ValidationRule</TT>, and <TT>ValidationText</TT> properties described previously.
+	Each of the values is directly assigned to the property. The various <TT>With...End
+	With</TT> blocks add some efficiency by eliminating extra object references.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub AddRules()
+<TT>  Dim td As TableDef</TT>
+<TT>  Dim fld As Field</TT>
+<TT>  ` Advisors table</TT>
+<TT>  ` AdvGradeLevel field</TT>
+<TT>  Set fld = mdb.TableDefs(&quot;Advisors&quot;).Fields(&quot;AdvGradeLevel&quot;)</TT>
+<TT>  With fld</TT>
+<TT>    ` require entry</TT>
+<TT>    .Required = True</TT>
+<TT>    ` require a value in a list</TT>
+<TT>    .ValidationRule = _</TT>
+<TT>        &quot;IN (`Freshman', `Sophomore', `Junior', `Senior')&quot;</TT>
+<TT>.ValidationText = _</TT>
+<TT>        &quot;Grade level must be Freshman, &quot; &amp; _</TT>
+<TT>        &quot;Sophomore, Junior or Senior&quot;</TT>
+<TT>End With</TT>
+<TT>  Set fld = Nothing</TT>
+<TT>  ` Courses table</TT>
+<TT>  ` CourseDesc field</TT>
+<TT>  mdb.TableDefs(&quot;Courses&quot;).Fields(&quot;CourseDesc&quot;).Required = True</TT>
+<TT>  ` Faculty table</TT>
+<TT>  Set td = mdb.TableDefs(&quot;Faculty&quot;)</TT>
+<TT>  With td</TT>
+<TT>    ` FacFirst required</TT>
+<TT>    .Fields(&quot;FacFirst&quot;).Required = True</TT>
+<TT>    ` FacLast required</TT>
+<TT>    .Fields(&quot;FacLast&quot;).Required = True</TT>
+<TT>  End With</TT>
+<TT>  Set td = Nothing</TT>
+<TT>  ` Students table</TT>
+<TT>  Set td = mdb.TableDefs(&quot;Students&quot;)</TT>
+<TT>  With td</TT>
+<TT>    ` first and last names are required</TT>
+<TT>    .Fields(&quot;StFirst&quot;).Required = True</TT>
+<TT>    .Fields(&quot;StLast&quot;).Required = True</TT>
+<TT>    ` table rule - if any part of the</TT>
+<TT>    ` address is provided, all of it</TT>
+<TT>    ` must be provided</TT>
+<TT>    ` the outer IIf evaluates if any field is not null</TT>
+<TT>    ` the inner IIf evaluates if all fields are not null</TT>
+<TT>    .ValidationRule = _</TT>
+<TT>      &quot;IIf(&quot; &amp; _</TT>
+<TT>        &quot;(&quot; &amp; _</TT>
+<TT>          &quot;(Not IsNull([StAddress])) Or &quot; &amp; _</TT>
+<TT>          &quot;(Not IsNull([StCity])) Or &quot; &amp; _</TT>
+<TT>          &quot;(Not IsNull([StState])) Or &quot; &amp; _</TT>
+<TT>          &quot;(Not IsNull([StZIP])) &quot; &amp; _</TT>
+<TT>        &quot;), &quot; &amp; _</TT>
+<TT>        &quot;(IIf(&quot; &amp; _</TT>
+<TT>          &quot;(&quot; &amp; _</TT>
+<TT>            &quot;(Not IsNull([StAddress])) And &quot; &amp; _</TT>
+<TT>            &quot;(Not IsNull([StCity])) And &quot; &amp; _</TT>
+<TT>            &quot;(Not IsNull([StState])) And &quot; &amp; _</TT>
+<TT>            &quot;(Not IsNull([StZIP])) &quot; &amp; _</TT>
+<TT>          &quot;), &quot; &amp; _</TT>
+<TT>          &quot;True, False)&quot; &amp; _</TT>
+<TT>        &quot;), &quot; &amp; _</TT>
+<TT>        &quot;True)&quot;</TT>
+<TT>    .ValidationText = _</TT>
+<TT>        &quot;If provided, the address must be complete.&quot;</TT>
+<TT>  End With</TT>
+<TT>  Set td = Nothing</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>This How-To provides the final refinement to the database that has been developed
+throughout the chapter by adding some basic business-rule enforcement at the level
+of the database engine. The rules are established by obtaining references to the
+appropriate table and field objects and by setting the <TT>ValidationRule</TT>, <TT>ValidationText</TT>,
+and <TT>Required</TT> properties.</P>
+<P>As you can see in the examples, it can be difficult to implement even relatively
+simple rules due to the limitations of these properties. Thus, you might need to
+supplement the properties provided by the database engine with additional validation
+code. Chapter 1, &quot;Accessing a Database with Bound Controls,&quot; and Chapter
+2, &quot;Accessing a Database with Data Access Objects,&quot; provide additional
+information on using Visual Basic code to enforce rules on the data in your database.</P>
+<P><B>Comments</B></P>
+<P>Unless you specify otherwise, field validation rules are applied when the record
+is updated. If you want the rule to be applied as soon as the entry is applied to
+the field, set the <TT>ValidateOnSet</TT> property of the <TT>Field</TT> object to
+<TT>True</TT>.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch03.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch03/ch03.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch05.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch05/ch05.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

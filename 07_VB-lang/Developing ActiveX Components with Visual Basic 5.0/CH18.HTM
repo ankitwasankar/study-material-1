@@ -1,0 +1,1278 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 18 -- The Extender and Ambient Objects</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;18</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>The Extender and Ambient Objects</FONT>
+</H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#TheExtenderObject">
+The Extender Object</A>
+<UL>
+<LI><A HREF="#ImpactofScopingRules">
+Impact of Scoping Rules</A>
+<LI><A HREF="#AccessingExtenderProperties">
+Accessing Extender Properties</A>
+<LI><A HREF="#ControlDependencies">
+Control Dependencies</A>
+<LI><A HREF="#ContainerDependencies">
+Container Dependencies</A>
+</UL>
+<LI><A HREF="#AmbientProperties">
+Ambient Properties</A>
+<UL>
+<LI><A HREF="#SpecificProperties">
+Specific Properties</A>
+<LI><A HREF="#StrategiesforUsingAmbientProperties">
+Strategies for Using Ambient Properties</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+If I'm doing my job right, by now you should be beginning to feel
+comfortable with the way ActiveX controls fit together. You should
+understand the different states in which a control exists. You
+should be familiar with the main events in the life of a control
+and a few of the most important methods and properties. 
+<P>
+<A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 19</A>, which deals with the way you define properties and
+events in your control, is going to be extremely important when
+it comes to implementing your controls. You can think of this
+chapter, perhaps, as a long introduction to the next one. It's
+a chapter in which we'll introduce the rest of the fundamental
+building blocks on which a control is based. For if the UserControl
+object forms the core of your ActiveX control, then surely the
+Extender and Ambient objects define the environment in which it
+lives.
+<H2><A NAME="TheExtenderObject"><FONT SIZE=5 COLOR=#FF0000>
+The Extender Object</FONT></A></H2>
+<P>
+Most of the properties of the Extender object are already familiar
+to you-they are found in almost every Visual Basic form or control.
+The purpose of this section is not to tell you about those properties
+or how they are used from the developer's perspective. Instead,
+the purpose is to show you how to deal with them from a control
+author's perspective.
+<P>
+To begin, try creating a new control, closing its designer, and
+adding it to a form. Do not add any properties-this is a completely
+empty control.
+<P>
+When you look at the properties of the control in the container's
+design time, depending on the property settings of the UserControl
+object, you will see the properties shown in the following table
+<P>
+.
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=192><B>Extender Properties for an Empty ActiveX Control</B>
+</TD><TD WIDTH=384><B>Comments</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Name </TD><TD WIDTH=384>Standard</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Align </TD><TD WIDTH=384>Only appears if the control's Alignable property is True
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Cancel </TD><TD WIDTH=384>Standard-only appears if the control's DefaultCancel property is True
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>DataBinding<BR>
+DataChanged<BR>
+DataField<BR>
+DataSource
+</TD><TD WIDTH=384>Only appears if the control has a property that is bound to a database. See <A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 19</A>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Default </TD><TD WIDTH=384>Standard-only appears if the control's DefaultCancel property is True
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>DragIcon</TD><TD WIDTH=384><H4>&nbsp;</H4>
+
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>DragMode</TD><TD WIDTH=384><H4>&nbsp;</H4>
+
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Enabled </TD><TD WIDTH=384>Only appears if the control has an Enabled property-more on this later
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Height</TD><TD WIDTH=384><H4>&nbsp;</H4>
+</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>HelpContextId </TD><TD WIDTH=384>Only appears if the control's CanGetFocus property is True
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Index</TD><TD WIDTH=384><H4>&nbsp;</H4>
+</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>Left</TD><TD WIDTH=384>Standard</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Negotiate </TD><TD WIDTH=384>Only appears if the control's Alignable property is True
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>TabIndex</TD><TD WIDTH=384>Only appears if the control's CanGetFocus property is True
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Tabstop</TD><TD WIDTH=384>Only appears if the control's CanGetFocus property is True
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Tag</TD><TD WIDTH=384>&nbsp;</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>ToolTipText</TD><TD WIDTH=384>&nbsp;</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Top</TD><TD WIDTH=384>&nbsp;</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Visible</TD><TD WIDTH=384>Standard</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>WhatsThisHelpID</TD><TD WIDTH=384>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>Width</TD><TD WIDTH=384>Standard</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The following items about this table should be noted.
+<UL>
+<LI>Those properties labeled &quot;standard&quot; represent properties
+that most containers will support.
+<LI>If the control's InvisibleAtRuntime property is True, only
+the Name, Index, Left, Top, and Tag Extender properties are available.
+<LI>As design-time properties, Visual Basic automatically handles
+persistence of these properties (saving them with your project).
+</UL>
+<P>
+In addition to these properties, Visual Basic provides the following
+Extender properties that can be accessed by a developer at runtime.
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=192><B>Runtime-Only Extender Properties, Methods, and Events</B>
+</TD><TD WIDTH=384>
+<B>Comments</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Container property</TD><TD WIDTH=384>The container (typically a form) that contains the control
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Object property</TD><TD WIDTH=384>References the underlying object, not the extender
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Parent property</TD><TD WIDTH=384>Standard-the container of the control. The UserControl object also provides a Parent property, which is always available regardless of the container.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Drag method</TD><TD WIDTH=384>&nbsp;</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Move method</TD><TD WIDTH=384>&nbsp;</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>SetFocus method</TD><TD WIDTH=384>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>ShowWhatsThis method</TD><TD WIDTH=384>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Zorder method</TD><TD WIDTH=384>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>DragDrop event</TD><TD WIDTH=384>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>GotFocus event</TD><TD WIDTH=384>Only appears if control's CanGetFocus property is True
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>LostFocus event</TD><TD WIDTH=384>Only appears if control's CanGetFocus property is True
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>DragOver event</TD><TD WIDTH=384>&nbsp;</TD>
+</TR>
+</TABLE></CENTER>
+<P>
+<P>
+From the point of view of the developer (the person using your
+control), there is no difference between Control properties and
+Extender properties. They appear as a single interface. How is
+this possible? When you, as a developer, reference a control,
+you are in fact referencing the control's extender. The Extender
+object reflects the properties and methods of the object itself.
+This is shown in Figure 18.1.
+<P>
+<A HREF="f18-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f18-1.gif"><B>Figure 18.1 :</B> <I>The relationship between the control and
+the extender</I>.</A>
+<P>
+There are some things you must keep in mind with respect to the
+Extender object:
+<UL>
+<LI>Properties, methods, and events on the Extender object are
+provided by the container. You cannot assume that any given property,
+method, or event will be present on the Extender object, since
+they may vary from one container to the next.
+<LI>Because the Extender object can change depending on the container,
+all access to Extender properties and methods from your control
+is late bound.
+<LI>When a developer references your control, he or she will actually
+be referencing the Extender object for your control. They can
+access the control object directly by using the extender's Object
+property (if one exists).
+</UL>
+<P>
+The ch18tst1.vbg program group contains two projects: ch18ctls.vbp
+project contains a number of controls that demonstrate the techniques
+described in this chapter. The ch18tst1.vbp project is a test
+program that exercises those controls.
+<P>
+The ch18ctla control is completely empty except for two functions
+that allow you to access the control's internal Extender and Me
+objects using the following code:
+<BLOCKQUOTE>
+<PRE>
+Public Function InternalExtender() As Object
+   Set InternalExtender = UserControl.Extender
+End Function
+
+Public Function InternalMe() As Object
+   Set InternalMe = Me
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+You should not generally expose these objects in this manner,
+but it is useful for test purposes. Place the control on a form,
+add a command button, and add the following code to its Click
+event:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Command1_Click()
+   If ch18CtlA1.Container Is ch18CtlA1.Parent Then
+      Debug.Print &quot;Parent and container are the same&quot;
+   Else
+      Debug.Print &quot;Parent and container are not the same&quot;
+   End If
+   If ch18CtlA1 Is ch18CtlA1.Object Then
+      Debug.Print &quot;Control and control's Object are the same&quot;
+   Else
+      Debug.Print &quot;Control and control's Object are different&quot;
+   End If
+   If ch18CtlA1.Object Is ch18CtlA1.InternalMe Then
+      Debug.Print &quot;Extender's object property is the control's Me&quot;
+   Else
+      Debug.Print &quot;Extender's object property is not the control's Me&quot;
+   End If
+   
+   If ch18CtlA1 Is ch18CtlA1.InternalExtender Then
+      Debug.Print &quot;Control is the control's extender&quot;
+   Else
+      Debug.Print &quot;Control is not the control's extender&quot;
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The results are as follows:
+<UL>
+<LI>Parent and container are the same.
+<LI>Control and control's object are different.
+<LI>Extender's Object property is the control's Me.
+<LI>Control is the control's extender.
+</UL>
+<P>
+From this, we can generate Table 18.1, which shows how to access
+the various properties as both a control author and a developer
+using the control.<BR>
+<P>
+<CENTER><B>Table 18.1:&nbsp;Navigating between Control, Container,
+and Extender</B></CENTER><P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=192><B>Object</B></TD><TD WIDTH=165><B>Access as a Developer</B>
+</TD><TD WIDTH=219><B>Access as a Control Author</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Control myctl Extender</TD><TD WIDTH=165>myctl
+</TD><TD WIDTH=219>Usercontrol.Extender</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Control myctl object itself (not the extender)
+</TD><TD WIDTH=165>myctl.Object</TD><TD WIDTH=219>Me</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Container of control &quot;myctl&quot;</TD>
+<TD WIDTH=165>myctl.Parent<BR>
+myctl.Container</TD><TD WIDTH=219>UserControl.Extender.Container<BR>
+UserControl.Extender.Parent<BR>
+UserControl.Parent
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="ImpactofScopingRules">
+Impact of Scoping Rules</A></H3>
+<P>
+You are already quite familiar with the general rules for scoping
+of variables, properties, and methods. When you define an item
+with the same name as an item that exists at a higher level, the
+other item is hidden. Thus if you have a global variable named
+x and define x in a procedure, the global one is hidden until
+the procedure exits.
+<P>
+The same principle applies with Control properties as they relate
+to Extender properties. For example: say you add a Tag property
+to your control. The VB extender already has a Tag property that
+it manages. Since the developer accesses the extender, that property
+takes priority. This is demonstrated in the ch18tst1.vbp project
+with the ch18ctlb.ctl control. This control implements its own
+Tag property and member variable using the following code:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get Tag() As String
+   Tag = m_Tag
+End Property
+
+Public Property Let Tag(ByVal vNewValue As String)
+   m_Tag = vNewValue
+   Debug.Print &quot;Setting internal tag&quot;
+   Report
+End Property
+
+Public Sub Report()
+   Debug.Print &quot;Internal Tag variable is &quot; &amp; m_Tag
+   Debug.Print &quot;Internal Tag property is &quot; &amp; Tag
+   Debug.Print &quot;Extender Tag is &quot; &amp; Extender.Tag
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The test code in form frmch18test1 is attached to a second command
+button as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Command2_Click()
+   ch18CtlB1.Tag = &quot;Setting tag Property&quot;
+   ch18CtlB1.Object.Tag = &quot;Setting object tag property&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The results are as follows:
+<BLOCKQUOTE>
+<PRE>
+Setting internal tag
+Internal Tag variable is Setting object tag property
+Internal Tag property is Setting object tag property
+Extender Tag is Setting tag Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+From this we can conclude that there are two separate Tag variables-one
+implemented and belonging to the control, the other by the container.
+You can access these variables as shown in Table 18.2.<BR>
+<P>
+<CENTER><B>Table 18.2:&nbsp;Scoping Example with Tag Property
+for ch18CtlB1</B></CENTER><P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=231><B>Tag Being Accessed</B></TD><TD WIDTH=164><B>Access As Developer</B>
+</TD><TD WIDTH=178><B>Access As Author</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=231>Extender Tag property managed by Visual Basic
+</TD><TD WIDTH=164>ch18CtlB1.Tag</TD><TD WIDTH=178>UserControl.Extender.Tag
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=231>Internal Tag property managed by your control
+</TD><TD WIDTH=164>ch18CtlB1.Object.Tag</TD><TD WIDTH=178>Tag 
+Me.Tag
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Why would you ever want to define a property, such as Tag, which
+is already implemented by the container? Because you may want
+to guarantee that people using your control have access to a Tag
+property for the control, and you cannot be sure that your control's
+container will always support a Tag property on its extender.
+<H3><A NAME="AccessingExtenderProperties">
+Accessing Extender Properties</A></H3>
+<P>
+The biggest catch to using Extender properties is that you can
+never be certain whether or not they are actually present. This
+means that unless you want your control to be limited to Visual
+Basic or a subset of containers, you must take precautions when
+accessing Extender properties so your control degrades gracefully.
+There are two approaches for doing this.
+<UL>
+<LI>You can use error trapping any time you access an Extender
+property or method.
+<LI>You can explicitly check to see if an Extender property exists
+before calling it.
+</UL>
+<P>
+The error trapping approach is obvious. The second approach can
+be handled in two ways. You can create a routine that attempts
+to access a property and records the results. The following code
+from the ch18ctlb.ctl control shows how this can be accomplished:
+<BLOCKQUOTE>
+<PRE>
+Private TagIsPresent As Boolean
+Private xyzIsPresent As Boolean
+Private zzzispresent As Boolean
+Private Sub CheckExtender()
+   Dim testnumber As Integer
+   Dim v As Variant
+   TagIsPresent = True
+   xyzIsPresent = True
+   zzzispresent = True
+   On Error GoTo itp1
+   testnumber = 0
+   v = Extender.Tag
+   testnumber = 1
+   v = Extender.xyz
+   testnumber = 2
+   v = Extender.zzz
+   Exit Sub
+itp1:
+   Select Case testnumber
+      Case 0
+         TagIsPresent = False
+      Case 1
+         xyzIsPresent = False
+      Case 2
+         zzzispresent = False
+   End Select
+   Resume Next
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The routine simply checks the desired properties one by one, setting
+a module level flag to indicate which ones fail. A simpler version
+of this routine could use a Boolean array, where each entry corresponds
+to a particular Extender property.
+<P>
+An even easier approach uses the apigid32.dll dynamic link library
+included with this book. This DLL was written originally for the
+<I>Visual Basic Programmer's Guide to the</I> <I>Win32 API</I>
+and contains a variety of useful low-level functions, one of them
+being the function called agIsValidName. The function is declared
+as follows:
+<BLOCKQUOTE>
+<PRE>
+Declare Function agIsValidName&amp; Lib &quot;apigid32.dll&quot; (ByVal o As Object, ByVal_ lpname$)
+</PRE>
+</BLOCKQUOTE>
+<P>
+Its use is demonstrated in the following code from the ch18ctlb.ctl
+control:
+<BLOCKQUOTE>
+<PRE>
+Debug.Print &quot;Tag property present: &quot; &amp; agIsValidName(Extender, &quot;Tag&quot;)
+Debug.Print &quot;xyz property present: &quot; &amp; agIsValidName(Extender, &quot;xyz&quot;)
+</PRE>
+</BLOCKQUOTE>
+<P>
+This function is actually quite simple internally. It simply calls
+the GetIDsOfNames method on the object's dispatch interface to
+see if it gets a valid return value. As you may recall from Part
+1 of this book, Visual Basic 5.0 requires that all interfaces
+it uses be either dispatch interfaces or dual interfaces that
+contain the dispatch interface functions along with those you
+define.
+<P>
+Which approach should you take? It's really up to you. I tend
+to use the latter because most of the controls I create take advantage
+of Desaware's tools (which is not surprising, since those tools
+were created primarily for me and my staff to be able to create
+more powerful controls in the first place). Since we're distributing
+apigid32.dll anyway (or one of its big brothers, which also contain
+the IsValidName function), there is no additional cost in terms
+of resources or performance in using the DLL function.
+<H3><A NAME="ControlDependencies">
+Control Dependencies</A></H3>
+<P>
+The Extender properties that are made available for a particular
+control may depend on settings in the control itself. These dependencies
+are entirely up to the container. The following are the most important
+of these dependencies that you should be aware of as a Visual
+Basic programmer.
+<H4>Enabled</H4>
+<P>
+The Enabled property is strange. To see why, load the EnTest1.vbp
+project in the <A HREF="ch18.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch18.htm" >Chapter 18</A> samples directory on your CD-ROM. This
+project contains a single control called EnCtl1.ctl, which contains
+a command button and a public Enabled property. The code for this
+control is as follows:
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+
+Public Property Get Enabled() As Boolean
+   Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal New_Enabled As Boolean)
+   UserControl.Enabled() = New_Enabled
+   PropertyChanged &quot;Enabled&quot;
+End Property
+
+'Load property values from storage
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   UserControl.Enabled = PropBag.ReadProperty(&quot;Enabled&quot;, True)
+End Sub
+
+'Write property values to storage
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;Enabled&quot;, UserControl.Enabled, True)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This code should be quite familiar to you by now-it is the standard
+way in which a public property is implemented and persisted. The
+UserControl object's internal Enabled property is set according
+to the public variable. A Report function has been added to the
+control. It prints the state of the Enabled property, the UserControl
+enabled property, and the Command1 enabled property to the Immediate
+window as follows:
+<BLOCKQUOTE>
+<PRE>
+Public Sub Report()
+   Debug.Print &quot;Within control code - &quot;
+   Debug.Print &quot;Enabled property is: &quot; &amp; Enabled
+   Debug.Print &quot;UserControl.Enabled property is: &quot; &amp; _
+   UserControl.Enabled
+   Debug.Print &quot;Command1.Enabled is: &quot; &amp; Command1.Enabled
+   Debug.Print &quot;Extended Enabled is: &quot; &amp; Extender.Enabled
+   Debug.Print &quot;End within control code.&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The project contains a single form, enForm1, which contains a
+timer and the EnCtl1 control. During the Timer control's Timer
+event, the following trace routine is called:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Timer1_Timer()
+   Debug.Print &quot;Enabled property is: &quot; &amp; Enabled
+   Debug.Print &quot;Control's Enabled property is: &quot; &amp; _
+   EnableTestControl.Enabled
+   Debug.Print &quot;Report: &quot;;
+   EnableTestControl.Report
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The EnCtl1 control has two properties set in the VB property window
+for the form: The Enabled property is set to True, and the Name
+property is set to EnableTestControl. The Enabled property of
+the form is set to False.
+<P>
+Now, before you run this sample, let's take a moment and review
+all of the different Enabled properties we are actually dealing
+with. In the control (control author's point of view) the properties
+are these:<BR>
+
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=158><B>Syntax</B></TD><TD WIDTH=414><B>What You Are Accessing</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=158>Enabled</TD><TD WIDTH=414>The public Enabled property for the control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=158>UserControl.Enabled</TD><TD WIDTH=414>The UserControl object Enabled property.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=158>Command1.Enabled</TD><TD WIDTH=414>The Enabled property of the constituent command button on the control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=158>Extender.Enabled</TD><TD WIDTH=414>The Enabled property provided by the container as part of the Extender object. Due to the scoping rules described earlier, this is the property seen by developers using the control unless 
+they 
+explicitly access the control's Enabled property using the Object property and the syntax EnableTestControl.Object.Enabled.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+From the container (application developer's point of view):<BR>
+
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=156><B>Syntax</B></TD><TD WIDTH=416><B>What You Are Accessing</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=156>Enabled</TD><TD WIDTH=416>The Enabled property for the form (actually, the Enabled property for the form's Extender object).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=156>EnableTestControl. Enabled</TD><TD WIDTH=416>The Enabled property provided by the container as part of the Extender object for the control.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=156>EnableTestControl. Object.Enabled</TD><TD WIDTH=416>The public Enabled property for the control. (Developers should never access this property.)
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+When you run the application, you will see the following displayed
+in the Debug window.
+<BLOCKQUOTE>
+<PRE>
+Enabled property is: False
+Control's Enabled property is: False
+Report: Within control code - 
+Enabled property is: True
+UserControl.Enabled property is: True
+Command1.Enabled is: True
+Extended Enabled is: False
+End within control code.
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Enabled property for the form is disabled. This makes sense
+because that is what was set for the form in the VB Property window.
+<P>
+The control's Enabled property, which is on the Extender object,
+is False. Keep in mind that it was set to True at design time.
+But the public Enabled property for the control, along with that
+of the UserControl object and the command button within the control,
+are all True! What's going on? Why is the control's Extender Enabled
+property False while the Control properties are actually enabled?
+<P>
+This occurs because of a convention specific to Visual Basic.
+First, consider how Windows works. When you disable a window,
+all of its child windows continue to appear as enabled. They will
+not receive keystrokes or mouse input because their parent form
+is disabled. If you want them to appear as disabled, you must
+disable them individually. This is similar to the situation we
+saw in <A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch17.htm" >Chapter 17</A> with regards to visibility, where controls on
+a form can have their Visible properties set to True, yet they
+are obviously hidden when their container is hidden.
+<P>
+In this example we disabled the form but did not disable the control.
+The developers of Visual Basic, for reasons that are probably
+lost in history and certainly undocumented, decided that when
+a container is disabled, the controls it contains should read
+as disabled as well (even though they have not been set explicitly
+to disabled). They could not, however, just disable the controls.
+Doing so would change their appearance, violating the standard
+behavior of Windows applications. So they let the controls remain
+enabled (as far as they were concerned), but rigged it so the
+Enabled property on the Extender object for controls on a disabled
+container would return False.
+<P>
+Now, in order for this trick to work, there is one important requirement.
+There has to be a way to let Visual Basic know which property
+is the Enabled property. It's not enough to assume that the property
+will actually be named Enabled-the control author may choose to
+localize the property name for different languages or use a different
+term entirely. How can you, as a control author, let Visual Basic
+know which of your properties is the Enabled property for the
+control?
+<P>
+The solution lies in one of the characteristics of the IDispatch
+interface discussed back in Part 1 of this book. Remember how
+each property in the interface has a unique dispatch identifier
+number (Dispatch ID or DispID)? You may also recall that negative
+Dispatch ID numbers are defined by COM to indicate certain standard
+properties. These values do not affect the behavior of the interface
+or property itself but may be used by a container to provide special
+handling for properties if it chooses to do so. Dispatch ID number
+-514 is the identifier number for the Enabled property.
+<P>
+You can use the VB Tools, Procedure Attributes menu command to
+bring up the Procedure Attributes dialog box. Select the Enabled
+property and click the Advanced button. In the Procedure ID combo
+box you will see that Enabled is selected. When the Enabled procedure
+ID is selected, Visual Basic automatically sets the Dispatch ID
+for the property to -514.
+<P>
+When you create a blank control with no properties, Visual Basic
+does not create an Enabled property on the Extender object by
+default. However, if you assign any of the control's properties
+to the Enabled procedure ID, Visual Basic will add an Enabled
+property to the extender for the control. When you set the Enabled
+property using code or the VB property window, Visual Basic will
+also set the property that you specified with this ID, regardless
+of the actual name of the property.
+<P>
+What happens if you add an Enabled property to the control but
+do not set the Procedure ID for the property to Enabled? Visual
+Basic does not create an Enabled property on the Extender! The
+Enabled property you see in the VB Property window for the control
+is the control's Enabled property.
+<P>
+If you set the Procedure ID for the EnCtl1.ctl control to (None)
+and run the program again, you will see the following debug messages
+in the Debug window (you may need to save and reload your project
+for the system to reset itself properly after this change):
+<BLOCKQUOTE>
+<PRE>
+Enabled property is: False
+Control's Enabled property is: True
+Report: Within control code - 
+Enabled property is: True
+UserControl.Enabled property is: True
+Command1.Enabled is: True
+Extended Enabled is: True
+End within control code.
+</PRE>
+</BLOCKQUOTE>
+<P>
+As you can see, there is no difference between the Enabled property
+as seen by the developer using the control and that seen by the
+control's author.
+<P>
+To conclude: If you want your control to exhibit the standard
+Visual Basic behavior for the Enabled property, you must do the
+following:
+<UL>
+<LI>Add an Enabled property to your control (it may be any name
+you choose, but you should use Enabled unless you have some overwhelming
+reason not to do so).
+<LI>Set the Procedure ID for that property to Enabled.
+<LI>Within the property procedures for the Enabled property, set
+the internal Enabled property for the control and possibly any
+constituent controls as well (if you wish for them to look disabled
+when the control is disabled). For user-drawn controls, you will
+probably also want to change the appearance of the control to
+indicate its state.
+<LI>Persist the value of the property during the ReadProperties
+and WriteProperties events as shown earlier.
+</UL>
+<H4>Align and Negotiate</H4>
+<P>
+If you set the Alignable property in your control to True, the
+extender will display an Align property and possibly a Negotiate
+property as well (depending on the container).
+<P>
+Your control can read the extender's Align property to determine
+whether your control has been aligned. You need not take any action
+in this case; the container is responsible for repositioning your
+control.
+<P>
+If your control uses a Toolbar control to implement a toolbar,
+the Negotiate property is provided to allow the developer to determine
+how the toolbar is displayed on an MDI form. Refer to your Visual
+Basic documentation for information on using the Toolbar control
+provided with Visual Basic.
+<H4>Cancel and Default</H4>
+<P>
+If you set the DefaultCancel property of your control to True,
+Visual Basic will add a Default and Cancel property to your control's
+extender. You can then read these Extender properties to determine
+whether your control has been set to be the Default or Cancel
+control for the container.
+<P>
+It is customary for a Default control to show a different appearance
+from a standard control of the same type. You could look at the
+default Extender property, but Visual Basic provides an easier
+way to determine when this is necessary. The Ambient object has
+a DisplayAsDefault property that is set to True when your control
+should appear in its default state. Why use the Ambient property
+instead of the extender? 
+<UL>
+<LI>Because the Ambient property can be early bound
+<LI>Because you can use the UserControl_AmbientChanged event to
+determine when the DisplayAsDefault property has changed
+</UL>
+<P>
+The ch18CtlB.ctl control demonstrates this using the following
+code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_AmbientChanged(PropertyName As String)
+   If PropertyName = &quot;DisplayAsDefault&quot; Then
+      UserControl.Refresh
+   End If
+End Sub
+
+Private Sub UserControl_GotFocus()
+   Label2.Caption = &quot;Has Focus&quot;
+End Sub
+
+Private Sub UserControl_LostFocus()
+   Label2.Caption = &quot;Lost Focus&quot;
+End Sub
+
+Private Sub UserControl_Paint()
+   Dim s$
+   If Extender.Default Then
+      s$ = &quot;Default&quot;
+   End If
+   If Extender.Cancel Then
+      s$ = s$ &amp; &quot; Cancel&quot;
+   End If
+   If s$ = &quot;&quot; Then s$ = &quot;Normal&quot;
+   Label1.Caption = s$
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The control contains two constituent Label controls that are used
+to display the current state of the control. Open the frmCh18Test2
+form in design mode and try changing the control's Default and
+Cancel property in the VB Property page (keep in mind that by
+doing so you are directly changing the Extender properties). When
+you change the Default property, the control will update immediately.
+When you change the Cancel property you will not see the change
+until the control is redrawn (try changing the size of the control
+after changing the Cancel property to see this). 
+<P>
+Is there a way to determine when an Extender property has changed?
+I don't know of any, other than polling. If you find one, please
+let me know.
+<H3><A NAME="ContainerDependencies">
+Container Dependencies</A></H3>
+<P>
+Allow me to close this section with two warnings. Visual Basic's
+Extender control and design environment is exceptionally robust.
+Other containers are likely to have fewer Extender properties
+and less sophisticated support for features you may have incorporated
+into your control. You should review all use of Extender properties
+to make sure that your control will still work if they are missing.
+There are a number of options for how to handle different containers
+with regard to Extender properties:
+<UL>
+<LI>Disable the feature supported by the Extender property in
+a way that is transparent to the developer.
+<LI>Disable the feature supported by the Extender property and
+notify the developer (by raising an error during the property
+access or by way of a message box or other notification scheme).
+<LI>Disable the control completely if the Extender property is
+required for your control to work. Your control will not run at
+all in the container if this is the case.
+<LI>Allow a run-time error to occur when the Extender property
+is accessed. This is the &quot;ignore the problem and it will
+go away&quot; scenario I encourage you to avoid.
+</UL>
+<H4>Terrible Evil Things You Should Never Do</H4>
+<P>
+The container and parent properties give you access to the Container
+object and all of its properties and methods. This means your
+control can do the following:
+<UL>
+<LI>Move itself on the container.
+<LI>Change the color of the container.
+<LI>Rearrange, resize, or change the visibility of other controls
+on the container.
+<LI>Set its own Extender.Container property to a different container
+in the application.
+<LI>Unload the container!
+</UL>
+<P>
+I could probably go on for pages with variations on the possibilities.
+It is possible for controls to be terribly nasty to an application.
+<P>
+It is fundamental to the philosophy of components that the developer
+using your control be responsible for the container. The developer
+is also responsible for setting and using Extender properties
+and events (since those are provided by the container). As a control
+author, keep your hands off the container and other controls!
+<H2><A NAME="AmbientProperties"><FONT SIZE=5 COLOR=#FF0000>
+Ambient Properties</FONT></A></H2>
+<P>
+It is sometimes easy to get confused between Extender and Ambient
+properties. Like so many aspects of ActiveX control development,
+the difference between them is a matter of perspective. Extender
+properties are those that are added to your control by the container
+and are intended to be used primarily by developers who are using
+your control to create applications. Ambient properties are those
+that are provided by the container and are intended to be used
+by control authors.
+<P>
+Ambient properties are accessed through the AmbientProperties
+object, which is accessed via the Ambient property of the UserControl
+object for your control. The AmbientProperties object always includes
+a core set of standard properties, unlike the Extender object,
+whose properties vary based on the container and control configuration.
+However, this does not mean that all of the standard Ambient properties
+are, in fact, supported by each container. If an Ambient property
+is not supported by the container, the AmbientProperties object
+simply returns a default value for the property. 
+<P>
+Consider, for example, the UserMode property. If a container does
+not support a design-time mode, it need not provide a UserMode
+ambient property. The AmbientProperties object sees that the property
+is missing in the container and always returns a default value
+of True for its own UserMode property.
+<P>
+A container can provide additional container-specific Ambient
+properties. These properties are always late bound, and you should
+use error trapping when accessing them. Table 18.3 shows the standard
+properties for the Ambient object. The default value shown indicates
+the value returned for the property when it is not supported by
+the container. The UserControl object's AmbientChanged event is
+triggered any time an Ambient property is changed.<BR>
+<P>
+<CENTER><B>Table 18.3:&nbsp;The Standard Ambient Properties</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=157><B>Property</B></TD><TD WIDTH=267><B>Comments</B>
+</TD><TD WIDTH=148><B>Default Value</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>BackColor</TD><TD WIDTH=267>Background color of the container.
+</TD><TD WIDTH=148>&amp;H80000005</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>DisplayAsDefault</TD><TD WIDTH=267>If the control's DefaultCancel property is True, and the developer specifies that this is the default control, this property returns True. Refer to the description of the DefaultCancel 
+property in <A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch17.htm" >Chapter 17</A>.
+</TD><TD WIDTH=148>False</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>DisplayName</TD><TD WIDTH=267>The name of the control assigned by the developer.
+</TD><TD WIDTH=148>&quot;&quot;</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>Font</TD><TD WIDTH=267>The font of the container, or the default font recommended by the container for use by the control. Note that the container's FontTransparent property does not trigger an AmbientChanged event.
+</TD><TD WIDTH=148>MS Sans Serif 8</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>ForeColor</TD><TD WIDTH=267>Foreground color of the container.
+</TD><TD WIDTH=148>&amp;H80000008</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>LocaleID</TD><TD WIDTH=267>See chapter text.
+</TD><TD WIDTH=148>Current system default</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>MessageReflect</TD><TD WIDTH=267>See chapter text.
+</TD><TD WIDTH=148>False</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>Palette</TD><TD WIDTH=267>A Picture property specifying the container-recommended palette (usually the palette in use by the container).
+</TD><TD WIDTH=148>&nbsp;</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>RightToLeft</TD><TD WIDTH=267>Indicates that the control should draw text from right to left on Hebrew or Arabic versions of Windows.
+</TD><TD WIDTH=148>False</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>ScaleUnits</TD><TD WIDTH=267>The name of the units in use by the container. See chapter text. 
+</TD><TD WIDTH=148>&nbsp;</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>ShowGrabHandles</TD><TD WIDTH=267>See chapter text.
+</TD><TD WIDTH=148>True</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>ShowHatching</TD><TD WIDTH=267>See chapter text.
+</TD><TD WIDTH=148>True</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>SupportsMnemonics</TD><TD WIDTH=267>See chapter text.
+</TD><TD WIDTH=148>False</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>TextAlign</TD><TD WIDTH=267>Indicates the container's text alignment or the default text alignment for the control.
+</TD><TD WIDTH=148>Zero</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>UserMode</TD><TD WIDTH=267>True indicates that the control is in end-user mode, which means runtime for Visual Basic.
+</TD><TD WIDTH=148>True</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157>UIDead</TD><TD WIDTH=267>See chapter text.</TD>
+<TD WIDTH=148>False</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="SpecificProperties">
+Specific Properties</A></H3>
+<P>
+The following Ambient properties are worthy of further comment.
+<H4>Encapsulated Properties</H4>
+<P>
+The MessageReflect, ShowGrabHandles, ShowHatching, SupportsMnemonics,
+and UIDead ambient properties are important to controls but are
+handled entirely by Visual Basic's implementation of ActiveX controls.
+You can safely ignore them. Here is a short description of these
+properties in case you are interested:
+<UL>
+<LI>MessageReflect-Indicates that the container should reflect
+certain windows messages back to the control.
+<LI>ShowGrabHandles-Indicates that the container can display grab
+handles for re-sizing the control.
+<LI>ShowHatching-Indicates that the container can display a hatching
+pattern over an inactive control when necessary.
+<LI>SupportsMnemonics-Indicates that the container can support
+access keys for a control.
+<LI>UIDead-Indicates that a control should ignore all user input.
+</UL>
+<H4>ScaleUnits</H4>
+<P>
+This property can be used to determine the scale units of the
+container. When Visual Basic is the container, ScaleUnits can
+take the values User, Twip, Point, Pixel, Character, Inch, Millimeter,
+Centimeter; these are the constant names of the ScaleMode property.
+<P>
+The possible values of this property are not defined by the ActiveX
+specification. Thus, containers can use any strings they wish.
+This means that this property may not be reliable under all containers
+for determining the actual scale mode of the container. It is
+intended primarily for controls to be able to display the container
+coordinate system when necessary.
+<P>
+When Visual Basic is the container, you can also access the container's
+ScaleMode property directly through the Extender object's Container
+property.
+<H4>LocaleID</H4>
+<P>
+A <I>Locale</I> is a 32-bit value that identifies the language
+and platform for the thread or system. Bits 0 through 15 (the
+low-order word) identify the language. Bits 16 through 19 specify
+how sorting works under this language. It is typically 0 but may
+be set to 1 for Far East Unicode environments. Figure 18.2 shows
+the structure of a Locale identifier.
+<P>
+<A HREF="f18-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f18-2.gif"><B>Figure 18.2 :</B> <I>The Locale identifier</I>.</A>
+<P>
+The low-order word is divided into two parts. The low 10 bits
+(bits 0 through 9) indicate the language. The high 6 bits (bits
+10 through 15) indicate a subset of the language-to differentiate,
+for example, between U.S. English and U.K. English. The values
+for the supported languages can be found in any good Win32 API
+declaration file: Look for the constants with the prefix LANG<B>_</B>.
+The subsets, or sublanguage constants, are identified with the
+prefix SUBLANG<B>_</B>. Many functions take the default system
+or user locales, which are given the special constant values
+<BLOCKQUOTE>
+<PRE>
+Public Const LOCALE_SYSTEM_DEFAULT = &amp;H800
+Public Const LOCALE_USER_DEFAULT = &amp;H400
+</PRE>
+</BLOCKQUOTE>
+<P>
+A great deal of information is associated with locales. For example,
+the country name, names of days and months (and their abbreviations),
+the symbol used for local currency, the format used for dates
+and times, and other information that tends to vary from country
+to country. This information can go a long way in helping you
+create truly international applications using Visual Basic. The
+subject of locales and the Win32 API functions that are available
+to work with them are discussed further in the <I>Visual Basic
+5.0 Programmer's Guide to the Win32 API</I>.
+<H4>UserMode</H4>
+<P>
+The UserMode ambient property is probably the most important one.
+It is almost certainly the one that you will use most often. A
+setting of True for this property indicates that the control's
+container is in run mode or <I>End-User</I> mode. False indicates
+that the container is in a design-time or developer mode. Keep
+in mind that not every container supports a design-time environment.
+<P>
+The most common uses for this property are:
+<UL>
+<LI>Making properties setable only at design time (this will be
+demonstrated in <A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 19</A>).
+<LI>Defining different appearances for design time and runtime.
+<LI>Defining different behaviors for design time and runtime (including
+handling activation at design time if you choose to support it).
+</UL>
+<H3><A NAME="StrategiesforUsingAmbientProperties">
+Strategies for Using Ambient Properties</A></H3>
+<P>
+There are a number of approaches you can use when working with
+Ambient properties. In order to illustrate this, let's take a
+close look at the BackColor property.
+<P>
+This is another one of those properties that require you to keep
+close track of which object you are considering. The ch18Test1
+project group includes the ch18ctlD control, which contains three
+constituent Text Box controls. This means that you, as the control
+author, have to deal with six different BackColor properties on
+six different objects, as shown in Table 18.4.<BR>
+<P>
+<CENTER><B>Table 18.4:&nbsp;A Plethora of BackColor Properties</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=173><B>Property</B></TD><TD WIDTH=403><B>Description</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=173>Text1.BackColor</TD><TD WIDTH=403>Author only-sets the background color of the Text1 control
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=173>Text2.BackColor</TD><TD WIDTH=403>Author only-sets the background color of the Text2 control
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=173>Text3.BackColor</TD><TD WIDTH=403>Author only-sets the background color of the Text3 control
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=173>UserControl.BackColor</TD><TD WIDTH=403>Author only-sets the background color of the ActiveX control
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=173>BackColor</TD><TD WIDTH=403>Public-Does whatever you the control author wishes
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=173>Ambient.BackColor</TD><TD WIDTH=403>Public-The current background color of the control's container
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+This raises some interesting questions. Exactly what should this
+control look like? What determines the background colors of the
+various text boxes and the control itself? You have a number of
+options:
+<UL>
+<LI>You can have the control or its constituent controls share
+a single public BackColor property.
+<LI>You can have each constituent control set independently.
+<LI>You can have the control or its constituent controls track
+the container's BackColor property.
+<LI>You can combine these approaches in any way you wish.
+</UL>
+<P>
+I would not dare to suggest which approach you should take. But
+I would strongly recommend that you ask yourself these questions
+when you are designing your control. 
+<P>
+The ch18CtlD control demonstrates all of these approaches in a
+manner that is hopefully educational and definitely unattractive.
+The public BackColor property defines the background color for
+the control and the Text1 constituent control. The property functions
+are as follows:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get BackColor() As OLE_COLOR
+   BackColor = UserControl.BackColor
+End Property
+
+Public Property Let BackColor(ByVal New_BackColor As OLE_COLOR)
+   UserControl.BackColor() = New_BackColor
+   Text1.BackColor = UserControl.BackColor
+   PropertyChanged &quot;BackColor&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+There are two things to note in this code. First, the property
+type is OLE_COLOR. This property type is defined by referencing
+the standard OLE (stdole) library, which is referenced by default
+by Visual Basic 5.0. The OLE_COLOR variable is a 32-bit long,
+and variables of this type can be assigned directly to and from
+Visual Basic numeric variables. Why then should you use the OLE_COLOR
+type? Because Visual Basic is a very smart container, and when
+it sees a property with the OLE_COLOR type, it adds the color
+selection popup to the VB property window for that control.
+<P>
+The other point of interest is that two objects are &quot;connected&quot;
+to the BackColor property. When the property is set, both the
+UserControl and the Text1 control's BackColor property are set.
+The intent in this example is for these two objects to always
+have the same background color. The property is saved in the UserControl_WriteProperties
+function with the following code:
+<BLOCKQUOTE>
+<PRE>
+Call PropBag.WriteProperty(&quot;BackColor&quot;, UserControl.BackColor, &amp;H8000000F)
+</PRE>
+</BLOCKQUOTE>
+<P>
+It is read as follows:
+<BLOCKQUOTE>
+<PRE>
+UserControl.BackColor = PropBag.ReadProperty(&quot;BackColor&quot;, &amp;H8000000F)
+Text1.BackColor = UserControl.BackColor
+</PRE>
+</BLOCKQUOTE>
+<P>
+When writing the property, we can use the value from either the
+UserControl or the Text1 object, since they are the same. When
+reading the property we must be sure to set both to the new value.
+It is also necessary to initialize the property in the UserControl_InitProperties
+event. There are two approaches for doing so. One is
+<BLOCKQUOTE>
+<PRE>
+UserControl.BackColor = PropBag.ReadProperty(&quot;BackColor&quot;, &amp;H8000000F)
+Text1.BackColor = UserControl.BackColor
+PropertyChanged &quot;BackColor&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The other is to simply use
+<BLOCKQUOTE>
+<PRE>
+BackColor = &amp;H8000000F
+</PRE>
+</BLOCKQUOTE>
+<P>
+In this case the public BackColor setting serves exactly the same
+purpose. The advantage to using the public property in this manner
+is obvious-it allows you to reuse the same code and helps you
+avoid forgetting some crucial operation (such as calling PropertyChanged
+or setting all of the values that are necessary). There will be
+cases, however, where you cannot do this; for example, when you
+have code or error trapping in the public property setting routine
+that you do not want called when reading the property settings
+from a file.
+<P>
+The Text2 constituent control takes a different approach. It is
+set using an independent property called BackColor2. As such it
+is completely independent of the other background colors, and
+its property procedures are quite straightforward:
+<BLOCKQUOTE>
+<PRE>
+' Background color for text2
+Public Property Get BackColor2() As OLE_COLOR
+   BackColor2 = Text2.BackColor
+End Property
+
+Public Property Let BackColor2(ByVal vNewValue As OLE_COLOR)
+   Text2.BackColor = vNewValue
+   PropertyChanged &quot;BackColor2&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Text3 constituent control is somewhat more complex. Its background
+color can be set to follow the container color or set independently
+using the BackColor3 property. This imposes some additional requirements
+on the control code:
+<UL>
+<LI>You need to provide a way for the developer to choose between
+having the Text3 control follow the ambient background color or
+the BackColor3 property value.
+<LI>Since the Text3 control's BackColor property value may reflect
+the container's background color, it is necessary to store the
+BackColor3 property value independently.
+<LI>You need to detect when the container's BackColor property
+changes so that the Text3 control can be updated if appropriate.
+</UL>
+<P>
+Listing 18.1 shows the remainder of the control module. This example
+takes a simple approach to letting the developer choose between
+the different modes for the Text3 control. It uses a separate
+property called Text3Ambient, which is True when the Text3 control
+should follow the Ambient BackColor property value. The value
+for this property is stored in private variable m_Text3Ambient.
+A second private variable, m_Text3Backcolor, is used to hold the
+value of the BackColor3 property.
+<P>
+Another possible approach would be to define an &quot;impossible&quot;
+color value, meaning the control should return to the ambient
+background color mode. In this case, you would examine the BackColor3
+property Let function parameter. If it was some invalid value,
+such as &amp;HFFFFFFFF, you would set the m_Text3Ambient property
+to True instead of setting the m_Text3Backcolor variable. This
+approach is somewhat awkward, because it requires the developer
+to remember that the way to reset the control to its ambient background
+mode is to type -1 or &amp;HFFFFFFFF into the BackColor3 property
+edit box in the VB Property window. Since colors are usually set
+using the pop-up palette values, this is not an intuitive approach.
+A separate variable to control the Text3 control mode is much
+easier for developers to remember.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 18.1:&nbsp;Partial Listing for ch18ctlD.ctl<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Should we use the ambient or back3color value
+Private m_Text3Ambient As Boolean
+Private m_Text3Backcolor As OLE_COLOR
+
+Private Sub UserControl_AmbientChanged(PropertyName As String)
+   If PropertyName = &quot;BackColor&quot; Then
+      SetText3Color
+   End If
+End Sub
+
+'Load property values from storage
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   UserControl.BackColor = PropBag.ReadProperty(&quot;BackColor&quot;, &amp;H8000000F)
+   Text1.BackColor = UserControl.BackColor
+   Text2.BackColor = PropBag.ReadProperty(&quot;BackColor2&quot;, &amp;H80000005)
+   m_Text3Backcolor = PropBag.ReadProperty(&quot;BackColor3&quot;, &amp;H80000005)
+   m_Text3Ambient = PropBag.ReadProperty(&quot;Text3Ambient&quot;, True)
+   SetText3Color  ' Update after read
+End Sub
+
+'Write property values to storage
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;BackColor&quot;, UserControl.BackColor, &amp;H8000000F)
+   Call PropBag.WriteProperty(&quot;BackColor2&quot;, Text2.BackColor, &amp;H80000005)
+   Call PropBag.WriteProperty(&quot;BackColor3&quot;, m_Text3Backcolor, &amp;H80000005)
+   Call PropBag.WriteProperty(&quot;Text3Ambient&quot;, m_Text3Ambient, True)
+End Sub
+
+Public Property Get BackColor3() As OLE_COLOR
+   If Ambient.UserMode Then
+      ' At runtime, return the actual color in use
+      BackColor3 = Text3.BackColor
+   Else
+      BackColor3 = m_Text3Backcolor
+   End If
+End Property
+
+Public Property Let BackColor3(ByVal vNewValue As OLE_COLOR)
+   m_Text3Backcolor = vNewValue
+   PropertyChanged &quot;BackColor3&quot;
+   SetText3Color
+End Property
+
+Public Property Get Text3Ambient() As Boolean
+   Text3Ambient = m_Text3Ambient
+End Property
+
+Public Property Let Text3Ambient(ByVal vNewValue As Boolean)
+   m_Text3Ambient = vNewValue
+   PropertyChanged &quot;Text3Ambient&quot;
+   SetText3Color
+End Property
+
+Private Sub SetText3Color()
+   If m_Text3Ambient Then
+      Text3.BackColor = Ambient.BackColor
+   Else
+      Text3.BackColor = m_Text3Backcolor
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The actual setting of the Text3 background color is accomplished
+using the SetText3Color function. This function needs to be called
+any time the Text3 background color may change. This includes
+after the properties are read during the UserControl_ReadProperties
+event and any time the Text3Ambient or BackColor3 properties are
+set.
+<P>
+To see the effects of this code, bring up the frmCh18Test3 form
+in design mode and experiment with the various property values
+using the VB property window.
+<P>
+As you have seen, the Ambient and Extender objects interact closely
+with properties that you define for your ActiveX control. But
+as you will see in the next chapter, you have only begun to delve
+into issues relating to ActiveX control properties.
+<HR>
+
+<CENTER><P><A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch17.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

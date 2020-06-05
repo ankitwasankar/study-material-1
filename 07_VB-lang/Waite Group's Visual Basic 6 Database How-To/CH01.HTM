@@ -1,0 +1,3305 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Visual Basic 6 Database How-To -- Ch 1 --Accessing a Database with Bound Controls</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="sams.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/sams.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"></H1>
+
+<H1 ALIGN="CENTER">Visual Basic 6 Database How-To</H1>
+<CENTER>
+<P><A HREF="fm.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/fm/fm.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch02.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch02/ch02.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1></H1>
+<H1 ALIGN="CENTER">- 1 -<BR>
+Accessing a Database with Bound Controls</H1>
+
+<UL>
+	<LI>How do I...
+	<UL>
+		<LI><A HREF="#BROWSE A RECORDSET USING BOUND CONTROLS">1.1 Browse a recordset using
+		bound controls?</A>
+		<LI><A HREF="#Validate data entered into bound Controls?">1.2 Validate data entered
+		into bound controls?</A>
+		<LI><A HREF="#Allow users to undo changes they've made in bound controls?">1.3 Allow
+		users to undo changes they've made in bound controls?</A>
+		<LI><A HREF="#Add and delete records using bound controls?">1.4 Add and delete records
+		using bound controls?</A>
+		<LI><A HREF="#Create and use bound lists?">1.5 Create and use bound lists?</A>
+		<LI><A HREF="#Display many detail records for a single master record?">1.6 Display
+		many detail records for a single master record?</A>
+		<LI><A HREF="#Change data in data-bound grid cells from code?">1.7 Change data in
+		data-bound grid cells from code?</A>
+		<LI><A HREF="#Gracefully handle database errors?">1.8 Gracefully handle database
+		errors?</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<H3></H3>
+<P>The Microsoft Jet database engine, supplied with Visual Basic, gives you the ability
+to access many types of databases--Microsoft Access databases; other PC-based databases
+such as dBASE, FoxPro, Paradox, and Btrieve; and any relational database that supports
+the open database connectivity (ODBC) standard. Visual Basic provides two basic techniques
+for working with the Jet database engine: the data control and the data access objects
+(DAO). The data control requires less code, but data access objects are much more
+flexible. This chapter shows you how to use the data control to perform common database
+operations. Chapter 2, &quot;Accessing a Database with Data Access Objects,&quot;
+describes the use of data access objects.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>VISUAL BASIC TERMINOLOGY PRIMER</STRONG></B> </P>
+
+	<P>If you're new to database programming, many Visual Basic terms might be new to
+	you. Visual Basic works with all databases through a <I>recordset</I> consisting
+	of all the records in a table or all the records satisfying a particular Structured
+	Query Language (SQL) <TT>SELECT</TT> statement. A <TT>SELECT</TT> statement asks
+	the database to retrieve specified database fields from one or more database tables
+	in which record fields meet certain criteria. SQL itself is discussed in Chapter
+	3, &quot;Creating Queries with SQL.&quot;<BR>
+	<BR>
+	The programmer's interaction with the user is through <I>visual controls</I> placed
+	on the form for data entry, command buttons, menus, labels, list boxes, and so on.
+	The most common controls are <I>text boxes</I> for entering data, <I>command buttons</I>
+	for getting the program to do useful work, <I>menus</I>, and <I>labels</I> to describe
+	the other controls. <I>List boxes</I> and <I>combo boxes</I> allow the program to
+	provide the user with multiple selections for text entry.<BR>
+	<BR>
+	Most visual controls, including text, list, and combo boxes, can be <I>bound</I>
+	to a data source for automatic display of data or have a special <I>data-bound</I>
+	version. <I>Binding</I> is the process of connecting the data in a visual control
+	to a field in a recordset. The most common binding method is the <I>data control</I>.
+	The data control has a visual interface to support data movement through the records
+	and a recordset object to manage the interface to the database engine. The data control
+	<I>component</I> also supports several <I>methods</I> and <I>properties</I> for programmatic
+	or design-time control. A component is simply a &quot;piece part&quot; used to build
+	a Visual Basic application. A method is equivalent to a function call to the component
+	to get the component to do useful work. A property is a data element of the component
+	that helps control its behavior. For example, the data control has a <TT>DatabaseName</TT>
+	property to tell it where the database can be found and a <TT>Move</TT> method to
+	move the visual control around on the form. In addition, the data control <I>exposes</I>
+	all the methods and properties of its contained recordset object. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>All examples in this chapter use existing Microsoft Access database files delivered
+with Visual Basic (later chapters demonstrate how to create a database with Visual
+Basic). The techniques, however, apply to all the databases that Visual Basic can
+access through the Jet engine. In addition, the Enterprise Edition <I>remote data
+control</I> uses very similar techniques for direct use with ODBC databases. The
+remote data control bypasses the Jet engine and usually delivers faster performance
+than access through the Jet engine.</P>
+<P>
+<H4>1.1 Browse a Recordset Using Bound Controls</H4>
+<P>One of the most fundamental operations in database work is the user's ability
+to browse through records in an existing database and modify data. In this How-To,
+you'll use the data control, bind its fields to some text boxes, and write one line
+of executable code to browse a database.</P>
+<P>
+<H4>1.2 Validate Data Entered into Bound Controls</H4>
+<P>People make data entry errors, and an industrial-strength application anticipates
+and traps those errors before the data entry errors corrupt the integrity of the
+database. This How-To shows how to trap and respond to entry errors when you're using
+the data control and bound visual controls.</P>
+<P>
+<H4>1.3 Allow People to Undo Changes They've Made in Bound Controls</H4>
+<P>Sometimes people catch their own mistakes. In this How-To, you'll learn how to
+enable them to undo those mistakes when the application uses the data control.</P>
+<P>
+<H4>1.4 Add and Delete Records Using Bound Controls</H4>
+<P>A database is fairly useless without some means of adding and deleting records.
+In this How-To, you'll see how to add and delete records with bound controls.</P>
+<P>
+<H4>1.5 Create and Use Bound Lists</H4>
+<P>One way to reduce data entry errors--and make people's lives a bit easier--is
+to provide people with lists from which they can choose appropriate values for database
+fields. Visual Basic 6 provides the DBCombo and DBList controls that make this easy
+to do. In this How-To, you'll use the DBCombo control to display suggested field
+values.</P>
+<P>
+<H4>1.6 Display Many Detail Records for a Single Master Record</H4>
+<P>Frequently, you need to work with related records at the same time in a master-detail
+relationship. You might want to show an invoice header and all its detail lines or
+show all the orders for a particular product. This How-To shows how the <TT>DBGrid</TT>
+control can place multiple detail records on a form for each master record.</P>
+<P>
+<H4>1.7 Change Data in Data-Bound Grid Cells from Code</H4>
+<P>The master-detail grid looks great, but some applications require the capability
+to expand and edit grid data from the main form. This How-To walks through a form
+that edits <TT>DBGrid</TT> data from the form's code.</P>
+<P>
+<H4>1.8 Gracefully Handle Database Errors</H4>
+<P>Whenever you're working with disk files, unanticipated errors can occur. Your
+Visual Basic database program should handle errors gracefully. This How-To shows
+how.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>FINDING THE SAMPLES</STRONG></B><STRONG> </STRONG></P>
+
+	<P>All the How-To's in this book are on the accompanying CD-ROM. After you install
+	the source code, you will find a directory for each chapter; and within each chapter
+	directory there is a directory for each How-To. The steps of each How-To start with
+	an opportunity to preview the completed How-To from your installation directory.
+	If you decide to work through a How-To in its entirety, we assume that you are working
+	in a separate work area on your computer. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H2>1.1 How do I...</H2>
+<H3><A NAME="BROWSE A RECORDSET USING BOUND CONTROLS"></A><B>BROWSE A RECORDSET USING
+BOUND CONTROLS?</B></H3>
+<P><B>Problem</B></P>
+<P>I need to see the records in a database, but I don't want to write a lot of code.
+How can I do this with Visual Basic?</P>
+<P><B>Technique</B></P>
+<P>The Visual Basic data control object, in conjunction with data-bound controls,
+allows you to browse records in a supported database without writing a single line
+of code.</P>
+<P>To use the data control, place it on your form and set two properties: <TT>DatabaseName</TT>,
+which specifies the database to which it will be linked, and <TT>RecordSource</TT>,
+which designates the source of data within the database. Add a text box to your form
+for every database field you want to access from the <TT>RecordSource</TT>, and bind
+each text box to the data control object and <TT>RecordSource</TT> field.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>COMPATIBLE DATABASES</STRONG></B><STRONG> </STRONG></P>
+
+	<P>Databases that are compliant with the Visual Basic data control--and with Visual
+	Basic data access objects, discussed in Chapter 2--include Microsoft Access, dBASE,
+	FoxPro, Paradox, Btrieve, and any other database products that support the ODBC standard.
+	Most relational database products for desktop systems and multiuser systems support
+	ODBC. The examples throughout this book use Microsoft Access databases, except for
+	those in Chapters 6, &quot;Connecting to an ODBC Server,&quot; and 7, &quot;SQL Server
+	Databases and Remote Data Objects,&quot; which relate specifically to other database
+	products. Virtually all the examples in the book (except for those in Chapters 6
+	and 7) can be applied to any of the database products. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>When you work with Microsoft Access databases, <TT>DatabaseName</TT> is the name
+of a Microsoft Access database file. When you work with other database products,
+what constitutes &quot;the database&quot; depends on the type of database--for dBASE,
+Paradox, and FoxPro databases, for example, <TT>DatabaseName</TT> is the name of
+the directory in which data files are stored. <TT>RecordSource</TT> can also be a
+table or a SQL <TT>SELECT</TT> statement. Microsoft Access also allows you to specify
+the name of a query stored within the database as the <TT>RecordSource</TT>.</P>
+<P>The data control not only provides the link between your form and the database,
+but it also provides tools for navigating through the database. Figure 1.1 shows
+a data control. The Next Record and Previous Record buttons move you through the
+database one record at a time. The First Record and Last Record buttons move you
+quickly to the beginning or end of the database.</P>
+<P><A HREF="javascript:popUp('01fig01.gif')"><B>Figure 1.1</B></A><B> </B><I>The
+data control.</I></P>
+<P><B>Steps</B></P>
+<P>To preview this How-To, open the project BrowseBound.VBP in the <TT>Chapter01\HowTo01</TT>
+directory. Change the <TT>DatabaseName</TT> property of the data control <TT>datEmployees</TT>
+to point to the copy of NWind.MDB installed on your system (probably in the directory
+where VB6.EXE is installed). Then run the project. The form shown in Figure 1.2 appears.
+Use the buttons on the data control to view records in the Titles table of NWind.MDB.</P>
+<P><A HREF="javascript:popUp('01fig02.gif')"><B>Figure 1.2</B></A><B> </B><I>The
+Bound Browser form.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project in your work area called BrowseBound.VBP. Use
+	<TT>Form1</TT> to create the objects and properties listed in Table 1.1, and save
+	the form as BrowseBound.FRM. Substitute the path to your copy of NWIND.MDB for the
+	<TT>DatabaseName</TT> property of <TT>datEmployees</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.1 Objects and properties for the Bound Browser form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Form1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Bound Browser&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Data</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>datEmployees</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Employees&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DatabaseName</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;D:\Program Files\Microsoft Visual Studio\VB6\NWIND.MDB&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>RecordSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Employees&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtEmpLastName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;LastName&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datEmployees&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtEmpFirstName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;FirstName&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datEmployees&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtBirthDate</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;BirthDate&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datEmployees&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtEmployeeId</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;EmployeeID&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datEmployees&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Enabled</TT></TD>
+		<TD ALIGN="LEFT"><TT>False</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Employee:&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Birth Date:&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label3</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Employee ID:&quot;</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Use the Visual Basic Menu Editor to create the menu shown in Table
+	1.2.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.2 Menu specifications for the Bound Browser.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">Shortcut Key</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;File</TD>
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----E&amp;xit</TD>
+		<TD ALIGN="LEFT"><TT>mnuFileExit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Enter the following code as the <TT>Click</TT> event for <TT>mnuExit</TT>:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileExit_Click()</TT>
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>When the application starts, the data control opens the NWind.MDB database, creates
+a recordset from the Titles table, and displays values from the first record of the
+recordset in the form's bound controls. A <I>recordset</I> is a Visual Basic object
+used to manipulate the contents of a database. <I>Bound controls</I> are visual interface
+controls such as text boxes that people can see on the screen but that are also linked,
+or bound, to fields managed by a data control's recordset. Recordsets provide methods
+for moving between records, as well as for adding, updating, and deleting records.
+When users click on one of the data control's record navigation buttons, the data
+control positions the record pointer to the selected record and updates the bound
+controls with the values from the new record.</P>
+<P>Under the covers, the data control is working hard. You see a screen form with
+text boxes. Figure 1.3 shows the main interactions between bound text boxes, the
+data control, and the data control's recordset. Every time the data control moves
+to a different record, it checks for changed data between the bound controls and
+the recordset fields. If changes are found, the data control moves the data to the
+fields and performs an automatic update to the recordset and the underlying database.
+Finally, the data control retrieves the desired record from the database and copies
+the field data to text controls for display. In the remainder of this chapter, you'll
+explore the data control's events and methods to build solid applications with very
+little work.</P>
+<P><A HREF="javascript:popUp('01fig03.gif')"><B>Figure 1.3</B></A><B> </B><I>Under
+the data control's covers.</I></P>
+<P><B>Comments</B></P>
+<P>This is truly code-free development. The only executable line of code closes the
+application. However, this is a very limited application; there's no way to validate
+entries, add records, or delete records. To perform these operations, some code is
+necessary--not a lot of code, but some code nonetheless. The following How-To's show
+how to add these functions to this simple beginning.</P>
+<P>
+<H2>1.2 How do I...</H2>
+<H3><A NAME="Validate data entered into bound Controls?"></A><B>Validate data entered
+into bound controls?</B></H3>
+<P><B>Problem</B></P>
+<P>The data control and bound controls provide low-code database access. But I need
+to verify that entered form data is valid before I update the database. How can I
+check entered data when I'm using bound controls?</P>
+<P><B>Technique</B></P>
+<P>Each time you change the current record in a recordset attached to a data control--by
+moving to a different record, deleting the current record, or closing the recordset--Visual
+Basic triggers the data control's <TT>Validate</TT> event. You can write an event
+subroutine to check any changes made to data in bound controls.</P>
+<P>The <TT>Validate</TT> event subroutine receives two arguments:</P>
+
+<UL>
+	<LI><TT>Action</TT>, an integer which describes the event that caused the <TT>Validate</TT>
+	event.
+	<P>
+	<LI><TT>Save</TT>, a Boolean value that is <TT>True</TT> if data in any bound control
+	has changed and <TT>False</TT> if the data hasn't changed.
+</UL>
+
+<P>In your event subroutine, you can check the value of <TT>Save</TT>. If it is <TT>True</TT>,
+you can then check each entry to verify that it falls within the bounds of what is
+legal in your application. If any entry is not legal, you can set the <TT>Action</TT>
+argument to the built-in constant <TT>dbDataActionCancel</TT>, which cancels the
+event that caused the <TT>Validate</TT> event. For example, if the <TT>Validate</TT>
+event was triggered by clicking on the data control to move to a different record,
+setting <TT>Action</TT> to <TT>dbDataActionCancel</TT> cancels the <TT>Move</TT>
+event and leaves the data control positioned on the original record. Your <TT>Validate</TT>
+event subroutine should also display a problem message so that the entry can be corrected.</P>
+<P><B>Steps</B></P>
+<P>Open the project ValidateBound.VBP in the <TT>Chapter01\HowTo02</TT> directory
+to preview the results of this How-To. Change the <TT>DatabaseName</TT> property
+of the data control <TT>datEmployees</TT> to point to the copy of NWind.MDB installed
+on your system (probably in the directory where VB6.EXE is installed). Then run the
+project. A form similar to that shown previously in Figure 1.2 appears. Use the buttons
+on the data control to view records in the Employees table of NWind.MDB. Select all
+the text in the Employee and Birth Date boxes and delete it; then try to move to
+another record. You'll see an error message like the one shown in Figure 1.4, informing
+you that you must enter a last name, first name, and birth date. Choose the File
+| Exit menu option to close the project.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project called ValidateBound.VBP in your work area. Use
+	<TT>Form1</TT> to create the objects and properties listed earlier in Table 1.1,
+	and save the form as ValidateBound.FRM. (Note that this is the same form used for
+	How-To 1.1.) Substitute the path to your copy of NWind.MDB for the <TT>DatabaseName</TT>
+	property of <TT>datEmployees</TT>. Use the Visual Basic Menu Editor to create the
+	menu shown earlier in Table 1.2.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add the file clsUtility.cls to your project from the <TT>Chapter01\HowTo02</TT>
+	directory by selecting Project | Add File from the main menu or by pressing Ctrl+D
+	on the keyboard. Use the File common dialog to select the file.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('01fig04.gif')"><B>Figure 1.4</B></A><B> </B><I>The
+Validate Bound form.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>3. </B>Add the following code to the declarations section of <TT>Form1</TT>.
+	The Utility class is used to tie <TT>MsgBox</TT> strings together in a common place.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Utility As New clsUtility</TT>
+Private mblnValidationFailed As Boolean</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Enter the following code into <TT>Form1</TT> as the <TT>Validate</TT>
+	event for the <TT>datEmployees</TT> data control. This code checks to make sure that
+	valid data have been entered into all controls. If there are any invalid data, the
+	subroutine displays an error message, cancels the <TT>Validate</TT> event, and sets
+	the form-level variable <TT>mblnValidationFailed</TT> to <TT>True</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub datEmployees_Validate(Action As Integer, Save As Integer)</TT>
+    Dim strMsg As String
+    Dim enumMsgResult As VbMsgBoxResult
+    If Save = True Or Action = vbDataActionUpdate _
+              Or Action = vbDataActionUnload Then
+        ` One or more bound controls has changed or the form
+        ` is being unloaded, so verify that all fields have
+        ` legal entries. If a field has an incorrect value,
+        ` append a string explaining the error to strMsg and
+        ` set the focus to that field to facilitate correcting
+        ` the error. We explain all errors encountered in a
+        ` single message box.
+        strMsg = &quot;&quot;
+        If txtEmpLastName.Text = &quot;&quot; Then
+             Utility.AddToMsg strMsg, _
+                &quot;You must enter a last name.&quot;
+             txtEmpLastName.SetFocus
+        End If
+        If txtEmpFirstName.Text = &quot;&quot; Then
+             Utility.AddToMsg strMsg, _
+                &quot;You must enter a first name.&quot;
+             txtEmpFirstName.SetFocus
+        End If
+        If Not IsDate(txtBirthDate.Text) Then
+             Utility.AddToMsg strMsg, _
+                &quot;You must enter a birth date.&quot;
+             txtBirthDate.SetFocus
+        Else
+            If CDate(txtBirthDate.Text) &gt;= Date Then
+                 Utility.AddToMsg strMsg, _
+                    &quot;Birth date must be in the past.&quot;
+                 txtBirthDate.SetFocus
+            End If
+        End If
+        If strMsg &lt;&gt; &quot;&quot; Then
+             ` We have something in the variable strMsg, which
+             ` means that an error has occurred. Display the
+             ` message. The focus is in the last text box where
+             ` an error was found.
+             MsgBox strMsg, vbExclamation
+             ` Cancel the Validate event
+             Action = vbDataActionCancel
+             ` Deny form Unload until fields are corrected
+             mblnValidationFailed = True
+         Else
+             mblnValidationFailed = False
+         End If
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Enter the following code into <TT>Form1</TT> as the <TT>Unload</TT>
+	event. If the <TT>Validate</TT> event has set the <TT>UpdateCancelled</TT> flag,
+	this procedure cancels the <TT>Unload</TT> event.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Unload(Cancel As Integer)</TT>
+    ` Don't allow the unload until the data is validated.
+    If mblnValidationFailed Then Cancel = True
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Enter the following code as the <TT>Click</TT> event for <TT>mnuExit</TT>:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuExit_Click()</TT>
+<TT>    Unload Me</TT>
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>Each time the <TT>Validate</TT> event is called, the contents of the controls
+are checked to make sure that they contain valid data. If they do not, the <TT>Validate</TT>
+event is cancelled. This prevents the record from being saved with invalid data.
+The validation event procedure makes use of a &quot;helper&quot; utility class to
+append multiple messages from each error check to the displayed results. Displaying
+all validation errors at once is a good design technique because it reduces frustration
+for the user.</P>
+<P>When the form is unloaded, the contents of bound controls are automatically saved
+through the data control. And that means that the <TT>Validate</TT> event gets called.
+If a control has invalid data, the <TT>Validate</TT> event is cancelled, but that
+does not in itself cancel the <TT>Form</TT> <TT>Unload</TT> event. Therefore, the
+<TT>Validate</TT> event sets a form-level flag variable, <TT>mblnValidationFailed</TT>,
+which the <TT>Form</TT> <TT>Unload</TT> procedure checks. If <TT>mblnValidationFailed</TT>
+is true, the <TT>Form</TT> <TT>Unload</TT> event is cancelled and the application
+does not terminate.</P>
+<P><B>Comments</B></P>
+<P>The validating browse form helps control data entry errors, but it is unforgiving
+without a cancellation option to undo form changes. After a field has been changed
+on this form, valid data must be entered before the user can change records or exit
+the application. Clearly, there should be a better way--and there is.</P>
+<P>
+<H2>1.3 How do I...</H2>
+<H3><A NAME="Allow users to undo changes they've made in bound controls?"></A><B>Allow
+users to undo changes they've made in bound controls?</B></H3>
+<P><B>Problem</B></P>
+<P>I want my form to have the capability to undo changes made to a record before
+the record is saved. How can I accomplish this when I'm using bound controls?</P>
+<P><B>Technique</B></P>
+<P>Your form gains the capability to undo changes to the current record by using
+the <TT>UpdateControls</TT> method of the data control. This method causes Visual
+Basic to reread the current record from the database file and refresh the value of
+each bound control with the respective field value from the database. Simply execute
+this method and any bound control changes are overwritten with the original data
+from the database.</P>
+<P><B>Steps</B></P>
+<P>Open the project UndoBound.VBP to preview this How-To. Change the <TT>DatabaseName</TT>
+property of the data control <TT>datEmployees</TT> to point to the copy of NWind.MDB
+installed on your system (probably in the directory where VB6.EXE is installed).
+Then run the project. The form shown in Figure 1.5 appears. Use the buttons on the
+data control to view records in the Employees table of NWind.MDB. Make a change in
+a record. Before you move to another record, select Edit | Undo. You'll see your
+changes &quot;backed out&quot; of the form.</P>
+<P><A HREF="javascript:popUp('01fig05.gif')"><B>Figure 1.5</B></A><B> </B><I>The
+Undo Bound form.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called UndoBound.VBP. Use <TT>Form1</TT> to create
+	the objects and properties listed earlier in Table 1.1, and save the form as UndoBound.FRM.
+	(Note that this is the same form used for How-To's 1.1 and 1.2.) Substitute the path
+	to your copy of NWind.MDB for the <TT>DatabaseName</TT> property of <TT>datEmployees</TT>.
+	Use the Visual Basic menu editor to create the menu shown in Table 1.3.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.3 Menu specifications for UndoBound.FRM.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Shortcut Key</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;File</TD>
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----E&amp;xit</TD>
+		<TD ALIGN="LEFT"><TT>mnuFileExit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;Edit</TD>
+		<TD ALIGN="LEFT"><TT>mnuEdit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----&amp;Undo</TD>
+		<TD ALIGN="LEFT"><TT>mnuEditUndo</TT></TD>
+		<TD ALIGN="LEFT">Ctrl+Z</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add the file clsUtility.cls to your project from the <TT>Chapter01\HowTo03</TT>
+	directory by selecting Project | Add File from the main menu or by pressing Ctrl+D
+	on the keyboard. Use the File common dialog to select the file.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the declarations section of <TT>Form1</TT>:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+	<PRE><TT>Private Utility As New clsUtility</TT>
+Private mblnValidationFailed As Boolean</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Enter the following code into <TT>Form1</TT> as the <TT>Validate</TT>
+	event for the <TT>datEmployees</TT> data control. (Note the changes from How-To 1.2
+	highlighted in<B> </B>bold.) This code checks to make sure that valid data have been
+	entered into all controls. If there are any invalid data, the subroutine displays
+	an error message and asks for an OK or a Cancel response. An OK response cancels
+	the <TT>Validate</TT> event and sets the form-level variable <TT>mblnValidationFailed</TT>
+	to <TT>True</TT>. A Cancel response retrieves the database values to the bound form
+	controls and backs out the changes.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub datEmployees_Validate(Action As Integer, Save As Integer)</TT>
+    Dim strMsg As String
+<B>    Dim enumMsgResult As VbMsgBoxResult</B>
+    If Save = True Or Action = vbDataActionUpdate _
+              Or Action = vbDataActionUnload Then
+        ` One or more bound controls has changed or the form
+        ` is being unloaded, so verify that all fields have
+        ` legal entries. If a field has an incorrect value,
+        ` append a string explaining the error to strMsg and
+        ` set the focus to that field to facilitate correcting
+        ` the error. We explain all errors encountered in a
+        ` single message box.
+        strMsg = &quot;&quot;
+        If txtEmpLastName.Text = &quot;&quot; Then
+             Utility.AddToMsg strMsg, _
+                &quot;You must enter a last name.&quot;
+             txtEmpLastName.SetFocus
+        End If
+        If txtEmpFirstName.Text = &quot;&quot; Then
+             Utility.AddToMsg strMsg, _
+                &quot;You must enter a first name.&quot;
+             txtEmpFirstName.SetFocus
+        End If
+        If Not IsDate(txtBirthDate.Text) Then
+             Utility.AddToMsg strMsg, _
+                &quot;You must enter a birth date.&quot;
+             txtBirthDate.SetFocus
+        Else
+            If CDate(txtBirthDate.Text) &gt;= Date Then
+                 Utility.AddToMsg strMsg, _
+                     &quot;Birth date must be in the past.&quot;
+                 txtBirthDate.SetFocus
+            End If
+        End If
+        If strMsg &lt;&gt; &quot;&quot; Then
+             ` We have something in the variable strMsg, which
+             ` means that an error has occurred. Display the
+             ` message. The focus is in the last text box where
+             ` an error was found
+<B>             enumMsgResult = MsgBox(strMsg, _</B>
+<B>                             vbExclamation + vbOKCancel + </B>
+<B>                             vbDefaultButton1)</B>
+<B>             If enumMsgResult = vbCancel Then</B>
+<B>                 ` Restore the data to previous values using the</B>
+<B>                 ` data control</B>
+<B>                 datEmployees.UpdateControls</B>
+<B>                 ` Allow form unload.</B>
+<B>                 mblnValidationFailed = False</B>
+<B>             Else</B>
+<B>                 ` Cancel the Validate event</B>
+<B>                 Action = vbDataActionCancel</B>
+<B>                 ` Deny form unload until fields are corrected</B>
+<B>                 mblnValidationFailed = True</B>
+<B>             End If</B>
+         Else
+             mblnValidationFailed = False
+         End If
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Enter the following code into <TT>Form1</TT> as the <TT>Unload</TT>
+	event. (This code is the same as that for the identically named procedure in How-To
+	1.2.) If the <TT>Validate</TT> event has set the <TT>UpdateCancelled</TT> flag, this
+	procedure cancels the <TT>Unload</TT> event.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Unload(Cancel As Integer)</TT>
+    ` Don't allow the unload until the data is validated or the
+    ` update is cancelled
+    If mblnValidationFailed Then Cancel = True
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Enter the following code as the <TT>Click</TT> eventfor <TT>mnuEditUndo</TT>:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuEditUndo_Click()</TT>
+    ` Undo all pending changes from form by copying recordset
+    ` values to form controls
+    datEmployees.UpdateControls
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Enter the following code as the <TT>Click</TT> event for <TT>mnuExit</TT>.
+	(This code is the same as that for the identically named procedure in How-To 1.2.)
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuExit_Click()</TT>
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The <TT>mnuEditUndo_Click</TT> procedure allows for removing any pending changes
+from the database by using the data control's <TT>UpdateControls</TT> method. This
+method takes the copy of the field data from the data control's recordset and &quot;updates&quot;
+the displayed bound controls. Remember from Figure 1.3 that there are constantly
+two copies of all data in a data control application--the copy on the screen fields
+(in the bound controls) and the copy in the data control's recordset fields. Data
+is moved from the bound controls to the recordset fields during an update but only
+after validation is successful. So no matter how much the data on the screen has
+changed, nothing happens until the recordset gets updated. (In this application so
+far, a recordset is updated only when the data control is moved from one record to
+another.)</P>
+<P>Another useful enhancement in this version of the program is the use of a Cancel
+response from the validation error message box to refresh the screen display automatically
+without making the user make a menu selection. Figure 1.6 shows the modified error
+message box. If the response indicates a cancellation, the validation is cancelled
+and the data values are restored from the database to the bound controls.</P>
+<P><A HREF="javascript:popUp('01fig06.gif')"><B>Figure 1.6</B></A><B> </B><I>The
+Cancel button added to an error message box.</I></P>
+<P>The validation event procedure (in step 4) makes extensive use of Visual Basic
+constants such as <TT>vbDataActionCancel</TT> and <TT>vbCancel</TT> rather than numeric
+constants to improve the ability of programmers to understand the code. Values for
+constants can easily be found by pressing the F2 key from within Visual Basic to
+bring up the Object Browser window from which constants can be copied and pasted
+into your code. Declaring <TT>enumMsgResult</TT> as a <TT>VbMsgBoxResult</TT> type
+shows the use of strong typing to help make the program's meaning clearer to subsequent
+programmers.</P>
+<P><B>Comments</B></P>
+<P>Even though you can update, validate, and undo changes to your employee records,
+you still can't hire or fire anyone with the information you have so far. Let's complete
+the core application by adding the add and delete functions.</P>
+<P>
+<H2>1.4 How do I...</H2>
+<H3><A NAME="Add and delete records using bound controls?"></A><B>Add and delete
+records using bound controls?</B></H3>
+<P><B>Problem</B></P>
+<P>How do I add and delete records when I'm using bound controls?</P>
+<P><B>Technique</B></P>
+<P>To add a record to the recordset of a data control, use the <TT>AddNew</TT> method
+of the recordset established by the data control. Visual Basic sets all bound controls
+to their default values (as determined by the table definition in the database you're
+accessing) and makes the new record the current record. After all data has been entered
+into the bound controls, Visual Basic creates a new record in the table and fills
+it with the values from the controls. Visual Basic knows that data entry is complete
+when you move to a different record, you add another new record, or your code executes
+the recordset's <TT>Update</TT> method. All records get added to the end of the data
+control's recordset.</P>
+<P>If you make changes to an existing record and then unload the form, Visual Basic
+automatically updates the recordset with your changes. When you add a record, enter
+data into the record, and then either add another record or move to an existing record,
+Visual Basic automatically saves the new record. However, if you add a record, enter
+data into the new record, and then unload the form--before you move to another record--Visual
+Basic does not automatically save the new record. If you want to save the new record,
+you can invoke the <TT>Recordset</TT> object's <TT>Update</TT> method from the form's
+<TT>Unload</TT> event. The <TT>Update</TT> method saves the data in the form's bound
+controls to the corresponding fields in the recordset.</P>
+<P>To delete the currently displayed record from the database, use the data control
+recordset's <TT>Delete</TT> method. Visual Basic deletes the current record from
+the database. It does not, however, move to a new record or update the controls.
+You must do this through your code by using one of the four <TT>Move</TT> methods:
+<TT>MoveFirst</TT>, <TT>MoveLast</TT>, <TT>MovePrevious</TT>, or <TT>MoveNext</TT>.
+If you do not move to a new record after executing the <TT>Delete</TT> method, there
+will be no current record. Visual Basic will, therefore, generate an error when you
+try to perform any operation on the current record.</P>
+<P><B>Steps</B></P>
+<P>Preview the project AddDeleteBound.VBP. Change the <TT>DatabaseName</TT> property
+of the data control <TT>datEmployees</TT> to point to the copy of NWind.MDB installed
+on your system (probably in the directory where VB6.EXE is installed). Then run the
+project. The form shown in Figure 1.7 appears. Select Data | Add Record. Enter some
+representative values into the fields. Move to another record or select Data | Save
+Record from the main menu. Move to the last record in the recordset by clicking the
+&gt;| button on the data control. You should see the record you just added. Select
+Data | Delete Record. Move to the last record in the recordset again. The record
+you added should be gone.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project called AddDeleteBound.VBP. Use <TT>Form1</TT>
+	to create the objects and properties listed earlier in Table 1.1, and save the form
+	as AddDeleteBound.FRM. Substitute the path to your copy of NWind.MDB for the <TT>DatabaseName</TT>
+	property of <TT>datEmployees</TT>. You might find it easier to start from the UndoBound.VBP
+	form from How-To 1.3. Use the Visual Basic menu editor to create the menu shown in
+	Table 1.4.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('01fig07.gif')"><B>Figure 1.7</B></A><B> </B><I>The
+Bound Add/Delete/Update form.</I></P>
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.4 Menu specifications for the Bound Add/Delete form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Shortcut Key</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;File</TD>
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----E&amp;xit</TD>
+		<TD ALIGN="LEFT"><TT>mnuFileExit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;Edit</TD>
+		<TD ALIGN="LEFT"><TT>mnuEdit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----&amp;Undo</TD>
+		<TD ALIGN="LEFT"><TT>mnuEditUndo</TT></TD>
+		<TD ALIGN="LEFT">Ctrl+Z</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;Data</TD>
+		<TD ALIGN="LEFT"><TT>mnuData</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----&amp;Add Record</TD>
+		<TD ALIGN="LEFT"><TT>mnuDataAdd</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----&amp;Delete Record</TD>
+		<TD ALIGN="LEFT"><TT>mnuDataDelete</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	</TABLE>
+</P>
+	<PRE>----&amp;Save Record <TT>mnuDataSave</TT></PRE>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>2. </B>Add the file clsUtility.cls to your project from the <TT>Chapter01\HowTo03</TT>
+	directory by selecting Project | Add File from the main menu or by pressing Ctrl+D
+	on the keyboard. Use the File common dialog to select the file.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the declarations section of <TT>Form1</TT>:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Utility As New clsUtility</TT>
+Private mblnValidationFailed As Boolean</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code as the <TT>Validate</TT> event of the data control
+	<TT>datEmployees</TT>. (This code is the same as that for the identically named procedure
+	in How-To 1.3, except for the code in bold.) The <TT>Validate</TT> event is called
+	every time the current record changes, when the form is unloaded, and when the <TT>Update</TT>
+	method is invoked. This procedure verifies that all entries meet the requirements
+	of the application when data in bound controls have been changed. If an entry is
+	incorrect, the routine cancels the <TT>Validate</TT> event and sets the form-level
+	flag variable <TT>mblnValidationFailed</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub datEmployees_Validate(Action As Integer, _</TT>
+        Save As Integer)
+    Dim strMsg As String
+    Dim enumMsgResult As VbMsgBoxResult
+    If Save = True Or Action = vbDataActionUpdate _
+    Or Action = vbDataActionUnload _
+<B>    Or Action = vbDataActionAddNew Then</B>
+        ` One or more bound controls has changed or the form
+        ` is being unloaded, so verify that all fields have
+        ` legal entries. If a field has an incorrect value,
+        ` append a string explaining the error to strMsg and
+        ` set the focus to that field to facilitate correcting
+        ` the error. We explain all errors encountered in a
+        ` single message box.
+        strMsg = &quot;&quot;
+        If txtEmpLastName.Text = &quot;&quot; Then
+             Utility.AddToMsg strMsg, _
+                 &quot;You must enter a last name.&quot;
+             txtEmpLastName.SetFocus
+        End If
+        If txtEmpFirstName.Text = &quot;&quot; Then
+             Utility.AddToMsg strMsg, _
+                 &quot;You must enter a first name.&quot;
+             txtEmpFirstName.SetFocus
+        End If
+        If Not IsDate(txtBirthDate.Text) Then
+             Utility.AddToMsg strMsg, _
+                 &quot;You must enter a birth date.&quot;
+             txtBirthDate.SetFocus
+        Else
+            If CDate(txtBirthDate.Text) &gt;= Date Then
+                 Utility.AddToMsg strMsg, _
+                     &quot;Birth date must be in the past.&quot;
+                 txtBirthDate.SetFocus
+            End If
+        End If
+        If strMsg &lt;&gt; &quot;&quot; Then
+             ` We have something in the variable strMsg, which 
+             ` means that an error has occurred. Display the 
+             ` message. The focus is in the last text box where an 
+             ` error was found
+             enumMsgResult = MsgBox(strMsg, _
+                    vbExclamation + vbOKCancel + vbDefaultButton1)
+             If enumMsgResult = vbCancel Then
+                 ` Restore the data to previous values using 
+                 ` the data control
+                 datEmployees.UpdateControls
+                 mblnValidationFailed = False
+             Else
+                 ` Cancel the Validate event
+                 Action = vbDataActionCancel
+                 ` Deny form Unload until fields are corrected
+                 mblnValidationFailed = True
+             End If
+         Else
+             ` Allow form unload
+             mblnValidationFailed = False
+<B>             ` Disable the Save menu</B>
+<B>             mnuDataSave.Enabled = False</B>
+         End If
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Enter the following code as the <TT>Click</TT> method of the Edit |
+	Undo menu item. If the user chooses Undo while adding a new record, the subroutine
+	uses the Recordset object's <TT>CancelUpdate</TT> method to cancel the pending <TT>AddNew</TT>
+	operation. If the user clicks the menu item while editing an existing record, the
+	procedure updates the form's controls by filling them with the current values from
+	the recordset.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuEditUndo_Click()</TT>
+    ` Undo all pending changes from form by copying recordset 
+    ` values to form controls
+    datEmployees.UpdateControls
+<B>    If datEmployees.Recordset.EditMode = dbEditAdd Then</B>
+<B>        ` Disable the menu save and cancel the update</B>
+<B>        datEmployees.Recordset.CancelUpdate</B>
+<B>        mnuDataSave.Enabled = False</B>
+<B>    End If</B>
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code as the <TT>Click</TT> event of the Data menu's
+	Add Record item. This subroutine uses the <TT>Recordset</TT> object's <TT>AddNew</TT>
+	method to prepare the form and the recordset for the addition of a new record.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuDataAdd_Click()</TT>
+    ` Reset all controls to the default for a new record
+    ` and make space for the record in the recordset copy
+    ` buffer.
+    datEmployees.Recordset.AddNew
+    `Enable the Save menu choice
+    mnuDataSave.Enabled = True
+    ` Set the focus to the first control on the form
+    txtEmpLastName.SetFocus
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the following code as the <TT>Click</TT> event of the Data menu's
+	Delete Record item. The procedure confirms that the user wants to delete the record
+	and then deletes it. It then ensures that the record pointer is pointing at a valid
+	record.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuDataDelete_Click()</TT>
+    Dim strMsg As String
+    `Verify the deletion.
+    strMsg = &quot;Are you sure you want to delete &quot; _
+            &amp; IIf(txtEmpLastName.Text &lt;&gt; &quot;&quot;, _
+                txtEmpLastName.Text, _
+                &quot;this record&quot;) &amp; &quot;?&quot;
+    If MsgBox(strMsg, vbQuestion + vbYesNo + vbDefaultButton2) = _
+        vbYes Then
+        ` We really want to delete
+        datEmployees.Recordset.Delete
+        ` Make a valid record the current record and 
+        ` update the display.
+        datEmployees.Recordset.MoveNext
+        ` If we deleted the last record, move to the new last 
+        ` record because the current record pointer is not defined 
+        ` afterdeleting the last record, even though EOF is 
+        ` defined.
+        If datEmployees.Recordset.EOF Then 
+        datEmployees.Recordset.MoveLast
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Add the following code as the <TT>Click</TT> event of the Data menu's
+	Save Record item. The Save Record subroutine uses the <TT>Update</TT> method of the
+	<TT>Recordset</TT> object to write the values in the form's bound controls to their
+	respective fields in the recordset. The <TT>If</TT> statement prevents a recordset
+	<TT>Update</TT> without a preceding <TT>AddNew</TT> or <TT>Edit</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuDataSave_Click()</TT>
+    ` Invoke the update method to copy control contents to
+    ` recordset fields and update the underlying table
+    datEmployees.Recordset.Update
+    If datEmployees.Recordset.EditMode &lt;&gt; dbEditAdd Then
+        ` If we added move to the new record
+        datEmployees.Recordset.MoveLast
+   End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Add the following code as the <TT>Click</TT> event of the File menu's
+	Exit item. (This code is the same as that for the identically named procedure in
+	How-To 1.2.)
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileExit_Click()</TT>
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Add the following code as the form's <TT>Unload</TT> event. If the
+	data currently in the bound controls is invalid, the procedure cancels the <TT>Unload</TT>
+	event. If the data is valid and an add-record operation is in progress, the code
+	invokes the <TT>Update</TT> event to save the data.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Unload(Cancel As Integer)</TT>
+    ` Don't allow the unload until the data is valid or the
+    ` update is cancelled
+    If mblnValidationFailed Then Cancel = True
+End SubEnd Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>Including record addition and deletion has made the data control program more
+complex, but it now looks like a real database application. A Data menu allows the
+user to explicitly control the data control's recordset activities through the appropriate
+click procedures. The <TT>Data</TT> <TT>Add</TT> <TT>Record</TT> procedure (step
+6) adds a new, blank record to the data control's recordset. The data control is
+automatically positioned on the new record. The <TT>Data</TT> <TT>Save</TT> procedure
+(step 8) updates the recordset and moves to the last record (the new record) if the
+current action is a record addition. The Data Save Record menu choice is also managed
+explicitly by the program during record additions to provide clear feedback from
+the programmer about what is happening within the program.</P>
+<P>Notice in the record deletion processing (step 7) that you have to manage the
+deletion of the last record carefully because the recordset object does not handle
+all changes without an error. In particular, deleting the last record can leave the
+recordset with &quot;No current record.&quot; In this state, any update actions (potentially
+caused by a record movement) can cause an error in your application.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>RUNTIME ERRORS</STRONG></B> </P>
+
+	<P>You should also note that you will receive a runtime error if you attempt to delete
+	certain default records contained in the Employees database. The Employees table
+	has a relationship with the Orders table within the same database, and the employee
+	records you cannot delete have at least one entry in the Orders table. A runtime
+	error will occur if you delete an employee record that has other data in the database
+	because you would have entries in the Orders table that do not have a corresponding
+	Employees record--which would result in a loss of data integrity in the database.
+	To properly delete these records, you must delete the corresponding data in any other
+	tables in the database. Refer to How-To 4.4 for information on defining and using
+	relations between tables. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Comments</B></P>
+<P>A Visual Basic data control maintains a record pointer into its <TT>RecordSource</TT>.
+The record pointer keeps track of where you are within the <TT>RecordSource</TT>.
+It always points to the current record--except when you move past the end or the
+beginning of the <TT>RecordSource</TT>.</P>
+<P>You can move past the end of the <TT>RecordSource</TT> by clicking the Next Record
+button when the record pointer is positioned on the last record; similarly, you can
+move past the beginning of the <TT>RecordSource</TT> by clicking the Previous Record
+button when you are on the first record. The record pointer then points at a special
+location, known as the end of file (EOF) or the beginning of file (BOF). When you
+are on EOF or BOF, there is no current record. If you try to delete or edit the record
+when you are on EOF or BOF, Visual Basic generates an error message. EOF and BOF
+are useful when you use data access objects for checking to see when you've reached
+the end or beginning of a <TT>RecordSource</TT>; but when you use the data control,
+you generally don't want to stay on EOF or BOF.</P>
+<P>For this reason, Visual Basic gives you a choice of what to do when your data
+control reaches EOF or BOF. You execute this choice by setting the <TT>BOFAction</TT>
+and <TT>EOFAction</TT> properties. The possible settings for each property are shown
+in Table 1.5.</P>
+<P>
+<H4>Table 1.5 The EOFAction and BOFAction properties of the data control.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Result</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>BOFAction</TT></TD>
+		<TD ALIGN="LEFT"><TT>0 - MoveFirst</TT> (default)</TD>
+		<TD ALIGN="LEFT">Positions the record pointer on the first record.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>1 - </TT>BOF</TD>
+		<TD ALIGN="LEFT">Positions the record pointer on BOF.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>EOFAction</TT></TD>
+		<TD ALIGN="LEFT"><TT>0 - MoveLast</TT> (default)</TD>
+		<TD ALIGN="LEFT">Positions the record pointer on the last record.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>1 - </TT>EOF</TD>
+		<TD ALIGN="LEFT">Positions the record pointer on EOF.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>2 - AddNew</TT></TD>
+		<TD ALIGN="LEFT">Adds a new record at the end of the <TT>RecordSource</TT> and positions the record
+			pointer on it.</TD>
+	</TR>
+</TABLE>
+</P>
+<P>The Visual Basic data control does not handle empty recordsets well; trying to
+move to another record generates an error. The only thing you can do with a bound,
+empty recordset is to add a new record. When you open an empty recordset, its EOF
+property is initially set to <TT>True</TT>. If you have the data control's <TT>EOFAction</TT>
+property set to <TT>AddNew</TT>, when you open an empty recordset Visual Basic immediately
+adds a record. This is a low-cost, no-code way to prevent empty recordset errors
+when working with bound controls.</P>
+<P>
+<H2>1.5 How do I...</H2>
+<H3><A NAME="Create and use bound lists?"></A><B>Create and use bound lists?</B></H3>
+<P><B>Problem</B></P>
+<P>Many tables in my database have fields that are related to other tables. I need
+to restrict entry into these fields to values that exist in the related tables. At
+the same time, I'd like to make it easy to select valid entries for these fields.
+How do I accomplish this when I'm using bound controls?</P>
+<P><B>Technique</B></P>
+<P>Assume that you have a warehouse application. You have two tables: Products and
+Categories. The Products table defines available products:</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>ProductID</TT></P>
+	<P><TT>ProductName</TT></P>
+	<P><TT>SupplierID</TT></P>
+	<P><TT>CategoryID</TT></P>
+	<P><TT>QuantityPerUnit</TT></P>
+	<P><TT>UnitPrice</TT></P>
+	<P><TT>UnitsInStock</TT></P>
+	<P><TT>UnitsOnOrder</TT></P>
+	<P><TT>ReorderLevel</TT></P>
+	<P><TT>Discontinued</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The Categories table defines product categories and is related to the Products
+table via the <TT>CategoryID</TT> field:</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>CategoryID</TT></P>
+	<P><TT>CategoryName</TT></P>
+	<P><TT>Description</TT></P>
+	<P><TT>Picture</TT></P>
+
+</BLOCKQUOTE>
+
+<P>You have a form that displays basic product information from the Products table
+and its related category. Because almost everybody has trouble remembering customer
+ID numbers, you want to provide the capability to designate the category by name.
+With a <TT>DBCombo</TT> or <TT>DBList</TT> control, people can choose a category
+name and have the control insert the category ID number corresponding to that category
+name into the Products table.</P>
+<P>The <TT>DBList</TT> and <TT>DBCombo</TT> controls both display values in a list
+format. The <TT>DBList</TT> control creates a list box, with several lines always
+visible. The <TT>DBCombo</TT> control can create a drop-down list. They are both
+bound controls. Unlike with most bound controls, however, you bind them not to a
+single data control but to two data controls. The first data control maintains the
+recordset represented by the form as a whole--the data records you are browsing or
+editing. The second data control refers to the validation recordset, the recordset
+that is displayed in the list box or combo box. (You normally make the second data
+control--the data control that displays the values in the list--invisible, because
+people do not need to access it.)</P>
+<P>In the example, one data control is linked to the Products table--the table into
+which category ID numbers are inserted. The other data control is linked to the Categories
+table--the source of the list. The table that is the source of the list must include
+both the information to be displayed (in this case, the information in the <TT>CategoryName</TT>
+field) and the value to be inserted into the other table (in this case, the <TT>CategoryID</TT>).</P>
+<P>You link the <TT>DBCombo</TT> or <TT>DBList</TT> control to its recordsets by
+setting five properties. Two properties describe the recordset to be updated; they
+are shown in Table 1.6. The other three properties define the recordset that makes
+up the list; these appear in Table 1.7.</P>
+<P>
+<H4>Table 1.6 DBList/DBCombo properties that describe the recordset to be updated.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT">Name of the data control with the recordset to be updated</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT">Name of the field to be updated</TD>
+	</TR>
+</TABLE>
+
+<H4>Table 1.7 DBList/DBCombo properties that create the list.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>RowSource</TT></TD>
+		<TD ALIGN="LEFT">Name of the data control that provides the values to display in the list</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ListField</TT></TD>
+		<TD ALIGN="LEFT">Name of the field with the values to display in the list</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>BoundColumn</TT></TD>
+		<TD ALIGN="LEFT">Name of the field with the value to be inserted in the table being updated</TD>
+	</TR>
+</TABLE>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>DBCOMBO STYLE</STRONG></B> </P>
+
+	<P>If you set the <TT>Style</TT> property of the <TT>DBCombo</TT> control to <TT>2</TT>
+	(Dropdown List), the control acts exactly like a <TT>DBList</TT> control--except,
+	of course, that it displays only a single item until you drop it down. You can't
+	add new items to the list through the control.<BR>
+	<BR>
+	If you want to give the user the opportunity to add new items, set <TT>Style</TT>
+	to <TT>0</TT> (Dropdown Combo) or <TT>1</TT> (Simple Combo). Your code must handle
+	the addition of the user's entry to the underlying row source; the control does not
+	do this automatically for you. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Open the project ListBound.VBP to preview this How-To. Change the <TT>DatabaseName</TT>
+property of the data control <TT>datEmployees</TT> to point to the copy of NWind.MDB
+installed on your system (probably in the directory where VB6.EXE is installed).
+Then run the project. The form shown in Figure 1.8 appears. Select Data | Add Record,
+and enter some representative values into the fields. Use the drop-down list to enter
+the publisher. When you move to another record, your new record is automatically
+saved.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project called ListBound.VBP. Use <TT>Form1</TT> to create
+	the objects and properties listed in Table 1.8, and save the form as LISTBND.FRM.
+	Substitute the path to your copy of NWind.MDB for the <TT>DatabaseName</TT> property
+	of <TT>datEmployees</TT> and <TT>datPublishers</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.8 Objects and properties for the Bound Lister form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Form1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot; Bound Lister &quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Data</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>datProducts</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Products&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DatabaseName</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;D:\Program Files\Microsoft Visual Studio\VB6\Nwind.mdb&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>RecordSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Products&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Data</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>datCategories</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Categories&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DatabaseName</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;D:\Program Files\Microsoft Visual Studio\VB6\Nwind.mdb&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>RecordSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Categories&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtProductName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;ProductName&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datProducts&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DBCombo</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbcCategory</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>BoundColumn</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;CategoryID&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;CategoryID&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datProducts&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>ListField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;CategoryName&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>RowSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datCategories&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Category:&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Product</TT> <TT>Name:&quot;</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Use the Visual Basic menu editor to create the menu shown in Table
+	1.9.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('01fig08.gif')"><B>Figure 1.8</B></A><B> </B><I>The
+Bound Lister form.</I></P>
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.9 Menu specifications for the Bound Lister.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Shortcut Key</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;File</TD>
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----E&amp;xit</TD>
+		<TD ALIGN="LEFT"><TT>mnuFileExit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;Edit</TD>
+		<TD ALIGN="LEFT"><TT>mnuEdit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----&amp;Undo</TD>
+		<TD ALIGN="LEFT"><TT>mnuEditUndo</TT></TD>
+		<TD ALIGN="LEFT">Alt+Backspace</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;Data</TD>
+		<TD ALIGN="LEFT"><TT>mnuData</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----&amp;Add Record</TD>
+		<TD ALIGN="LEFT"><TT>mnuDataAdd</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----&amp;Delete Record</TD>
+		<TD ALIGN="LEFT"><TT>mnuDataDelete</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	</TABLE>
+</P>
+	<PRE>----&amp;Save Record <TT>mnuDataSave</TT></PRE>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>3. </B>Add the following code to the declarations section of <TT>Form1</TT>:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Utility As New clsUtility</TT>
+Private mblnValidationFailed As Boolean</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code as the <TT>Validate</TT> event of the data control
+	<TT>datProducts</TT>. (This code is very similar to the <TT>Validate</TT> <TT>Event</TT>
+	code for How-To 1.4 with the exceptions of data control name and actual field-checking
+	logic.) The <TT>Validate</TT> event is called every time the current record changes,
+	when the form is unloaded, and when the <TT>Update</TT> method is invoked. This procedure
+	verifies that when data in bound controls have been changed, all entries meet the
+	requirements of the application. If an entry is incorrect, the routine cancels the
+	<TT>Validate</TT> event and sets the form-level flag variable <TT>mblnValidationFailed</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub datProducts_Validate(Action As Integer, Save As Integer)</TT>
+    Dim strMsg As String
+    Dim enumMsgResult As VbMsgBoxResult
+    If Save = True Or Action = vbDataActionUpdate _
+    Or mblnValidationFailed Or Action = vbDataActionAddNew Then
+        ` One or more bound controls has changed or a previous 
+        ` validation failed, so verify that all fields have legal 
+        ` entries. If a field has an incorrect value, append a 
+        ` string explaining the error to strMsg and set the focus 
+        ` to that field to facilitate correcting the error. We 
+        ` explain all errors encountered in a single message box.
+        strMsg = &quot;&quot;
+        If txtProductName.Text = &quot;&quot; Then
+             Utility.AddToMsg strMsg, _
+                 &quot;You must enter a Product name.&quot;
+             txtProductName.SetFocus
+        End If
+        If strMsg &lt;&gt; &quot;&quot; Then
+             ` We have something in the variable strMsg, which 
+             ` means that an error has occurred. Display the 
+             ` message. The focus is in the last text box where an 
+             ` error was found
+             enumMsgResult = MsgBox(strMsg, vbExclamation + _
+                 vbOKCancel + vbDefaultButton1)
+             If enumMsgResult = vbCancel Then
+                 ` Restore the data to previous values using the 
+                 ` data control
+                 datProducts.UpdateControls
+                 mblnValidationFailed = False
+             Else
+                 ` Cancel the Validate event
+                 Action = vbDataActionCancel
+                 ` Deny form Unload until fields are corrected
+                 mblnValidationFailed = True
+             End If
+         Else
+             mblnValidationFailed = False
+         End If
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Enter the following code as the <TT>Click</TT> method of the Edit |
+	Undo menu item. (This code is very similar to that for the identically named procedure
+	in How-To 1.4, except for the reference to a different data control.) The procedure
+	updates the form's controls by filling them with the current values from the recordset.
+	If the user chooses Undo while adding a new record, the subroutine uses the <TT>Recordset</TT>
+	object's <TT>CancelUpdate</TT> method to cancel the pending <TT>AddNew</TT> operation
+	and turns off the data save menu item.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuEditUndo_Click()</TT>
+    ` Undo all pending changes from form by copying recordset 
+    ` values to form controls
+    datProducts.UpdateControls
+    If datProducts.Recordset.EditMode = dbEditAdd Then
+        ` Disable the menu save and cancel the update
+        datProducts.Recordset.CancelUpdate
+        mnuDataSave.Enabled = False
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code as the <TT>Click</TT> event of the Data menu's
+	Add Record item. (This code is very similar to that for the identically named procedure
+	in How-To 1.4.) This subroutine uses the Recordset object's <TT>AddNew</TT> method
+	to prepare the form and the recordset for the addition of a new record. It also enables
+	the Data | Save menu.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuDataAdd_Click()</TT>
+    ` Reset all controls to the default for a new record
+    ` and make space for the record in the recordset copy
+    ` buffer.
+    datProducts.Recordset.AddNew
+    `Enable the Save menu choice
+    mnuDataSave.Enabled = True
+    ` Set the focus to the first control on the form
+    txtProductName.SetFocus
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the following code as the <TT>Click</TT> event of the Data menu's
+	Delete Record item. (This code is very similar to that for the identically named
+	procedure in How-To 1.4.) The procedure confirms that the user wants to delete the
+	record, deletes the record, and then ensures that the record pointer is pointing
+	at a valid record.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuDataDelete_Click()</TT>
+    Dim strMsg As String
+    `Verify the deletion.
+    strMsg = &quot;Are you sure you want to delete &quot; _
+            &amp; IIf(txtProductName.Text &lt;&gt; &quot;&quot;, _
+            txtProductName.Text, _
+                &quot;this record&quot;) &amp; &quot;?&quot;
+    If MsgBox(strMsg, vbQuestion + vbYesNo + vbDefaultButton2) = _
+        vbYes Then
+        ` We really want to delete
+        datProducts.Recordset.Delete
+        ` Make a valid record the current record and update the 
+        ` display.
+        datProducts.Recordset.MoveNext
+        ` If we deleted the last record, move to the new last 
+        ` record because the current record pointer is not defined 
+        ` after deleting the last record, even though EOF is 
+        ` defined.
+        If datProducts.Recordset.EOF Then 
+        datProducts.Recordset.MoveLast
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Add the following code as the <TT>Click</TT> event of the Data menu's
+	Save Record item. (This code is very similar to that for the identically named procedure
+	in How-To 1.4.) The <TT>Save</TT> <TT>Record</TT> subroutine uses the <TT>Update</TT>
+	method of the <TT>Recordset</TT> object to write the values in the form's bound controls
+	to their respective fields in the recordset.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuDataSave_Click()</TT>
+    ` Invoke the update method to copy control contents to
+    ` recordset fields and update the underlying table
+    datProducts.Recordset.Update
+    If datProducts.Recordset.EditMode &lt;&gt; dbEditAdd Then
+        ` If we added move to the new record
+        datProducts.Recordset.MoveLast
+   End IfEnd Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Add the following code as the <TT>Click</TT> event of the File menu's
+	Exit item. (This code is the same as that for the identically named procedure in
+	How-To 1.4.)
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileExit_Click()</TT>
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Add the following code as the form's <TT>Unload</TT> event. (This
+	code is the same as that for the identically named procedure in How-To 1.4.) If the
+	data currently in the bound controls is invalid, the procedure cancels the <TT>Unload</TT>
+	event.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Unload(Cancel As Integer)</TT>
+    ` Don't allow the unload until the data is valid or the
+    ` update is cancelled
+    If mblnValidationFailed Then Cancel = True
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P>When the form is loaded, the combined actions of <TT>datCategories</TT> and <TT>dbcCategories</TT>
+fill the Category combo box with a list of category names from the Categories table
+in NWind.MDB. When a category is chosen from the list, the category ID associated
+with the chosen category is inserted into the <TT>CategoryID</TT> field in the Products
+table.</P>
+<P>Unlike the unbound list box and combo box controls, their bound cousins <TT>DBList</TT>
+and <TT>DBCombo</TT> do not have a <TT>Sorted</TT> property. If you want to provide
+a sorted list, therefore, you must make sure that the recordset providing the list
+itself is sorted on the appropriate field. You can accomplish this by setting the
+<TT>RecordSource</TT> property of the data control named in the <TT>DBList</TT> or
+<TT>DBCombo</TT>'s <TT>RowSource</TT> property to a SQL statement with an <TT>ORDER</TT>
+<TT>BY</TT> clause. In the example cited in the &quot;Technique&quot; section of
+this How-To, you could provide a sorted list of customers by setting the <TT>RecordSource</TT>
+property of the data control to this:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT * FROM Categories ORDER BY CategoryID</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>With <TT>DBList</TT> and <TT>DBCombo</TT>, you can designate how the list reacts
+to characters typed at the keyboard when the control has the focus. If the control's
+<TT>MatchEntry</TT> property is set to <TT>vbMatchEntrySimple</TT>, the control searches
+for the next match for the character entered using the first letter of entries in
+the list. If the same letter is typed repeatedly, the control cycles through all
+the entries in the list beginning with that letter. If you set the <TT>MatchEntry</TT>
+property to <TT>vbMatchEntryExtended</TT>, the control searches for an entry matching
+all the characters typed by the user. As you type additional characters, you are
+further refining the search.</P>
+<P><B>Comments</B></P>
+<P>The <TT>DBCombo</TT> and <TT>DBList</TT> controls are powerful additions to your
+programming arsenal, but be careful about the performance implications in everyday
+use. Each <TT>DBCombo</TT> and <TT>DBList</TT> control requires a data control, and
+the data control is a fairly large bit of code. In one experiment, replacing eight
+<TT>DBCombo</TT> controls with plain <TT>Combo</TT> <TT>Box</TT> controls loaded
+from a database reduced the form load time by more than 40%.</P>
+<P>
+<H2><A NAME="Heading15"></A>1.6 How do I...</H2>
+<H3><A NAME="Display many detail records for a single master record?"></A><B>Display
+many detail records for a single master record?</B></H3>
+<P><B>Problem</B></P>
+<P>I want to display product inventory and order detail information for a displayed
+product. How do I build a form to display &quot;master-detail&quot; information showing
+products and order quantities?</P>
+<P><B>Technique</B></P>
+<P>A &quot;master-detail&quot; display is frequently used to show a hierarchical
+relationship between two tables such as invoice headers and invoice lines. In this
+How-To, you build a form to display all the orders for a particular product.</P>
+<P>Assume you have a warehouse application. The Products table contains the following
+fields:</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>ProductID</TT></P>
+	<P><TT>ProductName</TT></P>
+	<P><TT>SupplierID</TT></P>
+	<P><TT>CategoryID</TT></P>
+	<P><TT>QuantityPerUnit</TT></P>
+	<P><TT>UnitPrice</TT></P>
+	<P><TT>UnitsInStock</TT></P>
+	<P><TT>UnitsOnOrder</TT></P>
+	<P><TT>ReorderLevel</TT></P>
+	<P><TT>Discontinued</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The Order Details table defines the quantity of the product included on each order:</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>OrderID</TT></P>
+	<P><TT>ProductID</TT></P>
+	<P><TT>UnitPrice</TT></P>
+	<P><TT>Quantity</TT></P>
+	<P><TT>Discount</TT></P>
+
+</BLOCKQUOTE>
+
+<P>You have a form that displays product and stock information together with order
+quantities for the displayed product. This master-detail relationship requires two
+data controls to display a single product and multiple order lines. The master data
+control has a recordset tied to the Products table, and the detail recordset is tied
+to the Order Details table. Master table information is usually displayed in text
+boxes or other appropriate controls; detail information is displayed in a <TT>DBGrid</TT>
+control.</P>
+<P>The <TT>DBGrid</TT> control displays multiple rows from a recordset in a scrolling
+table that looks much like a spreadsheet. The <TT>DBGrid</TT> control allows recordset
+scrolling, column width changes, display formatting, and other useful capabilities.
+It is most useful as a display-only tool, but the <TT>DBGrid</TT> control can provide
+recordset maintenance functions as well. Table 1.10 describes important properties
+that control <TT>DBGrid</TT> runtime behavior.</P>
+<P>
+<H4>Table 1.10 Important DBGrid design-time properties.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AllowAddNew</TT></TD>
+		<TD ALIGN="LEFT">Controls ability to add new records (default is <TT>False</TT>)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AllowDelete</TT></TD>
+		<TD ALIGN="LEFT">Controls ability to delete records displayed by the grid (default is <TT>False</TT>)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AllowUpdate</TT></TD>
+		<TD ALIGN="LEFT">Controls ability to update records through the grid (default is <TT>True</TT>)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ColumnHeaders</TT></TD>
+		<TD ALIGN="LEFT">Controls display of column headers (default is <TT>True</TT>)</TD>
+	</TR>
+</TABLE>
+</P>
+<P>You specify a recordset at design time for <TT>DBGrid</TT> so that you can design
+the initial column layout and formatting. The <TT>DBGrid</TT> control can retrieve
+the field names from a linked recordset at design time to populate the initial column
+display. You then edit the column properties to set headers, formats, and default
+values.</P>
+<P><B>Steps</B></P>
+<P>Open the project GridLister.VBP to preview this How-To. Change the <TT>DatabaseName</TT>
+property of the data controls <TT>datProducts</TT> and <TT>datOrderDetails</TT> to
+point to the copy of NWind.MDB installed on your system (probably in the directory
+where VB6.EXE is installed). Then run the project. The form shown in Figure 1.9 appears.
+Navigate through the records using the product data control. Observe how the order
+detail information changes. Experiment with the grid's sliders to control the data
+display. Use the mouse to select rows or columns. Drastically change a column's display
+width, and observe how the horizontal scrollbar appears and disappears.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project called GridLister.VBP. Use <TT>Form1</TT> to create
+	the objects and properties listed in Table 1.11 and save the form as GridLister.FRM.
+	Substitute the path to your copy of NWind.MDB for the <TT>DatabaseName</TT> property
+	of <TT>datProducts</TT> and <TT>datOrderDetails</TT>.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('01fig09.gif')"><B>Figure 1.9</B></A><B> </B><I>The
+Grid Lister form.</I></P>
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.11 Objects and properties for the Grid Lister form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Form1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Grid Lister&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtProductName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;ProductName&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datProducts&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtUnitsInStock</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;UnitsInStock&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datProducts&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtProductId</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;ProductID&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datProducts&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Data</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>datProducts</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Products&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Connect</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Access&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DatabaseName</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;D:\Program Files\Microsoft Visual Studio\VB6\Nwind.mdb&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>RecordSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Products&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Data</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>datOrderDetails</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Order Details&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DatabaseName</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;D:\Program Files\Microsoft Visual Studio\VB6\Nwind.mdb&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>RecordSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Order Details&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Visible</TT></TD>
+		<TD ALIGN="LEFT"><TT>False</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DBGrid</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbgOrderDetails</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AllowAddNew</TT></TD>
+		<TD ALIGN="LEFT"><TT>False</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AllowDelete</TT></TD>
+		<TD ALIGN="LEFT"><TT>False</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AllowUpdate</TT></TD>
+		<TD ALIGN="LEFT"><TT>False</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;datOrderDetails&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Product Name:&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Units in Stock&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label3</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Product ID&quot;</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Use the Visual Basic menu editor to create the menu shown in Table
+	1.12.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.12 Menu specifications for the Grid Lister.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Shortcut Key</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;File</TD>
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----E&amp;xit</TD>
+		<TD ALIGN="LEFT"><TT>mnuFileExit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Use the <TT>DBGrid</TT> design-time controls to define the columns.
+	Right-click the grid to display the menu shown in Figure 1.10, and then select the
+	Retrieve Fields option. The <TT>DBGrid</TT> column information will be retrieved
+	from the <TT>datOrderDetails</TT> recordset. Right-click the <TT>DBGrid</TT> again
+	and select Edit to make on-screen modifications to column widths and row heights.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Right-click the <TT>DBGrid</TT> and select the Properties menu item
+	to adjust the column formats. Figure 1.11 shows the Columns tab of the <TT>DBGrid</TT>
+	design-time properties page.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('01fig10.gif')"><B>Figure 1.10</B></A><B> </B><I>The
+<TT>DBGrid</TT> right-click design-time menu.</I></P>
+<P><A HREF="javascript:popUp('01fig11.gif')"><B>Figure 1.11</B></A><B> </B><I>The
+<TT>DBGrid</TT> design-time properties.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>5. </B>Add the following code to the <TT>Reposition</TT> event of the data
+	control <TT>datProducts</TT>:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub datProducts_Reposition()</TT>
+    Dim strSql As String
+    If datProducts.Recordset.RecordCount = 0 Then
+        ` Don't re-query the Order Details if there are
+        ` no products displayed.
+        Exit Sub
+    End If
+    ` Re-query the Order Detail grid by SQL SELECT statement.
+    ` The WHERE clause picks up only the order details for
+    ` the displayed product.
+    strSql = &quot;SELECT * FROM [Order Details] WHERE ProductID = &quot; _
+        &amp; datProducts.Recordset.Fields(&quot;ProductID&quot;)
+    ` Assign the desired SQL statement as the record source.
+    datOrderDetails.RecordSource = strSql
+    ` Re-query the database to bring new data to the recordset.
+    datOrderDetails.Refresh
+    ` Set the default value for ProductID for any possible future
+    ` Order Details inserts to the displayed product ID.
+    dbgOrderDetails.Columns(&quot;ProductID&quot;).DefaultValue = _
+        datProducts.Recordset.Fields(&quot;ProductID&quot;)
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code as the <TT>Click</TT> event of the File menu's
+	Exit item. (This code is the same as that for the identically named procedure in
+	How-To 1.5.)
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileExit_Click()</TT>
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>When the form is loaded, the <TT>datProducts</TT> data control retrieves the first
+Products record and fires the <TT>Reposition</TT> event. The event procedure creates
+a SQL statement to query only those order detail records you want to see by using
+a <TT>WHERE</TT> clause.</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT * FROM [Order Details] WHERE ProductID = &lt;displayed product ID&gt;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>When the data control is refreshed, the <TT>DBGrid</TT> is populated with only
+the order detail records for the displayed product. A more complicated SQL statement
+(see Chapter 3, &quot;Creating Queries with SQL&quot;) could also retrieve the order
+number and customer information for display on the form.</P>
+<P><B>Comments</B></P>
+<P><TT>DBGrid</TT> is a powerful control well worth exploring in the Visual Basic
+6 help files and books online. It provides powerful display capabilities as well
+as add, update, and delete capabilities. When your program is running, users can
+resize columns and rows to suit their display needs.</P>
+<P>The <TT>DBGrid</TT> is also useful as the display for a master query in any database
+that requires logical partitioning. A multiple warehouse inventory application might
+use a <TT>DBGrid</TT> to select a &quot;master&quot; warehouse before browsing through
+&quot;detail&quot; items in order to limit inventory item display to a particular
+location. Logical partitioning is often required in service bureau applications to
+prevent making incorrect changes to a customer's account. Telephone companies and
+Internet service providers frequently need to see individual accounts but restrict
+the view to a particular corporate customer. <TT>DBGrid</TT> can help partition at
+the high level and provide &quot;drill-down&quot; capability through hierarchies.</P>
+<H1 ALIGN="CENTER"></H1>
+<H2>1.7 How do I...</H2>
+<H3><A NAME="Change data in data-bound grid cells from code?"></A><B>Change data
+in data-bound grid cells from code?</B></H3>
+<P><B>Problem</B></P>
+<P>I want to display product inventory and order detail information; I also want
+to restrict editing to the quantity-ordered information. How do I edit a single <TT>DBGrid</TT>
+cell?</P>
+<P><B>Technique</B></P>
+<P>Assume you have the same warehouse application as you did in How-To 1.6. Product
+information and order detail information are stored in two different tables, the
+structures of which are also shown in the preceding How-To. You have a form that
+displays product and stock information together with order quantities for the displayed
+product. Your management team wants to have a secure editing function to allow adjustment
+of order quantities for particular products.</P>
+<P>The <TT>DBGrid</TT> control can allow data updates, but all columns shown on the
+grid then become available for updates. You don't want to let the warehouse supervisor
+adjust prices or discounts--only the order quantity. You will have to directly manipulate
+the <TT>DBGrid</TT> cells to update the order quantity only.</P>
+<P><B>Steps</B></P>
+<P>Open the project GridChange.VBP. Change the <TT>DatabaseName</TT> property of
+the data controls <TT>datProducts</TT> and <TT>datOrderDetails</TT> to point to the
+copy of NWind.MDB installed on your system (probably in the directory where VB6.EXE
+is installed). Then run the project. The form shown in Figure 1.12 appears. Navigate
+through the product records and observe how the order detail information changes.
+Highlight an order detail row, enter a new quantity in the text box, and press the
+Change Qty command button. The quantity will be updated in the <TT>DBGrid</TT> control
+and the underlying recordset and database table.</P>
+<P><A HREF="javascript:popUp('01fig12.gif')"><B>Figure 1.12</B></A><B> </B><I>The
+Grid Change form.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called GridChange.VBP. Use <TT>Form1</TT> to create
+	the objects and properties listed in Table 1.13, and save the form as GridChange.FRM.
+	Substitute the path to your copy of NWind.MDB for the <TT>DatabaseName</TT> property
+	of <TT>datProducts</TT> and <TT>datOrderDetails</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.13 Objects and properties for the Grid Lister form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>Form1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;Grid Lister&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>txtProductName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;ProductName&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;datProducts&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>txtUnitsInStock</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;UnitsInStock&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;datProducts&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>txtProductId</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;ProductID&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;datProducts&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>txtChangeQuantity</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Data</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>datProducts</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;Products&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Connect</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;Access&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DatabaseName</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;D:\Program Files\Microsoft Visual Studio\VB6\Nwind.mdb&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>RecordSource</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;Products&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Data</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>datOrderDetails</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;Order Details&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DatabaseName</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;D:\Program Files\Microsoft Visual Studio\VB6\Nwind.mdb&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>RecordSource</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;Order Details&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Visible</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>False</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DBGrid</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>dbgOrderDetails</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AllowAddNew</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>False</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AllowDelete</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>False</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AllowUpdate</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>False</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;datOrderDetails&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>Label1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;Product Name:&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>Label2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;Units in Stock&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>Label3</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD WIDTH="231" ALIGN="LEFT"><TT>&quot;Product ID&quot;</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Use the Visual Basic menu editor to create the menu shown in Table
+	1.14.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.14 Menu specifications for the Grid Lister.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Shortcut Key</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;File</TD>
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">----E&amp;xit</TD>
+		<TD ALIGN="LEFT"><TT>mnuFileExit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Use the <TT>DBGrid</TT> design-time controls to define the columns.
+	Right-click the grid to display the menu shown earlier in Figure 1.10, and then select
+	Retrieve Fields. The <TT>DBGrid</TT> column information will be retrieved from the
+	<TT>datOrderDetails</TT> recordset. Right-click the <TT>DBGrid</TT> again and select
+	Edit to make on-screen modifications to column widths and row heights.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Right-click the <TT>DBGrid</TT> and select the Properties menu item
+	to adjust column formats.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Add the following code to the <TT>Reposition</TT> event of the data
+	control <TT>datProducts</TT>. The <TT>Reposition</TT> event is called when the current
+	record changes. To handle this event, query the database for the new data.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub datProducts_Reposition()</TT>
+    Dim strSql As String
+    If datProducts.Recordset.RecordCount = 0 Then
+        ` Don't re-query the Order Details if there are
+        ` no products displayed.
+        Exit Sub
+    End If
+    ` Re-query the Order Detail grid by SQL SELECT statement.
+    ` The WHERE clause picks up only the order details for
+    ` the displayed product.
+    strSql = &quot;SELECT * FROM [Order Details] WHERE ProductID = &quot; _
+        &amp; datProducts.Recordset.Fields(&quot;ProductID&quot;)
+    ` Assign the desired SQL statement as the record source.
+    datOrderDetails.RecordSource = strSql
+    ` Re-query the database to bring new data to the recordset.
+    datOrderDetails.Refresh
+    ` Set the default value for ProductID for any possible future
+    ` Order Details inserts to the displayed product ID.
+    dbgOrderDetails.Columns(&quot;ProductID&quot;).DefaultValue = _
+        datProducts.Recordset.Fields(&quot;ProductID&quot;)
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code as the <TT>Click</TT> event of <TT>cmdChangeGridCell</TT>.
+	This code validates the entered amount as a positive number and updates the displayed
+	grid cell.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdChangeGridCell_Click()</TT>
+    ` Change the selected grid cell value to the entered value
+    If Not IsNumeric(txtChangeQuantity.Text) Then
+        MsgBox &quot;Change quantity must be a positive number&quot;, _
+               vbInformation
+    ElseIf CInt(txtChangeQuantity.Text) &lt; 0 Then
+        MsgBox &quot;Change quantity must be a positive number&quot;, _
+               vbInformation
+    Else
+        dbgOrderDetails.Columns(&quot;Quantity&quot;).Text = _
+           txtChangeQuantity.Text
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the following code as the <TT>Click</TT> event of the File menu's
+	Exit item. (This code is the same as that for the identically named procedure in
+	How-To 1.5.)
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileExit_Click()</TT>
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>When the Change Qty button is pressed, the event procedure validates the entered
+number and updates the cell value in the grid. The heart of the code is the following
+statement:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>dbgOrderDetails.Columns(&quot;Quantity&quot;).Text = txtChangeQuantity.Text</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The data contents of the <TT>DBGrid</TT> control can be addressed directly, just
+as the data contents of any other visual control can be. The currently selected grid
+row is available to have its columns directly manipulated by code. The data control
+will update the recordset field and table when the record pointer is repositioned.</P>
+<P><B>Comments</B></P>
+<P>Another useful <TT>DBGrid</TT> trick with a bound grid is to make the data control
+visible and allow recordset movement with the data control. The <TT>DBGrid</TT> control
+automatically shows database positions. It can also be used as a record selector
+because it can function as a multicolumn list box.</P>
+<P>
+<H2>1.8 How do I...</H2>
+<H3><A NAME="Gracefully handle database errors?"></A><B>Gracefully handle database
+errors?</B></H3>
+<P><B>Problem</B></P>
+<P>When I access a database through Visual Basic, I have limited control over the
+environment. A user might move a database file or another program might have made
+unexpected changes to the database. I need my programs to be able to detect errors
+that occur and handle them in the context of the program. How do I accomplish this
+task with Visual Basic?</P>
+<P><B>Technique</B></P>
+<P>When an error occurs during execution of a Visual Basic program, control passes
+to error-handling logic. If you have not made provisions in your program to trap
+errors, Visual Basic calls its default error-handling process. When a compiled Visual
+Basic program is running, the default error-handling process displays a message describing
+the cause of the error--sometimes a helpful message, but often not--and terminates
+the program.</P>
+<P>That's never a good solution, but fortunately Visual Basic gives you a choice.
+You can build error-trapping and error-handling logic into your Visual Basic code.
+Every Visual Basic program should make provisions for trapping and handling errors
+gracefully, but it's especially important in database work, in which many potential
+error conditions can be expected to exist at runtime.</P>
+<P><B>Trapping Errors</B></P>
+<P>Visual Basic error-trapping is accomplished through the <TT>On</TT> <TT>Error</TT>
+statement. When an <TT>On</TT> <TT>Error</TT> statement is in effect and an error
+occurs, Visual Basic performs the action specified by the <TT>On</TT> <TT>Error</TT>
+statement. You therefore avoid Visual Basic's default error-handling behavior.</P>
+<P>An <TT>On</TT> <TT>Error</TT> statement is &quot;in effect&quot; when it has been
+executed before the occurrence of the error in the same function or subroutine where
+the error occurred or in a function or subroutine that called the function or subroutine
+where the error occurred. For example, assume that you have these five subroutines
+(subroutines are used here for the example; exactly the same principles apply for
+functions):</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Sub First()</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>    Second</TT>
+<TT>    Third</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>End Sub</TT>
+<TT>Sub Second()</TT>
+<TT>    `On Error Statement here</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>End Sub</TT>
+<TT>Sub Third()</TT>
+<TT>    `On Error Statement here</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>    Fourth</TT>
+<TT>    Fifth</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>End Sub</TT>
+<TT>Sub Fourth()</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>End Sub</TT>
+<TT>Sub Fifth()</TT>
+<TT>    `On Error Statement here</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>    .</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The subroutine <TT>First</TT> calls the subroutines <TT>Second</TT> and <TT>Third</TT>.
+The subroutine <TT>Third</TT> calls the subroutines <TT>Fourth</TT> and <TT>Fifth</TT>.
+<TT>Second</TT>, <TT>Third</TT>, and <TT>Fourth</TT> have <TT>On</TT> <TT>Error</TT>
+statements; <TT>First</TT> does not. If an error occurs during the execution of <TT>First</TT>,
+Visual Basic will use its default error handling because no <TT>On</TT> <TT>Error</TT>
+statement has been executed. This will be true even after the calls to <TT>Second</TT>
+and <TT>Third</TT> have completed; the <TT>On</TT> <TT>Error</TT> statements in <TT>Second</TT>
+and <TT>Third</TT> have no effect on the procedure that calls them.</P>
+<P>If an error occurs during the execution of <TT>Second</TT>, Visual Basic will
+take whatever action is specified by the <TT>On</TT> <TT>Error</TT> statement at
+the beginning of <TT>Second</TT>. Likewise, if an error occurs during <TT>Third</TT>,
+the error handling specified by <TT>Third</TT> applies.</P>
+<P>What happens if an error occurs during <TT>Fourth</TT>? There is no <TT>On</TT>
+<TT>Error</TT> statement in <TT>Fourth</TT>. However, because <TT>Fourth</TT> is
+called by <TT>Third</TT>, and because there is an <TT>On</TT> <TT>Error</TT> statement
+in <TT>Third</TT> (that is executed before <TT>Fourth</TT> is called), an error in
+<TT>Fourth</TT> will cause the error handling specified by the <TT>On</TT> <TT>Error</TT>
+statement in <TT>Third</TT> to execute.</P>
+<P><TT>Fifth</TT> is also called by <TT>Third</TT>, but <TT>Fifth</TT> has an <TT>On</TT>
+<TT>Error</TT> statement of its own. If an error occurs in <TT>Fifth</TT>, the error
+handling specified in its local <TT>On</TT> <TT>Error</TT> statement overrides that
+specified in <TT>Third</TT>'s.</P>
+<P><B>The </B><TT>On</TT><B> </B><TT>Error</TT><B> Statement</B></P>
+<P>These are the two forms of the <TT>On</TT> <TT>Error</TT> statement that you will
+use routinely:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>On Error Goto <I>label</I></TT>
+<TT>On Error Resume Next</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The <TT>On</TT> <TT>Error</TT> <TT>Goto</TT> <I><TT>label</TT></I> form tells
+Visual Basic this: When an error occurs, transfer execution to the line following
+the named label. A label is any combination of characters that starts with a letter
+and ends with a colon. An error-handling label must begin in the first column, must
+be in the same function or subroutine as the <TT>On</TT> <TT>Error</TT> statement,
+and must be unique within the module. In the code that follows the label, you take
+whatever action is appropriate to deal with the specific error that occurred. Most
+of the time, you will use the <TT>On</TT> <TT>Error</TT> <TT>Goto</TT> <I><TT>label</TT></I>
+form of the <TT>On</TT> <TT>Error</TT> statement because you normally want to respond
+to errors in a predetermined way.</P>
+<P><TT>On</TT> <TT>Error</TT> <TT>Resume</TT> <TT>Next</TT> tells Visual Basic this:
+If an error occurs, simply ignore it and go to the next statement you would normally
+execute. Use this form when you can reasonably expect an error to occur but are confident
+that the error will not cause future problems. For example, you might need to create
+a temporary table in your database. Before you create the temporary table, you need
+to delete any existing table with the same name, so you execute a statement to delete
+the table. If you try to delete a table that does not exist, Visual Basic will create
+an error. In this case, you don't care that the error occurred, so you insert an
+<TT>On</TT> <TT>Error</TT> <TT>Resume</TT> <TT>Next</TT> statement before the delete
+table statement. After the delete table statement, you would probably insert an <TT>On</TT>
+<TT>Error</TT> <TT>Goto</TT> <I><TT>label</TT></I> statement to restore the previous
+error-handling routine.</P>
+<P><B>Determining the Error Type</B></P>
+<P>Errors generated by Visual Basic or the Jet database engine are associated with
+error numbers. There are hundreds of error types, each with a specific error number.
+When an error occurs, Visual Basic puts the error number into the <TT>Number</TT>
+property of the <TT>Err</TT> object. You can determine the error that occurred by
+looking at that property.</P>
+<P>After you know the error type, you can take a specific action based on that information.
+This is most often accomplished through a <TT>Select</TT> <TT>Case</TT> statement.</P>
+<P>Assume that your application will be used in a multiuser environment and that
+you need to trap errors caused by more than one user working with the same record
+at the same time. (A full list of trappable data access object errors can be found
+in Visual Basic Help file JetErr.HLP, located in the VB6 Help directory.) In your
+error-handling routine, you might include code similar to what's shown in Listing
+1.1.</P>
+<P>
+<H4>Listing 1.1 Multiuser error handler.</H4>
+<PRE><TT>Select Case Err.Number</TT>
+<TT>  Case 3197</TT>
+<TT>     ` Another user has updated this record since the last time</TT>
+<TT>     ` the Dynaset was updated. Display a meaningful error message</TT>
+<TT>     ` and give the user the chance to overwrite the other user's</TT>
+<TT>     ` change.</TT>
+<TT>     strMsg = &quot;The data in this record have already been modified &quot;</TT>
+<TT>     strMsg = strMsg &amp; &quot; by another user. Do you want to overwrite &quot;</TT>
+<TT>     strMsg = strMsg &amp; &quot; those changes with your own?&quot;</TT>
+<TT>     If MsgBox(strMsg, vbQuestion + vbYesNo + vbDefaultButton2) = vbYes Then</TT>
+<TT>            ` The user said yes, so reexecute the Update method.</TT>
+<TT>            ` This time it should &quot;take.&quot;</TT>
+<TT>            Resume</TT>
+<TT>     Else</TT>
+<TT>             ` The user said no, so refresh the dynaset with the</TT>
+<TT>             ` current data and display that data. Then display a</TT>
+<TT>             ` message explaining what's happened.</TT>
+<TT>             rs.Requery</TT>
+<TT>             DisplayRecord</TT>
+<TT>             strMsg = &quot;The current values of the record are now displayed.&quot;</TT>
+<TT>             MsgBox strMsg, vbInformation</TT>
+<TT>             ` Exit from the procedure now to bypass the code after</TT>
+<TT>             ` the End Select statement.</TT>
+<TT>             Exit Sub</TT>
+<TT>      End If</TT>
+<TT>  Case 3020</TT>
+<TT>          ` The user clicked Update without previously having clicked</TT>
+<TT>          ` Edit. The default error message is &quot;Update without AddNew</TT>
+<TT>          ` or Edit.&quot; Create an error that is more meaningful in the</TT>
+<TT>          ` current context. (The message gets displayed after the</TT>
+<TT>          ` End Select statement).</TT>
+<TT>           strMsg = &quot;You must click Edit before you click Update!&quot;</TT>
+<TT>   Case 3260</TT>
+<TT>           ` Another user has the page locked. Create a meaningful</TT>
+<TT>           ` message. (The message gets displayed after the End Select</TT>
+<TT>           ` statement.)</TT>
+<TT>          strMsg = &quot;Locking error &quot; &amp; Str$(Err) &amp; &quot; on Update.&quot;</TT>
+<TT>          strMsg = strMsg &amp; &quot; Optimistic locking must be enabled!&quot;</TT>
+<TT>   Case Else</TT>
+<TT>          ` An unanticipated error, so just pass through Visual Basic's</TT>
+<TT>          ` message.</TT>
+<TT>           strMsg = Err.Description</TT>
+<TT>End Select</TT>
+<TT>       MsgBox strMsg, vbExclamation</TT>
+</PRE>
+<P><B>Determining the Error Location</B></P>
+<P>If your error handler needs to determine where in the code the error occurs, you
+can use old-fashioned line numbers. When an error occurs, the built-in <TT>Erl</TT>
+function returns the line number of the line that generated the error. If the line
+that generated the error has no number, the <TT>Erl</TT> function returns the line
+number of the most recent numbered line. If there are no numbered lines preceding
+the line that caused the error, <TT>Erl</TT> returns 0.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>THE </STRONG></B><STRONG><TT>Err</TT><B> OBJECT</B></STRONG> The <TT>Err</TT>
+	object incorporates the functionality of the <TT>Err</TT> statement, <TT>Err</TT>
+	function, <TT>Error</TT> statement, <TT>Error</TT> function, and <TT>Error$</TT>
+	function from earlier versions of Visual Basic. (These older techniques are still
+	supported for purposes of backward compatibility in Visual Basic 6.0.) 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Terminating an Error Handler</B></P>
+<P>Error handling code must terminate with a statement that clears the error. If
+it does not, the error handler itself will generate an error when it reaches the
+next <TT>End</TT> <TT>Sub</TT>, <TT>End</TT> <TT>Function</TT>, or <TT>End</TT> <TT>Property</TT>
+statement. The statements listed in Table 1.15 are those that clear an error.</P>
+<P>
+<H4>Table 1.15 Statements that clear an error.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>STATEMENT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Effect</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Resume Next</TT></TD>
+		<TD ALIGN="LEFT">Resumes execution at the line that follows the line that generated the error</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Resume</TT></TD>
+		<TD ALIGN="LEFT">Reexecutes the line that generated the error</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Resume label</TT></TD>
+		<TD ALIGN="LEFT">Resumes execution at the line following the named label</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Resume number</TT></TD>
+		<TD ALIGN="LEFT">Resumes execution at the line with the indicated number</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Exit Sub</TT></TD>
+		<TD ALIGN="LEFT">Exits immediately from the current subroutine</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Exit Function</TT></TD>
+		<TD ALIGN="LEFT">Exits immediately from the current function</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Exit Property</TT></TD>
+		<TD ALIGN="LEFT">Exits immediately from the current property</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>On Error</TT></TD>
+		<TD ALIGN="LEFT">Resets error-handling logic</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Err.Clear</TT></TD>
+		<TD ALIGN="LEFT">Clears the error without otherwise affecting program execution</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>End</TT></TD>
+		<TD ALIGN="LEFT">Terminates execution of the program</TD>
+	</TR>
+</TABLE>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>OPENING NWIND.MDB FOR HOW-TO'S</STRONG></B> </P>
+
+	<P>In many of the How-To's that use data access objects to work with NWIND.MDB, you
+	will see directions to add READINI.BAS to the project. (READINI.BAS is a module that
+	is installed in the main VB6DBHT directory.) In the code for the project you will
+	see the following lines:</P>
+	<PRE><TT> ` Get the database name and open the database.</TT>
+strName = strNWindDb()
+Set db = DBEngine.Workspaces(0).OpenDatabase(strName)</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+
+<BLOCKQUOTE>
+	<P><TT>strNWindDb()</TT> is a function in READINI.BAS that reads the VB6DBHT.INI
+	file and returns the fully qualified filename (that is, the directory, path, and
+	name) of NWIND.MDB. The code assigns that fully qualified filename to the string
+	variable <TT>strName</TT> and uses <TT>strName</TT> as the argument to the <TT>OpenDatabase</TT>
+	method. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Steps</B></P>
+<P>Open and run the project Errors.VBP. Three errors will occur in succession. For
+each, the message box reporting the error gives you the error number, error description,
+and line number where the error occurred. Figure 1.13 shows the first of these errors.</P>
+<P><A HREF="javascript:popUp('01fig13.gif')"><B>Figure 1.13</B></A><B> </B><I>One
+of the errors.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called Errors.VBP. Use <TT>Form1</TT> to create
+	the objects and properties listed in Table 1.16, and save the form as Errors.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 1.16 Objects and properties for the Errors form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Form1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Errors&quot;</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add the file READINI.BAS to your project from the <TT>Chapter01\HowTo08</TT>
+	directory.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code as the <TT>Load</TT> event of <TT>Form1</TT>.
+	This code generates three errors:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+
+	<UL>
+	<LI>Line 20 generates an error because there is no such table as No Such Table.<BR>
+	<BR>
+	
+	<LI>Line 40 generates an error because there is no such field as <TT>No Such Field</TT>.<BR>
+	<BR>
+	
+	<LI>Line 60 generates an error because the <TT>Year Published</TT> field requires
+	a numeric value.
+	</UL>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD>Each error causes execution to branch to the label <TT>LoadError</TT>. The code
+	beginning with <TT>LoadError</TT> displays an informative message and then executes
+	a <TT>Resume Next</TT>. The <TT>Resume Next</TT> transfers execution back to the
+	line following the line that caused the error.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Load()</TT>
+    Dim dbErrors As Database
+    Dim strDbName As String
+    Dim rsTest As Recordset
+    Dim strTmp As String
+    On Error GoTo LoadError
+  ` Get the database name and open the database.
+    strDbName = strNWindDb()  ` NWindPath is a function in 
+                              ` READINI.BAS
+10  Set dbErrors = DBEngine.Workspaces(0).OpenDatabase(strDbName)
+    ` This statement will cause an error, because there's no such 
+    ` table as No Such Table.
+20  Set rsTest = dbErrors.OpenRecordset(&quot;No Such Table&quot;, _
+        dbOpenTable)
+    ` There is a table named Products, so this one should work.
+30  Set rsTest = dbErrors.OpenRecordset(&quot;Products&quot;, dbOpenTable)
+    ` There's no such field as No Such Field, so here's another 
+    ` error.
+40  strTmp = rsTest![No Such Field]
+    ` This causes an error because UnitPrice only takes currency 
+    ` values.
+50  rsTest![UnitPrice] = &quot;XYZ&quot;
+    ` Finally!
+60  End
+Exit Sub
+LoadError:
+    MsgBox &quot;Error #&quot; &amp; Str$(Err.Number) &amp; _
+           &quot; at Line &quot; &amp; Str$(Erl) &amp; _
+        &quot; - &quot; &amp; Err.Description &amp; &quot; - reported by &quot; &amp; Err.Source
+Resume Next
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>This simple example merely shows the error-handling logic that is possible using
+Visual Basic. The key to this sample is the use of the <TT>MsgBox</TT> function to
+show the various <TT>Err Object</TT> properties on the screen. Meaningful error handling
+has to be written into your application as you discover the most common problems
+with your applications.</P>
+<P><B>Comments</B></P>
+<P>As you work with DAO, be forewarned that you might get some unexplainable errors.
+You can't assume that anything as complex as the data control will always behave
+the way you would have written it, so you sometimes have to learn parts of the data
+control's behavior through a process of discovery. The best way to trap elusive errors
+is to eliminate controls from your form and code from your program until the errors
+stop occurring. The last thing deleted before the program works again is, no matter
+how unlikely, the part of the code or control causing the problem. The multiple cascading
+of events between the data control, its recordset object, and your event handlers
+can have unforeseen consequences that result in inexplicable errors. The most common
+of these data control errors is referencing invalid recordset fields during a reposition
+event because the recordset has moved to the &quot;No current record&quot; area.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="fm.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/fm/fm.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch02.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch02/ch02.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A></P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

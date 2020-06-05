@@ -1,0 +1,1951 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Visual Basic 6 Database How-To -- Ch 11 -- The Windows Registry and State Information</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="sams.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/sams.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"></H1>
+
+<H1 ALIGN="CENTER">Visual Basic 6 Database How-To</H1>
+<CENTER>
+<P><A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch10/ch10.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch12/ch12.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1></H1>
+<H1 ALIGN="CENTER">- 11 -<BR>
+The Windows Registry and State Information</H1>
+
+<UL>
+	<LI>How do I...
+	<UL>
+		<LI><A HREF="#Enter and retrieve Windows Š">11.1 Enter and retrieve Windows Registry
+		entries from Visual Basic?</A>
+		<LI><A HREF="#Put data access-related informat">11.2 Put data access-related information
+		into an application's section of the Registry?</A>
+		<LI><A HREF="#Determine which database Š">11.3 Determine which database and report-related
+		files need to be distributed with my applications?</A>
+		<LI><A HREF="#Tune the Jet database engine Š">11.Tune the Jet database engine through
+		Windows Registry entries?</A>
+		<LI><A HREF="#Tune the ODBC engine using Š">11.5 Tune the ODBC engine using Windows
+		Registry entries?</A>
+	</UL>
+</UL>
+
+<H3>
+<HR SIZE="4">
+</H3>
+<P>The Windows Registry is a remarkable component of Windows 95. It is used to store
+information about every application installed on your machine and replaces the original
+INI files of Windows 3.<I>x</I>. The information that is held in the Registry ranges
+from file paths to encrypted registration keys for ActiveX controls.</P>
+<P>You can view the contents of the Windows Registry by locating the RegEdit application
+in your Windows directory. After launching this application, you can view the contents
+of any key stored in the Registry. You can also edit, create, or delete folders and
+keys within these folders; however, you should take extreme caution in doing so,
+because these values are of great importance. Make sure you know and realize what
+you are doing with the information in the Windows Registry before you decide to change
+anything.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>REGISTRY SAFEGUARDS</STRONG></B><STRONG> </STRONG></P>
+
+	<P>Always have at least one workable version of the Registry backed up before making
+	any type of adjustment to it.<BR>
+	<BR>
+	If you have made changes to the Registry but not restarted Windows since the change,
+	you can restore the Registry to its state at the last successful Windows startup.
+	Shut down Windows by choosing Restart in MS-DOS mode. Then when you see the MS-DOS
+	prompt, type</P>
+	<PRE><TT>scanreq /restore</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<P>If you are having a problem restarting Windows after Registry changes, you can
+	reboot from an emergency boot floppy disk, and type the preceding command from the
+	MS-DOS prompt. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>In this chapter, we will dive into the Windows Registry and see how we can get
+it to work for us. We will accomplish this by using it to save state information
+for our application and our data access. We will also look into changing specific
+information that is inherent on every user's machine to tune and maximize performance
+in our applications.</P>
+<P>
+<H4>11.1 Enter and Retrieve Windows Registry Entries from Visual Basic</H4>
+<P>When you exit most applications and then restart them later, you will notice that
+the screens appear to be just as you left them earlier. This technique of storing
+an application's state information is discussed in this How-To.</P>
+<P>
+<H4>11.2 Put Data Access-Related Information into an Application's Section of the
+Registry</H4>
+<P>Sometimes it is important to use data access specifications that most other applications
+do not use. It is important, however, to maintain the reliability of the original
+specifications in the Window Registry. This How-To presents a project used to store
+state information for data access in the Windows Registry and to temporarily change
+the settings for data access.</P>
+<P>
+<H4>11.3 Determine Which Database and Report-Related Files Need to Be Distributed
+with My Applications</H4>
+<P>Many times when creating a set of distribution disks for your application, you
+forget to include specific files relating to databases or reports. This How-To explains
+which files are necessary for each of these components.</P>
+<P>
+<H4>11.Tune the Jet Database Engine Through Windows Registry Entries</H4>
+<P>If you are the down-and-dirty type when it comes to tweaking your machine for
+optimum performance, this How-To is for you. Here we show you how to fine-tune each
+of the keys relating to the Jet database engine tick.</P>
+<P>
+<H4>11.5 Tune the ODBC Engine Using Windows Registry Entries</H4>
+<P>As well as fine-tuning the Jet database engine through the Windows Registry, you
+can also tune the ODBC engine. In this How-To, we will explain just how to do this.</P>
+<P>
+<H2><A NAME="Heading7"></A>11.1 How do I...</H2>
+<H3><A NAME="Enter and retrieve Windows Š"></A><B>Enter and retrieve Windows Registry
+entries from Visual Basic?</B></H3>
+<P><B>Problem</B></P>
+<P>My applications need to store specific state information. For example, I would
+like to store the position and size of the windows used in my projects so that the
+next time a user loads the program, it appears to continue where he left off. How
+do I store state information for my applications using Visual Basic?</P>
+<P><B>Technique</B></P>
+<P>Back in the days of Windows 3.<I>x</I>, applications used INI files to store state
+information for their programs. Apparently, this led to numerous INI files spread
+throughout user's drives. With the introduction of Windows 95, we now have what is
+called the Windows Registry.</P>
+<P>The Windows Registry acts as a Grand Central Station for <TT>INI</TT> files. Not
+only is application state information stored in the Registry, but registrations for
+OCXs also reside here. By using the same statements that we used to access INI files
+for Windows 3.<I>x</I> applications, we can work with the Windows Registry. There
+are four in all:</P>
+
+<UL>
+	<LI><TT>GetSetting</TT>--Used to retrieve a single key's setting.
+	<P>
+	<LI><TT>GetAllSettings</TT>--Used to retrieve all keys and their corresponding settings
+	for a given section in the Registry.
+	<P>
+	<LI><TT>SaveSetting</TT>--Used to save a setting for a particular key.
+</UL>
+
+
+<UL>
+	<LI><TT>DeleteSetting</TT>--Used to delete a key for a given section.
+</UL>
+
+<P>Visual Basic has set a special section set aside for state information of user's
+applications. This section is labeled by the key HKEY_CURRENT_USER\<BR>
+Software\VB and VBA Program Settings. By using the four statements previously listed,
+we can create, read, and alter settings in the VB and VBA Program Settings area of
+the Windows Registry to effectively record our application's state information.</P>
+<P><B>Steps</B></P>
+<P>Load and run <TT>RegistryEditor.vbp</TT>. You will see the form shown in Figure
+11.1. The Application Name and Section text boxes are set to the default values used
+for this application. Change these values to see different section keys. After you
+select a key, you can edit it and click the Save Setting command button to save the
+setting. End the application by clicking the Close button.</P>
+<P><A HREF="javascript:popUp('11fig01.gif')"><B>Figure 11.1.</B></A><B> </B><I>The
+Registry Editor project.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project and name it <TT>RegistryEditor.vbp</TT>. Add the
+	objects listed in Table 11.1 and edit their properties as shown. Save the form as
+	<TT>frmRegistryEditor.frm</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 11.1. Objects and properties for the Registry Editor project.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>frmRegistryEditor</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Registry Editor&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Text box</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtApplicationName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;VB6DBHT Chapter 11&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Text box</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtSection</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Settings&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Text box</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtSetting</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>List box</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lstKeys</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Command button</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdClose</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&amp;Close&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+		<TD ALIGN="LEFT"><TT>-1 `True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Default</TT></TD>
+		<TD ALIGN="LEFT"><TT>-1 `True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Command button</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdSave</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&amp;Save Setting&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblApplicationName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&amp;Application Name:&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblSection</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Se&amp;ction:&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblKeys</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&amp;Key(s):&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblSetting</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Se&amp;tting:&quot;</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Enter the declaration for the form-level variant variable used to store
+	keys and settings from the Windows Registry:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+` form-level variable used to store keys and settings for
+` desired application and section
+Private m_vSettings As Variant</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>When the application begins, automatically populate the screen with
+	the default information by calling the <TT>RepopulateKeys</TT> routine that we will
+	enter later:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Load()</TT>
+    ` initialize the application by populating the key list box
+    RepopulateKeys
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Now enter the code for the <TT>lstKeys_Click</TT> event shown here.
+	When the user changes the key to be displayed, the application will load the new
+	corresponding setting and display it in the setting text box.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub lstKeys_Click()</TT>
+    ` error message of choice when error has occurred 
+    ` obtaining setting
+    Const ERRMSG_INVALID_SETTING = &quot;&lt;ERROR&gt;&quot;
+<B>    ` set the txtSetting text box to the value of the key in </B>
+    ` the Registry
+    txtSetting = GetSetting(txtApplicationName, _
+                            txtSection, _
+                            lstKeys.Text, _
+                            ERRMSG_INVALID_SETTING)
+    ` if there was an error in the retrieval process, disable
+    ` editing of the key's setting
+    If (txtSetting &lt;&gt; ERRMSG_INVALID_SETTING) Then
+        lstKeys.Enabled = True
+        txtSetting.Enabled = True
+        cmdSave.Enabled = True
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>When the user changes the name of the application or the section <BR>
+	to find keys for, we want to repopulate the list box displaying <BR>
+	them. This is done with a call to the <TT>RepopulateKeys</TT> routine in the <TT>txtApplicationName_Change</TT>
+	and <TT>txtSection_Change</TT> events, as shown here:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub txtApplicationName_Change()</TT>
+    ` repopulate the key list box when the application name 
+    ` has changed
+    RepopulateKeys
+End Sub
+Private Sub txtSection_Change()
+    ` repopulate the key list box when the section name 
+    ` has changed
+    RepopulateKeys
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Enter the following code to end the application:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdClose_Click()</TT>
+    ` end the application
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Now enter the code for the <TT>cmdSave_Click</TT> event, which uses
+	the <TT>SaveSetting</TT> statement to save the information on the form to the Windows
+	Registry:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdSave_Click()</TT>
+    ` save the selected key information from the desired
+    ` information on the form
+    SaveSetting txtApplicationName, _
+                txtSection, _
+                lstKeys.Text, _
+                txtSetting
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Finally, enter the following code for the <TT>RepopulateKeys</TT> routine.
+	When this code is called, the application attempts to populate the list box with
+	all the available keys for the given application and section name. If this information
+	does not correspond to a section in the Registry, an error occurs. The <TT>RepopulateKeys</TT>
+	routine traps this error and gracefully exits the procedure, leaving the key list
+	box empty and disabling any controls used to edit key settings.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub RepopulateKeys()</TT>
+` if there is an error, goto the code labeled by ERR_RepopulateKeys
+On Error GoTo ERR_RepopulateKeys:
+    Dim nCount As Integer
+    ` errors that are expected to be encountered
+    Const ERR_INVALID_PROC_CALL = 5
+    Const ERR_TYPE_MISMATCH = 13
+    With lstKeys
+        ` clear the listbox and setting text box
+        .Clear
+        txtSetting = &quot;&quot;
+        ` disable editing functions
+        lstKeys.Enabled = False
+        txtSetting.Enabled = False
+        cmdSave.Enabled = False
+        ` retrieve available keys for given application name
+        ` and section this will cause an ERR_INVALID_PROC_CALL
+        ` error if one of the text box controls are empty
+        m_vSettings = GetAllSettings(txtApplicationName, _
+              txtSection)
+        ` add each setting to the key list box
+        ` this will cause an ERR_TYPE_MISMATCH error if there
+        ` are no keys for the selected application and section 
+        ` names
+        For nCount = 0 To UBound(m_vSettings, 1)
+            .AddItem m_vSettings(nCount, 0)
+        Next nCount
+        ` select the first item in the list box
+        .ListIndex = 0
+    End With
+Exit Sub
+ERR_RepopulateKeys:
+    With Err
+        Select Case .Number
+            ` if the error is expected, do nothing but end the 
+            ` procedure
+            Case ERR_INVALID_PROC_CALL, ERR_TYPE_MISMATCH:
+            ` unexpected error, display for the user
+            Case Else:
+                MsgBox &quot;ERROR #&quot; * .Number &amp; &quot;: &quot; &amp; _
+                       .Description, _
+                       vbExclamation, &quot;ERROR&quot;
+        End Select
+    End With
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>When this project is run, the list box control of the form is populated with the
+keys available for the given application and section names using the <TT>GetAllSettings</TT>
+statement. If the section does not exist in the Windows Registry, an error occurs,
+and the application is ended gracefully. If there are keys, the list box is populated
+and the controls that are related to editing the key's setting are enabled.</P>
+<P>After you decide to change the setting for a given key selected from the list
+box, you click the Save Setting button. The code that is in the <TT>cmdSave_Click</TT>
+event uses the <TT>SaveSetting</TT> statement to save the current key's value.</P>
+<P>Choosing a new key from the list box control causes the code to execute the <TT>GetSetting</TT>
+statement, which retrieves an individual setting for a specified application name,
+section, and key.</P>
+<P><B>Comments</B></P>
+<P>In this project, we saved all the key's settings as strings in the Windows Registry.
+This is because the <TT>txtSetting</TT> text box's <TT>Text</TT> property returns
+a string value. If you were to use this project to save the information for your
+application's position and size, you would have to change the string value returned
+to a <TT>Long</TT> value.</P>
+<P>This problem can be avoided by using a variable with a <TT>Long</TT> data type
+in the <TT>SaveSetting</TT> statement. Visual Basic creates a new key with the data
+type of the specified setting.</P>
+<P>
+<H2><A NAME="Heading8"></A>11.2 How do I...</H2>
+<H3><A NAME="Put data access-related informat"></A><B>Put data access-related information
+into an application's section of the Registry?</B></H3>
+<P><B>Problem</B></P>
+<P>My application calls for DAO settings that are not considered standard. I can
+manually edit the Registry key settings to the values that my application requires;
+however, other programs will be affected by my changes. How do I temporarily change
+the DAO settings every time a user runs my projects?</P>
+<P><B>Technique</B></P>
+<P>By using the techniques discussed in How-To 11.1, we know that we can save state
+information for our application. Visual Basic does not care what kind of information
+this is; therefore, we can just as easily store DAO setting information as we can
+the application's position and height.</P>
+<P>To temporarily change the DAO settings for the Jet engine, we can use the <TT>SetOption</TT>
+method of the DBEngine. Using this command we can change the values of parameters
+that Jet uses to access data. These changes are made until we change them again or
+the DBEngine is actually closed.</P>
+<P>In all, there are 11 parameters we can use to alter the Jet and DAO's behavior.
+These parameters and their associated key--in the Jet\3.5\Engines\Jet 3.5\ section
+of the Windows Registry--are listed in Table 11.2.</P>
+<P>
+<H4>Table 11.2. Objects and properties for the Set Options project.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>KEY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Parameter Enumeration Constant</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>PageTimeout</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbPageTimeout</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>SharedAsyncDelay</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbSharedAsyncDelay</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ExclusiveAsyncDelay</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbExclusiveAsyncDelay</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>LockRetry</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbLockRetry</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>UserCommitSync</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbUserCommitSync</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ImplicitCommitSync</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbImplicitCommitSync</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>MaxBufferSize</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbMaxBufferSize</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>MaxLocksPerFile</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbMaxLocksPerFile</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>LockDelay</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbLockDelay</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>RecycleLVs</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbRecycleLVs</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FlushTransactionTimeout</TT></TD>
+		<TD ALIGN="LEFT"><TT>dbFlushTransactionTimeout</TT></TD>
+	</TR>
+</TABLE>
+</P>
+<P><B>Steps</B></P>
+<P>Open and run <TT>SetOptions.vbp</TT>. You will see the form shown in Figure 11.2.
+By selecting the key from the combo box, you will see the associated setting for
+the key in the Setting text box. Changing the key's setting and clicking the Save
+Setting button will not only save the value of the setting, but also temporarily
+change the parameter for the <TT>DBEngine</TT> object. If you delete the key by clicking
+the Delete Key button, you will remove the key from the section for our state information
+in the Registry. The next time you go to view the key, you will see the default setting
+of the key.</P>
+<P><A HREF="javascript:popUp('11fig02.gif')"><B>Figure 11.2.</B></A><B> </B><I>The
+Set Options project.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project and name it <TT>SetOptions.vbp</TT>. Add the controls
+	and edit their properties as shown in Table 11.3 for the default form, <TT>Form1</TT>.
+	Save the form as <TT>frmSetOptions.frm</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 11.3. Objects and properties for the Set Options project.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>frmSetOptions</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Set Options&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Combo box</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboKeys</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>2 `Dropdown List</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Text box</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtSetting</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Command button</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdClose</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&amp;Close&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+		<TD ALIGN="LEFT"><TT>-1 `True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Default</TT></TD>
+		<TD ALIGN="LEFT"><TT>-1 `True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Command button</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdSave</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&amp;Save Setting&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Command button</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdDelete</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&amp;Delete Key&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblKey</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;&amp;Key:&quot;</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lblSetting</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&quot;Se&amp;tting:&quot;</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Now enter the following code in the declarations section of the project.
+	The form-level <TT>Long</TT> variable is used to store the currently selected key
+	from the combo box on the form. The other two declarations are constants and are
+	used to represent the default application and section names used for this project.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+` form-level variable used to store the selected parameter from
+` the list in the keys combo box
+Private m_lSelectedParameter As Long
+` form-level constant declarations used throughout the
+` application to name the application and section when 
+` using the Get and Save settings methods
+Private Const APPLICATION_TITLE = &quot;VB6DBHT Chapter 11&quot;
+Private Const SECTION_NAME = &quot;Jet 3.5&quot;</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Now enter the <TT>Form_Load</TT> event code as shown next. This code
+	calls the <TT>LoadJetRegistryInformation</TT> routine, which we will code in a separate
+	module later, to retrieve all the keys for the specified application and section
+	of the Windows Registry. The event then adds all the available parameters to the
+	combo box control and selects the first one.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Load()</TT>
+    ` load all Jet Registry settings from application section
+    ` of the Windows Registry
+    LoadJetRegistryInformation APPLICATION_TITLE, SECTION_NAME
+    With cboKeys
+        ` add all the available parameters for the SetOption 
+        ` method
+        .AddItem &quot;dbPageTimeout&quot;
+        .AddItem &quot;dbSharedAsyncDelay&quot;
+        .AddItem &quot;dbExclusiveAsyncDelay&quot;
+        .AddItem &quot;dbLockRetry&quot;
+        .AddItem &quot;dbUserCommitSync&quot;
+        .AddItem &quot;dbImplicitCommitSync&quot;
+        .AddItem &quot;dbMaxBufferSize&quot;
+        .AddItem &quot;dbMaxLocksPerFile&quot;
+        .AddItem &quot;dbLockDelay&quot;
+        .AddItem &quot;dbRecycleLVs&quot;
+        .AddItem &quot;dbFlushTransactionTimeout&quot;
+        ` select the first item in the combo box control
+        .ListIndex = 0
+    End With
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Now enter the code for the <TT>cboKeys_Click</TT> event, which is called
+	every time the user selects a new key from the combo box. This event retrieves the
+	current setting for the chosen key from the application's section of the Windows
+	Registry. If there is no specified entry for the key in this section, the <TT>lDefaultSetting</TT>
+	is used instead.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cboKeys_Click()</TT>
+    Dim lDefaultSetting As Variant
+    With cboKeys
+        ` get a long value from the text version of the key
+        m_lSelectedParameter = GetParameterFromKey(.Text)
+        ` obtain the default setting for the key
+        lDefaultSetting = GetDefaultKeySetting(.Text)
+        ` display the current setting from the application's
+        ` Registry settings if there is one; otherwise, 
+        ` display the default
+        txtSetting = GetSetting(APPLICATION_TITLE, _
+                                SECTION_NAME, _
+                                .Text, _
+                                lDefaultSetting)
+    End With
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Enter the following code to end the application:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdClose_Click()</TT>
+    ` end the application
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>The following code is used to save the current key and setting combina-tion
+	to the application's section of the Registry. This is done with the <TT>SaveSetting</TT>
+	statement. In addition to the Registry entry, the <TT>SetOption</TT> method of the
+	<TT>DBEngine</TT> object is called to temporarily change the setting of the desired
+	parameter to the new value. If the user entered an incorrect data type for the key,
+	an error is generated and the user is notified.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+	<PRE><TT>Private Sub cmdSave_Click()</TT>
+` if there is an error, goto the code labeled by ERR_
+` cmdSave_Click
+On Error GoTo ERR_cmdSave_Click:
+    ` constant declarations for expected errors
+    Const ERR_TYPE_MISMATCH = 13
+    Const ERR_RESERVED_ERROR = 3000
+</PRE>
+	<P>
+	<PRE><TT>    ` attempt to set the DBEngine option for the given key</TT>
+    ` an error will occur here if an incorrect setting data
+    ` type is entered by the user
+    DBEngine.SetOption m_lSelectedParameter, _
+            GetValueFromSetting(txtSetting)
+    ` if the SetOption method was successful, save the
+    ` new setting value in the application Registry section
+    SaveSetting APPLICATION_TITLE, SECTION_NAME, _
+            cboKeys.Text, txtSetting
+    ` inform the user of the success
+    MsgBox &quot;Change has been made.&quot;, vbInformation, &quot;Set Option&quot;
+Exit Sub
+ERR_cmdSave_Click:
+    Dim sMessage As String
+    With Err
+        Select Case .Number
+            ` wrong data type entered for key setting
+            Case ERR_TYPE_MISMATCH, ERR_RESERVED_ERROR:
+                sMessage = &quot;Value is of incorrect format.&quot;
+            ` unexpected error, create a message from the error
+            Case Else:
+                sMessage = &quot;ERROR #&quot; &amp; .Number &amp; &quot;: &quot; &amp; _
+                       .Description
+        End Select
+    End With
+    ` inform the user of the error
+    MsgBox sMessage, vbExclamation, &quot;ERROR&quot;
+    ` repopulate the setting text box with the current or
+    ` default key setting and set focus to the text box
+    cboKeys_Click
+    txtSetting.SetFocus
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>The following code simply deletes the key from the application's section
+	in the Windows Registry and notifies the user of the success:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdDelete_Click()</TT>
+    ` remove the setting from the application section of the
+    ` Windows Registry
+    DeleteSetting APPLICATION_TITLE, SECTION_NAME, cboKeys.Text
+    ` refresh the setting text box with the default value
+    cboKeys_Click
+    ` inform the user of the success
+    MsgBox &quot;Key has been deleted.&quot;, vbInformation, &quot;Delete Key&quot;
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>The second half of this project begins with adding a new module. <BR>
+	This can be done by choosing Project | Add Module from the Visual <BR>
+	Basic menu. Rename the module <TT>RegistryInformation</TT> and save it <BR>
+	as <TT>RegistryInformation.bas</TT>. The remaining code for this project <BR>
+	should be entered in this module.
+	<P>
+	<DT></DT>
+	<DD><B>9. </B>In the <TT>RegistryInformation</TT> module, enter the first routine
+	to be used, which is the <TT>LoadJetRegistryInformation</TT> as shown here. This
+	routine loads all the settings and keys for the given application and section names.
+	For each key specified in the corresponding section of the Registry, the <TT>SetOption</TT>
+	method of the <TT>DBEngine</TT> object is called to temporarily change the value
+	of the given parameter for the life of this application. If there are no settings
+	for the given application and section names, an error is trapped and the routine
+	exits gracefully.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Sub LoadJetRegistryInformation( _</TT>
+       sApplicationName As String, _
+       sSectionName As String)
+` if there is an error, goto the code labeled by
+` ERR_LoadJetRegistryInformation
+On Error GoTo ERR_LoadJetRegistryInformation:
+    Dim vSettings As Variant
+    Dim nCount As Integer
+    ` constant declaration for expected error
+    Const ERR_TYPE_MISMATCH = 13
+    ` obtain all the settings from the Registry section for
+    ` the given application
+    vSettings = GetAllSettings(sApplicationName, sSectionName)
+    ` set all the options that were specified in the Jet 3.5
+    ` section for the current application
+    For nCount = 0 To UBound(vSettings, 1)
+        DBEngine.SetOption GetParameterFromKey _
+                (vSettings(nCount, 0)), _
+                GetValueFromSetting( _
+                vSettings(nCount, 1))
+    Next nCount
+Exit Sub
+ERR_LoadJetRegistryInformation:
+    With Err
+        Select Case .Number
+            ` there was no settings specified in the Registry
+            ` for the given application, just continue without
+            ` displaying an error message
+            Case ERR_TYPE_MISMATCH:
+            ` unexpected error, create a message from the error
+            Case Else:
+                MsgBox &quot;ERROR #&quot; &amp; .Number &amp; &quot;: &quot; &amp; _
+                        .Description, _
+                        vbExclamation, &quot;ERROR&quot;
+        End Select
+    End With
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Now enter the public function <TT>GetValueFromSetting</TT>, which
+	accepts a variant as an argument and returns either a <TT>Long</TT> or <TT>String</TT>
+	dependent upon the data type of the argument:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Function GetValueFromSetting( _</TT>
+        vSetting As Variant) As Variant
+    ` if the setting is a number, return a long; otherwise, 
+    ` return a string
+    If (IsNumeric(vSetting)) Then
+        GetValueFromSetting = CLng(vSetting)
+    Else
+        GetValueFromSetting = CStr(vSetting)
+    End If
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>The following function returns the default setting for the specified
+	key name. These defaults were obtained from the Visual Basic Books Online and can
+	be changed to your desired settings.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Function GetDefaultKeySetting(sKey As String) As Variant</TT>
+    ` return the default key setting for the key specified
+    Select Case sKey
+        Case &quot;dbPageTimeout&quot;:
+            GetDefaultKeySetting = 5000
+        Case &quot;dbSharedAsyncDelay&quot;:
+            GetDefaultKeySetting = 0
+        Case &quot;dbExclusiveAsyncDelay&quot;:
+            GetDefaultKeySetting = 2000
+        Case &quot;dbLockEntry&quot;:
+            GetDefaultKeySetting = 20
+        Case &quot;dbUserCommitSync&quot;:
+            GetDefaultKeySetting = &quot;Yes&quot;
+        Case &quot;dbImplicitCommitSync&quot;:
+            GetDefaultKeySetting = &quot;No&quot;
+        Case &quot;dbMaxBufferSize&quot;:
+            GetDefaultKeySetting = 0
+</PRE>
+	<P>
+	<PRE><TT>        Case &quot;dbMaxLocksPerFile&quot;:</TT>
+            GetDefaultKeySetting = 9500
+        Case &quot;dbLockDelay&quot;:
+            GetDefaultKeySetting = 100
+        Case &quot;dbRecycleLVs&quot;:
+            GetDefaultKeySetting = 0
+        Case &quot;dbFlushTransactionTimeout&quot;:
+            GetDefaultKeySetting = 500
+    End Select
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>12. </B>Finally, enter the code for the public function <TT>GetParameterFromKey</TT>
+	as shown here. This function returns the corresponding parameter enumeration value
+	for a specified key.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Function GetParameterFromKey(ByVal sKey As String) As Long</TT>
+    ` return the correct constant for the given key
+    Select Case sKey
+        Case &quot;dbPageTimeout&quot;:
+            GetParameterFromKey = dbPageTimeout
+        Case &quot;dbSharedAsyncDelay&quot;:
+            GetParameterFromKey = dbSharedAsyncDelay
+        Case &quot;dbExclusiveAsyncDelay&quot;:
+            GetParameterFromKey = dbExclusiveAsyncDelay
+        Case &quot;dbLockRetry&quot;:
+            GetParameterFromKey = dbLockRetry
+        Case &quot;dbUserCommitSync&quot;:
+            GetParameterFromKey = dbUserCommitSync
+        Case &quot;dbImplicitCommitSync&quot;:
+            GetParameterFromKey = dbImplicitCommitSync
+        Case &quot;dbMaxBufferSize&quot;:
+            GetParameterFromKey = dbMaxBufferSize
+        Case &quot;dbMaxLocksPerFile&quot;:
+            GetParameterFromKey = dbMaxLocksPerFile
+        Case &quot;dbLockDelay&quot;:
+            GetParameterFromKey = dbLockDelay
+        Case &quot;dbRecycleLVs&quot;:
+            GetParameterFromKey = dbRecycleLVs
+        Case &quot;dbFlushTransactionTimeout&quot;:
+            GetParameterFromKey = dbFlushTransactionTimeout
+    End Select
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>This project uses two files for code. The first file, the <TT>frmSetOptions</TT>
+form, holds the information for displaying and altering the application's Jet engine
+state information.</P>
+<P>The second file used in this project, the <TT>RegistryInformation</TT> module,
+is designed to be portable and to be added to your own project. By calling the <TT>LoadJetRegistryInformation</TT>
+and passing the application's name and section, the procedure loads all the state
+information stored for the Jet in the specified section of the Windows Registry.
+It then uses the <TT>SetOption</TT> method to temporarily change the parameter values
+of Jet engine access for the life of your application.</P>
+<P><B>Comments</B></P>
+<P>It is important not to change the values of the actual settings for the Jet in
+the key Jet\3.5\Engines\Jet 3.5\ because it is very likely this is where the rest
+of your applications are finding the parameter values for Jet DAO access. If by some
+chance you decide to change these values and need to set them back to their original
+values, you can find the default settings from the Microsoft Visual Basic Books Online,
+in the &quot;Initializing the Microsoft Jet 3.5 Database Engine&quot; section.</P>
+<P>For more information on the meaning of the parameters used in this section, see
+How-To 11.4, &quot;Tune the Jet Database Engine Through Windows Registry Entries.&quot;</P>
+<P>
+<H2><A NAME="Heading9"></A>11.3 How do I...</H2>
+<H3><A NAME="Determine which database Š"></A><B>Determine which database and report-related
+files need to be distributed with my applications?</B></H3>
+<P><B>PROBLEM</B><BR>
+<BR>
+I am creating an application that uses the Jet database engine and Crystal Reports.
+How do I determine the files I need to distribute with my application?</P>
+<P><B>Technique</B></P>
+<P>Before Visual Basic 5.0, life was rough. Actually, life is still rough, but we
+are getting there. Creating distribution disks for your application was a headache
+up until Microsoft began delivering its Application Setup Wizard with Visual Basic
+5.0. With the introduction of Visual Basic 6.0, Microsoft offers us the Package and
+Deployment Wizard. The Package and Deployment Wizard does everything that the Application
+Wizard in Visual Basic 5.0 did, but it also adds the ability to create packages for
+network or Internet distribution. In this How-To, we will concentrate on how the
+Package and Deployment Wizard can be used to create conventional disk-based packages
+for our applications.</P>
+<P><B>Steps</B></P>
+<P>Run the Package and Deployment Wizard that comes with Visual Basic 6.0. You will
+see the wizard as shown in Figure 11.3.</P>
+<P><A HREF="javascript:popUp('11fig03.gif')"><B>Figure 11.3.</B></A><B> </B><I>The
+Package and Deployment Wizard.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>After choosing to create a package, choose a packaging script as shown
+	in Figure 11.4.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig04.gif')"><B>Figure 11.4.</B></A><B> </B><I>Choosing
+a packaging script.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>2. </B>Click the Next button and you will see the panel shown in Figure 11.5.
+	In this panel, you select the type of setup you wish to create.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig05.gif')"><B>Figure 11.5.</B></A><B> </B><I>Choosing
+a setup type.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>3. </B>After choosing the type of setup, choose the location to build the
+	setup as shown in Figure 11.6.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig06.gif')"><B>Figure 11.6.</B></A><B> </B><I>Choosing
+a location to build the setup.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>4. </B>If your application uses DAO, you will choose drivers from the list
+	shown in Figure 11.7.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Figure 11.8 shows a list of files that have been chosen to be included
+	in your package. In this step, you can deselect or add files for your package.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig07.gif')"><B>Figure 11.7.</B></A><B> </B><I>Choosing
+a DAO driver.</I></P>
+<P><A HREF="javascript:popUp('11fig08.gif')"><B>Figure 11.8.</B></A><B> </B><I>Choosing
+files for the setup.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>6. </B>Next, choose whether you would like a single cab or multiple cab files
+	for your installation as shown in Figure 11.9.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig09.gif')"><B>Figure 11.9.</B></A><B> </B><I>Choosing
+a distribution size.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>7. </B>Next, enter the name that should be shown when the setup program for
+	your application is run. This is shown in Figure 11.10.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig10.gif')"><B>Figure 11.10.</B></A><B> </B><I>Choosing
+a name for the setup.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>8. </B>After entering a setup name for your application, click the Next button
+	to get to the screen shown in Figure 11.11. This screen allows you to select the
+	menu groups and items that should be created once your application is created.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig11.gif')"><B>Figure 11.11.</B></A><B> </B><I>Choosing
+menu groups and Items.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>9. </B>The next step, as shown in Figure 11.12, allows you to change the locations
+	in which particular items in your package can be located.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig12.gif')"><B>Figure 11.12.</B></A><B> </B><I>Changing
+the location of setup components.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>10. </B>After you have set the correct location for the files in Figure 11.12,
+	click the Next button to see Figure 11.13. This screen allows you to indicate which
+	files in your package are considered shared files.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig13.gif')"><B>Figure 11.13.</B></A><B> </B><I>Choosing
+shared files.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>11. </B>After completing this, you will see the Finished panel as shown in
+	Figure 11.14. Click Finish to complete the installation setup process.
+	<P>
+	<DT></DT>
+	<DD><B>12. </B>Type a name for the installation script and click Save Script.
+	<P>
+	<DT></DT>
+	<DD><B>13. </B>Click Finish to create your application package.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig14.gif')"><B>Figure 11.14.</B></A><B> </B><I>Completing
+the setup.</I></P>
+<P><B>How It Works</B></P>
+<P>Problems arise sometimes when files become lost or when the Package and Deployment
+Wizard does not find all the files necessary to be included in our distribution disks.
+All the files that actually have meaning to us to run our application are considered
+runtime files.</P>
+<P><B>Runtime Files</B></P>
+<P>There is a check list of standard runtime files that you should work through when
+creating a set of distribution disks. This checklist is as follows:</P>
+
+<UL>
+	<LI>The program's main executable.
+	<P>
+	<LI>Any database (<TT>MDB</TT> files for Access) or report files (<TT>RPT</TT> files
+	for Crystal Reports).
+	<P>
+	<LI>Any other data files (<TT>DAT</TT>), text files (<TT>TXT</TT>), or Registry files
+	(<TT>REG</TT>). These files are those that will not be found by a wizard, but accessed
+	from within your application.
+	<P>
+	<LI>Any ActiveX components (<TT>OCX</TT> files).
+	<P>
+	<LI>The Visual Basic runtime DLL (<TT>MSVBVM60.DLL</TT>).
+	<P>
+	<LI>Any other dependency files (<TT>DLL</TT> or <TT>EXE</TT>).
+</UL>
+
+<P>You should be able to know immediately what database, report, data, and ActiveX
+files you are to add to your setup disks because these are files that you explicitly
+added to your project. The Visual Basic runtime DLL (<TT>MSVBVM60.DLL</TT>) is necessary
+for every Visual Basic application. The trickiest files to find are component dependency
+files.</P>
+<P><B>Component Dependencies</B></P>
+<P>Component dependencies are files that are necessary in order to use specific ActiveX
+controls and particular components that are added as references from your application.
+There are a number of resources, however, to locate the proper dependency files that
+are important to you.</P>
+<P>First, it is important to always consult the documentation on all third-party
+components, as well as Microsoft components, to see which DLLs are necessary in order
+to use its product. For instance, the Microsoft Data Reporter requires the <TT>MSDBRPT.DLL</TT>
+file. In most cases, <TT>REG</TT> files are also necessary. These files have registration
+information, entered into the Windows Registry, that is used to determine the licensing
+usage available to the user for the particular component.</P>
+<P>The second source for finding the appropriate dependency files for your distribution
+disks is the Visual Basic documentation. All the included components are documented
+and explain which files are necessary in order for them to work properly. All ActiveX
+controls will come with <TT>DEP</TT> files, if they don't already. For example, the
+Microsoft Data Repeater ActiveX control comes with a file named <TT>MSDATREP.DEP</TT>,
+and Crystal Reports comes with <TT>CRYSTL32.DEP</TT>. These files are used by the
+Package and Deployment Wizard to determine which files are necessary for installation.</P>
+<P>The third and most important source of information is the <TT>VB6DEP.INI</TT>
+file. This file replaces the original <TT>SWDEPEND.INI</TT> file of earlier times
+and describes the dependencies used by Visual Basic.</P>
+<P>The <TT>VB6DEP.INI</TT> file can be found in the Visual Basic \Wizards\PDWizard
+directory. This file lists necessary dependencies for all available Visual Basic
+components. This file is used by the Package and Deployment Wizard to determine the
+appropriate files necessary to successfully run your application.</P>
+<P><B>Comments</B></P>
+<P>The following is a portion of the <TT>MSDATREP.DEP</TT> file. It lists the information
+necessary to successfully incorporate the <TT>MSDATREP.OCX</TT> ActiveX control that
+is for the Microsoft Data Repeater.</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>[MSDatRep.ocx]</TT>
+<TT>Dest=$(WinSysPath)</TT>
+<TT>Register=$(DLLSelfRegister)</TT>
+<TT>Version=6.0.80.52</TT>
+<TT>Uses1=ComCat.dll</TT>
+<TT>Uses2=MSStdFmt.dll</TT>
+<TT>Uses3=MSBind.dll</TT>
+<TT>CABFileName=MSDatRep.cab</TT>
+<TT>CABDefaultURL=http://activex.microsoft.com/controls/vb6</TT>
+<TT>CABINFFile=MSDatRep.inf</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The header of this portion of code, <TT>[MSDatRep.ocx]</TT>, indicates the file
+in question. The first key, <TT>Dest</TT>, indicates where the file should be stored
+on the installation machine (in this case, the Windows System path).</P>
+<P>The second parameter, <TT>Register</TT>, indicates that the file will self-register
+in the Windows Registry. The <TT>Version</TT> parameter clearly holds the file's
+version number to compare with older files during the installation process.</P>
+<P>After this, a list of additional dependencies is listed with the parameter form
+of <TT>UsesX</TT>, where <TT>X</TT> is the number of the dependency. These are files
+that the actual file being installed (<TT>MSDATREP.OCX</TT>) uses to reference; therefore,
+they in turn must also be installed. The <TT>CABFileName</TT> parameter is the name
+of the installation file for the particular installed file, and <TT>CABINFFile</TT>
+is the file that contains the installation information for the installed file.</P>
+<P>I skipped the <TT>CABDefaultURL</TT> parameter, which indicates the default Web
+site that is used in reference to the installed file for upgrades or more information.</P>
+<P>
+<H2><A NAME="Heading10"></A>11.4 How do I...</H2>
+<H3><A NAME="Tune the Jet database engine Š"></A><B>Tune the Jet database engine
+through Windows Registry entries?</B></H3>
+<P><B>Problem</B></P>
+<P>My application needs to alter the way the Jet engine is initiated in the Windows
+Registry in order to obtain better performance. I know I can edit the Windows Registry
+using <TT>RegEdit</TT>, but I do not know what to actually do. How do I tune the
+Jet engine through the Windows Registry?</P>
+<P><B>Technique</B></P>
+<P>When you install the Microsoft Jet engine for the first time, two DLL files are
+registered in the Windows Registry. These files are <TT>MSJET35.DLL</TT> and <TT>MSRD2X35.DLL</TT>.
+When these files are registered, two entries are created in the HKEY_LOCAL_MACHINES\Software\Microsoft\Jet\3.5\Engines
+folder. This is done automatically when you install Access 97.</P>
+<P>The first of these keys represents the path to the system database file. The typical
+path for this key would be the system directory of Windows; therefore, no path is
+necessary because the system directory is usually part of the default path. The following
+is an example of this <TT>SystemDB</TT> key:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SystemDB = &quot;C:\WINDOWS\SYSTEM\SYSTEM.MDB&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The second key that is created is called <TT>CompactBYPkey</TT>. When this key
+is set to anything but zero, databases will be compacted in the order of the primary
+key. If no primary key exists, the database is compacted in base-table order. A value
+of zero for the <TT>CompactBYPkey</TT> key will instruct the Jet engine to compact
+databases in base-table order. The default value for this key is nonzero, as in the
+following example:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>CompactBYPkey = 1</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>It should be noted that this setting is good only for databases created with the
+Microsoft Jet database engine, version 3.0 or later. Any database created from an
+earlier version will compact by base-table order automatically.</P>
+<P>The Microsoft Jet is controlled by keys set in the \HKEY_LOCAL_MACHINES\<BR>
+Software\Microsoft\Jet\3.5\Engines\Jet 3.5 folder of the Windows Registry. The default
+settings for these keys are shown in Table 11.4.</P>
+<P>
+<H4>Table 11.4. The Jet\3.5\Engines\Jet 3.5 keys and default values.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>KEY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Default</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>PageTimeout</TT></TD>
+		<TD ALIGN="LEFT"><TT>5000</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>SharedAsyncDelay</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ExclusiveAsyncDelay</TT></TD>
+		<TD ALIGN="LEFT"><TT>2000</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>LockRetry</TT></TD>
+		<TD ALIGN="LEFT"><TT>20</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>UserCommitSync</TT></TD>
+		<TD ALIGN="LEFT"><TT>Yes</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ImplicitCommitSync</TT></TD>
+		<TD ALIGN="LEFT"><TT>No</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>MaxBufferSize</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>MaxLocksPerFile</TT></TD>
+		<TD ALIGN="LEFT"><TT>9500</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>LockDelay</TT></TD>
+		<TD ALIGN="LEFT"><TT>100</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FlushTransactionTimeout</TT></TD>
+		<TD ALIGN="LEFT"><TT>500</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Threads</TT></TD>
+		<TD ALIGN="LEFT"><TT>3</TT></TD>
+	</TR>
+</TABLE>
+</P>
+<P>By adjusting these settings, you can manipulate how the Jet engine operates in
+every program that uses these settings. The keys listed in Table 11.4 are briefly
+described in the text that follows.</P>
+<P><B>Steps</B></P>
+<P>Run the <TT>RegEdit</TT> application that is in the Windows directory on your
+machine. Locate the \HKEY_LOCAL_MACHINES\Software\Microsoft\Jet\3.5\Engines\Jet 3.5
+section of the Registry, and you should see something similar to what's shown in
+Figure 11.15.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Choose a key in the section that you are now in. Choose Edit | Modify
+	from the RegEdit menu.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Edit the value of the key that you selected. For a complete list of
+	the available keys for this section, see the &quot;How It Works&quot; section of
+	this <BR>
+	How-To.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Click OK to save your changes or Cancel to abort.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('11fig15.gif')"><B>Figure 11.15.</B></A><B> </B><I>The
+\HKEY_LOCAL_MACHINES\Software\<BR>
+Microsoft\Jet\3.5\Engines\Jet 3.5 of the Windows Registry.</I></P>
+<P><B>How It Works</B></P>
+<P>The following is a list of the keys that make up the \HKEY_LOCAL_MACHINES\<BR>
+Software\Microsoft\Jet\3.5\Engines\Jet 3.5 section of the Windows Registry and a
+description of each.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>PageTimeout</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>PageTimeout</TT> key is used to indicate the time interval between when
+data that is not read-locked is placed in an internal cache and when that data is
+invalidated. This key is measured in milliseconds, with a default value of <TT>5000</TT>
+or <TT>5</TT> seconds.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>FlushTransactionTimeout</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>FlushTransactionTimeout</TT> key disables the <TT>ExclusiveAsyncDelay</TT>
+and <TT>SharedAsyncDelay</TT> keys with a value of <TT>1</TT>. A value of <TT>0</TT>
+enables these keys. The <TT>FlushTransactionTimeout</TT> is the value that will start
+asynchronous writes only after the amount of time specified has expired and no pages
+have been added to the cache. An exception to this statement is if the cache exceeds
+the <TT>MaxBufferSize</TT>, the cache will start asynchronous writing even if the
+time has expired. For instance, the Microsoft Jet 3.51 database engine will wait
+500 milliseconds during non-activity or until the cache size is exceeded before starting
+asynchronous writes.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>LockDelay</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>LockDelay</TT> key holds a value in milliseconds used to determine the
+time in between lock requests indicated by the <TT>LockRetry</TT> key. This key was
+added to prevent &quot;bursting&quot; (overloading of the network) that would occur
+with certain network operating systems.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>MaxLocksPerFile</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>MaxLocksPerFile</TT> key holds a value indicating the maximum number of
+Microsoft Jet transactions. If the locks in a transaction attempt to exceed the <TT>MaxLocksPerFile</TT>
+key value, the transaction is split into multiple parts and partially committed.
+This concept was conceived in order to prevent NetWare 3.1 server crashes when the
+specified NetWare lock limit was exceeded as well as to improve performance with
+both NetWare and NT.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>LockRetry</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>LockRetry</TT> key indicates the number of times to repeat attempts to
+access a locked page before returning a lock conflict message. The default value
+for the <TT>LockRetry</TT> key is <TT>20</TT>.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>RecycleLVs</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>RecycleLVs</TT> key is used to indicate whether Microsoft Jet is to recycle
+long value pages. These include the Memo, Long Binary (OLE object), and Binary data
+types. With Microsoft Jet 3.0, if the <TT>RecycleLVs</TT> key was not set, these
+long value pages would be recycled when the last user closed the database. Microsoft
+Jet 3.51 will start to recycle most long value pages when the database is expanded--in
+other words, when groups of pages are added. When this feature is enabled, you will
+notice a performance drop when using long value data types. With Microsoft Access
+97, this feature is automatically enabled and disabled.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>MaxBufferSize</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>MaxBufferSize</TT> key represents the size of the database engine internal
+cache. This value is represented in kilobytes. The <TT>MaxBufferSize</TT> key must
+be an integer greater than or equal to 512. The default value for the <TT>MaxBufferSize</TT>
+varies depending on the amount of RAM installed on the user's system. The formula
+for calculating the default is as follows:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>((<I>RAM</I> - 12MB) / 4) + 512KB</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>Here, <I><TT>RAM</TT></I> is the amount of memory on the current system, measured
+in megabytes (MB). To set the value of the <TT>MaxBufferSize</TT> to the default,
+simply set the key to zero.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>THREADS</TT>
+
+</BLOCKQUOTE>
+
+<P><BR>
+The <TT>Threads</TT> key represents the number of background threads available to
+the Microsoft Jet database engine. The default value for the <TT>Threads</TT> key
+is <TT>3</TT>.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>UserCommitSync</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>UserCommitSync</TT> key indicates whether the system should wait for a
+commit to finish. If the value is <TT>Yes</TT>, which is the default, the system
+will wait for a commit to finish. If the value is <TT>No</TT>, the system will perform
+the commit asynchronously.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>ImplicitCommitSync</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>ImplicitCommitSync</TT> key represents whether the system will wait for
+a commit to finish. A default value of <TT>No</TT> will instruct the system to continue
+without waiting for the commit to finish, whereas a value of <TT>Yes</TT> will cause
+the system to wait.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>ExclusiveAsyncDelay</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>ExclusiveAsyncDelay</TT> key specifies the amount of time (in milliseconds)
+an asynchronous flush of an exclusive database is to be deferred. The default value
+for this key is <TT>2000</TT> milliseconds (2 seconds).</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>SharedAsyncDelay</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>SharedAsyncDelay</TT> key represents the amount of time (in milliseconds)
+to defer an asynchronous flush of a shared database. The default for the <TT>SharedAsyncDelay</TT>
+is <TT>0</TT>.</P>
+<P>
+<H2><A NAME="Heading11"></A>11.5 How do I...</H2>
+<H3><A NAME="Tune the ODBC engine using Š"></A><B>Tune the ODBC engine using Windows
+Registry entries?</B></H3>
+<P><B>Problem</B></P>
+<P>My application needs to alter the way in which the ODBC engine is initiated in
+the Windows Registry in order to obtain better performance. I know I can edit the
+Windows Registry using RegEdit, but I don't know what to actually do. How do I tune
+the ODBC engine through the Windows Registry?</P>
+<P><B>Technique</B></P>
+<P>The ODBC engine keys are stored in the Windows Registry in the \HKEY_LOCAL_MACHINE\Software\Microsoft\Jet\3.5\Engines\ODBC
+section. Table 11.5 lists the available keys and their respective default values.</P>
+<P>
+<H4>Table 11.5. The Jet\3.5\Engines\ODBC keys and default values.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>KEY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Default</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>LoginTimeout</TT></TD>
+		<TD ALIGN="LEFT"><TT>20</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>QueryTimeout</TT></TD>
+		<TD ALIGN="LEFT"><TT>60</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ConnectionTimeout</TT></TD>
+		<TD ALIGN="LEFT"><TT>600</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AsyncRetryInterval</TT></TD>
+		<TD ALIGN="LEFT"><TT>500</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AttachCaseSensitive</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>AttachableObjects</TT></TD>
+		<TD ALIGN="LEFT"><TT>`TABLE', `VIEW', `SYSTEM TABLE', `ALIAS', `SYNONYM'</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>SnapshotOnly</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TraceSQLMode</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TraceODBCAPI</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DisableAsync</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>JetTryAuth</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>PreparedInsert</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>PreparedUpdate</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>FastRequery</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+</TABLE>
+</P>
+<P>By adjusting the values of any of these keys, you can affect the way any application
+that uses the ODBC jet engine accesses data. The following is a brief description
+of each key represented in Table 11.5.</P>
+<P><B>Steps</B></P>
+<P>Run the <TT>RegEdit</TT> application that is in the Windows directory on your
+machine. Locate the \HKEY_LOCAL_MACHINE\Software\Microsoft\Jet\3.5\Engines\ODBC section
+of the Registry, and you should see something similar to Figure 11.13.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Choose a key in the section that you are now in. Choose Edit | Modify
+	from the RegEdit menu.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Edit the value of the key that you have selected. For a complete list
+	of the available keys for this section, see the &quot;How It Works&quot; section
+	of this How-To.
+	<P>
+	<DD><B>3. </B>Click OK to save your changes or Cancel to abort.
+</DL>
+
+<P><B>How It Works</B></P>
+<P>The following sections contain a list of the keys that make up the \HKEY_LOCAL_MACHINE\Software\Microsoft\Jet\3.5\Engines\ODBC
+section of the Windows Registry, and a description of each.</P>
+<P><A HREF="javascript:popUp('11fig16.gif')"><B>Figure 11.16.</B></A><B> </B><I>The
+\HKEY_LOCAL_MACHINE\Software\<BR>
+Microsoft\Jet\3.5\Engines\ODBC of the Windows Registry.</I></P>
+
+
+<BLOCKQUOTE>
+	<P><TT>LoginTimeout</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>LoginTimout</TT> key is used to store the maximum number of seconds a
+login attempt can take. After the specified time, timing out occurs with an error.
+The default for <TT>LoginTimout</TT> is <TT>20</TT> seconds.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>QueryTimeout</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>QueryTimeout</TT> key is used to store the maximum number of seconds the
+entire processing time can take to run a query before actually timing out. The default
+value for this key is <TT>60</TT> seconds. If the <TT>DisableAsync</TT> key is set
+to its default of <TT>0</TT>, the <TT>QueryTimeout</TT> key is used to indicate the
+time in seconds waited for a response from the server between polls for the completion
+of a query.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>ConnectionTimeout</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>ConnectionTimeout</TT> key is used to store the maximum amount of seconds
+a cached connection may remain idle before timing out. The default value for the
+<TT>ConnectionTimeout</TT> key is <TT>600</TT> seconds (10 minutes).</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>AsyncRetryInterval</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>AsyncRetryInverval</TT> is used to measure the time allotted between polls
+to determine whether the server has completed processing a query. The <TT>AsyncRetryInterval</TT>
+key is measured in milliseconds with a default of <TT>500</TT>. This key is available
+only for asynchronous processing.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>AttachCaseSensitive</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>AttachCaseSensitive</TT> key is used to determine what type of matching
+is enabled for linking tables. A default value of <TT>0</TT> indicates that the linking
+process is not case sensitive whereas a value of <TT>1</TT> indicates that the tables
+must match according to case.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>AttachableObjects</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>AttachableObjects</TT> key holds a list of server object types that are
+allowed to be linked. The default value for this key is <TT>`TABLE',</TT> <TT>`VIEW',</TT>
+<TT>`SYSTEM</TT> <TT>TABLE',</TT> <TT>`ALIAS',</TT> <TT>`SYNONYM'</TT>.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>SnapshotOnly</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>SnapshotOnly</TT> key indicates whether <TT>Recordsets</TT> objects must
+be snapshots (default value of <TT>0</TT>); they may also be dynasets (value of <TT>1</TT>).</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>TraceSQLMode</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>TraceSQLMode</TT> key is equivalent to the <TT>SQLTraceMode</TT> key.
+It indicates whether a trace of SQL statements will be recorded in <TT>SQLOUT.TXT</TT>
+that is sent to an ODBC data source. The default value for the <TT>TraceSQLMode</TT>
+key is <TT>0</TT>, or no. A value of <TT>1</TT> indicates yes.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>TraceODBCAPI</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>TraceODBCAPI</TT> key indicates whether ODBC API calls are traced in the
+<TT>ODBCAPI.TXT</TT> file. A value of <TT>0</TT> indicates no, and <TT>1</TT> indicates
+yes. The default for this key is no.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>DisableAsync</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>DisableAsync</TT> key is an indicator of whether to force synchronous
+query execution. This key can either be set to its default of <TT>1</TT> for a force
+of synchronous query execution, or <TT>0</TT> for using asynchronous query execution
+if possible.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>JetTryAuth</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>JetTryAuth</TT> key indicates whether the Microsoft Access user name and
+password are to be used to log in to the server before prompting. The default value
+is yes (<TT>1</TT>). A value of <TT>0</TT> indicates no.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>PreparedInsert</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>PreparedInsert</TT> key is used to determine whether to use a prepared
+<TT>INSERT</TT> statement that inserts data in all columns. The default value for
+this key is <TT>1</TT>, which indicates using a prepared <TT>INSERT</TT> statement.
+A value of <TT>0</TT> would indicate using a custom <TT>INSERT</TT> statement that
+inserts only non-null values. By using prepared <TT>INSERT</TT> statements, nulls
+can overwrite server defaults. In addition, triggers can execute on columns that
+were not inserted explicitly.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>PreparedUpdate</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>PreparedUpdate</TT> key is used to determine whether to use a prepared
+<TT>UPDATE</TT> statement that updates data in all the available columns. A value
+of <TT>0</TT> is the default and this indicates that a custom <TT>UPDATE</TT> statement
+is to be used and sets only columns that have changed. A value of <TT>1</TT> is used
+to use a prepared <TT>UPDATE</TT> statement.</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>FastRequery</TT></P>
+
+</BLOCKQUOTE>
+
+<P>The <TT>FastRequery</TT> key is used to indicate whether to use a prepared <TT>SELECT</TT>
+statement for parameterized queries. The default value is no, or <TT>0</TT>. A value
+of <TT>1</TT> indicates yes.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch10/ch10.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch12/ch12.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A></P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,1082 @@
+
+
+<HTML>
+<HEAD>
+<TITLE>Sams Teach Yourself C in 24 Hours: More Operators</TITLE>
+</head>
+
+<BODY BGCOLOR="#FFFFFF">
+<!-- ISBN=0672310686 //--> <!-- TITLE=Sams Teach Yourself C in 24 Hours//--> <!-- AUTHOR=Tony Zhang//--> 
+<!-- PUBLISHER=Macmillan Computer Publishing//--> <!-- IMPRINT=Sams//--> <!-- CHAPTER=08 //--> 
+<!-- PAGES=0103-0122 //--> <!-- UNASSIGNED1 //--> 
+<H2 align="center">Sams Teach Yourself C in 24 Hours</H2>
+<P> 
+  <CENTER>
+    <a href="ch07.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch07/ch07.htm">Previous</A> | <a href="index.html" tppabs="http://pbs.mcp.com/ebooks/0672310686/index.html">Table of 
+    Contents</A> | <a href="ch09.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch09/ch09.htm">Next</A> 
+  </CENTER>
+</P>
+<h2 align="center"><A NAME="ch08_ 1"> Hour 8 </A> - More Operators </H2>
+<P>Civilization advances by extending the number of important operations we can 
+  perform without thinking about them.</p>
+<P><B>&#151;A. N. Whitehead</B></p>
+<P>In Hour 6, &quot;Manipulating Data with Operators,&quot; you learned about 
+  some important operators in C, such as the arithmetic assignment operators, 
+  the unary minus operator, the increment and decrement operators, and the relational 
+  operators. In this lesson you'll learn about more operators, including</p>
+<UL>
+  <LI> The sizeof operator 
+  <LI> Logical operators 
+  <LI> Bit-manipulation operators 
+  <LI> The conditional operator 
+</UL>
+<H3><A NAME="ch08_ 2"> Measuring Data Sizes </A></H3>
+<P>You may remember in Hour 4, &quot;Data Types and Names in C,&quot; I mentioned 
+  that each data type has its own size. Depending on the operating system and 
+  the C compiler you're using, the size of a data type varies. For example, on 
+  most UNIX workstations, an integer is 32 bits long, while most C compilers only 
+  support 16-bit integers on a DOS-based machine.</p>
+<P>So, how do you know the size of a data type on your machine? The answer is 
+  that you can measure the data type size by using the sizeof operator provided 
+  by C.</p>
+<P>The general form of the sizeof operator is</p>
+<!-- CODE SNIP //--> 
+<PRE>sizeof (expression)
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>Here expression is the data type or variable whose size is measured by the 
+  sizeof operator. The value of the size is returned, in units of bytes, by the 
+  sizeof operator. For instance, if an integer is 16 bits long, the value returned 
+  by the sizeof operator will be 2 (bytes). (Note that 8 bits are equal to 1 byte.)</p>
+<P>The parentheses are optional in the general form of the operator. If the expression 
+  is not a C keyword for a data type, the parentheses can be discarded.</p>
+<P>For instance, the following statement</p>
+<!-- CODE SNIP //--> 
+<PRE>size = sizeof(int);
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>measures the size of the int data type and returns the number of bytes required 
+  by the data type to an int variable size.</p>
+<P>The program in Listing 8.1 finds the sizes of the char, int, float, and double 
+  data types on my machine.</p>
+<h4>TYPE<BR>
+  Listing 8.1. Using the sizeof operator.</h4>
+<!-- CODE //--> 
+<PRE>
+1:  /* 08L01.c: Using the sizeof operator */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  main()
+5:  {
+6:     char   ch = ` `;
+7:     int    int_num = 0;
+8:     float  flt_num = 0.0f;
+9:     double dbl_num = 0.0;
+10:
+11:    printf(&quot;The size of char is: %d-byte\n&quot;, sizeof(char));
+12:      printf(&quot;The size of ch is: %d-byte\n&quot;, sizeof ch );
+13:        printf(&quot;The size of int is: %d-byte\n&quot;, sizeof(int));
+14:          printf(&quot;The size of int_num is: %d-byte\n&quot;, sizeof int_num);
+15:            printf(&quot;The size of float is: %d-byte\n&quot;, sizeof(float));<BR>
+16:          printf(&quot;The size of flt_num is: %d-byte\n&quot;, sizeof flt_num);
+17:        printf(&quot;The size of double is: %d-byte\n&quot;, sizeof(double));
+18:      printf(&quot;The size of dbl_num is: %d-byte\n&quot;, sizeof dbl_num);
+19:    return 0;
+20: }
+</PRE>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>OUTPUT</b><BR>
+  After this program is compiled and linked, an executable file, 08L01.exe, is 
+  created. The following is the output printed on the screen after the executable 
+  is run from a DOS prompt on my machine: </BLOCKQUOTE>
+<!-- CODE //--> 
+<blockquote> 
+  <PRE>
+C:\app&gt; 08L01
+The size of char is: 1-byte
+The size of ch is: 1-byte
+The size of int is: 2-byte
+The size of int_num is: 2-byte
+The size of float is: 4-byte
+The size of flt_num is: 4-byte
+The size of double is: 8-byte
+The size of dbl_num is: 8-byte
+C:\app&gt;
+</PRE>
+</blockquote>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>ANALYSIS</b><BR>
+  Line 2 in Listing 8.1 includes the header file stdio.h for the printf() function 
+  used in the statements inside the main() function body. Lines 6_9 declare a 
+  char variable (ch), an int variable (int_num), a float variable (flt_num), and 
+  a double variable (dbl_num), respectively. Also, these four variables are initialized. 
+  Note that in line 8, the initial value to flt_num is suffixed with f to specify 
+  float. (As you learned in Hour 4, you can use f or F to specify the float type 
+  for a floating-point number.) </BLOCKQUOTE>
+<P>Lines 11 and 12 display the size of the char data type, as well as the char 
+  variable ch. Note that the sizeof operator is used in both line 11 and line 
+  12 to obtain the number of bytes the char data type or the variable ch can have. 
+  Because the variable ch is not a keyword in C, the parentheses are discarded 
+  for the sizeof operator in line 12.</p>
+<P>The first two lines in the output are printed out by executing the two statements 
+  in line 11 and 12, respectively. From the output, you see that the size of the 
+  char data type is 1 byte long, which is the same as the size of the variable 
+  ch. This is not surprising because the variable ch is declared as the char variable.</p>
+<P>Likewise, lines 13 and 14 print out the sizes of the int data type and the 
+  int variable int_num by using the sizeof operator. You see that the size of 
+  each is 2 bytes.</p>
+<P>Also, by using the sizeof operator, lines 15_18 give the sizes of the float 
+  data type, the float variable flt_num, the double data type, and the double 
+  variable dbl_num, respectively. The results in the output section show that 
+  the float data type and the variable flt_num have the same size (4 bytes). The 
+  double data type and the variable dbl_num are both 8 bytes long.</p>
+<P>From the output you see that char uses 1 byte, while an int uses 2 bytes. Accordingly, 
+  while variables of type char have been used to store integers, they cannot store 
+  integers of the same range as a variable of type int can.</p>
+<H3><A NAME="ch08_ 3"> Everything Is Logical </A></H3>
+<P>Now, it's time for you to learn about a new set of operators: logical operators.</p>
+<P>There are three logical operators in the C language:</p>
+<TABLE>
+  <TR> 
+    <TD> &amp;&amp; </TD>
+    <TD> The logical AND operator </TD>
+  </TR>
+  <TR> 
+    <TD> || </TD>
+    <TD> The logical OR operator </TD>
+  </TR>
+  <TR> 
+    <TD> ! </TD>
+    <TD> The logical negation operator </TD>
+  </TR>
+</TABLE>
+<P>The logical AND operator (&amp;&amp;) evaluates the truth or falseness of pairs 
+  of expressions. If both expressions are true, the logical AND operator returns 
+  1. Otherwise, the operator returns 0.</p>
+<P>However, the logical OR operator (||) returns 1 if at least one of the expressions 
+  is true. The || operator returns 0 if both expressions are false.</p>
+<P>Only one operand (or expression) can be taken by the logical negation operator 
+  (!). If the operand is true, the ! operator returns 0; otherwise, the operator 
+  returns 1.</p>
+<P> 
+<CENTER>
+  <TABLE BGCOLOR="#FFFF99">
+    <TR> 
+      <TD><B> NOTE </B></TD>
+    </TR>
+    <TR> 
+      <TD> 
+        <BLOCKQUOTE> In C, if an expression or operator returns a nonzero value, 
+          the expression returns TRUE. If an expression or operator returns 0, 
+          the expression returns FALSE. In other words, TRUE can be used to represent 
+          any nonzero value returned by an expression or operator; FALSE is equivalent 
+          to 0. </BLOCKQUOTE>
+      </TD>
+    </TR>
+  </TABLE>
+</CENTER>
+<p></p>
+<P>&nbsp;</p>
+<P>The following three sections contain examples that show you how to use the 
+  three logical operators.</p>
+<H4><A NAME="ch08_ 4"> The Logical AND Operator (&amp;&amp;) </A></H4>
+<P>A general format of using the logical AND operator is:</p>
+<!-- CODE SNIP //--> 
+<PRE>exp1 &amp;&amp; exp2
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>where exp1 and exp2 are two expressions evaluated by the AND operator.</p>
+<P>We can have a table that shows the return values of the AND operator under 
+  the following conditions when exp1 and exp2 return 1 or 0, respectively. See 
+  Table 8.1, which can be called the truth table of the AND operator.</p>
+<h4>Table 8.1. The values returned by the AND operator.</h4>
+<TABLE>
+  <TR> 
+    <TD> exp1 </TD>
+    <TD> exp2 </TD>
+    <TD> Value Returned by &amp;&amp; </TD>
+  </TR>
+  <TR> 
+    <TD> 1 </TD>
+    <TD> 1 </TD>
+    <TD> 1 </TD>
+  </TR>
+  <TR> 
+    <TD> 1 </TD>
+    <TD> 0 </TD>
+    <TD> 0 </TD>
+  </TR>
+  <TR> 
+    <TD> 0 </TD>
+    <TD> 1 </TD>
+    <TD> 0 </TD>
+  </TR>
+  <TR> 
+    <TD> 0 </TD>
+    <TD> 0 </TD>
+    <TD> 0 </TD>
+  </TR>
+</TABLE>
+<P>Listing 8.2 is an example of using the logical AND operator (&amp;&amp;).</p>
+<h4>TYPE<BR>
+  Listing 8.2. Using the logical AND operator (&amp;&amp;).</h4>
+<!-- CODE //--> 
+<PRE>
+1:  /* 08L02.c: Using the logical AND operator */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  main()
+5:  {
+6:     int   num;
+7:
+8:     num = 0;
+9:     printf(&quot;The AND operator returns: %d\n&quot;,
+10:           (num%2 == 0) &amp;&amp; (num%3 == 0));
+11:    num = 2;
+12:    printf(&quot;The AND operator returns: %d\n&quot;,
+13:           (num%2 == 0) &amp;&amp; (num%3 == 0));
+14:    num = 3;
+15:    printf(&quot;The AND operator returns: %d\n&quot;,
+16:           (num%2 == 0) &amp;&amp; (num%3 == 0));
+17:    num = 6;
+18:    printf(&quot;The AND operator returns: %d\n&quot;,
+19:           (num%2 == 0) &amp;&amp; (num%3 == 0));
+20:
+21:    return 0;
+22: }
+</PRE>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>OUTPUT</b><BR>
+  After this program is compiled and linked, an executable file, 08L02.exe, is 
+  created. The following is the output printed on the screen after the executable 
+  is run from a DOS prompt on my machine: </BLOCKQUOTE>
+<!-- CODE SNIP //--> 
+<blockquote> 
+  <PRE>
+C:\app&gt; 08L02
+The AND operator returns: 1
+The AND operator returns: 0
+The AND operator returns: 0
+The AND operator returns: 1
+C:\app&gt;
+</PRE>
+</blockquote>
+<!-- END CODE SNIP //--> 
+<BLOCKQUOTE> 
+  <blockquote> 
+    <p><b>ANALYSIS</b><BR>
+      In Listing 8.2, an integer variable, num, is declared in line 6 and initialized 
+      for the first time in line 8. Lines 9 and 10 print out the value returned 
+      by the logical AND operator in the following expression: </p>
+  </blockquote>
+</BLOCKQUOTE>
+<!-- CODE SNIP //--> 
+<PRE>(num%2 == 0) &amp;&amp; (num%3 == 0)
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>Here you see two relational expressions, num%2 == 0 and num%3 == 0. In Hour 
+  3, &quot;The Essentials of C Programs,&quot; you learned that the arithmetic 
+  operator % can be used to obtain the remainder after its first operand is divided 
+  by the second operand. Therefore, num%2 yields the remainder of num divided 
+  by 2. The relational expression num%2 == 0 returns 1 (TRUE) if the remainder 
+  is equal to 0&#151;that is, the value of num can be divided evenly by 2. Likewise, 
+  if the value of num can be divided by 3, the relational expression num%3 == 
+  0 returns 1 as <BR>
+  well. Then, according to the truth table of the &amp;&amp; operator (see Table 
+  8.1), we know that the combination of the logical AND operator (&amp;&amp;) 
+  and the two relational expressions yields 1 if the two relational expressions 
+  both return 1; otherwise, it yields 0.</p>
+<P>In our case, when num is initialized to 0 in line 8, both 0%2 and 0%3 yield 
+  remainders of 0 so that the two relational expressions return TRUE. Therefore, 
+  the logical AND operator returns 1.</p>
+<P>However, when num is assigned with the value of 2 or 3 as shown in lines 11 
+  and 14, the logical AND operator in line 13 or line 16 returns 0. The reason 
+  is that 2 or 3 cannot be divided by both 2 and 3.</p>
+<P>Line 17 then assigns num the value of 6. Because 6 is a multiple of both 2 
+  and 3, the logical <BR>
+  AND operator in line 19 returns 1, which is printed out by the printf() function 
+  in lines 18 and 19.</p>
+<P>From the program in Listing 8.2, you see several single statements spanning 
+  into multiple lines. The output from the program in Listing 8.2 shows the values 
+  returned by the AND operator when num is assigned with different values.</p>
+<H4><A NAME="ch08_ 5"> The Logical OR Operator (||) </A></H4>
+<P>As mentioned earlier, the logical OR operator returns 1 if at least one of 
+  the expressions is true. The || operator returns 0 if both expressions are false.</p>
+<P>A general format of using the logical OR operator is:</p>
+<!-- CODE SNIP //--> 
+<PRE>exp1 || exp2
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>where exp1 and exp2 are two expressions evaluated by the OR operator.</p>
+<h4>Table 8.2 shows the truth table of the OR operator.</h4>
+<TABLE width="216">
+  <TR> 
+    <TD> <b>exp1</b> </TD>
+    <TD> <b>exp2</b> </TD>
+    <TD> <b>Value Returned by || </b></TD>
+  </TR>
+  <TR> 
+    <TD> 1 </TD>
+    <TD> 1 </TD>
+    <TD> 1 </TD>
+  </TR>
+  <TR> 
+    <TD> 1 </TD>
+    <TD> 0 </TD>
+    <TD> 1 </TD>
+  </TR>
+  <TR> 
+    <TD> 0 </TD>
+    <TD> 1 </TD>
+    <TD> 1 </TD>
+  </TR>
+  <TR> 
+    <TD> 0 </TD>
+    <TD> 0 </TD>
+    <TD> 0 </TD>
+  </TR>
+</TABLE>
+<P>The program in Listing 8.3 shows how to use the logical OR operator (||).</p>
+<h4>TYPE<BR>
+  Listing 8.3. Using the logical OR operator (||).</h4>
+<!-- CODE //--> 
+<PRE>
+1:  /* 08L03.c: Using the logical OR operator */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  main()
+5:  {
+6:     int   num;
+7:
+8:     printf(&quot;Enter a single digit that can be divided\nby both 2 and 3:\n&quot;);
+9:     for (num = 1; (num%2 != 0) || (num%3 != 0); )
+10:       num = getchar() - 48;
+11:    printf(&quot;You got such a number: %d\n&quot;, num);
+12:    return 0;
+13: }
+</PRE>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>OUTPUT</b><BR>
+  The following is the output printed on the screen after the executable, 08L03.exe, 
+  is run from a DOS prompt on my machine. The numbers in bold font are what I 
+  entered. (The Enter key is pressed after each number is entered.) In the range 
+  of 0_9, 0 and 6 are the only two numbers that can be divided evenly by both 
+  2 and 3: </BLOCKQUOTE>
+<!-- CODE //--> 
+<blockquote>
+  <PRE>
+C:\app&gt; 08L03
+Enter a single digit that can be divided
+by both 2 and 3:
+2
+3
+4
+5
+6
+You got such a number: 6
+C:\app&gt;
+</PRE>
+</blockquote>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>ANALYSIS</b><BR>
+  In Listing 8.3, an integer variable, num, is declared in line 6. Line 8 of Listing 
+  8.3 prints out a headline asking the user to enter a single digit. Note that 
+  there is a newline character (\n) in the middle of the headline message in the 
+  printf() function to break the message into two lines. </BLOCKQUOTE>
+<P>In line 9, the integer variable num is initialized in the first expression 
+  field of the for statement. The reason to initialize num with 1 is that 1 is 
+  such a number that cannot be divided by either 2 nor 3. Thus, the for loop is 
+  guaranteed to be executed at least once.</p>
+<P>The key part of the program in Listing 8.3 is the logical expression in the 
+  for statement:</p>
+<!-- CODE SNIP //--> 
+<PRE> (num%2 != 0) || (num%3 != 0)
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>Here the relational expressions num%2 != 0 and num%3 != 0 are evaluated. According 
+  to the truth table of the || operator (see Table 8.2), we know that if one of 
+  the relational expression returns TRUE, i.e., the value of num cannot be divided 
+  completely by either 2 or 3. Then the logical expression returns 1, which allows 
+  the for loop to continue.</p>
+<P>The for loop stops only if the user enters a digit that can be divided by both 
+  2 and 3. In other words, when both the relational expressions return FALSE, 
+  the logical OR operator yields 0, which causes the termination of the for loop.</p>
+<P>You can rewrite the program in Listing 8.3 with the if statement, too.</p>
+<H4><A NAME="ch08_ 6"> The Logical Negation Operator (!) </A></H4>
+<P>A general format of using the logical OR operator is:</p>
+<!-- CODE SNIP //--> 
+<PRE>!expression
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>where expression is an expression operated by the negation operator.</p>
+<P>The truth table of the negation operator is shown in Table 8.3.</p>
+<h4>Table 8.3. The values returned by the ! operator.</h4>
+<TABLE width="210">
+  <TR> 
+    <TD> <b>expression</b> </TD>
+    <TD> <b>Value Returned by !</b> </TD>
+  </TR>
+  <TR> 
+    <TD> 1 </TD>
+    <TD> 0 </TD>
+  </TR>
+  <TR> 
+    <TD> 0 </TD>
+    <TD> 1 </TD>
+  </TR>
+</TABLE>
+<BLOCKQUOTE> <b>TYPE</b><BR>
+  Now, let's take a look at the example, shown in Listing 8.4, that demonstrates 
+  how to use the logical negation operator (!). </BLOCKQUOTE>
+<h4>Listing 8.4. Using the logical negation operator (!).</h4>
+<PRE>1:  /* 08L04.c: Using the logical negation operator */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  main()
+5:  {
+6:     int   num;
+7:
+8:     num = 7;
+9:     printf(&quot;Given num = 7\n&quot;);
+10:    printf(&quot;!(num &lt; 7)  returns: %d\n&quot;, !(num &lt; 7));
+11:    printf(&quot;!(num &gt; 7)  returns: %d\n&quot;, !(num &gt; 7));
+12:    printf(&quot;!(num == 7) returns: %d\n&quot;, !(num == 7));
+13:    return 0;
+14: }
+</PRE>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>OUTPUT</b><BR>
+  The following result is obtained by running the executable file 08L04.exe: </BLOCKQUOTE>
+<!-- CODE SNIP //--> 
+<blockquote>
+  <PRE>
+C:\app&gt; 08L04
+Given num = 7
+!(num &lt; 7)  returns: 1
+!(num &gt; 7)  returns: 1
+!(num == 7) returns: 0
+C:\app&gt;
+</PRE>
+</blockquote>
+<!-- END CODE SNIP //--> 
+<BLOCKQUOTE> <b>ANALYSIS</b><BR>
+  In line 8, note that an integer variable, num, is initialized with 7, which 
+  is then displayed by the printf() function in line 9. </BLOCKQUOTE>
+<P>In line 10, the relational expression num &lt; 7 returns FALSE (that is, 0), 
+  because the value of num is not less than 7. However, by using the logical negation 
+  operator, !(num &lt; 7) yields 1. (Refer to the truth table of the ! operator 
+  shown in Table 8.3.)</p>
+<P>Similarly, the logical expression !(num &gt; 7) returns 1 in line 11.</p>
+<P>Because num has the value of 7, the relational expression num == 7 is true; 
+  however, the <BR>
+  logical expression !(num == 7) in line 12 returns 0 due to the logical negation 
+  operator (!).</p>
+<H3><A NAME="ch08_ 7"> Manipulating Bits </A></H3>
+<P>In previous hours, you learned that computer data and files are made of bits 
+  (or bytes). There is even an operator in C_the sizeof operator_that can be used 
+  to measure the number of bytes for data types.</p>
+<P>In this section, you'll learn about a set of operators that enable you to access 
+  and manipulate specific bits.</p>
+<P>There are six bit-manipulation operators in the C language:</p>
+<TABLE>
+  <TR> 
+    <TD> <b>Operator</b> </TD>
+    <TD> <b>Description</b> </TD>
+  </TR>
+  <TR> 
+    <TD> &amp; </TD>
+    <TD> The bitwise AND operator </TD>
+  </TR>
+  <TR> 
+    <TD> | </TD>
+    <TD> The bitwise OR operator </TD>
+  </TR>
+</TABLE>
+<TABLE>
+  <TR> 
+    <TD> ^ </TD>
+    <TD> The bitwise exclusive OR (XOR) operator </TD>
+  </TR>
+  <TR> 
+    <TD> ~ </TD>
+    <TD> The bitwise complement operator </TD>
+  </TR>
+  <TR> 
+    <TD> &gt;&gt; </TD>
+    <TD> The right-shift operator </TD>
+  </TR>
+  <TR> 
+    <TD> &lt;&lt; </TD>
+    <TD> The left-shift operator </TD>
+  </TR>
+</TABLE>
+<P> The following two sections give explanations and examples of the bit-manipulation 
+  <BR>
+  operators.</p>
+<P> 
+<CENTER>
+  <TABLE BGCOLOR="#FFFF99">
+    <TR> 
+      <TD><B> TIP </B></TD>
+    </TR>
+    <TR> 
+      <TD> 
+        <BLOCKQUOTE> It's easy to convert a decimal number into a hex or a binary. 
+          Each digit in a hex number consists of four bits. A bit represents a 
+          digit in a binary number. Table 8.4 shows the hex numbers (0_F) and 
+          their corresponding binary and decimal representations. </BLOCKQUOTE>
+      </TD>
+    </TR>
+  </TABLE>
+</CENTER>
+<p></p>
+<h4>&nbsp;</h4>
+<h4>Table 8.4. Numbers expressed in different formats.</h4>
+<TABLE>
+  <TR> 
+    <TD> Hex </TD>
+    <TD> Binary </TD>
+    <TD> Decimal </TD>
+  </TR>
+  <TR> 
+    <TD> 0 </TD>
+    <TD> 0000 </TD>
+    <TD> 0 </TD>
+  </TR>
+  <TR> 
+    <TD> 1 </TD>
+    <TD> 0001 </TD>
+    <TD> 1 </TD>
+  </TR>
+  <TR> 
+    <TD> 2 </TD>
+    <TD> 0010 </TD>
+    <TD> 2 </TD>
+  </TR>
+  <TR> 
+    <TD> 3 </TD>
+    <TD> 0011 </TD>
+    <TD> 3 </TD>
+  </TR>
+  <TR> 
+    <TD> 4 </TD>
+    <TD> 0100 </TD>
+    <TD> 4 </TD>
+  </TR>
+  <TR> 
+    <TD> 5 </TD>
+    <TD> 0101 </TD>
+    <TD> 5 </TD>
+  </TR>
+  <TR> 
+    <TD> 6 </TD>
+    <TD> 0110 </TD>
+    <TD> 6 </TD>
+  </TR>
+  <TR> 
+    <TD> 7 </TD>
+    <TD> 0111 </TD>
+    <TD> 7 </TD>
+  </TR>
+  <TR> 
+    <TD> 8 </TD>
+    <TD> 1000 </TD>
+    <TD> 8 </TD>
+  </TR>
+  <TR> 
+    <TD> 9 </TD>
+    <TD> 1001 </TD>
+    <TD> 9 </TD>
+  </TR>
+  <TR> 
+    <TD> A </TD>
+    <TD> 1010 </TD>
+    <TD> 10 </TD>
+  </TR>
+  <TR> 
+    <TD> B </TD>
+    <TD> 1011 </TD>
+    <TD> 11 </TD>
+  </TR>
+  <TR> 
+    <TD> C </TD>
+    <TD> 1100 </TD>
+    <TD> 12 </TD>
+  </TR>
+  <TR> 
+    <TD> D </TD>
+    <TD> 1101 </TD>
+    <TD> 13 </TD>
+  </TR>
+  <TR> 
+    <TD> E </TD>
+    <TD> 1110 </TD>
+    <TD> 14 </TD>
+  </TR>
+  <TR> 
+    <TD> F </TD>
+    <TD> 1111 </TD>
+    <TD> 15 </TD>
+  </TR>
+</TABLE>
+<P>Let's see how to convert a decimal number into a binary, or vice versa. As 
+  we know, that binary is a 2-based numbering system. Each digit in a binary number 
+  is called a bit and can be 1 or 0. If the position of a bit in a binary number 
+  is n, then the bit can have a value of 2 to the power of n. The position of 
+  a bit in a binary number is counted from the right of the binary number. The 
+  most-right bit is at the position of zero. Thus, given a binary number 1000, 
+  we can calculate its decimal value like this:</p>
+<!-- CODE SNIP //--> 
+<PRE>
+1000 -&gt; 1 * 2<SUP>3</SUP> + 0 *2<SUP>2</SUP> + 0 * 2<SUP>1</SUP> + 0 * 2<SUP>0</SUP>-&gt; 2<SUP>3</SUP> -&gt; 8 (decimal)
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>That is, the decimal vale of the binary number 1000 is 8.</p>
+<P>If we want to convert a decimal number, for example 10, to its binary counterpart, 
+  we have the following process:</p>
+<!-- CODE SNIP //--> 
+<PRE>10 -&gt; 2<SUP>3</SUP> + 2<SUP>1</SUP> -&gt; 1 *2<SUP>3</SUP> + 0 * 2<SUP>2</SUP> + 1 *2<SUP>1</SUP> + 0 * 2<SUP>0</SUP> -&gt; 1010 (binary)
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>Likewise, you can convert the rest of the decimal numbers in Table 8.4 to their 
+  binary counterparts, or vice versa.</p>
+<H4><A NAME="ch08_ 8"> Using Bitwise Operators </A></H4>
+<P>The general forms of the bitwise operators are as follows:</p>
+<!-- CODE SNIP //--> 
+<PRE>x &amp; y
+x | y
+x ^ y
+~x
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>Here x and y are operands.</p>
+<P>The &amp; operator compares each bit of x to the corresponding bit in y. If 
+  both bits are 1, 1 is placed at the same position of the bit in the result. 
+  If one of the bits, or two of them, is 0, 0 is placed in the result.</p>
+<P>For instance, the expression with two binary operands, 01 &amp; 11, returns 
+  01.</p>
+<P>The | operator, however, places 1 in the result if either operand is 1. For 
+  example, the expression 01 | 11 returns 11.</p>
+<P>The ^ operator places 1 in the result if either operand, but not both, is 1. 
+  Therefore, the expression 01 ^ 11 returns 10.</p>
+<P>Finally, the ~ operator takes just one operand. This operator reverses each 
+  bit in the operand. For instance, ~01 returns 10.</p>
+<P>Table 8.5 shows more examples of using the bitwise operators in decimal, hex, 
+  and binary formats (in the left three columns). The corresponding results, in 
+  binary, hex, and decimal formats, are listed in the right three columns. The 
+  hex numbers are prefixed with 0x.</p>
+<h4>Table 8.5. Examples of using bitwise operators.</h4>
+<TABLE>
+  <TR> 
+    <TD> </TD>
+    <TD> <b>Decimal</b> </TD>
+    <TD> </TD>
+    <TD> </TD>
+    <TD> </TD>
+    <TD> <b>Results</b> </TD>
+  </TR>
+  <TR> 
+    <TD> Expressions </TD>
+    <TD> Hex </TD>
+    <TD> Binary </TD>
+    <TD> Decimal </TD>
+    <TD> Hex </TD>
+    <TD> Binary </TD>
+  </TR>
+  <TR> 
+    <TD> 12 &amp; 10 </TD>
+    <TD> 0x0C &amp; 0x0A </TD>
+    <TD> 1100 &amp;1010 </TD>
+    <TD> 8 </TD>
+    <TD> 0x08 </TD>
+    <TD> 1000 </TD>
+  </TR>
+  <TR> 
+    <TD> 12 | 10 </TD>
+    <TD> 0x0C | 0x0A </TD>
+    <TD> 1100 | 1010 </TD>
+    <TD> 14 </TD>
+    <TD> 0x0E </TD>
+    <TD> 1110 </TD>
+  </TR>
+  <TR> 
+    <TD> 12 ^ 10 </TD>
+    <TD> 0x0C ^ 0x0A </TD>
+    <TD> 1100 ^ 1010 </TD>
+    <TD> 6 </TD>
+    <TD> 0x06 </TD>
+    <TD> 0110 </TD>
+  </TR>
+  <TR> 
+    <TD> ~12 </TD>
+    <TD> ~0x000C </TD>
+    <TD> ~0000000000001100 </TD>
+    <TD> 65523 </TD>
+    <TD> FFF3 </TD>
+    <TD> 1111111111110011 </TD>
+  </TR>
+</TABLE>
+<BLOCKQUOTE> <b>TYPE</b><BR>
+  Note that the complementary value of 12 is 65523, because the unsigned integer 
+  data type (16-bit) has the maximum number 65535. In other words, 65,523 is the 
+  result of subtracting 12 from 65,535. (The unsigned data modifier is introduced 
+  in Hour 9, &quot;Playing with Data Modifiers and Math Functions.&quot;) </BLOCKQUOTE>
+<P>The program in Listing 8.5 demonstrates the usage of the bitwise operators.</p>
+<h4>Listing 8.5. Using bitwise operators.</h4>
+<!-- CODE //--> 
+<PRE>
+1:  /* 08L05.c: Using bitwise operators */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  main()
+5:  {
+6:     int   x, y, z;
+7:
+8:     x = 4321;
+9:     y = 5678;
+10:    printf(&quot;Given x = %u, i.e., 0X%04X\n&quot;, x, x);
+11:    printf(&quot;      y = %u, i.e., 0X%04X\n&quot;, y, y);
+12:    z = x &amp; y;
+13:    printf(&quot;x &amp; y  returns: %6u, i.e., 0X%04X\n&quot;, z, z);
+14:    z = x | y;
+15:    printf(&quot;x | y  returns: %6u, i.e., 0X%04X\n&quot;, z, z);
+16:    z = x ^ y;
+17:    printf(&quot;x ^ y  returns: %6u, i.e., 0X%04X\n&quot;, z, z);
+18:    printf(&quot;  ~x   returns: %6u, i.e., 0X%04X\n&quot;, ~x, ~x);
+19:    return 0;
+20: }
+</PRE>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>OUTPUT</b><BR>
+  After the executable, 08L05.exe, is created and run from a DOS prompt, the following 
+  output is shown on the screen: 
+  <PRE>
+C:\app&gt; 08L05
+Given x = 4321, i.e., 0X10E1
+      y = 5678, i.e., 0X162E
+x &amp; y  returns:  4128, i.e., 0X1020
+x | y  returns:  5871, i.e., 0X16EF
+     x ^ y  returns:  1743, i.e., 0X06CF
+       ~x   returns: 61214, i.e., 0XEF1E
+     C:\app&gt;
+</PRE>
+</BLOCKQUOTE>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>ANALYSIS</b><BR>
+  In Listing 8.5, three integer variables, x, y, and z, are declared in line 6. 
+  Lines 8 and 9 set x and y to 4321 and 5678, respectively. Lines 10 and 11 then 
+  print out the values of x and y in both decimal and hex formats. The hex numbers 
+  are prefixed with 0X. </BLOCKQUOTE>
+<P>The statement in line 12 assigns the result of the operation made by the bitwise 
+  AND operator (&amp;) with the variables x and y. Then, line 13 displays the 
+  result in both decimal and hex formats.</p>
+<P>Lines 14 and 15 perform the operation specified by the bitwise operator (|) 
+  and print out the result in both decimal and hex formats. Similarly, lines 16 
+  and 17 give the result of the operation made by the bitwise XOR operator (^).</p>
+<P>Last, the statement in line 18 prints out the complementary value of x by using 
+  the bitwise complement operator (~). The result is displayed on the screen in 
+  both decimal and hex formats.</p>
+<P>Note that the unsigned integer format specifier with a minimum field width 
+  of 6, %6u, and the uppercase hex format specifier with the minimum width of 
+  4, %04X, are used in the printf() function. The unsigned integer data type (that 
+  is, the non-negative integer data type) is chosen so that the complementary 
+  value of an integer can be shown and understood easily. More details on the 
+  unsigned data modifier are introduced in Hour 9.</p>
+<P> 
+<CENTER>
+  <TABLE BGCOLOR="#FFFF99">
+    <TR> 
+      <TD><B> WARNING </B></TD>
+    </TR>
+    <TR> 
+      <TD> 
+        <BLOCKQUOTE> Don't confuse the bitwise operators &amp; and | with the 
+          logical operators &amp;&amp; and ||. For instance, <!-- CODE SNIP //--> 
+          <PRE>(x=1) &amp; (y=10)
+</PRE>
+          <!-- CODE SNIP //--> 
+          <PRE>(x=1) &amp;&amp; (y=10)
+</PRE>
+          <!-- END CODE SNIP //--> </BLOCKQUOTE>
+      </TD>
+    </TR>
+  </TABLE>
+</CENTER>
+<p></p>
+<H4><A NAME="ch08_ 9"> Using Shift Operators </A></H4>
+<P>There are two shift operators in C. The &gt;&gt; operator shifts the bits of 
+  an operand to the right; the &lt;&lt; operator shifts the bits to the left.</p>
+<P>The general forms of the two shift operators are</p>
+<!-- CODE SNIP //--> 
+<PRE>
+x &gt;&gt; y
+x &lt;&lt; y
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>Here x is an operand that is going to be shifted. y contains the specified 
+  number of places to shift.</p>
+<P>For instance, the 8 &gt;&gt; 2 expression tells the computer to shift 2 bits 
+  of the operand 8 to the right, which returns 2 in decimal. The following:</p>
+<!-- CODE SNIP //--> 
+<PRE>8 &gt;&gt; 2 -&gt; (1 * 2<SUP>3</SUP> + 0 *2<SUP>2</SUP> + 0 * 2<SUP>1</SUP> + 0 *2<SUP>0</SUP>) &gt;&gt; 2
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>produces the following:</p>
+<!-- CODE SNIP //--> 
+<PRE>(0 * 2<SUP>3</SUP> + 0 * 2<SUP>2</SUP> + 1 *2<SUP>1</SUP> + 0 * 2<SUP>0</SUP>) -&gt; 0010 (binary) -&gt; 2 (decimal).
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>Likewise, the 5 &lt;&lt; 1 expression shifts 1 bit of the operand 5, and yields 
+  10 in decimal.</p>
+<P>The program in Listing 8.6 prints out more results by using the shift operators.</p>
+<h4>TYPE<BR>
+  Listing 8.6. Using the shift operators.</h4>
+<!-- CODE //--> 
+<PRE>
+1:  /* 08L06.c: Using shift operators */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  main()
+5:  {
+6:     int   x, y, z;
+7:
+8:     x = 255;
+9:     y = 5;
+10:    printf(&quot;Given x = %4d, i.e., 0X%04X\n&quot;, x, x);
+11:    printf(&quot;      y = %4d, i.e., 0X%04X\n&quot;, y, y);
+12:    z = x &gt;&gt; y;
+13:    printf(&quot;x &gt;&gt; y  returns: %6d, i.e., 0X%04X\n&quot;, z, z);
+14:    z = x &lt;&lt; y;
+15:    printf(&quot;x &lt;&lt; y  returns: %6d, i.e., 0X%04X\n&quot;, z, z);
+16:    return 0;
+17: }
+</PRE>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>OUTPUT</b><BR>
+  The following output is obtained by running the executable, 08L06.exe, from 
+  a DOS prompt: </BLOCKQUOTE>
+<!-- CODE //--> 
+<blockquote>
+  <PRE>
+C:\app&gt; 08L06
+Given x =  255, i.e., 0X00FF
+      y =    5, i.e., 0X0005
+x &gt;&gt; y  returns:      7, i.e., 0X0007
+x &lt;&lt; y  returns:   8160, i.e., 0X1FE0
+C:\app&gt;
+</PRE>
+</blockquote>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>ANALYSIS</b><BR>
+  Three integer variables, x, y, and z, are declared in line 6 of Listing 8.6. 
+  x is initial-ized with </BLOCKQUOTE>
+<P> 255 in line 8; y is set to 5 in line 9. Then, lines 10 and 11 display the 
+  values of x and y on the screen.</p>
+<P>The statement in line 12 shifts y bits of the operand x to the right, and then 
+  assigns the result to z. Line 13 prints out the result of the shifting made 
+  in line 12. The result is 7 in decimal, or 0X0007 in hex.</p>
+<P>Lines 14 and 15 shift the operand x to the left by y bits and display the result 
+  on the screen, too. The result of the left-shifting is 8160 in decimal, or 0x1FE0 
+  in hex.</p>
+<P> 
+<CENTER>
+  <TABLE BGCOLOR="#FFFF99">
+    <TR> 
+      <TD><B> TIP </B></TD>
+    </TR>
+    <TR> 
+      <TD> 
+        <BLOCKQUOTE> The operation of the shift-right operator (&gt;&gt;) is equivalent 
+          to dividing by powers of 2. In other words, the following: <!-- CODE SNIP //--> 
+          <PRE>x &gt;&gt; y
+</PRE>
+          <!-- CODE SNIP //--> 
+          <PRE>x / 2<SUP>y</SUP>
+</PRE>
+          <!-- END CODE SNIP //--> Here x is a non-negative integer.<BR>
+          On the other hand, shifting to the left is equivalent to multiplying 
+          by powers of 2; that is, <!-- CODE SNIP //--> 
+          <PRE>x &lt;&lt; y
+</PRE>
+          <!-- CODE SNIP //--> 
+          <PRE>x * 2<SUP>y</SUP>
+</PRE>
+          <!-- END CODE SNIP //--> </BLOCKQUOTE>
+      </TD>
+    </TR>
+  </TABLE>
+</CENTER>
+<p></p>
+<H3><A NAME="ch08_ 10"> What Does x?y:z Mean? </A></H3>
+<P>In C, ?: is called the conditional operator, which is the only operator that 
+  takes three operands. The general form of the conditional operator is</p>
+<!-- CODE SNIP //--> 
+<PRE>x ? y : z
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>Here x, y, and z are three operands. Among them, x contains the test condition, 
+  and y and z represent the final value of the expression. If x returns nonzero 
+  (that is, TRUE), y is chosen; otherwise, z is the result.</p>
+<P>For instance, the expression x &gt; 0 ? `T' : `F' returns `T' if the value 
+  of x is greater than 0. Otherwise, the expression returns `F'.</p>
+<P>Listing 8.7 demonstrates the usage of the conditional operator in the C language.</p>
+<h4>TYPE<BR>
+  Listing 8.7. Using the conditional operator.</h4>
+<!-- CODE //--> 
+<PRE>
+1:  /* 08L07.c: Using the ?: operator */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  main()
+5:  {
+6:     int   x;
+7:
+8:     x = sizeof(int);
+9:     printf(&quot;%s\n&quot;,
+10:       (x == 2) ? &quot;The int data type has 2 bytes.&quot; : &quot;int doesn't have 2
+                      &Acirc;bytes.&quot;);
+11:    printf(&quot;The maximum value of int is: %d\n&quot;,
+12:       (x != 2) ? ~(1 &lt;&lt; x * 8 - 1) : ~(1 &lt;&lt; 15) );
+13:    return 0;
+14: }
+</PRE>
+<!-- END CODE //--> 
+<BLOCKQUOTE> <b>OUTPUT</b><BR>
+  I get the following output shown on the screen when I run the executable 08L07.exe 
+  from a DOS prompt on my machine: </BLOCKQUOTE>
+<!-- CODE SNIP //--> 
+<blockquote>
+  <PRE>
+C:\app&gt; 08L07
+The int data type has 2 bytes.
+The maximum value of int is: 32767
+C:\app&gt;
+</PRE>
+</blockquote>
+<!-- END CODE SNIP //--> 
+<BLOCKQUOTE> <b>ANALYSIS</b><BR>
+  In Listing 8.7, the size of the int data type is measured first in line 8, by 
+  using the sizeof operator and the number of bytes assigned to the integer variable 
+  x. </BLOCKQUOTE>
+<P>Lines 9 and 10 contain one statement, in which the conditional operator (?:) 
+  is used to test whether the number of bytes saved in x is equal to 2. (Here 
+  you see another example that a single statement can span multiple lines.) If 
+  the x == 2 expression returns nonzero (that is, TRUE), the string of The int 
+  data type has 2 bytes. is printed out by the printf() function in the statement. 
+  Otherwise, the second string, int doesn't have 2 bytes., is displayed on the 
+  screen.</p>
+<P>In addition, the statement in lines 11 and 12 tries to find out the maximum 
+  value of the int data type on the current machine. The x != 2 expression is 
+  evaluated first in the statement. If the expression returns nonzero (that is, 
+  the byte number of the int data type is not equal to 2), the ~( &lt;&lt; x * 
+  8 - 1) expression is evaluated, and the result is chosen as the return <BR>
+  value. Here the ~(1 &lt;&lt; x * 8 - 1) expression is a general form to calculate 
+  the maximum value of the int data type, which is equivalent to 2 ** (x * 8 - 
+  1) - 1. (The complement operator, ~, and the shift operator, &lt;&lt;, were 
+  introduced in the previous sections of this hour.)</p>
+<P>On the other hand, if the test condition x != 2 in line 12 returns 0, which 
+  means the value of x is indeed equal to 2, the result of the ~(1 &lt;&lt; 15) 
+  expression is chosen. Here you may have already figured out that ~(1 &lt;&lt; 
+  15) is equivalent to 2<SUP>15</SUP>_1, which is the maximum value that the 16-bit 
+  int data type can have.</p>
+<P>The result displayed on the screen shows that the int data type on my machine 
+  is 2 bytes <BR>
+  (or 16 bits) long, and the maximum value of the int data type is 32767. 
+<H3><A NAME="ch08_ 11"> Summary </A></H3>
+<P>In this lesson you've learned the following:</p>
+<UL>
+  <LI> The sizeof operator returns the number of bytes that a specified data type 
+    can have. You can use the operator to measure the size of a data type on your 
+    machine. 
+  <LI> The logical AND operator (&amp;&amp;) returns 1 only if both its two operands 
+    (that is, expressions) are TRUE. Otherwise, the operator returns 0. 
+  <LI> The logical OR operator (||) returns 0 only if both its two operands are 
+    FALSE. Otherwise, the operator returns 1. 
+  <LI> The logical negation operator (!) reverses the logical value of its operand. 
+  <LI> There are six bit-manipulation operators: the bitwise AND operator (&amp;), 
+    the bitwise OR operator (|), the bitwise XOR operator (^), the bitwise complement 
+    operator (~), the right-shift operator (&gt;&gt;), and the left-shift operator 
+    (&lt;&lt;). 
+  <LI> The conditional operator (?:) is the only operator in C that can take three 
+    operands. 
+</UL>
+<P>In next lesson you'll learn about the data type modifiers in the C language.</p>
+<H3><A NAME="ch08_ 12"> Q&amp;A </A></H3>
+<BLOCKQUOTE> 
+  <P> <B> Q </B> Why do we need the sizeof operator?</p>
+  <P> <B> A </B> The sizeof operator can be used to measure the sizes of all data 
+    types defined in C. When you write a portable C program that needs to know 
+    the size of an integer variable, it's a bad idea to hard-code the size as 
+    16 or 32. The better way to tell the program the size of the variable is to 
+    use the sizeof operator, which returns the size of the integer variable at 
+    runtime.</p>
+  <P> <B> Q </B> What's the difference between | and ||?</P>
+  <P> <B> A </B> | is the bitwise OR operator that takes two operands. The | operator 
+    compares each bit of one operand to the corresponding bit in another operand. 
+    If both bits are 0, 0 is placed at the same position of the bit in the result. 
+    Otherwise, 1 is placed in the result.</p>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<P> On the other hand, ||, the logical OR operator, requires two operands (or 
+    expressions). The operator returns 0 (that is, FALSE) if both its operands 
+    are false. Otherwise, a nonzero value (that is, TRUE) is returned by the || 
+    operator.</p>
+  <P> <B> Q </B> Why is 1 &lt;&lt; 3 equivalent to 1 * 2<SUP>3</SUP>?</p>
+  <P> <B> A </B> The 1 &lt;&lt; 3 expression tells the computer to shift 3 bits 
+    of the operand 1 to the left. The binary format of the operand is 0001. (Note 
+    that only the lowest four bits are shown here.) After being shifted 3 bits 
+    to the left, the expression returns 1000, which is equivalent to 1 * 2<SUP>3</SUP>+0 
+    * 2<SUP>2</SUP>+0 * 2<SUP>1</SUP>+0 * 2<SUP>0</SUP>; that is, 1 * 2<SUP>3</SUP>.</p>
+  <P> <B> Q </B> What can the conditional operator (?:) do?</p>
+  <P> <B> A </B> If there are two possible answers under certain conditions, you 
+    can use the ?: operator to pick up one of the two answers based on the result 
+    made by testing the conditions. For instance, the expression (age &gt; 65) 
+    ? &quot;Retired&quot; : &quot;Not retired&quot; tells the computer that if 
+    the value of age is greater than 65, the string of Retired should be chosen; 
+    otherwise, Not retired is chosen.</p>
+</BLOCKQUOTE>
+<H3><A NAME="ch08_ 13"> Workshop </A></H3>
+<P>To help solidify your understanding of this hour's lesson, you are encouraged 
+  to answer the quiz questions and finish the exercises provided in the Workshop 
+  before you move to the next lesson. The answers and hints to the questions and 
+  exercises are given in Appendix E, &quot;Answers to Quiz Questions and Exercises.&quot;</p>
+<H4><A NAME="ch08_ 14"> Quiz </A></H4>
+<OL>
+  <LI> What do the (x=1) &amp;&amp; (y=10) and (x=1) &amp; (y=10) expressions 
+    return, respectively? 
+  <LI> Given x = 96, y = 1, and z = 69, what does the expression !y ? x == z : 
+    y return? 
+  <LI> What do the ~0011000000111001 and ~1100111111000110 expressions return? 
+  <LI> Given x=9, what does (x%2==0)||(x%3==0) return? How about (x%2==0)&amp;&amp;(x%3==0)? 
+  <LI> Is 8 &gt;&gt; 3 equivalent to 8 / 2<SUP>3</SUP>? How about 1 &lt;&lt; 3? 
+</OL>
+<H4><A NAME="ch08_ 15"> Exercises </A></H4>
+<OL>
+  <LI> Given x = 0xEFFF and y = 0x1000, what do ~x and ~y return, respectively, 
+    in the hex format? 
+  <LI> Taking the values of x and y assigned in exercise 1, write a program that 
+    prints out the return values of !x and !y by using both the %d and %u formats 
+    in the printf() function.
+</OL>
+<OL START="3">
+  <LI> Given x = 123 and y = 4, write a program that displays the results of the 
+    x &lt;&lt; y and x &gt;&gt; y expressions. 
+  <LI> Write a program that shows the return values (in hex) of the 0xFFFF^0x8888, 
+    0xABCD &amp; 0x4567, and 0xDCBA | 0x1234 expressions. 
+  <LI> Use the ?: operator and the for statement to write a program that keeps 
+    taking the characters entered by the user until the character q is accounted. 
+    (Hint: Put the x!='q' ? 1 : 0 expression to the second field in the for statement.)
+</OL>
+<P> 
+  <CENTER>
+    <a href="ch07.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch07/ch07.htm">Previous</A> | <a href="index.html" tppabs="http://pbs.mcp.com/ebooks/0672310686/index.html">Table of 
+    Contents</A> | <a href="ch09.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch09/ch09.htm">Next</A> 
+  </CENTER>
+</P>
+
+
+
+</body>
+
+</html>
+

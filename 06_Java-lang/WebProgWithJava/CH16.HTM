@@ -1,0 +1,1831 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 16</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>Multithreading with Java</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+<UL>
+<LI><A HREF="#WhatIsaThread" >What Is a Thread?</A>
+<UL>
+<LI><A HREF="#TheThreadClass" >The Thread Class</A>
+<LI><A HREF="#SimpleThreadExamples" >Simple Thread Examples</A>
+</UL>
+<LI><A HREF="#ProblemswithMultithreading" >Problems with Multithreading</A>
+<UL>
+<LI><A HREF="#WhatGoesWrong" >What Goes Wrong?</A>
+<LI><A HREF="#ThreadNamesandCurrentThreads" >Thread Names and Current Threads</A>
+<LI><A HREF="#Javassynchronized" >Java's synchronized</A>
+</UL>
+<LI><A HREF="#SynchronizingThreads" >Synchronizing Threads</A>
+<UL>
+<LI><A HREF="#MultipleLocks" >Multiple Locks</A>
+</UL>
+<LI><A HREF="#TheDiningPhilosophersProblem" >The Dining Philosophers Problem</A>
+<UL>
+<LI><A HREF="#Deadlocks" >Deadlocks</A>
+<LI><A HREF="#ASolutiontotheDiningPhilosophersPr" >A Solution to the Dining Philosophers Problem</A>
+<LI><A HREF="#Javaswaitandnotify" >Java's wait() and notify()</A>
+<LI><A HREF="#DiningPhilosophersExample" >Dining Philosophers Example</A>
+</UL>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<H2><A NAME="WhatIsaThread"><B><FONT SIZE=5 COLOR=#FF0000>What
+Is a Thread?</FONT></B></A></H2>
+<P>
+A thread executes a series of instructions. Every line of code
+that is executed is done so by a thread. Some threads can run
+for the entire life of the applet, while others are alive for
+only a few milliseconds. A thread also creates a new thread or
+kills an existing one. Threads run in methods or constructors.
+The methods and constructors themselves are lifeless. The threads
+go into the methods and follow their instructions. Methods and
+constructors reside in the computer's memory. Figure 16.1 shows
+threads, constructors, and methods in a typical applet.
+<P>
+<A HREF="f16-1.gif" ><B>Figure 16.1 : </B><I>Two threads running through three classes.</I></A>
+<P>
+The applet methods <TT>start()</TT>,
+<TT>paint()</TT>, and so on are all
+called by underlying threads. These threads are created by the
+Web browser. When there is a mouse click or a <TT>repaint()</TT>
+has been called, the underlying thread calls the appropriate thread
+in the applet. While the threads are running in the applet methods,
+they cannot do anything else. If the applet holds these threads
+too long, it locks up the browser. If an applet needs to do something
+that will take some time in one of its methods, it should start
+a new thread. Some specific uses for threads are listed below:
+<UL>
+<LI>Long initiations.&nbsp;&nbsp;Threads are used in applets that
+may take a while to initialize. The applet may need to do something
+like wait for an image to be loaded. A thread is used so that
+the system thread can handle other events.
+<LI>Repetitive or timed tasks<I>.</I>&nbsp;&nbsp;Threads are used
+to do tasks that happen repetitively. A common example of this
+is found in animations. Every few milliseconds a new frame is
+shown. A thread displays a frame, sleeps for a while, and then
+repeats the process.
+<LI>Asynchronous events.&nbsp;&nbsp;Threads are used to handle
+events. An example of this is a mouse click. If the user clicks
+the mouse, a new thread is created to render a new frame in an
+image.
+<LI>Multiple tasks.&nbsp;&nbsp;Threads are used to do more than
+one thing at once. One thread controls an animation, while another
+does a computation.
+</UL>
+<H3><A NAME="TheThreadClass"><B>The </B><TT><B><FONT SIZE=4>Thread</FONT></B></TT><B><FONT SIZE=4>
+Class</FONT></B></A></H3>
+<P>
+The class <TT>java.lang.Thread</TT>
+is used to create and control threads. To create a thread, a new
+instance of this class must be created. However, the thread does
+not start running right away. <TT>Thread.start()</TT>
+must be called to actually make the thread run. When <TT>Thread.start()</TT>
+is called, the thread begins executing in the <TT>run()</TT>
+method of the target class. A new <TT>Thread</TT>
+class always starts running the <TT>public
+void run()</TT> method of a class. There are two ways to
+create a thread:
+<UL>
+<LI>Extend the <TT>Thread</TT> class.&nbsp;&nbsp;With
+this technique the new class inherits from the class <TT>Thread</TT>.
+The thread can start running in the class's <TT>run</TT>
+method.
+<LI>Implement the <TT>Runnable</TT>
+interface.&nbsp;&nbsp;This technique is probably more common than
+extending the <TT>Thread</TT> class.
+It is not necessary to define a new class to run the thread. If
+a thread is to start running in the applet, it must use the <TT>Runnable</TT>
+interface. The applet cannot inherit from both the <TT>Thread</TT>
+and <TT>Applet</TT> classes. An applet
+with the <TT>Runnable</TT> interface
+must have a <TT>run()</TT> method
+for the thread to start.
+</UL>
+<P>
+There isn't much difference between the two approaches. Both extending
+the <TT>Thread</TT> class and implementing
+the <TT>Runnable</TT> interface have
+the same functionality. The interface approach must be used if
+the thread is to actually start in the <TT>applet</TT>
+class. But if the thread is going to be running in its own class,
+it may be more convenient to extend the <TT>Thread</TT>
+class. Examples of both approaches are in this chapter.
+<P>
+The <TT>Thread</TT> class has seven
+constructors. All of them create a new thread. The thread does
+not start running until <TT>Thread.start()</TT>
+is called. When <TT>Thread.start()</TT>
+is called, the new thread starts running in the <TT>run()</TT>
+method of an object. The constructors are the following:
+<BLOCKQUOTE>
+<TT>Thread()<BR>
+Thread(Runnable)<BR>
+Thread(ThreadGroup)<BR>
+Thread(String)<BR>
+Thread(ThreadGroup,String)<BR>
+Thread(Runnable,String)<BR>
+Thread(ThreadGroup,Runnable,String)</TT>
+</BLOCKQUOTE>
+<P>
+The constructors can use three possible parameters:
+<UL>
+<LI><TT>String</TT>&nbsp;&nbsp;The
+name of the new thread is the parameter <TT>String</TT>.
+A thread can get its name by calling <TT>Thread.getName()</TT>.
+<LI><TT>ThreadGroup</TT>&nbsp;&nbsp;The
+new thread will belong to the group specified by the parameter
+<TT>ThreadGroup</TT>. A <TT>ThreadGroup</TT>
+can be used to organize a thread.
+<LI><TT>Runnable</TT>&nbsp;&nbsp;The
+<TT>Runnable</TT> parameter is an
+object that has implemented the <TT>Runnable</TT>
+interface. The thread will start executing in the <TT>run()</TT>
+method of the <TT>Runnable</TT> parameter
+when <TT>Thread.start()</TT> has been
+called.
+</UL>
+<P>
+There are many methods in the <TT>Thread</TT>
+class. Some of them, such as <TT>destroy()</TT>,
+don't seem to have been implemented yet, and may never be. Some
+of the methods that control the thread execution are the following:
+<UL>
+<LI><TT>start()</TT>&nbsp;&nbsp;This
+method starts the thread. It starts executing in the <TT>run()</TT>
+method of its <TT>Runnable</TT> target
+that was set when the constructor was called. This method can
+be called only once.
+<LI><TT>suspend()</TT>&nbsp;&nbsp;This
+method suspends the execution of the thread. It remains suspended
+until <TT>resume()</TT> is called.
+<LI><TT>resume()</TT>&nbsp;&nbsp;This
+method resumes the execution of a suspended thread. It has no
+effect on a thread that is not suspended.
+<LI><TT>stop()</TT>&nbsp;&nbsp;This
+method stops and kills a running thread. Currently, the thread
+does not stop unless it is running. If it is suspended, it does
+not die until it starts running again. However, this may be fixed
+someday.
+<LI><TT>sleep(int<I> m</I>)/sleep(int<I>
+m</I>,int <I>n</I>)</TT>&nbsp;&nbsp;The thread sleeps for
+<TT><I>m</I></TT> milliseconds, plus
+<TT><I>n</I></TT> nanoseconds.
+</UL>
+<H3><A NAME="SimpleThreadExamples"><B>Simple Thread Examples</B></A>
+</H3>
+<P>
+Listing 16.1 shows how to start, stop, suspend, and resume threads.
+It uses the <TT>Runnable</TT> interface.
+Threads like this are useful for things like controlling animation
+sequences or repeatedly playing audio samples. This example uses
+a thread that counts and prints a string every second. The thread
+starts when the applet is initialized. It continues to run until
+the user leaves the page. If the user returns to the page (and
+all is well), the thread continues from where it left off. This
+allows applets to retain their states while the user is away.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 16.1. Thread examples.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.lang.Thread;<BR>
+import java.applet.Applet;<BR>
+<BR>
+public class InfiniteThreadExample extends Applet implements Runnable
+<BR>
+{<BR>
+&nbsp;&nbsp;Thread myThread;<BR>
+<BR>
+&nbsp;&nbsp;public void init()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;in
+init() -- starting thread.&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myThread= new Thread(this);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myThread.start();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void start()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;in
+start() -- resuming thread.&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myThread.resume();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void stop()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;in
+stop() -- suspending thread.&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myThread.suspend();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void destroy()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;in
+destroy() -- stoping thread.&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myThread.resume();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myThread.stop();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void run()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i=0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(;;)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i++;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;At
+&quot; + i + &quot; and counting!&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{myThread.sleep(1000);}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch
+(InterruptedException e ) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<H4><TT><B>SimpleThreadExample</B></TT><B>
+Output</B></H4>
+<P>
+The output of <TT>InfiniteThreadExample</TT>
+is shown here. The applet ran for nine seconds until it was stopped.
+<BLOCKQUOTE>
+<TT>in init() -- starting thread.<BR>
+At 1 and counting!<BR>
+in start() -- resuming thread.<BR>
+At 2 and counting!<BR>
+At 3 and counting!<BR>
+At 4 and counting!<BR>
+At 5 and counting!<BR>
+At 6 and counting!<BR>
+At 7 and counting!<BR>
+At 8 and counting!<BR>
+At 9 and counting!<BR>
+in stop() -- suspending thread.<BR>
+in destroy() -- stoping thread.</TT>
+</BLOCKQUOTE>
+<P>
+The applet has only five methods:
+<UL>
+<LI><TT>public void init()</TT>&nbsp;&nbsp;The
+thread is initialized and is started in this method. In this example,
+the constructor <TT>Thread</TT> takes
+the argument <TT>this</TT>. When the
+<TT>Thread.start()</TT> method is
+called, the thread looks for a <TT>public
+void run()</TT> method in the <TT>this</TT>
+object.
+<LI><TT>public void start()</TT>&nbsp;&nbsp;When
+this method is called by the system, the thread resumes execution.
+If the thread is already running, this method has no effect.
+<LI><TT>public void stop()</TT>&nbsp;&nbsp;This
+method suspends the thread.
+<LI><TT>public void destroy()</TT>&nbsp;&nbsp;This
+method stops the thread. <TT>Thread.stop()</TT>
+stops and kills the thread. However, it only kills a thread that
+is running, so <TT>Thread.resume()</TT>
+is called beforehand.
+<LI><TT>public void run()</TT>&nbsp;&nbsp;This
+is where the thread actually starts running. This example has
+an infinite loop that prints a string and then sleeps for a second.
+Long running threads should sleep every once in a while to give
+other threads a chance to run. If not, the system may not even
+get a chance to paint the applet.
+</UL>
+<H4><B>When Are the Methods in </B><TT><B>InfiniteThreadExample</B></TT><B>
+Called?</B></H4>
+<P>
+Unfortunately, its not always possible to know exactly when or
+if the methods are called. It can vary from browser to browser,
+or even by how the user has the browser configured. Netscape 3.0
+calls <TT>init()</TT> and then calls
+<TT>start()</TT> the first time the
+applet is loaded. If the user leaves the page with the applet,
+<TT>stop()</TT> is called. Returning
+to the applet calls <TT>start()</TT>,
+but it is possible that <TT>init()</TT>
+may be the first called. It depends on whether or not the applet
+is still residing in memory. If it is, then only <TT>start()</TT>
+is called; otherwise, both <TT>init()</TT>
+and <TT>start()</TT> are called again.
+<P>
+The method <TT>destroy()</TT> is called
+before the applet is removed from memory. All threads should be
+destroyed at this time so that its resources can be used by other
+applets. The browsers can only handle so many threads. If the
+user visits too many applets that don't clean up after themselves,
+the browser may crash. Generally, threads should be suspended
+when the user leaves the page and killed when the applet is destroyed.
+It is possible to leave threads running while the user is visiting
+other pages, but the user may not appreciate it.
+<P>
+Listing 16.2 shows how to use threads to handle events. When an
+event that existing threads shouldn't take the time to handle
+happens in the applet, a new thread is spawned to handle that
+event. After the event is handled, the new thread quietly dies.
+Listing 16.2 uses threads to handle mouse clicks. Each thread
+draws a blue target, as you can see in Figure 16.2. Methods such
+as <TT>mouseDown()</TT> or <TT>mouseUp()</TT>
+are called by threads external to the applet. While the thread
+is running in the applet, no other mouse movements are detected.
+Keeping the external thread may not just affect the applet, but
+possibly the whole browser. Generally, these methods should be
+returned as soon as possible. If it is necessary to do a long
+computation or wait for something else, a new thread should be
+started. By starting a new thread, the external thread can return
+almost immediately.
+<P>
+<A HREF="f16-2.gif" ><B>Figure 16.2 : </B><I>The applet in Listing 16.2 draws targets.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 16.2. Handling an event with threads.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.applet.Applet;<BR>
+import java.awt.*;<BR>
+<BR>
+public class FiniteThreadExample extends Applet<BR>
+{<BR>
+&nbsp;&nbsp;Image offImage;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*
+off screen image&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<BR>
+&nbsp;&nbsp;Graphics offGraphics;&nbsp;&nbsp;/* Graphics for offImage
+*/<BR>
+<BR>
+&nbsp;&nbsp;public void init()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offImage=createImage(400,300);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics=offImage.getGraphics();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void paint(Graphics g)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawImage(offImage,0,0,null);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void update(Graphics g)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paint(g);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public boolean mouseDown(Event e, int x, int y)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new DrawTarget(this,x,y,offGraphics);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}<BR>
+<BR>
+class DrawTarget extends Thread<BR>
+{<BR>
+&nbsp;&nbsp;int xPos,yPos;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*
+position of the target */<BR>
+&nbsp;&nbsp;Applet myMaster;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*
+who to repaint&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<BR>
+&nbsp;&nbsp;Graphics offGraphics; /* Graphics to draw on&nbsp;&nbsp;&nbsp;&nbsp;*/
+<BR>
+<BR>
+&nbsp;&nbsp;public DrawTarget(Applet a, int x, int y, Graphics
+g)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xPos=x; yPos=y;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myMaster=a;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics=g;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void run()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i;&nbsp;&nbsp;/* i is
+direction the circles are moving */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int r;&nbsp;&nbsp;/* r is
+the radius of the current circle */<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics.setColor(Color.white);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics.setXORMode(Color.blue);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(r=0,i=10;i&gt;-20;i-=20)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*
+i=(10,-10)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(r+=i;(r&lt;90)&amp;&amp;(r&gt;0);r+=i)
+/* r=(10,20...80,80,70...10) */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics.fillOval(xPos-r,yPos-r,2*r,2*r);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myMaster.repaint();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{sleep(200);}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch
+(InterruptedException e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The class <TT>FiniteThreadExample</TT>
+is used to paint the applet, to catch the mouse clicks, but not
+to start the threads. The applet uses a class that extends the
+<TT>Thread</TT> class to start new
+threads. The class <TT>FiniteThreadExample</TT>
+has four methods shown below that sets up things, handles the
+painting, and catches the mouse clicks:
+<UL>
+<LI><TT>public void init()</TT>&nbsp;&nbsp;This
+method creates an image and gets a <TT>Graphics</TT>
+context for that image.
+<LI><TT>public void paint(Graphics)</TT>&nbsp;&nbsp;This
+method paints the Image <TT>offImage</TT>
+on the screen.
+<LI><TT>public void update(Graphics)</TT>&nbsp;&nbsp;This
+method isn't really necessary. It overrides <TT>update(Graphics)</TT>
+in <TT>java.awt.Component</TT>, and
+is used to reduce flickering.
+<LI><TT>public boolean mouseDown(Event, int,
+int)</TT>&nbsp;&nbsp;This method is called when there is
+a mouse click in the applet. It creates a new instance of the
+class <TT>DrawTarget</TT>. <TT>DrawTarget</TT>
+is defined in the next class.
+</UL>
+<P>
+<TT>DrawTarget</TT> is where the threads
+are created to draw the targets. <TT>DrawTarget</TT>
+inherits properties from <TT>java.lang.Thread</TT>
+and has a single constructor and method, which are listed below:
+<UL>
+<LI><TT>public DrawTarget(Applet a, int x,
+int y, Graphics g)</TT>&nbsp;&nbsp;The constructor copies
+the parameters to instance variables and starts the thread. <TT>Applet</TT>
+is needed so the <TT>run</TT> method
+can tell the applet to repaint. The integers <TT>x</TT>
+and <TT>y</TT> are the coordinates
+of target. <TT>Graphics</TT> is the
+graphics context on which the targets are drawn. The thread is
+started by simply calling <TT>start()</TT>.
+<LI><TT>public void run()</TT>&nbsp;&nbsp;This
+method is where the thread starts and draws the targets. It is
+called sometime after <TT>start()</TT>
+is called in the constructor. The method first sets <TT>offGraphics</TT>
+to XOR-Mode. In this mode, if something is drawn on something
+previously drawn, it reverts back to its original color. Next,
+the thread enters the nested <TT>for</TT>
+loops. Each iteration draws a circle, asks the applet to repaint,
+and sleeps for 200ms. The radius of the circle is varied from
+10 to 80, and then from 80 back to 10. The thread dies on its
+own after it exits the loops, so there is no need to call <TT>stop()</TT>.
+</UL>
+<H2><A NAME="ProblemswithMultithreading"><B><FONT SIZE=5 COLOR=#FF0000>Problems
+with Multithreading</FONT></B></A></H2>
+<P>
+Listing 16.3 shows how data can be corrupted in a multithreaded
+environment. If more than one thread manipulates shared variables
+or objects at the same time, corruption may result. Instance variables
+are shared between threads. If one is modified by a thread, the
+change affects the other threads. Method variables are unique
+for each threads. Each Thread has its own copy. Listing 16.3 uses
+2 classes, <TT>ProblemThreadExample</TT>
+and <TT>CorruptedDataExample</TT>.
+The class <TT>ProblemThreadExample</TT>
+extends the <TT>Applet</TT> class.
+It has two methods, which are listed after Listing 16.3.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 16.3. How to get corrupted data.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.lang.*;<BR>
+import java.applet.Applet;<BR>
+<BR>
+public class ProblemThreadExample extends Applet<BR>
+{<BR>
+&nbsp;&nbsp;CorruptedDataExample CDE;<BR>
+<BR>
+&nbsp;&nbsp;public void start()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDE=new CorruptedDataExample();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=0;i&lt;20;i++)&nbsp;&nbsp;/*
+start 20 threads */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new Thread(CDE,new
+String(&quot;booThread&quot;+i)).start();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void stop()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDE.stopThreads();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}<BR>
+<BR>
+class CorruptedDataExample extends Object implements Runnable
+<BR>
+{<BR>
+&nbsp;&nbsp;int num=0;&nbsp;&nbsp;/* num will be corrupted&nbsp;&nbsp;*/
+<BR>
+<BR>
+&nbsp;&nbsp;public void run()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i=0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(;;)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=0;i&lt;1000;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;num=num+10;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;num=num-10;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{Thread.sleep(10000);}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch
+(InterruptedException e ) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(Thread.currentThread().getName()+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;
+sees the number: &quot; + num);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void stopThreads()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread tArray[];<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int numThreads;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numThreads=Thread.activeCount();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tArray=new Thread[numThreads];
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread.enumerate(tArray);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(int i=0;i&lt;numThreads;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(tArray[i].getName().startsWith(&quot;booThread&quot;))
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tArray[i].stop();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<UL>
+<LI><TT>public void start()</TT>&nbsp;&nbsp;This
+method gets a new instance of the <TT>CorruptedDataExample</TT>
+class and starts 20 threads. Each thread has an individual name
+that is from <TT>&quot;booThread0&quot;</TT>
+to <TT>&quot;booThread19&quot;</TT>.
+The threads start running in <TT>CorruptedDataExample</TT>'s
+run method.
+<LI><TT>public void stop()&nbsp;&nbsp;</TT>This
+method calls <TT>stopThreads()</TT>
+in <TT>CorruptedDataExample</TT>.
+The class <TT>CorruptedDataExample</TT>
+does not guard against corruption of its instance variable <TT>num</TT>.
+The class has two methods, which are as follows:
+<LI><TT>public void run()</TT>&nbsp;&nbsp;This
+method has an infinite loop that shows how data can be corrupted
+by multiple threads. Twenty threads are executed in this loop
+at the same time. The loop does the following:
+<LI>Adds 10 then -10 to <TT>num</TT>
+1000 times
+<LI>Sleeps
+<LI>Prints a string that contains <TT>num</TT>
+<LI>The first step is the cause of the corruption. It serves no
+purpose other than illustrating how data is corrupted.
+<LI><TT>void stopThreads()</TT>&nbsp;&nbsp;All
+of the <TT>booThread</TT>s are stopped
+in this method. A list of threads is fetched. All of the threads
+that have names that begin with <TT>booThread</TT>
+are stopped.
+</UL>
+<P>
+The following is the <TT>ProblemThreadExample</TT>
+output:
+<BLOCKQUOTE>
+<TT>booThread0 sees the number: 0<BR>
+booThread1 sees the number: 0<BR>
+booThread2 sees the number: 0<BR>
+booThread3 sees the number: 0<BR>
+booThread4 sees the number: 10<BR>
+booThread6 sees the number: 10<BR>
+booThread7 sees the number: 10<BR>
+booThread8 sees the number: 10<BR>
+booThread9 sees the number: 10<BR>
+booThread10 sees the number: 0<BR>
+booThread11 sees the number: 0<BR>
+booThread12 sees the number: 0<BR>
+booThread13 sees the number: 0<BR>
+booThread5 sees the number: 0<BR>
+booThread14 sees the number: 0<BR>
+booThread15 sees the number: 0<BR>
+booThread16 sees the number: 0<BR>
+booThread17 sees the number: 0<BR>
+booThread18 sees the number: 0<BR>
+booThread19 sees the number: 0<BR>
+booThread0 sees the number: 0<BR>
+booThread1 sees the number: 0<BR>
+booThread3 sees the number: 0<BR>
+booThread4 sees the number: 0<BR>
+booThread6 sees the number: 0<BR>
+booThread8 sees the number: 0<BR>
+booThread9 sees the number: 0<BR>
+booThread2 sees the number: 0<BR>
+booThread7 sees the number: 0<BR>
+booThread10 sees the number: 10<BR>
+booThread11 sees the number: 0<BR>
+booThread12 sees the number: -10<BR>
+booThread13 sees the number: -10<BR>
+booThread5 sees the number: -10<BR>
+booThread14 sees the number: -10<BR>
+booThread16 sees the number: -10<BR>
+booThread17 sees the number: -10<BR>
+booThread18 sees the number: -10<BR>
+booThread19 sees the number: -10</TT>
+</BLOCKQUOTE>
+<H3><A NAME="WhatGoesWrong"><B>What Goes Wrong?</B></A></H3>
+<P>
+The first step in the infinite loop would have no ill effect in
+a single-threaded environment. It simply adds and then subtracts
+10 to a variable with the net result being no change. However,
+in a multithreaded environment, the operations can interfere with
+each other. You can see one scenario in the following steps in
+which two threads try to add 10 at the same time.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I><CENTER>Step</CENTER></I></TD><TD WIDTH=132><I>Thread A</I>
+</TD><TD WIDTH=132><I>Thread B</I></TD><TD WIDTH=49><I><CENTER>num</CENTER></I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=50><CENTER>1.</CENTER></TD><TD WIDTH=132><TT>Atmp</TT>&nbsp;<TT>num</TT>
+</TD><TD WIDTH=132>&nbsp;</TD><TD WIDTH=49><CENTER>0</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=50><CENTER>2.</CENTER></TD><TD WIDTH=132><TT>Atmp</TT>&nbsp;<TT>Atmp+10</TT>
+</TD><TD WIDTH=132>&nbsp;</TD><TD WIDTH=49><CENTER>0</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=50><CENTER>3.</CENTER></TD><TD WIDTH=132>&nbsp;</TD><TD WIDTH=132><TT>Btmp</TT>&nbsp;<TT>num</TT>
+</TD><TD WIDTH=49><CENTER>0</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=50><CENTER>4.</CENTER></TD><TD WIDTH=132>&nbsp;</TD><TD WIDTH=132><TT>Btmp</TT>&nbsp;<TT>Btmp+10</TT>
+</TD><TD WIDTH=49><CENTER>0</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=50><CENTER>5.</CENTER></TD><TD WIDTH=132>&nbsp;</TD><TD WIDTH=132><TT>num</TT>&nbsp;<TT>Btmp</TT>
+</TD><TD WIDTH=49><CENTER>10</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=50><CENTER>.</CENTER></TD><TD WIDTH=132>      .</TD><TD WIDTH=132>    .
+</TD><TD WIDTH=49><CENTER>.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=50><CENTER>.</CENTER></TD><TD WIDTH=132>      .</TD><TD WIDTH=132>    .
+</TD><TD WIDTH=49><CENTER>.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=50><CENTER>.</CENTER></TD><TD WIDTH=132>      .</TD><TD WIDTH=132>    .
+</TD><TD WIDTH=49><CENTER>.</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=50><CENTER>10.</CENTER></TD><TD WIDTH=132><TT>num</TT>&nbsp;<TT>Atmp</TT> 
+</TD><TD WIDTH=132>&nbsp;</TD><TD WIDTH=49><CENTER>10</CENTER></TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Two <TT>num=num+10;</TT> operations
+have been executed, but the value of <TT>num</TT>
+has only increased by 10. The problem here is that Thread <TT>A</TT>
+was interrupted in the middle of its operation before it could
+save its results. Threads <TT>A</TT>
+and <TT>B</TT> have added 10 to the
+same number.
+<P>
+This type of problem is somewhat rare, but should not be ignored.
+In the previous example, 10 is added and subtracted 1000 times
+in 20 threads, and the problem still did not occur that often.
+The bad thing about these types of bugs is that they can be extremely
+difficult to find. Imagine that <TT>num</TT>
+is the index of an array. The problem may not show up until long
+after <TT>num</TT> has been corrupted.
+Generally, these bugs are not reproducible, so they are hard to
+catch. In some ways the problem is amplified in Java because Java
+is expected to run on so many platforms. On some systems, <TT>num=num+10</TT>
+may be an atomic operation (cannot be interrupted). In this case,
+everything works fine. A developer may create an applet on such
+a system thinking that everything is fine, but it may not work
+when someone from a different system views the applet. Data corruption
+can also be more common with other data types. Integer operations
+are simple compared to many others. Arrays or other data structures
+can take much longer to process so it is much more likely to be
+corrupted.
+<H3><A NAME="ThreadNamesandCurrentThreads"><B>Thread Names and
+Current Threads</B></A></H3>
+<P>
+In Listing 16.3, the threads are given names. They are named <TT>booThread0</TT>
+through <TT>booThread19</TT> when
+they are created by the constructor <TT>Thread(Runnable,String)</TT>.
+The names can be used to identify the threads. The thread names
+are printed along with <TT>num</TT>
+in the <TT>run()</TT> method of <TT>CorruptedDataExample</TT>.
+The <TT>Thread</TT> method <TT>current.Thread()</TT>
+is called to get a reference to the currently running thread.
+<P>
+The names are also used to stop the threads. A reference is needed
+for each thread so that <TT>stop()</TT>
+can be called to kill it. <TT>Thread.enumerate(Thread[])</TT>
+gets a reference to every thread in this group. Some of these
+threads are the <TT>booThread</TT>s,
+but they may be others. The other threads should not be killed.
+Before each thread is killed it is checked to see if its name
+starts with <TT>booThread</TT>.
+<H3><A NAME="Javassynchronized"><B>Java's </B><TT><B><FONT SIZE=4>synchronized</FONT></B></TT></A>
+</H3>
+<P>
+A way to prevent data from being corrupted by multiple threads
+is to prevent the interruption of <I>critical regions</I>. Critical
+regions are places like <TT>num=num+10</TT>
+above, where only one thread should be running at once. Java's
+<TT>synchronized</TT> can be used
+to ensure that only one thread is in a critical region at once.
+When the thread enters a synchronized code block, it tries to
+get a lock on that region. While the thread is in the critical
+region, no other thread can enter the critical region. If a thread
+tries to enter and the code is already locked, the thread has
+to wait for the other thread to leave the critical region. Listing
+16.3 can be fixed by synchronizing the access to <TT>num</TT>.
+The <TT>run()</TT> method in <TT>CorruptedDataExample</TT>
+can be modified to the following:
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;public void run()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i=0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int tmp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(;;)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=0;i&lt;1000;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;synchronized
+(this)&nbsp;&nbsp;/*new*/<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;num=num+10;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;num=num-10;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{Thread.sleep(10000);}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch
+(InterruptedException e ) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;synchronized
+(this)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tmp=num;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(Thread.currentThread().getName()+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;
+sees the number: &quot; + tmp); /*new*/<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<P>
+The following lines make up a protected critical region:
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;synchronized
+(this)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;num=num+10;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;num=num-10;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<P>
+<TT>synchronized (this)</TT> ensures
+that only one thread can be in the following code block. The argument
+<TT>this</TT> tells the thread to
+use the lock for this <TT>this</TT>
+object.
+<P>
+The variable <TT>num</TT> is also
+referenced when the string is printed. The new code is as follows:
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;synchronized
+(this)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tmp=num;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(currentThread().getName()+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;
+sees the number: &quot; + tmp);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/</TT>
+</BLOCKQUOTE>
+<P>
+A critical region is used to copy <TT>num</TT>
+to temporary storage. The string is then printed using the temporary
+storage. It would have been possible to synchronize the print
+line directly, but it would cut performance because the print
+line does many other things that have nothing to do with referencing
+<TT>num</TT>. All the threads waiting
+to enter the critical region will needlessly wait longer while
+the print line is executed. Generally, the synchronized blocks
+should be as small as possible while still protecting the critical
+region.
+<P>
+You may also think that the other variables in the <TT>run</TT>
+method, <TT>i</TT> and <TT>tmp</TT>,
+also need to be synchronized, but it's not necessary. Both <TT>i</TT>
+and <TT>tmp</TT> are method variables
+so each running thread has its own private copy. There are 20
+<TT>i</TT>'s and <TT>tmp</TT>'s
+but there is only one <TT>num</TT>.
+<H2><A NAME="SynchronizingThreads"><B><FONT SIZE=5 COLOR=#FF0000>Synchronizing
+Threads</FONT></B></A></H2>
+<P>
+Listing 16.4 can be seen in Figure 16.3. This example shows how
+<TT>synchronized</TT> can be used
+to control critical regions. There are two synchronized methods:
+<TT>drawRoundTarget()</TT> and <TT>drawSquareTarget()</TT>.
+If a thread is in a synchronized method, no other thread can be
+in any synchronized method that uses the same lock. This example
+draws only one square or circle at a time. The seven methods of
+the <TT>SynchronizedThreadExample</TT>
+applet are shown after Listing 16.4.
+<P>
+<A HREF="f16-3.gif" ><B>Figure 16.3 :</B> <I>Listing 16.4 draws a square.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 16.4. Using </B><TT><B>synchronized</B></TT><B>.
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.applet.Applet;<BR>
+import java.awt.*;<BR>
+<BR>
+public class SynchronizedThreadExample extends Applet<BR>
+implements Runnable<BR>
+{<BR>
+&nbsp;&nbsp;Image offImage;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*
+off screen image&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<BR>
+&nbsp;&nbsp;Graphics offGraphics;&nbsp;&nbsp;/* Graphics for offImage
+*/<BR>
+&nbsp;&nbsp;Thread Thr1, Thr2;&nbsp;&nbsp;&nbsp;&nbsp; /* threads&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<BR>
+<BR>
+&nbsp;&nbsp;public void start()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offImage=createImage(400,300);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics=offImage.getGraphics();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics.setColor(Color.white);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics.setXORMode(Color.blue);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thr1=new Thread(this);&nbsp;&nbsp;Thr1.start();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thr2=new Thread(this);&nbsp;&nbsp;Thr2.start();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void stop()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thr1.stop();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thr2.stop();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void paint(Graphics g)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawImage(offImage,0,0,null);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void update(Graphics g)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paint(g);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void run()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(;;)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawRoundTarget();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawSquareTarget();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;synchronized void drawRoundTarget()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(int r=0,i=10;i&gt;-20;i-=20)&nbsp;&nbsp;/*
+i=(10,-10)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(r+=i;(r&lt;90)&amp;&amp;(r&gt;0);r+=i)
+/* r=(10,20...80,80,70...10) */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics.fillOval(200-r,150-r,2*r,2*r);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;repaint();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{Thread.currentThread().sleep(200);}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch
+(InterruptedException e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;synchronized void drawSquareTarget()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i,r;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(r=0,i=10;i&gt;-20;i-=20)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*
+i=(10,-10)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(r+=i;(r&lt;90)&amp;&amp;(r&gt;0);r+=i)
+/* r=(10,20...80,80,70...10) */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics.fillRect
+(200-r,150-r,2*r,2*r);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;repaint();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{Thread.currentThread().sleep(250);}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch
+(InterruptedException e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+The methods of the <TT>SynchronizedThreadExample</TT>
+applet are as follows:
+<UL>
+<LI><TT>public void start()/stop()</TT>&nbsp;&nbsp;The
+threads are started and stopped in these methods.
+<LI><TT>public void paint/update(Graphics)</TT>&nbsp;&nbsp;These
+methods paint the applet.
+<LI><TT>public void run()</TT>&nbsp;&nbsp;Both
+threads start executing in this method. It is an infinite loop
+that draws round and then square targets.
+<LI><TT>synchronized void drawRoundTarget()</TT>&nbsp;&nbsp;This
+method is synchronized. Only one thread can be inside drawing
+circles.
+<LI><TT>synchronized void drawSquareTarget()</TT>&nbsp;&nbsp;This
+method is like <TT>drawRoundTarget</TT>,
+but draws squares instead of circles.
+</UL>
+<H3><A NAME="MultipleLocks"><B>Multiple Locks</B></A></H3>
+<P>
+What if two locks are needed?
+<P>
+The current applet only allows one target to be drawn at a time,
+be it round or square. Suppose that you want the applet to draw
+a round and a square target at the same time; you would need two
+locks for two independent critical regions. The problem is that
+each object has only one lock. Creating separate classes for <TT>drawRoundTarget()</TT>
+and <TT>drawSquareTarget()</TT> could
+solve the problem, but it may not be convenient. A better way
+is to create new objects, and to use their locks to control the
+methods. This is done by modifying Listing 16.4 as follows:
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<BR>
+&nbsp;&nbsp;Object RoundSync,SquareSync;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+<BR>
+&nbsp;&nbsp;public void start()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RoundSync=new Object();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SquareSync=new Object();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thr1=new Thread(this);&nbsp;&nbsp;Thr1.start();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thr2=new Thread(this);&nbsp;&nbsp;Thr2.start();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void drawRoundTarget()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;synchronized (RoundSync)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(int
+r=0,i=10;i&gt;-20;i-=20)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;void drawSquareTarget()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;synchronized (SquareSync)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*new*/
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(r=0,i=10;i&gt;-20;i-=20)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Two new <TT>Object</TT>s are created:
+<TT>RoundSync</TT> and <TT>SquareSync</TT>.
+The <TT>Object</TT>s don't actually
+do anything themselves, but their locks are used when drawing
+the targets. The instances of <TT>Object</TT>
+are obtained in the start method. <TT>synchronized
+(RoundSync)</TT> is put in front of the <TT>for</TT>
+loops in the <TT>drawRoundTarget()</TT>
+method and <TT>drawSquareTarget()</TT>
+is modified similarly. When a thread tries to execute the body
+of the target drawing methods, it first has to get a lock. <TT>drawRoundTarget()</TT>
+gets a lock from the object <TT>RoundSync</TT>
+and <TT>drawSquareTarget()</TT> gets
+a lock from <TT>SquareSync()</TT>.
+After these modifications have been made, the <TT>drawRoundTarget()</TT>
+and <TT>drawSquareTargets()</TT> methods
+do not block each other. The applet draws round and square targets
+at the same time. But it is not able to draw two round targets
+or two square targets at the same time. Figure 16.4 shows the
+results of the modifications.
+<P>
+<A HREF="f16-4.gif" ><B>Figure 16.4 : </B><I>A square and round target being drawn at the same time.</I></A>
+<H2><A NAME="TheDiningPhilosophersProblem"><B><FONT SIZE=5 COLOR=#FF0000>The
+Dining Philosophers Problem</FONT></B></A></H2>
+<P>
+The Dining Philosophers problem is a classic concurrent programming
+problem. In the problem, a philosopher only does two things, think
+and eat. A philosopher thinks for a while, and then gets hungry.
+Then it eats until it gets full, and then starts thinking again.
+Each philosopher is so involved in its own thinking or eating
+that it's oblivious to anything else. The problem has five philosophers
+that are sitting at a table. Between neighboring philosophers
+there is a single chop stick. A philosopher must have both the
+stick on its right and the stick on its left in order for it to
+eat. Obviously, no two neighboring philosophers can be eating
+at the same time. The philosophers cannot disturb each other.
+If a philosopher wants to start eating and its neighbor has one
+of the sticks, the philosopher must wait until the stick becomes
+available. To solve the problem, an algorithm must be designed
+to let all of the philosophers eat.
+<P>
+A simple algorithm for the philosophers could be:
+<BLOCKQUOTE>
+Think
+Get right chopstick<BR>
+Get left chopstick<BR>
+Eat<BR>
+Drop left chopstick<BR>
+Drop right chopstick<BR>
+Repeat<BR>
+</BLOCKQUOTE>
+<P>
+There is one very serious problem with this algorithm. Suppose
+that each philosopher picks up the right chopstick at the same
+time. When they try to get the left stick, it won't be there.
+The neighbor to the left has it. All of the philosophers starve
+to death with a chopstick in one hand and food on the table. This
+is known as a deadlock.
+<H3><A NAME="Deadlocks"><B>Deadlocks</B></A></H3>
+<P>
+Deadlocks are always a danger in multithreaded environments. A
+deadlock has occurred because
+<UL>
+<LI>Each thread needed exclusive use of the chopsticks.
+<LI>One thread is not allowed to take a chopstick from its neighbor.
+<LI>Each thread is waiting while holding a chopstick that another
+thread is waiting for.
+</UL>
+<P>
+All deadlocks in any problem have the same reasons for deadlocking.
+Instead of waiting for chopsticks, they are waiting for some other
+resource or resources. If only one of the conditions can be broken,
+a deadlock will not occur.
+<P>
+The first condition is usually hard to break. In the previous
+algorithm this could done by allowing philosophers to share a
+chopstick, but that isn't really possible. Sometimes threads need
+exclusive use of a resource. Things like the instance of a class
+or a socket may require that only one thread may use it at once.
+<P>
+The second condition can sometimes be used to avoid deadlocks.
+If a philosopher was allowed to take a chopstick from its neighbor,
+there would not be a deadlock. However, if the philosophers keep
+taking sticks from each other, they may never get a chance to
+take a bite. Some problems can be solved by allowing resource
+stealing. It depends on the resource and the problem.
+<P>
+If the deadlock cannot be avoided with the other conditions, it
+should be avoided by breaking the third condition. The philosophers
+can avoid a deadlock if there is a special chopstick that they
+aren't allowed to hold while they are waiting for the second chopstick.
+They are allowed to eat with the special stick, but they can't
+just hold it. An algorithm should not be too strict, otherwise
+the resources may be underused. For example, an algorithm could
+be made that only allows one philosopher to eat at once. Obviously,
+there would be no deadlocks, but a philosopher may have to wait
+longer before it can eat.
+<H3><A NAME="ASolutiontotheDiningPhilosophersPr"><B>A Solution
+to the Dining Philosophers Problem</B></A></H3>
+<P>
+There are many solutions to the Dining Philosophers problem. One
+solution follows.
+<P>
+One of the chopsticks is marked as gold, while the rest are wood.
+No philosopher is allowed to hold the gold stick without eating.
+This prevents the philosophers from deadlocking. The philosophers
+picks up one chopstick then the other. If the gold stick is picked
+up first, it is put down and the other stick is picked up. It
+is possible that in the time between putting down the gold chopstick
+and picking up the other chopstick, all the other philosophers
+will have eaten and moved the gold chopstick all the way around
+the table, so when the philosopher picks up the other chopstick,
+it too is the gold chopstick. If this happens, the philosopher
+starts over. The solution is as follows:
+<BLOCKQUOTE>
+Think
+<BR>
+Pick up right chopstick
+<BR>
+If right chopstick is gold
+<BR>
+Drop right chopstick
+<BR>
+Pick up left chopstick
+<BR>
+If left chopstick is gold
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start over
+<BR>
+Pick up right chopstick
+<BR>
+Else
+<BR>
+Pick up left chopstick
+<BR>
+Eat
+<BR>
+Switch chopsticks in hands
+<BR>
+Drop right chopstick
+<BR>
+Drop left chopstick
+<BR>
+Repeat
+</BLOCKQUOTE>
+<P>
+The chopsticks are switched when the philosopher puts down the
+chopsticks. This allows the philosophers equal chances to eat.
+Otherwise, the philosopher to the left of the gold chopstick would
+be disadvantaged.
+<P>
+The philosophers may interfere with each other when they try to
+pick up a chopstick. A critical region is used to ensure that
+one philosopher can pick up or put down a chopstick. If one philosopher
+is picking up or putting down a stick, its neighbor is not allowed
+to touch the stick. What if a philosopher enters the critical
+section to get a chopstick, but the chopstick is not there? The
+philosopher must wait until the stick returns. This is done by
+a special <TT>wait</TT> in the critical
+section. The philosopher releases its lock and waits in the critical
+section. This allows the other philosopher to enter the critical
+section to return the chopstick. After the chopstick is returned,
+the waiting philosopher is woken up. After awakening, the philosopher
+reacquires the lock and continues executing. At any one time there
+can be only one philosopher running in the critical section, but
+it is OK if another philosopher is also sleeping in the critical
+section.
+<H3><A NAME="Javaswaitandnotify"><B>Java's </B><TT><B><FONT SIZE=4>wait()</FONT></B></TT><B><FONT SIZE=4>
+and </FONT></B><TT><B><FONT SIZE=4>notify()</FONT></B></TT></A>
+</H3>
+<P>
+Java has three <TT>wait()</TT> and
+two <TT>notify()</TT> methods that
+aid in synchronizing threads. The <TT>wait()</TT>
+methods cause the thread to pause in the critical region. While
+paused, the thread releases its lock. It must get the lock again
+before it starts executing again. The <TT>notify()</TT>
+methods wake up threads that have called <TT>wait()</TT>.
+Calling <TT>notify()</TT> when no
+<TT>wait()</TT> has been called has
+no effect. The methods shown below are in the <TT>Object</TT>
+class and can only be called in a <TT>synchronized</TT>
+block or method.
+<UL>
+<LI><TT>public final void wait()</TT>&nbsp;&nbsp;This
+method causes the thread to wait forever until a <TT>notify()</TT>
+or <TT>notifyAll()</TT> is called.
+The thread releases its lock on the critical regions so that other
+threads may enter.
+<LI><TT>public final void wait(long m)</TT>&nbsp;&nbsp;This
+method causes the thread to wait <TT>m</TT>
+milliseconds for a <TT>notify()</TT>
+or <TT>notifyAll()</TT> to be called.
+After the time is expired, the thread tries to resume execution.
+However, it must first reobtain the lock for the critical region.
+Another thread may have entered the critical section while the
+thread was waiting.
+<LI><TT>public final void wait(long m, int
+n)</TT>&nbsp;&nbsp;This method is similar to the previous
+one except that it waits for <TT>m</TT>
+milliseconds plus <TT>n</TT> nanoseconds.
+<LI><TT>public final void notify()</TT>&nbsp;&nbsp;This
+method wakes up a thread that has previously called <TT>wait()</TT>.
+The thread that was waiting has to get the lock before it can
+resume execution. It has to wait until the current thread leaves
+the critical region. Only one thread that has called <TT>wait()</TT>
+is woken up. It is not guaranteed that the first thread that called
+<TT>wait()</TT> is the first one woken
+up.
+<LI><TT>public final void notifyAll()</TT>&nbsp;&nbsp;This
+method wakes up all the threads that have called <TT>wait()</TT>.
+Each waiting thread has to get the lock for the critical region
+before it resumes. There can still be only one thread running
+in the critical section at once.
+</UL>
+<H3><A NAME="DiningPhilosophersExample"><B>Dining Philosophers
+Example</B></A></H3>
+<P>
+The Dining Philosophers applet uses four classes: the ones shown
+in Listings 16.5, 16.6, 16.7, and 16.8. The first class, <TT>DiningPhilosophers</TT>,
+extends the <TT>Applet</TT> class.
+The structure of this class is similar to the first example. <TT>Philosopher</TT>
+threads are created when the applet is initialized. They are suspended
+if the user leaves the page and resumed if the user returns. However,
+unlike the first example, no threads are created in this class.
+The Dining Philosophers example can be seen in Figure 16.5.
+<P>
+<A HREF="f16-5.gif" ><B>Figure 16.5 :</B> <I>The Dining Philosophers example.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 16.5. The class </B><TT><B>DiningPhilosophers</B></TT><B>.
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>public class DiningPhilosophers extends
+Applet<BR>
+{<BR>
+&nbsp;&nbsp;final int numPhils=5;<BR>
+<BR>
+&nbsp;&nbsp;Image offImage;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*
+off screen image&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<BR>
+&nbsp;&nbsp;Graphics offGraphics;&nbsp;&nbsp;/* Graphics for offImage
+*/<BR>
+&nbsp;&nbsp;Philosopher Phil[] = new Philosopher[numPhils];<BR>
+&nbsp;&nbsp;Chopstick Stick[] = new Chopstick[numPhils];<BR>
+&nbsp;&nbsp;ScenePainter painter;<BR>
+<BR>
+&nbsp;&nbsp;public void init()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offImage=createImage(400,300);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offGraphics=offImage.getGraphics();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter=new ScenePainter(offGraphics,this,numPhils);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=0;i&lt;numPhils;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stick[i]=new Chopstick
+(i==0 ? Chopstick.gold :<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chopstick.wood,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter,i);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=0;i&lt;numPhils;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phil[i]= new Philosopher(Stick[i],Stick[(i+1)%numPhils],
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter,i);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void start()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=0;i&lt;numPhils;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phil[i].resume();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void stop()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=0;i&lt;numPhils;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phil[i].suspend();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void destroy()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=0;i&lt;numPhils;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phil[i].resume();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phil[i].stop();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void paint(Graphics g)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawImage(offImage,0,0,null);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void update(Graphics Dijkstra)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paint(Dijkstra);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The class <TT>DiningPhilosophers</TT>
+has six methods and is similar to the <TT>InfiniteThreadExample</TT>.
+<UL>
+<LI><TT>public void init()</TT>&nbsp;&nbsp;This
+method initializes the applet. It creates five instances of the
+classes <TT>Chopstick</TT> and <TT>Philosopher</TT>.
+One of the <TT>Chopstick</TT> classes
+is created as a <TT>gold</TT> chopstick,
+the rest are <TT>wood</TT>. Each <TT>Philosopher</TT>
+can reach two <TT>Chopstick</TT>s.
+On the right is <TT>Chopstick</TT>
+<TT>i</TT>, and on the left is <TT>Chopstick
+i+1 mod 5</TT>.
+<LI><TT>public void start()</TT>&nbsp;&nbsp;This
+method resumes philosopher execution.
+<LI><TT>public void stop()</TT>&nbsp;&nbsp;This
+method suspends philosopher execution.
+<LI><TT>public void destroy()</TT>&nbsp;&nbsp;This
+method kills the philosophers.
+<LI><TT>public void paint()/update()</TT>&nbsp;&nbsp;These
+two methods paint the state of the philosophers.
+</UL>
+<P>
+Each philosopher at the table is its own thread. The thread is
+created in the class <TT>Philosopher</TT>
+by extending <TT>Thread</TT>. The
+methods in the class control the philosopher's life of thinking
+and eating. Initially, the philosopher is thinking. After some
+time, the philosopher picks up the two chopsticks next to it and
+starts eating. It calls methods in the <TT>Chopstick</TT>
+class (see Listing 16.7) to get the chopsticks. The philosopher
+also paints its state by calling methods in the <TT>ScenePainter</TT>
+class (see Listing 16.8).
+<HR>
+<BLOCKQUOTE>
+<B>Listing 16.6. The class </B><TT><B>Philosopher</B></TT><B>.
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>class Philosopher extends Thread<BR>
+{<BR>
+&nbsp;&nbsp;final int ThinkTime=5000, EatTime=3000;<BR>
+&nbsp;&nbsp;Chopstick rightStick,leftStick;<BR>
+&nbsp;&nbsp;ScenePainter painter;<BR>
+&nbsp;&nbsp;int rightHand,leftHand;<BR>
+&nbsp;&nbsp;int myNum;<BR>
+<BR>
+&nbsp;&nbsp;public Philosopher(Chopstick right, Chopstick left,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ScenePainter
+p, int n)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter=p;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myNum=n;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rightStick=right;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;leftStick=left;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public void run()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(;;)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;think();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PickUpSticks();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eat();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PutDownSticks();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void think()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawThink(myNum);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try {sleep((int)(ThinkTime*Math.random()));}
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch (InterruptedException
+e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawThink(myNum);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void PickUpSticks()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(boolean gotem=false;!gotem;)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawFirstGrab(myNum);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rightHand=rightStick.grabStick();
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawSecondGrab(myNum);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(rightHand==Chopstick.gold)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawGoldGrab(myNum);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rightStick.dropStick(rightHand);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;leftHand=leftStick.grabStick();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(leftHand==Chopstick.gold)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;leftStick.dropStick(leftHand);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;&nbsp;&nbsp;/*
+gold stick went around table */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rightHand=rightStick.grabStick();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawGoldGrab(myNum);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else
+leftHand=leftStick.grabStick();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawSecondGrab(myNum);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawFirstGrab(myNum);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gotem=true;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void eat()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawEat(myNum);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try {sleep((int)(EatTime*Math.random()));}
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch (InterruptedException
+e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawEat(myNum);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void PutDownSticks()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{/* swap sticks and put them down */<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rightStick.dropStick(leftHand);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;leftStick.dropStick(rightHand);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The class <TT>Philosopher</TT> is
+used to start the threads for the Dining Philosophers applet.
+The class has the following five methods:
+<UL>
+<LI><TT>public void run()</TT>&nbsp;&nbsp;This
+method defines the philosophers actions. Each philosopher thinks,
+waits to pick up its chopsticks, eats, returns the chopsticks,
+and repeats the cycle.
+<LI><TT>void think()</TT>&nbsp;&nbsp;This
+method is where the philosopher thinks. The thinking image is
+drawn and the philosopher sleeps for a random amount of time.
+<LI><TT>void PickUpSticks()</TT>&nbsp;&nbsp;In
+this method, the philosopher picks up the chopsticks in a way
+that is fair and avoids deadlocks.
+<LI><TT>void eat()</TT>&nbsp;&nbsp;This
+method is where the philosopher eats. The eating image is drawn
+and the philosopher sleeps for a random amount of time.
+<LI><TT>void PutDownSticks()</TT>&nbsp;&nbsp;In
+this method, the philosopher returns the sticks. The chopsticks
+are switched when they are put down so that the gold stick is
+not always in the same place.
+</UL>
+<P>
+All of the synchronization is done in the <TT>Chopstick</TT>
+class. There is one instance of this class for each chopstick
+on the table. The class is used by the philosophers when they
+want to pick up or return a chopstick. The three states of the
+chopstick are represented by the variable <TT>stickHolder</TT>:
+<TT>noStick</TT> means the chopstick
+is gone, <TT>wood</TT> means this
+is the wooden stick, and <TT>gold</TT>
+means this is the golden stick. <TT>stickHolder</TT>
+is an instance variable. More than one philosopher may be trying
+to get/drop it at once, so there is a danger of data corruption.
+The methods of this class are <TT>synchronized</TT>
+to ensure that <TT>stickHolder</TT>
+does not get corrupted (see Listing 16.7).
+<HR>
+<BLOCKQUOTE>
+<B>Listing 16.7. The class </B><TT><B>Chopstick</B></TT><B>.
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>class Chopstick extends Object<BR>
+{<BR>
+&nbsp;&nbsp;final static int noStick=0;<BR>
+&nbsp;&nbsp;final static int wood=1;<BR>
+&nbsp;&nbsp;final static int gold=2;<BR>
+&nbsp;&nbsp;ScenePainter painter;<BR>
+&nbsp;&nbsp;int stickHolder;<BR>
+&nbsp;&nbsp;int myNum;<BR>
+<BR>
+&nbsp;&nbsp;public Chopstick(int stick, ScenePainter p, int n)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter=p;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myNum=n;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dropStick(stick);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;synchronized int grabStick()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int Thuy;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(stickHolder==noStick)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try {wait();}
+catch (InterruptedException e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawStick(myNum,stickHolder);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thuy=stickHolder;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stickHolder=noStick;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return Thuy;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;synchronized void dropStick(int stick)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stickHolder=stick;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;painter.drawStick(myNum,stickHolder);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notify();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The class <TT>Chopstick</TT> is used
+to synchronize the threads in the Dining Philosophers applet.
+The class has the following two methods:
+<UL>
+<LI><TT>synchronized int grabStick()</TT>&nbsp;&nbsp;Philosophers
+(threads) will come into this method when they attempt to get
+a stick. If the stick is there, the method gives the stick to
+the philosopher. If the stick has already been taken by its neighbor,
+the philosopher waits for the stick to be returned.
+<LI><TT>synchronized void dropStick()</TT>&nbsp;&nbsp;The
+philosophers use this method to return the sticks. If the other
+philosopher is waiting for this chopstick, it is woken.
+</UL>
+<P>
+The class <TT>ScenePainter</TT> is
+used by the philosophers to paint their state. If a philosopher
+starts eating, puts down a stick, or does anything else, it calls
+methods in this class. The states of philosophers (for example,
+eating or waiting for a stick) are represented by different shapes.
+When a philosopher starts thinking, it calls <TT>drawThink(myNum)</TT>
+to draw the philosopher in its thinking state. Then, when it is
+done thinking, it calls <TT>drawThink(myNum)</TT>
+again to erase the philosopher. All of the methods in this class
+are called in pairs. The first call draws a state and the second
+erases it.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 16.8. The class </B><TT><B>ScenePainter</B></TT><B>.
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>class ScenePainter extends Object<BR>
+{<BR>
+&nbsp;&nbsp;int sX1[], sY1[], sX2[], sY2[], pX[], pY[];<BR>
+&nbsp;&nbsp;final int xOffset=150, yOffset=150, Tscale=70;<BR>
+&nbsp;&nbsp;final int rg=2, rEating=15, rThinking=8, rFirst=7;
+<BR>
+&nbsp;&nbsp;final int rSecond=3, rGold=5;<BR>
+&nbsp;&nbsp;Graphics G;<BR>
+&nbsp;&nbsp;Component C;<BR>
+<BR>
+&nbsp;&nbsp;public ScenePainter(Graphics g, Component c, int numPhils)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pX&nbsp;&nbsp;= new int[numPhils];
+pY&nbsp;&nbsp;= new int[numPhils];<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sX1 = new int[numPhils]; sY1
+= new int[numPhils];<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sX2 = new int[numPhils]; sY2
+= new int[numPhils];<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double arc=Math.PI/numPhils;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;G=g; C=c;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=0;i&lt;numPhils;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pX[i]=
+(int)(xOffset+&nbsp;&nbsp; Tscale*Math.cos(i*2*arc));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pY[i]=
+(int)(yOffset+&nbsp;&nbsp; Tscale*Math.sin(i*2*arc));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sX1[i]=(int)(xOffset+&nbsp;&nbsp;
+Tscale*Math.cos(i*2*arc+arc));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sY1[i]=(int)(yOffset+&nbsp;&nbsp;
+Tscale*Math.sin(i*2*arc+arc));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sX2[i]=(int)(xOffset+.7*Tscale*Math.cos(i*2*arc+arc));
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sY2[i]=(int)(yOffset+.7*Tscale*Math.
+sin(i*2*arc+arc));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;G.setColor(Color.white);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;G.setXORMode(Color.blue);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void drawStick(int num, int stick)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;G.drawLine(sX1[num],sY1[num],sX2[num],sY2[num]);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(stick==Chopstick.gold)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;G.fillOval(sX1[num]-rg,sY1[num]-rg,rg+rg,rg+rg);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C.repaint();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void drawEat(int num)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fillCircle(num,rEating);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void drawThink(int num)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fillCircle(num,rThinking);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void drawFirstGrab(int num)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fillSquare(num,rFirst);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The class <TT>ScenePainter</TT> is
+used to draw the state of all the philosophers in the Dining Philosophers
+applet.
+<UL>
+<LI><TT>public ScenePainter(Graphics, Component,
+int)</TT>&nbsp;&nbsp;The constructor for this class calculates
+the position of each philosopher and chopstick.
+<LI><TT>void drawStick(num, stick)</TT>&nbsp;&nbsp;This
+method draws/erases the chopstick specified by <TT>num</TT>.
+A stick is represented by drawing a line between the two philosophers
+that may use it. If <TT>stick</TT>
+is the <TT>gold</TT> chopstick, a
+small circle is added to the end of the chopstick.
+<LI><TT>void drawEat(num)</TT>&nbsp;&nbsp;This
+method draws/erases the philosopher specified by <TT>num</TT>
+in its eating state. A large circle represents the eating state.
+<LI><TT>void drawThink(num)</TT>&nbsp;&nbsp;This
+method draws/erases a small circle that represents a philosopher
+in its thinking state.
+<LI><TT>void drawFirstGrab(num)</TT>&nbsp;&nbsp;This
+method draws/erases a small square. The method is called when
+the philosopher tries to grab the first stick.
+<LI><TT>void drawSecondGrab(num)</TT>&nbsp;&nbsp;This
+method erases/draws a smaller square inside the square drawn by
+<TT>drawFirstGrab(num)</TT>. The method
+is called after the philosopher already has one chopstick and
+is trying to grab the second. A philosopher in this state is represented
+by a small hollow square.
+<LI><TT>void drawGoldGrab(num)</TT>&nbsp;&nbsp;This
+method is called if the first stick the philosopher picked up
+is the <TT>gold</TT> stick. It is
+only called after both <TT>drawFirstGrab(num)</TT>
+and <TT>drawSecondGrab(num)</TT> have
+been called. A philosopher in this state is represented by a small
+hollow square with a tiny circle in the middle.
+</UL>
+<H2><A NAME="Summary"><B><FONT SIZE=5 COLOR=#FF0000>Summary</FONT></B></A>
+</H2>
+<P>
+Threads are the life in an applet. Some threads are created by
+the system, but others are started in the applet. Threads can
+be started to remove some of the burden from a system thread,
+or to start its own line of execution.
+<P>
+This chapter contained several applets that started threads. The
+examples showed specific uses of threads that can be expanded
+to general use. Most threading problems can be solved by using
+slight variations of the first two examples. These examples have
+threads that do not communicate with other threads. If threads
+need to communicate with each other, care must be taken to avoid
+data corruption. The third example shows data corruption and the
+steps that must be taken to avoid it. The forth example shows
+how two threads can be synchronized so that they can do things
+in the right order. The final example, the Dining Philosophers,
+shows many of the subtle problems in a multithreaded environment.
+If threads in an applet compete for common resources, a deadlock
+can occur unless care is taken to avoid it. The examples in this
+chapter are just that, examples. The reader is encouraged to experiment
+with them, tweak some of the parameters, add more threads, but
+most of all, have fun.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

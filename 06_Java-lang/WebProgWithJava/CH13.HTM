@@ -1,0 +1,2375 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 13</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>General Purpose Classes</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+
+<UL>
+<LI><A HREF="#WhatsinThisChapter" >What's in This Chapter</A>
+<UL>
+<LI><A HREF="#LinkedListsQueuesSearchTreesand" >Linked Lists, Queues, Search Trees, and Other Dynamic Data Structures</A>
+</UL>
+<LI><A HREF="#UsingtheUtilitiesPackage" >Using the Utilities Package</A>
+<UL>
+<LI><A HREF="#Enumeration" >Enumeration</A>
+<LI><A HREF="#Observer" >Observer</A>
+</UL>
+<LI><A HREF="#Classes" >Classes</A>
+<UL>
+<LI><A HREF="#BitSet" >BitSet</A>
+<LI><A HREF="#Date" >Date</A>
+<LI><A HREF="#Random" >Random</A>
+<LI><A HREF="#StringTokenizer" >StringTokenizer</A>
+<LI><A HREF="#Vector" >Vector</A>
+<LI><A HREF="#Stack" >Stack</A>
+<LI><A HREF="#Dictionary" >Dictionary</A>
+<LI><A HREF="#Hashtable" >Hashtable</A>
+<LI><A HREF="#Properties" >Properties</A>
+<LI><A HREF="#Observable" >Observable</A>
+</UL>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+In this chapter, you will learn about the <TT>java.util</TT>
+package of classes in the Java class library. These classes implement
+many of those features or functions usually left for the programmer
+or someone else to implement. In programming experiences, I regularly
+find myself saying: &quot;It would be so much easier if there
+were a built-in object that would do <I>some common but complicated
+task</I>.&quot; The <TT>java.util</TT>
+package is a well-designed and effective attempt to satisfy many
+of these specialized needs.
+<P>
+In many languages you will find yourself implementing a stack
+or a hash table class and all of the corresponding methods. Java
+has an already built-in stack type, which will enable you to quickly
+and efficiently include your own stack data structures in your
+Java programs. This frees you to deal with more important design
+and implementation issues. These classes are also useful in a
+variety of other ways and are the fundamental building blocks
+of the more complicated data structures used in other Java packages
+and in your own applications.
+<H2><A NAME="WhatsinThisChapter"><B><FONT SIZE=5 COLOR=#FF0000>What's
+in This Chapter</FONT></B></A></H2>
+<P>
+This chapter covers
+<UL>
+<LI>Each of the features of the utilities package
+<LI>The implementation of each of the different classes in the
+package
+</UL>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Unless otherwise noted, all of the interfaces and classes discussed in this chapter extend the <TT>java.lang.Object</TT> class.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Table 13.1 shows the classes that are part of the utilities package
+that will be discussed.<BR>
+<P>
+<CENTER><B>Table 13.1. Utilities package classes.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Class</I></TD><TD WIDTH=358><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>BitSet</TT>
+</TD><TD WIDTH=358>Implements a collection of binary values</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>Date</TT></TD>
+<TD WIDTH=358>Date and time data storage and use</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>Dictionary</TT>
+</TD><TD WIDTH=358>Used to store a collection of key and value pairs
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>Hashtable</TT>
+</TD><TD WIDTH=358>Used to store a hash table</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>Observable</TT>
+</TD><TD WIDTH=358>Used to store observable data</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>Properties</TT>
+</TD><TD WIDTH=358>Storage and use of a properties list that can be saved
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>Random</TT>
+</TD><TD WIDTH=358>Used to generate a pseudo-random number</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>Stack</TT></TD>
+<TD WIDTH=358>A class to store and implement a stack</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>StringTokenizer</TT>
+</TD><TD WIDTH=358>Used to tokenize a string</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>Vector</TT>
+</TD><TD WIDTH=358>Used to store a vector data type</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+You may not be familiar with some of these data types. The <TT>Dictionary</TT> class is used to implement a dictionary in your program. A hash table is a storage data type whose speed in searching is much greater than that of other data structures because it stores data items based on a key derived from some given formula. A stack, of course, functions as if you were stacking data items on the floor one upon the other in a single stack. As a consequence, the only two manipulations you can make to the stack are to remove the top item or to place another on top. The <TT>Vector</TT> class implements an interesting data structure that has the capability to begin with a limited capacity and then change in size to accommodate the data items you insert into it. It can be descibed as a &quot;growable array.&quot;
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="LinkedListsQueuesSearchTreesand"><B>Linked Lists,
+Queues, Search Trees, and Other Dynamic Data Structures</B></A>
+</H3>
+<P>
+One would expect that the <TT>Vector</TT>
+class, as described previously, would eliminate the necessity
+for creating your own data structures. But there may be times
+when you might want to conserve space to the maximum or access
+your data in a specialized way. In these cases, there is a technique
+to implement such data structures in Java.
+<P>
+As you learned before, Java has no pointers. Since dynamically
+linked lists and queues are implemented using pointers, is it
+then impossible to create these two data structures in Java? Not
+quite. Just as with many other tasks in Java, you need to do a
+little &quot;funky stepping&quot; to get it right, because the
+implementation of lists, queues, and other dynamic data structures
+is not intuitive.
+<P>
+To define your own dynamic data structures, you will want to make
+use of the fact that references to <I>objects</I> in Java are
+already dynamic. This is demonstrated and necessitated by the
+practices Java utilizes, such as interfaces and abstract implementations.
+<P>
+If you are accustomed to implementing dynamically linked lists
+or queues in C++, the format you will use to create your own version
+of these structures should seem very familiar to you. For example,
+the following creates a <TT>Node</TT>
+class for the list that contains a string:
+<BLOCKQUOTE>
+<TT>class Node {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;String Name;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Node Prev;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Node Next;<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+This would be a <I>doubly linked list</I>, which has links backward
+and forward to other nodes containing strings. You could just
+as easily convert this type to link objects in just about any
+way to exhibit just about any behavior you want: queues, stacks
+(remember, there is already a <TT>Stack</TT>
+object in the class library), doubly linked lists, circular lists,
+binary search trees, and the list goes on.
+<P>
+To implement such a list, you could create a <TT>DoubleList</TT>
+class that would contain one such <TT>Node</TT>
+object and links strung out from there. You can use the keyword
+<TT>null</TT> to represent an empty
+object. Here is an example of the <TT>DoubleList</TT>
+declaration:
+<BLOCKQUOTE>
+<TT>class DoubleList {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Declare the listhead to be of the Node
+type we created above.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Also, set it to be an empty object.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Node ListHead = null;<BR>
+.<BR>
+.<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Next you create methods to act upon the list, such as <TT>InsertNode</TT>
+or <TT>ClearMyListJerk</TT>-whatever
+you want.
+<P>
+You would also probably want to create a constructor method for
+the <TT>Node</TT> class that would
+accept parameters to set the previous and next nodes at construction
+time; or you could create a method such as <TT>SetNext</TT>
+or <TT>SetNextToNull</TT>. Either
+way would work just fine.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Out of all this you get a surprise bonus: No worry about freeing space allocated to create nodes because the Java Garbage Collection processes take care of all that for you. Just create <I>objects</I> when you need them, and then let Java take care of it.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="UsingtheUtilitiesPackage"><B><FONT SIZE=5 COLOR=#FF0000>Using
+the Utilities Package</FONT></B></A></H2>
+<P>
+The utilities package has two interfaces that can be used in classes
+of your own design: <TT>Enumeration</TT>
+and <TT>Observer</TT>. An interface
+is a set of methods that must be written for any class that claims
+to <I>implement</I> the interface. This provides a way to consistently
+use all classes that implement the interface. The following list
+summarizes the <TT>Enumeration</TT>
+and <TT>Observer</TT> interfaces:
+<BR>
+<P>
+<CENTER><TABLE>
+<TR VALIGN=TOP><TD><TT>Enumeration</TT>
+</TD><TD WIDTH=445>Interface for classes that can enumerate a vector
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=145><TT>Observer</TT>
+</TD><TD WIDTH=445>Interface for classes that can observe observable objects
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>Enumeration</TT> interface
+is used for classes that can retrieve data from a list, element
+by element. For example, there is an <TT>Enumeration</TT>
+class in the utilities package that implements the <TT>Enumeration</TT>
+interface for use in conjunction with the <TT>Vector</TT>
+class. This frees you from hard-core traversal of the different
+classes of data structures.
+<P>
+The <TT>Observer</TT> interface is
+useful in designing classes that can watch for changes that occur
+in other classes.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Some of the examples in this chapter are not applets, but applications. Many of these data structures are best exhibited by just plain text input and output. Removing the baggage that would have come along with applets allowed the examples to be simplified so that the topic being demonstrated would be clearer.</BLOCKQUOTE>
+<BLOCKQUOTE>
+When you are applying any code segments from this chapter in your own applets, remember that some of the examples here are not true applets and you need to deal with the differences inherent between them.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="Enumeration"><TT><B><FONT SIZE=4>Enumeration</FONT></B></TT></A>
+</H3>
+<P>
+This interface specifies a set of methods used to enumerate-that
+is, iterate through-a list. An object that implements this interface
+may be used to iterate through a list only once because the <TT>Enumeration</TT>
+object is consumed through its use.
+<P>
+For example, an <TT>Enumeration</TT>
+object can be used to print all the elements of a <TT>Vector</TT>
+object, <TT>v</TT>, as follows:
+<BLOCKQUOTE>
+<TT>for (Enumeration e=v.elements();e.hasMoreElements();)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(e.nextElement()+&quot;
+&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>Enumeration</TT> interface
+specifies only two methods: <TT>hasMoreElements()</TT>
+and <TT>nextElement()</TT>. The <TT>hasMoreElements()</TT>
+method must return <TT>True</TT> if
+there are elements remaining in the enumeration. The <TT>nextElement()</TT>
+method must return an object representing the next element within
+the object that is being enumerated. The details of how the <TT>Enumeration</TT>
+interface is implemented and how the data is represented internally
+are left up to the implementation of the specific class.
+<H3><TT><B><FONT SIZE=4><A NAME="Observer">Observer</A></FONT></B></TT>
+</H3>
+<P>
+This interface, if implemented by a class, allows an object of
+the class to observe other objects of the class <TT>Observable</TT>.
+The <TT>Observer</TT> is notified
+whenever the <TT>Observable</TT> object
+that it is watching has been changed.
+<P>
+The interface only specifies one method, <TT>update(Observable,
+Object)</TT>. This method is called by the observed object
+to notify the <TT>Observer</TT> of
+changes. A reference to the observed object is passed along with
+any additional object that the observed object wishes to pass
+to the <TT>Observer</TT>. The first
+argument enables the <TT>Observer</TT>
+to operate on the observed object, while the second argument is
+used to pass information from the observed to the <TT>Observer</TT>.
+<H2><A NAME="Classes"><B><FONT SIZE=5 COLOR=#FF0000>Classes</FONT></B></A>
+</H2>
+<P>
+The utilities package supplies ten different classes that provide
+a wide variety of functionality. Although these classes don't
+generally have much in common, they all provide support for the
+most common data structures used by programmers. The techniques
+described next will enable you to create your own specialized
+classes to supplement those missing.
+<P>
+The classes supplied in the <TT>java.util</TT>
+package, however limited, do provide a great advantage over previous
+languages. The main advantage is that these classes simplify some
+things and eliminate a lot of the garbage that you were stuck
+with in the past, in terms of freeing memory and doing mundane
+programming tasks.
+<P>
+However, there are a number of limitations. For example, you have
+to &quot;dance a little bit&quot; to implement some of the more
+complicated data structures. Also, if you want speed, there are
+much faster languages to choose from. Java provides a combination
+of power and simplicity while sacrificing speed. However, don't
+worry that your programs will be slugs. Although Java is not nearly
+as efficient as C++ and C, it still beats Visual Basic in terms
+of size and speed.
+<H3><A NAME="BitSet"><TT><B><FONT SIZE=4>BitSet</FONT></B></TT></A>
+</H3>
+<P>
+This class implements a data type that represents a collection
+of bits. The collection will grow dynamically as more bits are
+required. It is useful for representing a set of <TT>True/False</TT>
+values. Specific bits are identified using non-negative integers.
+The first bit is bit 0.
+<P>
+This class is most useful for storing a group of related <TT>True/False</TT>
+values, such as user responses to <TT>Yes/No</TT>
+questions. For example, if the applet had a number of radio buttons,
+you could slap those values into an instance of the <TT>BitSet</TT>
+class.
+<P>
+It is also useful in terms of bitmapping your own graphics. You
+can create bitsets that can represent a pixel at a time (of course,
+it would be much easier to use the <TT>Graphics</TT>
+class instead).
+<P>
+Individual bits in the set are turned on or off with the <TT>set()</TT>
+and <TT>clear()</TT> methods, respectively.
+Individual bits are queried with the <TT>get()</TT>
+method. These methods all take the specific bit number as their
+only argument. The basic Boolean operations <TT>AND</TT>,
+<TT>OR</TT>, and <TT>XOR</TT>
+can be performed on two <TT>BitSets</TT>
+using the <TT>and()</TT>, <TT>or()</TT>,
+and <TT>xor()</TT> methods. Because
+these methods modify one of the <TT>BitSets</TT>,
+one generally will use the <TT>clone()</TT>
+method to create a duplicate of one, and then <TT>AND</TT>,
+<TT>OR</TT>, or <TT>XOR</TT>
+the clone with the second <TT>BitSet</TT>.
+The result of the operation then will end up in the cloned <TT>BitSet</TT>.
+The <TT>BitSet1</TT> program in Listing
+13.1 illustrates the basic <TT>BitSet</TT>
+operations.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.1. </B><TT><B>BitSet1.java</B></TT><B>-</B><TT><B>BitSet</B></TT><B>
+sample program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.io.DataInputStream;<BR>
+import java.util.BitSet;<BR>
+<BR>
+class BitSet1 {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String args[])
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throws java.io.IOException
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream
+dis=new DataInputStream(System.in);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String bitstring;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BitSet set1,set2,set3;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set1=new BitSet();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set2=new BitSet();
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Get the first
+bit sequence and store it<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Bit
+sequence #1:&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bitstring=dis.readLine();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (short i=0;i&lt;bitstring.length();i++){
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if
+(bitstring.charAt(i)=='1')<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set1.set(i);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set1.clear(i);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Get the second
+bit sequence and store it<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Bit
+sequence #2:&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bitstring=dis.readLine();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (short i=0;i&lt;bitstring.length();i++){
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if
+(bitstring.charAt(i)=='1')<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set2.set(i);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set2.clear(i);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;BitSet
+#1: &quot;+set1);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;BitSet
+#2: &quot;+set2);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Test the AND
+operation<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set3=(BitSet)set1.clone();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set3.and(set2);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;set1
+AND set2: &quot;+set3);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Test the OR
+operation<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set3=(BitSet)set1.clone();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set3.or(set2);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;set1
+OR set2: &quot;+set3);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Test the XOR
+operation<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set3=(BitSet)set1.clone();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set3.xor(set2);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;set1
+XOR set2: &quot;+set3);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The output from this program looks like this:
+<BLOCKQUOTE>
+<TT>Bit sequence #1:<BR>
+1010<BR>
+Bit sequence #2:<BR>
+1100<BR>
+BitSet #1: {0, 2}<BR>
+BitSet #2: {0, 1}<BR>
+set1 AND set2: {0}<BR>
+set1 OR set2: {0, 1, 2}<BR>
+set1 XOR set2: {1, 2}</TT>
+</BLOCKQUOTE>
+<P>
+Table 13.2 summarizes all the various methods available in the
+<TT>BitSet</TT> class.
+<P>
+<CENTER><B>Table 13.2. The </B><TT><B>BitSet</B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=547><CENTER><I>Constructors</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>BitSet()</TT>
+</TD><TD WIDTH=390>Constructs an empty <TT>BitSet</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>BitSet(int)</TT>
+</TD><TD WIDTH=390>Constructs an empty <TT>BitSet</TT> of a given size
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=547><CENTER><I>Methods</I></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>and(BitSet)</TT>
+</TD><TD WIDTH=390>Logically <TT>AND</TT>s the object's bit set with another <TT>BitSet</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>clear(int)</TT>
+</TD><TD WIDTH=390>Clears a specific bit</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>clone()</TT>
+</TD><TD WIDTH=390>Creates a clone of the <TT>BitSet</TT> object
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>equals(Object)</TT>
+</TD><TD WIDTH=390>Compares this object against another <TT>BitSet</TT> object
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>get(int)</TT>
+</TD><TD WIDTH=390>Returns the value of a specific bit</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>hashCode()</TT>
+</TD><TD WIDTH=390>Returns the hash code</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>or(BitSet)</TT>
+</TD><TD WIDTH=390>Logically <TT>OR</TT>s the object's bit set with another <TT>BitSet</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>set(int)</TT>
+</TD><TD WIDTH=390>Sets a specific bit</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>size()</TT>
+</TD><TD WIDTH=390>Returns the size of the set</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>toString()</TT>
+</TD><TD WIDTH=390>Converts bit values to a string representation
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>xor(BitSet)</TT>
+</TD><TD WIDTH=390>Logically <TT>XOR</TT>s the object's bit set with another <TT>BitSet</TT>
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+In addition to extending the <TT>java.lang.Object</TT>
+class, <TT>BitSet</TT> implements
+the <TT>java.lang.Cloneable</TT> interface.
+This, of course, allows instances of the object to be cloned to
+create another instance of the class.
+<H3><A NAME="Date"><TT><B><FONT SIZE=4>Date</FONT></B></TT></A>
+</H3>
+<P>
+You will regularly run into instances in which you will need to
+access and manipulate dates and times in your applets on the Web.
+For example, you might want an applet to display the current time
+or date during its execution. Or, if you are programming a game,
+you can use the system clock to get your elapsed time right.
+<P>
+The <TT>Date</TT> class is used to
+represent dates and times in a platform-independent fashion. For
+example, the current date or a specific date can be printed as
+shown in Listing 13.2.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.2. </B><TT><B>Date1.java</B></TT><B>-</B><TT><B>Date</B></TT><B>
+sample program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.util.Date;<BR>
+<BR>
+public class Date1{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main (String args[]){
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date today=new
+Date();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Today
+is &quot;+today.toLocaleString()+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;
+(&quot;+today.toGMTString()+&quot;)&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date birthday=new
+Date(89,10,14,8,30,00);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;My
+birthday is&quot;+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;birthday.toString()+&quot;
+(&quot;+birthday.toGMTString()+&quot;)&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date anniversary=new
+Date(&quot;Jun 21, 1986&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;My
+anniversary is &quot;+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;anniversary+&quot;
+(&quot;+anniversary.toGMTString()+&quot;)&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The output from this program looks like this:
+<BLOCKQUOTE>
+<TT>Today is 01/21/96 19:55:17 (22 Jan 1996
+01:55:17 GMT)<BR>
+My birthday is Thu Nov 14 08:30:00  1989 (14 Nov 1989 14:30:00
+GMT)<BR>
+My anniversary is Sat Jun 21 00:00:00  1989 (21 Jun 1986 05:00:00
+GMT)</TT>
+</BLOCKQUOTE>
+<P>
+The default constructor is used when the current date and time
+are needed. A specific date and time can be used to initialize
+a <TT>Date</TT> object using the constructors
+that take three, five, and six integers. These constructors allow
+the date and time to be specified using YMD, YMDHM, or YMDHMS.
+Any parts of the time not specified by the three- and five-integer
+constructors will be set to zero.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+<TT>Date/time</TT> formats can be conveniently summarized using notations of the form YMD, YMDHMS, HMS, or MDY. These abbreviated formats indicate in what order the various numeric parts of the date will appear. Each letter refers to a specific component of the <TT>date/time</TT>: year (Y), month (M), day (D), hour (H), minute (M), and second (S). Whether the letter M refers to month or minute depends on the context.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Alternately, a <TT>Date</TT> object
+can be constructed using a single string that represents a date
+and time using a variety of different syntax. One of the most
+important is the international standard date syntax of the form,
+&quot;Sun, 14 Aug 1995 9:00:00 GMT.&quot; Continental U.S. time
+zone abbreviations are understood, but time zone offsets should
+be considered for general use; for example, &quot;Sun, 14 Aug
+1995 9:00:00 GMT+0600&quot; (six hours west of the Greenwich meridian).
+The local time zone to the computer executing the code is assumed
+if none is supplied.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The <TT>Date</TT> class intends to store date and time information in UTC (Coordinated Universal Time). However, it does not necessarily achieve this goal. UTC is a time standard based on an atomic clock. Time specifications using UTC are considered equal to GMT (Greenwich Mean Time). The implementation of the Date class is limited by the time set by the underlying operating system. Because modern operating systems typically assume that a day is always 86,400 seconds, the extra leap seconds, which are needed about once a year to accurately reflect UTC, usually are not added.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The date can be converted to a text representation using the methods
+<TT>toString()</TT>, <TT>toGMTString()</TT>,
+and <TT>toLocaleString()</TT>, which
+convert the date and time to the standard UNIX, GMT, or local
+time formats, respectively. The <TT>toLocaleString</TT>
+function is very useful since you do not have to determine what
+your system's date format is. This may not sound like much, but
+it is just another piece of the very complicated puzzle that Sun
+has put together to allow your applets and applications to flow
+seamlessly into the system on which they are running.
+<P>
+When a date is being converted to a string by an automatic coercion,
+the <TT>toString()</TT> method will
+be used. The resulting string returned by the <TT>toString</TT>
+function follows UNIX time and date standards.
+<P>
+The <TT>Date</TT> class also has methods
+for setting and querying the date and time component values once
+the <TT>Date</TT> object is constructed.
+The individual parts of the date (month, date, year) and time
+(hours, minutes, seconds) are always specified in local time.
+When referring to the various parts of the date and time, the
+first letter of each part typically is used in an abbreviation.
+For example, YMDHMS would indicate that all six parts (year, month,
+date, hour, minute, second) are present. Each of these parts of
+the date and time have a specific range of acceptable values,
+as illustrated in Table 13.3.
+<P>
+<CENTER><B>Table 13.3. Date component ranges.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=69>Year</TD><TD WIDTH=133>Year minus 1900</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=69>Month</TD><TD WIDTH=133>0-11 (January=0)</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=69>Date</TD><TD WIDTH=133>1-31</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=69>Day</TD><TD WIDTH=133>0-6 (Sunday=0)</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=69>Hour</TD><TD WIDTH=133>0-23</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=69>Minute</TD><TD WIDTH=133>0-59</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=69>Second</TD><TD WIDTH=133>0-59</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The date and time also can be specified using a single integer
+UTC value that represents the number of milliseconds that have
+elapsed since a specific starting date (which might vary from
+system to system). For UNIX systems this date is January 1, 1970.
+The program <TT>Date2</TT> in Listing
+13.3 shows how this single value corresponds to the normal YMDHMS
+representation.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.3. </B><TT><B>Date2.java</B></TT><B>-</B><TT><B>Date</B></TT><B>
+sample program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.util.Date;<BR>
+<BR>
+public class Date2{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main (String args[]){
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date beginning=new
+Date(0);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date anniversary=new
+Date(&quot;Jun 21, 1986&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date today=new
+Date();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(beginning+&quot;=&quot;+beginning.getTime());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(anniversary+&quot;=&quot;+anniversary.getTime());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(today+&quot;=&quot;+today.getTime());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The output from this program looks like this:
+<BLOCKQUOTE>
+<TT>Wed Dec 31 18:00:00  1969=0<BR>
+Sat Jun 21 00:00:00  1986=519714000000<BR>
+Sun Jan 21 19:55:17  1996=822275717000</TT>
+</BLOCKQUOTE>
+<P>
+Dates can be compared to each other by using this UTC value or
+by using the methods <TT>after()</TT>,
+<TT>before()</TT>, or <TT>equals()</TT>.
+<BR>
+<BR>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Don't try to launch space shuttles or coordinate nuclear attacks based on your operating system's local time as reflected by Java. Although the API is intended to reflect UTC it doesn't do so exactly. This inexact behavior is inherited from the time system of the underlying OS. The vast majority of all modern operating systems assume that 1 day = 3600 seconds <FONT FACE="Symbol">&#165;</FONT> 24 hours, and as such, they reflect time to the accuracy that UTC does.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Under the UTC, about once a year there is an extra second, called a &quot;leap second,&quot; added to account for the wobble of the earth. Most computer clocks are not accurate enough to reflect this distinction.</BLOCKQUOTE>
+<BLOCKQUOTE>
+Between UTC and standard OS time (UT/GMT), there is this subtle difference; one is based on an atomic clock and the other is based on astronomical observations, which for all practical purposes is an invisibly fine hair to split.</BLOCKQUOTE>
+<BLOCKQUOTE>
+For more information, Sun suggests you visit the U.S. Naval Observatory site, particularly the Directorate of Time at <TT><A TARGET="resource window" HREF="http://tycho.usno.navy.mil">http://tycho.usno.navy.mil</A></TT> and their definitions of different systems of time at <TT>http://tycho.usno.navy.mil/systime.html</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Table 13.4 summarizes everything available in the <TT>Date</TT>
+class.
+<P>
+<CENTER><B>Table 13.4. The </B><TT><B><FONT SIZE=1>Date</FONT></B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Constructors</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>Date()</TT>
+</TD><TD WIDTH=349>Constructs a date using today's date and time
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>Date(long)</TT>
+</TD><TD WIDTH=349>Constructs a date using a single UTC value
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>Date(int, int, int)</TT>
+</TD><TD WIDTH=349>Constructs a date using YMD</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>Date(int, int, int, int, int)</TT>
+</TD><TD WIDTH=349>Constructs a date using YMDHM</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>Date(int, int, int, int, int, int)</TT>
+</TD><TD WIDTH=349>Constructs a date using YMDHMS</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>Date(string)</TT>
+</TD><TD WIDTH=349>Constructs a date from a string</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Static Methods</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>UTC(int, int, int, int, int, int)</TT>
+</TD><TD WIDTH=349>Calculates a UTC value from YMDHMS</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>parse(string)</TT>
+</TD><TD WIDTH=349>Returns the single UTC value of a date in text format
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Methods</I></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>after(Date)</TT>
+</TD><TD WIDTH=349>True if the date is later than the specified date
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>before(Date)</TT>
+</TD><TD WIDTH=349>True if the date is earlier than the specified date
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>equals(Object)</TT>
+</TD><TD WIDTH=349>True if the date and the specified date are equal
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>getDate()</TT>
+</TD><TD WIDTH=349>Returns the day of the month</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>getDay()</TT>
+</TD><TD WIDTH=349>Returns the day of the week</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>getHours()</TT>
+</TD><TD WIDTH=349>Returns the hour</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>getMinutes()</TT>
+</TD><TD WIDTH=349>Returns the minute</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>getMonth()</TT>
+</TD><TD WIDTH=349>Returns the month</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>getSeconds()</TT>
+</TD><TD WIDTH=349>Returns the second</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>getTime()</TT>
+</TD><TD WIDTH=349>Returns the time as a single UTC value</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>getTimezoneOffset()</TT>
+</TD><TD WIDTH=349>Returns the time zone offset, in minutes, for this locale
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>getYear()</TT>
+</TD><TD WIDTH=349>Returns the year after 1900</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>hashCode()</TT>
+</TD><TD WIDTH=349>Computes a hash code for the date</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>setDate(int)</TT>
+</TD><TD WIDTH=349>Sets the date</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>setHours(int)</TT>
+</TD><TD WIDTH=349>Sets the hours</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>setMinutes(int)</TT>
+</TD><TD WIDTH=349>Sets the minutes</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>setMonth(int)</TT>
+</TD><TD WIDTH=349>Sets the month</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>setSeconds(int)</TT>
+</TD><TD WIDTH=349>Sets the seconds</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>setTime(long)</TT>
+</TD><TD WIDTH=349>Sets the time using a single UTC value</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>setYear(int)</TT>
+</TD><TD WIDTH=349>Sets the year</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>toGMTString()</TT>
+</TD><TD WIDTH=349>Converts a date to text using Internet GMT conventions
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>toLocaleString()</TT>
+</TD><TD WIDTH=349>Converts a date to text using locale conventions
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=241><TT>toString()</TT>
+</TD><TD WIDTH=349>Converts a date to text using UNIX <TT>ctime()</TT> conventions
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+One of the most helpful methods available in the <TT>Date</TT>
+class is the <TT>parse</TT> method.
+This void takes an instance of the <TT>String</TT>
+type and then <TT>parse</TT>s that
+string. The result of that <TT>parse</TT>
+is then placed in the calling instance of the class. If you had
+a date called <TT>ADate</TT>, you
+could set its value to be the date in the <TT>SomeString</TT>
+class with the code line:
+<BLOCKQUOTE>
+<TT>ADate.parse(SomeString);</TT>
+</BLOCKQUOTE>
+<P>
+You will also find the <TT>before</TT>
+and <TT>after</TT> functions useful.
+They enable you to send in another instance of the <TT>Date</TT>
+class and then compare that date to the value in the calling instance.
+The sample applet in Listing 13.4 demonstrates the use of the
+<TT>Date</TT> class in your own applet.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.4. Using the </B><TT><B>Date</B></TT><B>
+class.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.util.*;<BR>
+<BR>
+public class MichaelSimpleClock extends java.applet.Applet {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Date TheDate = new Date();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Button DateButton = new Button(<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Click
+me!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void init()&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(DateButton);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public boolean handleEvent(Event e) {
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (e.target ==
+DateButton) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DateButton.setLabel(TheDate.toString());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Figure 13.1 is a screenshot of the <TT>MichaelSimpleClock</TT>
+applet. Note that the clock in the applet is wrong: it is not
+actually 8:00 am. There is no way I would write that early in
+the morning.
+<P>
+<A HREF="f13-1.gif" ><B>Figure 13.1 : </B><I>The MichaelSimpleClock applet.</I></A>
+<P>
+What about a real-time clock that updates as the clock changes?
+To accomplish this small feat, you need to include in the applet
+a loop that has each iteration reconstructing the internal <TT>Date</TT>
+instance. Then, regularly<TT> repaint</TT>
+that value inside the applet's <TT>paint</TT>
+method. You'll also need to include <I>threading</I> to prevent
+locking up your system during the applet's execution. <I>Threading</I>
+will not be covered until a later chapter, so a real-time clock
+was not included in this section.
+<H3><A NAME="Random"><TT><B><FONT SIZE=4>Random</FONT></B></TT></A>
+</H3>
+<P>
+Essential to the programming of games and many other program types
+is the capability to generate random numbers. Java includes the
+capability to generate random numbers efficiently and effectively.
+<P>
+The <TT>Random</TT> class implements
+a pseudo-random number data type used to generate a stream of
+seemingly random numbers. To create a sequence of different pseudo-random
+values each time the application is run, create the <TT>Random</TT>
+object as follows:
+<BLOCKQUOTE>
+<TT>Random r=new Random();</TT>
+</BLOCKQUOTE>
+<P>
+This will seed the random generator with the current time. On
+the other hand, consider the following statement:
+<BLOCKQUOTE>
+<TT>Random r=new Random(326);&nbsp;&nbsp;&nbsp;&nbsp;//
+Pick any value</TT>
+</BLOCKQUOTE>
+<P>
+This will seed the random generator with the same value each time,
+resulting in the same sequence of pseudo-random numbers each time
+the application is run. The generator can be reseeded at any time
+using the <TT>setSeed()</TT> method.
+<BR>
+<BR>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Want to get really random numbers? Well, you can't. But a common practice to simulate actual random numbers in computer programs is to seed the random number generator with some variant of the current time or date. If, for example, you wanted to seed a random number generator with the sum of the current seconds, minutes, and hours, you could say:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>int OurSeed = ADate.getSeconds() + ADate.getHours() + ADate.getMinutes();<BR>
+Random = new Random(OurSeed);</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+This should suffice for most tasks.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Pseudo-random numbers can be generated by using one of these functions:
+<TT>nextInt()</TT>, <TT>nextLong()</TT>,
+<TT>nextFloat()</TT>, <TT>nextDouble()</TT>,
+or <TT>nextGaussian()</TT>. The first
+four functions return <I>integers</I>, <I>longs</I>, and so on.
+(For more information on the <TT>Gaussian</TT>
+distribution, see the next Note.) For example, the program <TT>Random1</TT>
+in Listing 13.5 will print out five pseudo-random uniformly distributed
+values using these functions.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.5. </B><TT><B>Random1.java</B></TT><B>-</B><TT><B>Random</B></TT><B>
+sample program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.lang.Math;<BR>
+import java.util.Date;<BR>
+import java.util.Random;<BR>
+<BR>
+class Random1 {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String args[])
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throws java.io.IOException
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int count=6;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Random randGen=new
+Random();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Uniform
+Random Integers&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=0;i&lt;count;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(randGen.nextInt()+&quot;
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;\n&quot;);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Uniform
+Random Floats&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=0;i&lt;count;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(randGen.nextFloat()+&quot;
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;\n&quot;);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Gaussian
+Random Floats&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=0;i&lt;count;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(randGen.nextGaussian()+&quot;
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;\n&quot;);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Uniform
+Random Integers [1,6]&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=0;i&lt;count;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print((Math.abs(randGen.nextInt())%6+1)+&quot;
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;\n&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The output from the preceding program looks like this:
+<BLOCKQUOTE>
+<TT>Uniform Random Integers<BR>
+1704667569 -1431446235 1024613888 438489989 710330974 -1689521238
+<BR>
+<BR>
+Uniform Random Floats<BR>
+0.689189 0.0579988 0.0933537 0.748228 0.400992 0.222109<BR>
+<BR>
+Gaussian Random Floats<BR>
+-0.201843 -0.0111578 1.63927 0.205938 -0.365471 0.626304<BR>
+<BR>
+Uniform Random Integers [1,6]<BR>
+4 6 1 6 3 2</TT>
+</BLOCKQUOTE>
+<P>
+If you need to generate uniformly distributed random integers
+within a specific range, the output from <TT>nextInt()</TT>,
+<TT>nextLong()</TT>, or <TT>nextDouble()</TT>
+can be scaled to match the required range. A simpler approach
+is to take the remainder of the result of <TT>nextInt()</TT>
+divided by the number of different values plus the first value
+of the range. For example, if the values 10 to 20 are needed one
+can use the formula <TT>nextInt()%21+10</TT>.
+Unfortunately, although this method is much simpler than scaling
+the output of <TT>nextInt()</TT>,
+it only is guaranteed to work on truly random values. Because
+the pseudo-random generator might have various undesired correlations,
+the <TT>modulus</TT> operator might
+not provide acceptable results-one might get all odd numbers,
+for example. In other words, don't plan on simulating the detonation
+of your new H-bomb in Java because you might find yourself a couple
+of miles too close.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Uniformly distributed random numbers are generated using a modified linear congruential method with a 48-bit seed. Uniformly distributed random numbers within a given range will all appear with the same frequency. This class can also generate random numbers from a <TT>Gaussian</TT> or <TT>Normal</TT> distribution. The <TT>Gaussian</TT> frequency distribution curve is also referred to as a bell curve. For information on this, see Donald Knuth, <I>The Art of Computer Programming</I>, Volume 2, Section 3.2.1.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Table 13.5 summarizes the complete interface of the <TT>Random</TT>
+class.
+<P>
+<CENTER><B>Table 13.5. The </B><TT><B>Random</B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=536><CENTER>Constructors</CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>Random()</TT>
+</TD><TD WIDTH=379>Creates a new random number generator</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>Random(long)</TT>
+</TD><TD WIDTH=379>Creates a new random number generator using a seed
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=536><CENTER>Methods</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>nextDouble()</TT>
+</TD><TD WIDTH=379>Returns a pseudo-random uniformly distributed Double
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>nextFloat()</TT>
+</TD><TD WIDTH=379>Returns a pseudo-random uniformly distributed Float
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>nextGaussian()</TT>
+</TD><TD WIDTH=379>Returns a pseudo-random Gaussian distributed Double
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>nextInt()</TT>
+</TD><TD WIDTH=379>Returns a pseudo-random uniformly distributed Int
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>nextLong()</TT>
+</TD><TD WIDTH=379>Returns a pseudo-random uniformly distributed Long
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>setSeed(long)</TT>
+</TD><TD WIDTH=379>Sets the seed of the pseudo-random number generator
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Refer also to <TT>Random()</TT>.
+<P>
+The following applet, shown in Listing 13.6, demonstrates a bit
+of what you can do with <TT>Random</TT>.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.6. Using the </B><TT><B>Random</B></TT><B>
+Class.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.util.*;<BR>
+<BR>
+public class TheWanderer extends java.applet.Applet {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int xpos = 100;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int ypos = 100;
+<BR>
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Our current date.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Date D = new Date();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The movement
+button<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Button theButton
+= new Button(&quot;Click Me&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Our random
+number generator.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Random R;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public void init()
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(theButton);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setBackground(Color.white);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Our random
+number generator seeded with the current seconds.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int seed = D.getSeconds();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R
+= new Random(seed);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public boolean
+handleEvent (Event e) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if
+(e.target == theButton) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Move our thing.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xpos
+= xpos + (Math.abs(R.nextInt())%10-7);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ypos
+= ypos + (Math.abs(R.nextInt())%10-7);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+repaint the sucker.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;repaint();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return
+super.handleEvent(e);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics g) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.setColor(Color.black);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.fillOval(xpos,ypos,
+50, 50);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Figure 13.2 shows <TT>TheWanderer</TT>
+applet during its execution.
+<P>
+<A HREF="f13-2.gif" ><B>Figure 13.2 : </B><I>TheWanderer applet.</I></A>
+<H3><A NAME="StringTokenizer"><TT><B><FONT SIZE=4>StringTokenizer</FONT></B></TT></A>
+</H3>
+<P>
+This section will describe the function of the <TT>StringTokenizer</TT>
+class, which also could have been appropriately grouped with other
+classes in <A HREF="ch11.htm" >Chapter 11</A>, &quot;Reading and
+Writing with Java,&quot; since it is so vital to the input and
+output functions demonstrated in that chapter. This class enables
+you to <TT>parse</TT> a string into
+a number of smaller strings called <I>tokens</I>. This class works
+specifically for what is called &quot;delimited text,&quot; which
+means that each individual substring of the string is separated
+by a delimiter. The delimiter can be anything ranging from a &quot;<TT>*</TT>&quot;
+to &quot;<TT>YabaDaba</TT>&quot;.
+You simply specify what you want the class to look for when tokenizing
+the string.
+<P>
+This class is included here because it has uses that would prove
+helpful in everything from a spreadsheet applet to an arcade game
+applet.
+<P>
+The delimiter set can be specified when the <TT>StringTokenizer</TT>
+object is created, or it can be specified on a per-token basis.
+The default delimiter set is the set of <I>whitespace</I> characters.
+The class would then find all of the separate words in a string
+and tokenize them. For example, the <TT>StringTokenizer1</TT>
+code in Listing 13.7 prints out each word of the string on a separate
+line.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.7. StringTokenizer1.java-StringTokenizer sample
+program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.io.DataInputStream;<BR>
+import java.util.StringTokenizer;<BR>
+<BR>
+class StringTokenizer1 {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String args[])
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throws java.io.IOException
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream
+dis=new DataInputStream(System.in);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Enter
+a sentence: &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String s=dis.readLine();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StringTokenizer
+st=new StringTokenizer(s);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (st.hasMoreTokens())
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(st.nextToken());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Here is the output from this listing:
+<BLOCKQUOTE>
+<TT>Enter a sentence:<BR>
+Four score and seven<BR>
+Four<BR>
+score<BR>
+and<BR>
+seven</TT>
+</BLOCKQUOTE>
+<P>
+Pure excitement. The method <TT>countTokens()</TT>
+returns the number of tokens remaining in the string using the
+current delimiter set-that is, the number of times <TT>nextToken()</TT>
+can be called before generating an exception. This is an efficient
+method because it does not actually construct the substrings that
+<TT>nextToken()</TT> must generate.
+<P>
+In addition to extending the <TT>java.lang.object</TT>
+class, the <TT>StringTokenizer</TT>
+class implements the <TT>java.util.Enumeration</TT>
+interface.
+<P>
+Table 13.6 summarizes the methods of the <TT>StringTokenizer</TT>
+class.<BR>
+<P>
+<CENTER><B>Table 13.6. The </B><TT><B>StringTokenizer</B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Constructors</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>StringTokenizer</TT>
+</TD><TD WIDTH=405>Constructs a <TT>StringTokenizer</TT> given a string using
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>(string)</TT>
+</TD><TD WIDTH=405>whitespace as delimiters</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>StringTokenizer</TT>
+</TD><TD WIDTH=405>Constructs a <TT>StringTokenizer</TT> given a string and a
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>(string, string)</TT>
+</TD><TD WIDTH=405>delimiter set</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>StringTokenizer (string, string, boolean)</TT>
+</TD><TD WIDTH=405>Constructs a <TT>StringTokenizer</TT> given a string and a delimiter set
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Methods</I></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>countTokens()</TT>
+</TD><TD WIDTH=405>Returns the number of tokens remaining in the string
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>hasMoreTokens()</TT>
+</TD><TD WIDTH=405>Returns True if more tokens exist</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>nextToken()</TT>
+</TD><TD WIDTH=405>Returns the next token of the string</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>nextToken(string)</TT>
+</TD><TD WIDTH=405>Returns the next token, given a new delimiter set
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>hasMoreTokens()</TT>
+</TD><TD WIDTH=405>Returns True if more elements exist in the enumeration
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=186><TT>nextElement()</TT>
+</TD><TD WIDTH=405>Returns the next element of the enumeration using the current delimiter set
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="Vector"><TT><B><FONT SIZE=4>Vector</FONT></B></TT></A>
+</H3>
+<P>
+As was stated before, Java doesn't include dynamically linked
+list, queue, or other data structures of that type. Instead, the
+designers of Java envisioned the <TT>Vector</TT>
+class, which would be able to handle occasions when you need dynamic
+storage of objects. Of course, there are positive and negative
+consequences of this decision by the designers at Sun. On the
+positive side, it contributes to the simplicity of the language.
+The major negative point is that, at face value, it severely limits
+programmers from utilizing more sophisticated programs.
+<P>
+In any case, the <TT>Vector</TT> class
+implements a dynamically allocated list of objects. It attempts
+to optimize storage by increasing the storage capacity of the
+list when needed by increments larger than just one object. Typically
+with this mechanism, there is some excess capacity in the list.
+When this capacity is exhausted, the list is reallocated to add
+another block of objects at the end of the list. Setting the capacity
+of the <TT>Vector</TT> object to the
+needed size before inserting a large number of objects will reduce
+the need for incremental reallocation. Because of this mechanism,
+it is important to remember that the capacity (the available elements
+in the <TT>Vector</TT> object) and
+the size (the number of elements currently stored in the <TT>Vector</TT>
+object) usually are not the same.
+<P>
+For example, say a <TT>Vector</TT>
+with <TT>capacityIncrement</TT> equal
+to three has been created. As objects are added to the <TT>Vector</TT>,
+new space is allocated in chunks of three objects. After five
+elements have been added, there still will be room for one more
+element without the need for any additional memory allocation.
+<P>
+After the sixth element has been added, there is no more excess
+capacity. When the seventh element is added, a new allocation
+will be made that adds three additional elements, giving a total
+capacity of nine. After the seventh element is added, there will
+be two remaining unused elements.
+<P>
+The initial storage capacity and the capacity increment both can
+be specified in the constructor. Even though the capacity is automatically
+increased as needed, the <TT>ensureCapacity()</TT>
+method can be used to increase the capacity to a specific minimum
+number of elements, whereas <TT>trimToSize()</TT>
+can be used to reduce the capacity to the minimum needed to store
+the current elements. New elements can be added to the <TT>Vector</TT>
+using the <TT>addElement()</TT> and
+<TT>insertElementAt()</TT> methods.
+The elements passed to be stored in the <TT>Vector</TT>
+must be derived from type <TT>Object</TT>.
+Elements can be changed using the <TT>setElementAt()</TT>
+method. Removal of elements is accomplished with the <TT>removeElement()</TT>,
+<TT>removeElementAt()</TT>, and <TT>removeAllElements()</TT>
+methods. Elements can be accessed directly using the <TT>elementAt()</TT>,
+<TT>firstElement()</TT>, and <TT>lastElement()</TT>
+methods, whereas elements can be located using the <TT>indexOf()</TT>
+and <TT>lastIndexOf()</TT> methods.
+Information about the size and the capacity of the <TT>Vector</TT>
+are returned by the <TT>size()</TT>
+and <TT>capacity()</TT> methods respectively.
+The <TT>setSize()</TT> method can
+be used to directly change the size of the <TT>Vector</TT>.
+<P>
+For example, the <TT>Vector1</TT>
+code in Listing 13.8 creates a <TT>Vector</TT>
+of integers by adding new elements to the end. Then, using a variety
+of techniques, it prints the <TT>Vector</TT>.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.8. </B><TT><B>Vector1.java</B></TT><B>-</B><TT><B>Vector</B></TT><B>
+sample program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.lang.Integer;<BR>
+import java.util.Enumeration;<BR>
+import java.util.Vector;<BR>
+<BR>
+class Vector1 {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String args[]){
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Vector v=new Vector(10,10);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=0;i&lt;20;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v.addElement(new
+Integer(i));<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Vector
+in original order using an Enumeration&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (Enumeration
+e=v.elements();e.hasMoreElements();)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(e.nextElement()+&quot;
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println();
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Vector
+in original order using elementAt&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=0;i&lt;v.size();i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(v.elementAt(i)+&quot;
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println();
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Print out the
+original vector<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;\nVector
+in reverse order using elementAt&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=v.size()-1;i&gt;=0;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(v.elementAt(i)+&quot;
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println();
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Print out the
+original vector<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;\nVector
+as a String&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(v.toString());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The output from this program looks like this:
+<BLOCKQUOTE>
+<TT>Vector in original order using an Enumeration
+<BR>
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19<BR>
+Vector in original order using elementAt<BR>
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19<BR>
+<BR>
+Vector in reverse order using elementAt<BR>
+19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0<BR>
+<BR>
+Vector as a String<BR>
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+18, 19]<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The expression new <TT>Integer()</TT> was used to create integer objects to store because the fundamental types, such as <TT>int</TT>, are not objects in Java. This technique is used many times throughout this chapter.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Notice the use of the <TT>Enumeration</TT>
+object as one way to access the elements of a <TT>Vector</TT>.
+Look at the following lines:
+<BLOCKQUOTE>
+<TT>for (Enumeration e=v.elements();e.hasMoreElements();)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(e.nextElement()+&quot;
+&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+One can see that an <TT>Enumeration</TT>
+object, which represents all of the elements in the <TT>Vector</TT>,
+is created and returned by the <TT>Vector</TT>
+method <TT>elements()</TT>. With this
+<TT>Enumeration</TT> object, the loop
+can check to see if there are more elements to process using the
+<TT>Enumeration</TT> method <TT>hasMoreElements()</TT>,
+and the loop can get the next element in the <TT>Vector</TT>
+using the <TT>Enumeration</TT> method
+<TT>nextElement()</TT>.
+<P>
+The <TT>Vector2</TT> program in Listing
+13.9 illustrates some of the vector-accessing techniques. It first
+generates a vector of random integers; then allows the user to
+search for a specific value. The locations of the first and last
+occurrences of the value are printed by the program using the
+<TT>indexOf()</TT> and <TT>lastIndexOf()</TT>
+methods.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.9. </B><TT><B>Vector2.java</B></TT><B>-</B><TT><B>Vector</B></TT><B>
+sample program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.io.DataInputStream;<BR>
+import java.lang.Integer;<BR>
+import java.lang.Math;<BR>
+import java.util.Enumeration;<BR>
+import java.util.Random;<BR>
+import java.util.Vector;<BR>
+<BR>
+class Vector2 {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String args[])
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throws java.io.IOException
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int numElements;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream
+dis=new DataInputStream(System.in);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Vector v=new Vector(10,10);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Random randGen=new
+Random();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;How
+many random elements? &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numElements=Integer.valueOf(dis.readLine()).intValue();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=0;i&lt;numElements;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v.addElement(new
+Integer(Math.abs(<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;randGen.nextInt())%numElements));
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(v.toString());
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integer searchValue;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Find
+which value? &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;searchValue=Integer.valueOf(dis.readLine());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;First
+occurrence is element &quot;+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v.indexOf(searchValue));
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Last
+occurrence is element &quot;+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v.lastIndexOf(searchValue));
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The output from this program looks like this:
+<BLOCKQUOTE>
+<TT>How many random elements?<BR>
+10<BR>
+[0, 2, 8, 4, 9, 7, 8, 6, 3, 2]<BR>
+<BR>
+Find which value?<BR>
+8<BR>
+First occurrence is element 2<BR>
+Last occurrence is element 6</TT>
+</BLOCKQUOTE>
+<P>
+In addition to extending the <TT>java.lang.Object</TT>
+class, the <TT>Vector</TT> class implements
+the <TT>java.lang.Cloneable</TT> interface.
+Table 13.7 summarizes the methods of the <TT>Vector</TT>
+class.
+<P>
+<CENTER><B>Table 13.7. The </B><TT><B>Vector</B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Variables</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>capacityIncrement</TT>
+</TD><TD WIDTH=361>Size of the incremental allocations, in elements
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>elementCount</TT>
+</TD><TD WIDTH=361>Number of elements in <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>elementData</TT>
+</TD><TD WIDTH=361>Buffer where the elements are stored</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Constructors</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>Vector()</TT>
+</TD><TD WIDTH=361>Constructs an empty vector</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>Vector(int)</TT>
+</TD><TD WIDTH=361>Constructs an empty vector with the specified storage capacity
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>Vector(int, int)</TT>
+</TD><TD WIDTH=361>Constructs an empty vector with the specified storage capacity and <TT>capacityIncrement</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Methods</I></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>addElement(Object)</TT>
+</TD><TD WIDTH=361>Adds the specified object at the end of the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>capacity()</TT>
+</TD><TD WIDTH=361>Returns the capacity of the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>clone()</TT>
+</TD><TD WIDTH=361>Creates a clone of the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>contains(Object)</TT>
+</TD><TD WIDTH=361>True if the specified object is in the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>copyInto(Object[])</TT>
+</TD><TD WIDTH=361>Copies the elements of this vector into an array
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>elementAt(int)</TT>
+</TD><TD WIDTH=361>Returns the element at the specified index
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>elements()</TT>
+</TD><TD WIDTH=361>Returns an <TT>Enumeration</TT> of the elements
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>ensureCapacity(int)</TT>
+</TD><TD WIDTH=361>Ensures that the <TT>Vector</TT> has the specified capacity
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>firstElement()</TT>
+</TD><TD WIDTH=361>Returns the first element of the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>indexOf(Object)</TT>
+</TD><TD WIDTH=361>Returns the index of the first occurrence of the specified object within the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>indexOf(Object, int)</TT>
+</TD><TD WIDTH=361>Returns the index of the specified object within the <TT>Vector</TT> starting the search at the index specified and proceeding toward the end of the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>insertElementAt(Object, int)</TT>
+</TD><TD WIDTH=361>Inserts an object at the index specified</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>isEmpty()</TT>
+</TD><TD WIDTH=361>True if the <TT>Vector</TT> is empty
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>lastElement()</TT>
+</TD><TD WIDTH=361>Returns the last element of the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>lastIndexOf(Object)</TT>
+</TD><TD WIDTH=361>Returns the index of the last occurrence of the specified object within the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>lastIndexOf(Object, int)</TT>
+</TD><TD WIDTH=361>Returns the index of the specified object within the <TT>Vector</TT> starting the search at the index specified and proceeding toward the beginning of the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>removeAllElements()</TT>
+</TD><TD WIDTH=361>Removes all elements of the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>removeElement(Object)</TT>
+</TD><TD WIDTH=361>Removes the specified object from the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>removeElementAt(int)</TT>
+</TD><TD WIDTH=361>Removes the element with the specified index
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>setElementAt(Object, int)</TT>
+</TD><TD WIDTH=361>Stores the object at the specified index in the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>setSize(int)</TT>
+</TD><TD WIDTH=361>Sets the size of the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>size()</TT>
+</TD><TD WIDTH=361>Returns the number of elements in the <TT>Vector</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>toString()</TT>
+</TD><TD WIDTH=361>Converts the <TT>Vector</TT> to a string
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=229><TT>trimToSize()</TT>
+</TD><TD WIDTH=361>Trims the <TT>Vector</TT>'s capacity down to the specified size
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Refer also to <TT>Vector</TT>, <TT>Hashtable</TT>.
+<H3><A NAME="Stack"><TT><B><FONT SIZE=4>Stack</FONT></B></TT></A>
+</H3>
+<P>
+The <TT>Stack</TT> data structure
+is key to many programming efforts, ranging from building compilers
+to solving mazes. The <TT>Stack</TT>
+class in the Java library implements a <I>Last In, First Out</I>
+(LIFO) stack of objects. Even though they are based on (extends)
+the <TT>Vector</TT> class, <TT>Stack</TT>s
+are typically not accessed in a direct fashion. Instead, values
+are pushed onto and popped off of the top of the &quot;stack.&quot;
+The net effect is that values that were most recently pushed are
+the first ones to be popped.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+While the <TT>Stack</TT> class implements a LIFO removal strategy, the <I>queue</I> data structure discussed early in the chapter is based on a <I>First In, First Out</I> (FIFO) strategy.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>Stack1</TT> code in Listing
+13.10 pushes strings onto the stack, and then retrieves them.
+The strings will end up being printed in reverse order from which
+they were stored.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.10. </B><TT><B>Stack1.java</B></TT><B>-</B><TT><B>Stack</B></TT><B>
+sample program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.io.DataInputStream;<BR>
+import java.util.Stack;<BR>
+import java.util.StringTokenizer;<BR>
+<BR>
+class Stack1 {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String args[])
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throws java.io.IOException
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream
+dis=new DataInputStream(System.in);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Enter
+a sentence: &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String s=dis.readLine();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StringTokenizer
+st=new StringTokenizer(s);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack stack=new
+Stack();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (st.hasMoreTokens())
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stack.push(st.nextToken());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (!stack.empty())
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print((String)stack.pop()+&quot;
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The output from this program looks like this:
+<BLOCKQUOTE>
+<TT>Enter a sentence:<BR>
+The quick brown fox jumps over the lazy dog<BR>
+dog lazy the over jumps fox brown quick The</TT>
+</BLOCKQUOTE>
+<P>
+Even though <TT>Stack</TT> objects
+normally are not accessed in a direct fashion, it is possible
+to search the <TT>Stack</TT> for a
+specific value using the <TT>search()</TT>
+method. It accepts an object to find and returns the distance
+from the top of the <TT>Stack</TT>
+where the object was found. It will return -1 if the object is
+not found.
+<P>
+The method <TT>peek()</TT> will return
+the top object on the <TT>Stack</TT>
+without actually removing it from the <TT>Stack</TT>.
+The <TT>peek()</TT> method will throw
+an <TT>EmptyStackException</TT> if
+the <TT>Stack</TT> has no items.
+<P>
+Table 13.8 summarizes the complete interface of the <TT>Stack</TT>
+class.
+<P>
+<CENTER><B>Table 13.8. The </B><TT><B>Stack</B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=415><CENTER><I>Constructors</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>Stack()</TT>
+</TD><TD WIDTH=258>Constructs an empty <TT>Stack</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=415><CENTER><I>Methods</I></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>empty()</TT>
+</TD><TD WIDTH=258>True if the <TT>Stack</TT> is empty
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>peek()</TT>
+</TD><TD WIDTH=258>Returns the top object on the <TT>Stack</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>pop()</TT></TD>
+<TD WIDTH=258>Pops an element off the <TT>Stack</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>push(Object)</TT>
+</TD><TD WIDTH=258>Pushes an element onto the <TT>Stack</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=157><TT>search(Object)</TT>
+</TD><TD WIDTH=258>Finds an object on the <TT>Stack</TT>
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="Dictionary"><TT><B><FONT SIZE=4>Dictionary</FONT></B></TT></A>
+</H3>
+<P>
+This class is an abstract class that is used as a base for the
+<TT>Hashtable</TT> class. It implements
+a data structure that allows a collection of key and value pairs
+to be stored. Any type of object can be used for the keys or the
+values. Typically, the keys are used to find a particular corresponding
+value.
+<P>
+Because this class is an abstract class that cannot be used directly,
+the code examples presented cannot actually be run. They are presented
+only to illustrate the purpose and use of the methods declared
+by this class. The following code would, hypothetically, be used
+to create a <TT>Dictionary</TT> with
+these values illustrated:
+<BLOCKQUOTE>
+<TT>Dictionary products = new Dictionary();
+<BR>
+products.put(new Integer(342), &quot;Widget&quot;);<BR>
+products.put(new Integer(124), &quot;Gadget&quot;);<BR>
+products.put(new Integer(754), &quot;FooBar&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>put()</TT> method is used
+to insert a key and value pair into the <TT>Dictionary</TT>.
+The two arguments both must be derived from the class <TT>Object</TT>.
+The key is the first argument and the value is the second.
+<P>
+A value can be retrieved using the <TT>get()</TT>
+method and a specific key to be found. It returns the null value
+if the specified key is not found. For example:
+<BLOCKQUOTE>
+<TT>String name = products.get(new Integer(124));
+<BR>
+if (name != null) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Product name
+for code 124 is &quot; + name);<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Although an individual object can be retrieved with the <TT>get()</TT>
+method, sometimes it is necessary to access all of the keys or
+all of the values. There are two methods, <TT>keys()</TT>
+and <TT>elements()</TT>, that will
+return <TT>Enumeration</TT>s that
+can be used to access the keys and the values, respectively.
+<P>
+Table 13.9 summarizes the complete interface of the <TT>Dictionary</TT>
+class.
+<P>
+<CENTER><B>Table 13.9. The </B><TT><B>Dictionary</B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Constructors</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=205><TT>Dictionary()</TT>
+</TD><TD WIDTH=386>Constructs an empty Dictionary</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Methods</I></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=205><TT>elements()</TT>
+</TD><TD WIDTH=386>Returns an <TT>Enumeration</TT> of the values
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=205><TT>get(Object)</TT>
+</TD><TD WIDTH=386>Returns the object associated with the specified key
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=205><TT>isEmpty()</TT>
+</TD><TD WIDTH=386>True if the <TT>Dictionary</TT> has no elements
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=205><TT>keys()</TT>
+</TD><TD WIDTH=386>Returns an <TT>Enumeration</TT> of the keys
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=205><TT>put(Object, Object)</TT>
+</TD><TD WIDTH=386>Stores the specified key and value pair in the <TT>Dictionary</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=205><TT>remove(Object)</TT>
+</TD><TD WIDTH=386>Removes an element from the <TT>Dictionary</TT> by its key
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=205><TT>size()</TT>
+</TD><TD WIDTH=386>Returns the number of elements stored</TD>
+</TR>
+</TABLE></CENTER>
+<P>
+<P>
+Refer also to <TT>Enumeration</TT>,
+<TT>Hashtable</TT>, Properties.
+<H3><A NAME="Hashtable"><TT><B><FONT SIZE=4>Hashtable</FONT></B></TT></A>
+</H3>
+<P>
+The <TT>Hashtable</TT> data structure
+is very useful when dealing with the search for and manipulation
+of data. You would want to use this class if you will be storing
+a large amount of data in memory and then searching it. The time
+needed to complete a search of a hash table is decidedly less
+than in the <TT>Vector</TT> class.
+Of course, for small amounts of data, it won't make much difference
+whether you use a hash table or a linear data structure, since
+the overhead time will be much greater than any search time would
+be. See the next Note for more information on search times in
+the different classes.
+<P>
+Hash table organization is based upon keys, which are computed
+based upon the data being stored. For example, if you were going
+to insert a number of words into a hash table, you could base
+your key upon the first letter of the word. When you came back
+to search for a word later on, you could then compute the key
+for the item being sought. By using this key, search time is drastically
+reduced because the items are stored based upon the value of their
+respective key.
+<P>
+The <TT>Hashtable</TT> class implements
+a hash table storage mechanism for storing key and value pairs.
+Hash tables are designed to quickly locate and retrieve information
+stored by using a key. Keys and values may be of any object type,
+but the key object's class must implement the <TT>hashCode()</TT>
+and <TT>equals()</TT> methods.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Big &quot;O&quot; notation is used to measure the &quot;worst case scenario&quot; time requirements in terms of searching while using different data structures. Linear searching, such as that used in the <TT>Vector</TT> class, is <I>O(n),</I> whereas hash table searching is <I>O(log n)</I>. This basically means that over a large number of objects, you'll be saving a large amount of time when searching, since the <I>log</I> of a number is always less than the number itself. For times when you will be doing a large amount of searching through data, a hash table will likely be much more efficient.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The sample <TT>Hashtable1</TT> in
+Listing 13.11 creates a <TT>Hashtable</TT>
+object and stores 10 key and value pairs using the <TT>put()</TT>
+method. It then uses the <TT>get()</TT>
+method to return the value corresponding to a key entered by the
+user.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.11. </B><TT><B>Hashtable1.java</B></TT><B>-</B><TT><B>Hashtable</B></TT><B>
+sample program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.io.DataInputStream;<BR>
+import java.lang.Integer;<BR>
+import java.lang.Math;<BR>
+import java.util.Random;<BR>
+import java.util.Hashtable;<BR>
+<BR>
+class Hashtable1 {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String args[])
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throws java.io.IOException
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream
+dis=new DataInputStream(System.in);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int numElements=10;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String keys[]={&quot;Red&quot;,&quot;Green&quot;,&quot;Blue&quot;,&quot;Cyan&quot;,&quot;Magenta&quot;,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Yellow&quot;,&quot;Black&quot;,&quot;Orange&quot;,&quot;Purple&quot;,&quot;White&quot;};
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hashtable ht;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Random randGen=new
+Random();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ht=new Hashtable(numElements*2);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=0;i&lt;numElements;i++)
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ht.put(keys[i],new
+Integer(Math.abs(<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;randGen.nextInt())%numElements));
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(ht.toString());
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String keyValue;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Which
+key to find? &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keyValue=dis.readLine();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integer value=(Integer)ht.get(keyValue);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (value!=null)
+System.out.println(keyValue+&quot; = &quot;+value);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The output from this program looks like this:
+<BLOCKQUOTE>
+<TT>{Cyan=4, White=0, Magenta=4, Red=5, Black=3,
+<BR>
+&Acirc;Green=8, Purple=3, Orange=4, Yellow=2, _Blue=6}<BR>
+Which key to find?<BR>
+Red<BR>
+Red = 5</TT>
+</BLOCKQUOTE>
+<P>
+In addition to the <TT>get()</TT>
+method, the <TT>contains()</TT> and
+<TT>containsKey()</TT> methods can
+be used to search for a particular value or key, respectively.
+Both return <TT>True</TT> or <TT>False</TT>
+depending on whether the search was successful. The <TT>contains()</TT>
+method must perform an exhaustive search of the table and is not
+as efficient as the <TT>containsKey()</TT>
+method, which can take advantage of the hash table's storage mechanism
+to find the key quickly.
+<P>
+Because hash tables need to allocate storage for more data than
+actually is stored, a measurement called the <I>load factor</I>
+indicates the number of used storage spaces as a fraction of the
+total available storage spaces. It is expressed as a value between
+0 and 100 percent. Typically, the load factor should not be higher
+than about 50 percent for efficient retrieval of data from a hash
+table. When specifying the load factor in a program, use a fractional
+value in the range 0.0 to 1.0 to represent load factors in the
+range 0 to 100 percent.
+<P>
+Hash tables can be constructed in three different ways: by specifying
+the desired initial capacity and load factor, by specifying only
+the initial capacity, or by specifying neither. If the load factor
+is not specified, the <TT>Hashtable</TT>
+will be rehashed into a larger table when it is full-otherwise
+it is rehashed when it exceeds the load factor. The constructors
+will throw an <TT>IllegalArgumentException</TT>
+if the initial capacity is less than or equal to zero, or if the
+load factor is less than or equal to zero.
+<P>
+The <TT>clone()</TT> method can be
+used to create a copy (clone) of the <TT>Hashtable</TT>.
+However, it creates a shallow copy of the <TT>Hashtable</TT>,
+which means that the keys and values themselves are not clones.
+This local method overrides the inherited <TT>clone()</TT>
+method.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The <TT>clone()</TT> method is a relatively expensive operation to perform in terms of memory utilization and execution time. Because the new <TT>Hashtable</TT> still refers directly to the objects (keys and values) stored in the old table, caution should be used to avoid making changes that will disrupt the original <TT>Hashtable</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>Hashtable</TT> class extends
+the <TT>java.util.Dictionary</TT>
+class and implements the <TT>java.lang.Cloneable</TT>
+interface. Table 13.10 summarizes the methods of the <TT>Hashtable</TT>
+class.
+<P>
+<CENTER><B>Table 13.10. The </B><TT><B>Hashtable</B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Constructors</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>Hashtable()</TT>
+</TD><TD WIDTH=366>Constructs an empty <TT>Hashtable</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>Hashtable(int)</TT>
+</TD><TD WIDTH=366>Constructs an empty <TT>Hashtable</TT> with the specified capacity
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>Hashtable(int, float)</TT>
+</TD><TD WIDTH=366>Constructs an empty <TT>Hashtable</TT> given capacity and load factor
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Methods</I></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>clear()</TT>
+</TD><TD WIDTH=366>Deletes all elements from the <TT>Hashtable</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>clone()</TT>
+</TD><TD WIDTH=366>Creates a clone of the <TT>Hashtable</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>contains(Object)</TT>
+</TD><TD WIDTH=366>True if the specified object is an element of the <TT>Hashtable</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>containsKey(Object)</TT>
+</TD><TD WIDTH=366>True if the <TT>Hashtable</TT> contains the specified key
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>elements()</TT>
+</TD><TD WIDTH=366>Returns an <TT>Enumeration</TT> of the <TT>Hashtable</TT>'s values
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>get(Object)</TT>
+</TD><TD WIDTH=366>Returns the object associated with the specified key
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>isEmpty()</TT>
+</TD><TD WIDTH=366>True if the <TT>Hashtable</TT> has no elements
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>keys()</TT>
+</TD><TD WIDTH=366>Returns an <TT>Enumeration</TT> of the keys
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>put(Object, Object)</TT>
+</TD><TD WIDTH=366>Stores the specified key and value pair in the <TT>Hashtable</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>rehash()</TT>
+</TD><TD WIDTH=366>Rehashes the contents of the table into a bigger table
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>remove(Object)</TT>
+</TD><TD WIDTH=366>Removes an element from the <TT>Hashtable</TT> by its key
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>size()</TT>
+</TD><TD WIDTH=366>Returns the number of elements stored</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=224><TT>toString()</TT>
+</TD><TD WIDTH=366>Converts the contents to a very long string
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Refer also to <TT>hashCode</TT>, <TT>equals</TT>.
+<H3><A NAME="Properties"><TT><B><FONT SIZE=4>Properties</FONT></B></TT></A>
+</H3>
+<P>
+The <TT>Properties</TT> class is what
+enables end-users to customize their Java program. For example,
+you can easily store values such as foreground colors, background
+colors, and font defaults, and then have those values available
+to be reloaded. This would be most useful for Java applications,
+but you can also implement them for applets. If you have an applet
+that is regularly used by multiple users, you could keep a properties
+file on your server for each different user, which would be accessed
+each time that user loaded the applet.
+<P>
+The <TT>Properties</TT> class is a
+<TT>Hashtable</TT>, which can be repeatedly
+stored and restored from a stream. It is used to implement persistent
+properties. It also allows for an unlimited level of nesting,
+by searching a default property list if the required property
+is not found. The fact that this class is an extension of the
+<TT>Hashtable</TT> class means that
+all methods available in the <TT>Hashtable</TT>
+class are also available in the <TT>Properties</TT>
+class.
+<P>
+The sample program <TT>Properties1</TT>
+in Listing 13.12 creates two properties lists. One will be the
+default property list and the other will be the user-defined property
+list. When the user property list is created, the default <TT>Properties</TT>
+object is passed. When the user property list is searched, if
+the key value is not found, the default Properties list will be
+searched.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.12. </B><TT><B>Properties1.java</B></TT><B>-</B><TT><B>Properties</B></TT><B>
+sample program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.io.Data7InputStream;<BR>
+import java.lang.Integer;<BR>
+import java.util.Properties;<BR>
+<BR>
+class Properties1 {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String args[])
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throws java.io.IOException
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int numElements=4;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String defaultNames[]={&quot;Red&quot;,&quot;Green&quot;,&quot;Blue&quot;,&quot;Purple&quot;};
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int defaultValues[]={1,2,3,4};
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String userNames[]={&quot;Red&quot;,&quot;Yellow&quot;,&quot;Orange&quot;,&quot;Blue&quot;};
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int userValues[]={100,200,300,400};
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream
+dis=new DataInputStream(System.in);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Properties defaultProps=new
+Properties();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Properties userProps=new
+Properties(defaultProps);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i=0;i&lt;numElements;i++){
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defaultProps.put(defaultNames[i],
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integer.toString(defaultValues[i]));
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userProps.put(userNames[i],
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integer.toString(userValues[i]));
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Default
+Properties&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defaultProps.list(System.out);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;\nUser
+Defined Properties&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userProps.list(System.out);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String keyValue;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;\nWhich
+property to find? &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keyValue=dis.readLine();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Property
+'&quot;+keyValue+&quot;' is '&quot;+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userProps.getProperty(keyValue)+&quot;'&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice that the <TT>getProperties()</TT>
+method is used instead of the inherited <TT>get()</TT>
+method. The <TT>get()</TT> method
+only searches the current <TT>Properties</TT>
+object. The <TT>getProperties()</TT>
+method must be used in order to have the default <TT>Properties</TT>
+list searched. An alternative form of the <TT>getProperties()</TT>
+method has a second argument, which is that a default <TT>Properties</TT>
+list is to be searched instead of the default specified when the
+<TT>Properties</TT> object was created.
+<P>
+The <TT>propertyNames()</TT> method
+can be used to return an <TT>Enumeration</TT>,
+which can be used to index through all of the property names.
+This <TT>Enumeration</TT> includes
+the property names from the default <TT>Properties</TT>
+list. Likewise, the <TT>list()</TT>
+method, which prints the <TT>Properties</TT>
+list to the standard output, will list all of the properties of
+the current <TT>Properties</TT> object
+and those in the default <TT>Properties</TT>
+object.
+<P>
+<TT>Properties</TT> objects can be
+written to and read from a stream using the <TT>save()</TT>
+and <TT>load()</TT> methods, respectively.
+In addition to the output or input stream, the save method has
+an additional string argument that will be written at the beginning
+of the stream as a header comment.
+<P>
+Table 13.11 summarizes the methods of the <TT>Properties</TT>
+class.
+<P>
+<CENTER><B>Table 13.11. The </B><TT><B>Properties</B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Variables</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>defaults</TT>
+</TD><TD WIDTH=357>Default <TT>Properties</TT> list to search
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Constructors</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>Properties()</TT>
+</TD><TD WIDTH=357>Constructs an empty property list</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>Properties(Properties)</TT>
+</TD><TD WIDTH=357>Constructs an empty property list with specified default
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Methods</I></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>getProperty(string)</TT>
+</TD><TD WIDTH=357>Returns a property given the key</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>getProperty(string, string)</TT>
+</TD><TD WIDTH=357>Returns a property given the specified key and default
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>list(PrintStream)</TT>
+</TD><TD WIDTH=357>Lists the properties to a stream for debugging
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>load(InputStream)</TT>
+</TD><TD WIDTH=357>Reads the properties from an <TT>InputStream</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>propertyNames()</TT>
+</TD><TD WIDTH=357>Returns an <TT>Enumeration</TT> of all of the keys
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>save(OutputStream, string)</TT>
+</TD><TD WIDTH=357>Writes the properties to an <TT>OutputStream</TT>
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="Observable"><TT><B><FONT SIZE=4>Observable</FONT></B></TT></A>
+</H3>
+<P>
+This class acts as a base class for objects that you wish to have
+observed by other objects that implement the <TT>Observer</TT>
+interface. An <TT>Observable</TT>
+object can notify its <TT>Observer</TT>s
+whenever the <TT>Observable</TT> object
+is modified using the <TT>notifyObservers()</TT>
+method. This method accomplishes the notification by invoking
+the <TT>update()</TT> method of all
+of its <TT>Observer</TT>s, optionally
+passing a data object that is passed to <TT>notifyObservers</TT>.
+<TT>Observable</TT> objects may have
+any number of <TT>Observer</TT>s.
+<P>
+Table 13.12 summarizes the complete interface of the <TT>Observable</TT>
+class.
+<P>
+<CENTER><B>Table 13.12. The </B><TT><B>Observable</B></TT><B>
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Constructors</I></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><TT>Observable()</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590><CENTER><I>Methods</I></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>addObserver(Observer)</TT>
+</TD><TD WIDTH=338>Adds an Observer to the observer list</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>clearChanged()</TT>
+</TD><TD WIDTH=338>Clears an observable change</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>countObservers()</TT>
+</TD><TD WIDTH=338>Returns the number of Observers</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>deleteObserver(Observer)</TT>
+</TD><TD WIDTH=338>Deletes an Observer from the observer list
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>deleteObservers()</TT>
+</TD><TD WIDTH=338>Deletes all Observers from the observer list
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>hasChanged()</TT>
+</TD><TD WIDTH=338>True if an observable change occurred</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>notifyObservers()</TT>
+</TD><TD WIDTH=338>Notifies all Observers if an observable change occurred
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>notifyObservers(Object)</TT>
+</TD><TD WIDTH=338>Notifies all Observers of a specific observable change
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>setChanged()</TT>
+</TD><TD WIDTH=338>Sets a flag to indicate that an observable change occurred
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Refer also to <TT>Observer</TT>.
+<H2><A NAME="Summary"><B><FONT SIZE=5 COLOR=#FF0000>Summary</FONT></B></A>
+</H2>
+<P>
+This chapter described the classes that make up the Java utilities
+package. This package provides complete implementations of the
+basic data structures and some of the most useful data types (other
+than the fundamental numeric types) needed by programmers. Many
+of the data types and data structures that you will develop using
+Java will be based on the classes found in the utilities package.
+For smaller applets, many of these classes will not be necessary.
+However, as your applets increase in complexity, you will find
+these classes to be very useful. In any case, this chapter has
+been a good starting point for understanding the utility of these
+important Java classes and for understanding how to use them effectively.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

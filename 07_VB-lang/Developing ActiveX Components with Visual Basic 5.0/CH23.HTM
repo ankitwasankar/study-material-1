@@ -1,0 +1,598 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 23 -- ActiveX Document Fundamentals</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;23</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>ActiveX Document Fundamentals</FONT>
+</H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#WhatIsanActiveXDocument">
+What Is an ActiveX Document?</A>
+<UL>
+<LI><A HREF="#ActiveXDocumentsandActiveXControls">
+ActiveX Documents and ActiveX Controls</A>
+</UL>
+<LI><A HREF="#ActiveXDocumentProgramming">
+ActiveX Document Programming</A>
+<UL>
+<LI><A HREF="#ShouldYouUseaDLLoranEXEServer">
+Should You Use a DLL or an EXE Server?</A>
+<LI><A HREF="#ActiveXDocumentDisplay">
+ActiveX Document Display</A>
+<LI><A HREF="#TheLifeandTimesofanActiveXDocument">
+The Life and Times of an ActiveX Document</A>
+<LI><A HREF="#Versioning">
+Versioning</A>
+<LI><A HREF="#Containers">
+Containers</A>
+<LI><A HREF="#Menus">
+Menus</A>
+<LI><A HREF="#ErrorChecking">
+Error Checking</A>
+</UL>
+<LI><A HREF="#TheUserDocumentObject">
+The UserDocument Object</A>
+<UL>
+<LI><A HREF="#AmbientandExtenderProperties">
+Ambient and Extender Properties</A>
+<LI><A HREF="#ParentandOtherClientProperties">
+Parent and Other Client Properties</A>
+<LI><A HREF="#PropertyPersistence">
+Property Persistence</A>
+<LI><A HREF="#TipsandTricks">
+Tips and Tricks</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+From a programming perspective, ActiveX documents are almost identical
+to ActiveX controls. In fact, the greatest challenge you are likely
+to face is understanding exactly what ActiveX documents are and
+how they differ from controls.
+<P>
+So we'll begin this chapter with a discussion of the philosophy
+of ActiveX documents, focusing on the assumption that the most
+likely use for this type of component is on Internet and intranet
+Web sites. We'll conclude with a surprisingly short section discussing
+ActiveX document programming. Short, because you already know
+almost everything you need to know from our discussions relating
+to other types of components.
+<P>
+And what if you have skipped directly to this chapter because
+all you want to do is write ActiveX documents and you don't want
+to waste your time learning how to write ActiveX code components
+and controls first? Sorry, but you are about to become extremely
+confused, because I am definitely assuming that you have read
+the entire book before reaching this point.
+<H2><A NAME="WhatIsanActiveXDocument"><FONT SIZE=5 COLOR=#FF0000>
+What Is an ActiveX Document?</FONT></A></H2>
+<P>
+In order to really understand ActiveX documents, you need to go
+back to <A HREF="ch2.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch2.htm" >Chapter 2</A>and recall our discussion on the idea of docu-centric
+programming. In this approach we distinguish between a document,
+such as a word document or video clip, and the application that
+can service (open, edit, display, save) the document. So when
+you talk about ActiveX documents, you are really talking about
+two different things: the document itself and the ActiveX DLL
+or EXE server that supports it.
+<P>
+When you create a new ActiveX document project, you are actually
+creating both of these elements: the server, and an empty document.
+A single server can support an unlimited number of documents,
+just as Microsoft Word can support any number of document files.
+The server for an ActiveX document can be an EXE or a DLL server.
+The document generally has the extension .VBD, though ActiveX
+documents can be stored within other files as well, using a mechanism
+called OLE structured storage.
+<P>
+This division between server and document may seem obvious, but
+I found that it is very easy to lose sight of when reading the
+Visual Basic documentation for ActiveX documents. Table 23.1 illustrates
+the similarities between Word documents and ActiveX documents.
+<BR>
+<P>
+<CENTER><B>Table 23.1:&nbsp;Comparison of Microsoft Word with
+an ActiveX Document</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=192><B>Operation</B></TD><TD WIDTH=192><B>Microsoft Word</B>
+</TD><TD WIDTH=192><B>ActiveX Document</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Open a document file</TD><TD WIDTH=192>Double-click on a .DOC file.
+</TD><TD WIDTH=192>Double-click on an HTML page that references a .VBD file, or open the .VBD file using MS Explorer.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>The server is found.</TD><TD WIDTH=192>Windows checks the registry and finds that files with the extension .DOC should be opened by Word.
+</TD><TD WIDTH=192>OLE looks inside the .VBD file to find the CLSID of the server.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>The document is opened.</TD><TD WIDTH=192>Word is loaded and opens the .DOC file. The contents of the document are loaded.
+</TD><TD WIDTH=192>The ActiveX document server is loaded and opens the .VBD document file. An ActiveX document object is created that loads the document by reading properties from the file.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>The document is displayed.</TD><TD WIDTH=192>Word displays the .DOC file.
+</TD><TD WIDTH=192>The browser allocates a window in which the ActiveX document object is sited. The server then displays this object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>The document is edited.</TD><TD WIDTH=192>You can use all of the functionality of Word to manipulate the data for the document.
+</TD><TD WIDTH=192>You can use all of the functionality that has been programmed into the server to manipulate the data for the object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>The server is closed.</TD><TD WIDTH=192>Word prompts you to save the changed document data into the .DOC file if you wish.
+</TD><TD WIDTH=192>Explorer prompts you to save the changed document data if you wish. If you say yes, the object saves the document data by writing properties into the .VBD file (or a separate file if it can't write into the current document file).
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+When you compile or run a new ActiveX document server, Visual
+Basic creates an empty .VBD file that has no properties set. When
+you load an empty .VBD file, the UserDocument's InitProperties
+event will trigger. If you save the object, the object will write
+out its properties into the .VBD file during the UserDocument's
+WriteProperties event. From then on, when you open the .VBD file,
+a ReadProperties event will trigger to prompt the server to read
+the properties from the .VBD file. Sounds just like an ActiveX
+control, doesn't it?
+<H3><A NAME="ActiveXDocumentsandActiveXControls">
+ActiveX Documents and ActiveX Controls</A></H3>
+<P>
+Even though ActiveX documents and ActiveX controls are extremely
+similar when it comes to programming, there are substantial differences
+in how they work and how they are deployed.
+<P>
+Table 23.2 compares ActiveX controls and ActiveX documents. The
+table limits itself to a comparison of deploying these two technologies
+on Web pages, since we resolved earlier that from our perspective
+in this chapter, the Internet and intranets are the most likely
+uses for ActiveX documents.<BR>
+<P>
+<CENTER><B>Table 23.2:&nbsp;Comparison of ActiveX Controls and
+ActiveX Documents on a Web Page</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=192><B>Operation</B></TD><TD WIDTH=192><B>ActiveX Control</B>
+</TD><TD WIDTH=192><B>ActiveX Document</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Finding the component</TD><TD WIDTH=192>The control is defined by an Object tag in an HTML file.
+</TD><TD WIDTH=192>The document server DLL or EXE is defined by an Object tag in an HTML file.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Downloading the server</TD><TD WIDTH=192>The browser downloads the control or .CAB file. Code signing can be used to identify the file.
+</TD><TD WIDTH=192>The browser downloads the document server DLL or EXE, or the .CAB file. Code signing can be used to identify the file.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Initializing the Server object</TD><TD WIDTH=192>Properties are defined by PARAM commands in the HTML file. The control is in run mode on the container and thus will never need to write properties. Each object reference 
+creates 
+an instance of the control on the container.
+</TD><TD WIDTH=192>The required server and current property settings are loaded from a .VBD document file. The object reference loads the server DLL or EXE, but does not create an instance of the Document object. Document objects are only created when 
+.VBD 
+document files are referenced.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Siting the Server object</TD><TD WIDTH=192>The Object reference defines a location for the control on the current Web page.
+</TD><TD WIDTH=192>The ActiveX document is best thought of as its own Web page. You can link to it as you would link to any page. You can't mix HTML and an ActiveX document on a page. However, an ActiveX document can be loaded into a browser frame. 
+Each 
+frame contains an independent Web page.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Changing Object properties</TD><TD WIDTH=192>You can change control properties through user interaction or HTML scripting. Changes will not be saved unless you provide a mechanism to do so yourself-and never through the 
+WriteProperties event. The control can't rewrite the HTML page that loaded it.
+</TD><TD WIDTH=192>You can change ActiveX document properties through user interaction and, depending on the container, through scripting. The browser will give you the opportunity to save changes before you leave the page. If you do so, a .VBD file 
+will 
+be written with the new properties.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+This suggests another way of looking at ActiveX documents.
+<P>
+Think of your Internet browser as a window onto the Internet or
+an intranet. When it is displaying a Web page, what it is really
+doing is interpreting a simple text markup language called HTML.
+An advanced browser such as Microsoft's Internet Explorer or Netscape's
+Navigator can execute scripts that are included on the HTML page.
+These scripts can be in Javascript or in VBScript, but there is
+nothing to prevent other scripting languages from being defined.
+<P>
+But an Internet browser window can display other things as well.
+It might be able to display a directory when you are looking at
+an FTP site. Or perhaps an image when you ask it to display a
+bitmap file.
+<P>
+Microsoft's Internet Explorer can display ActiveX documents. Unlike
+an ActiveX control, which is designed to appear as an object on
+an HTML page, an ActiveX document is a completely independent
+type of object the browser can display instead of a Web page.
+This leads us to a staggering possibility: Because ActiveX documents
+support the Hyperlink object, which allows navigation among pages,
+it is theoretically possible to create a Web site that contains
+only ActiveX documents, with no HTML code whatsoever (other than
+perhaps a single initial page to download the server components).
+<P>
+Now add to this the fact that an ActiveX document has virtually
+all of the same capabilities as Visual Basic, including the ability
+to bring up additional forms, and that both the UserDocument object
+and the document's forms can contain additional controls. In other
+words: An ActiveX document is a Visual Basic application. The
+logical conclusion is inescapable: ActiveX documents allow you
+to create a site that is actually an application that runs on
+the client system.
+<P>
+Hmmm. Perhaps Carl was right about the importance of ActiveX documents
+after all.
+<P>
+On the other hand, a site created in this fashion could, at the
+time of this writing, only support people using Microsoft's Internet
+Explorer 3.01 or later on Windows 95 or Windows NT 4.0. This leaves
+a number of possible strategies for deploying this technology:
+<UL>
+<LI>You could create a site only for these people. This approach
+works best for Microsoft-specific sites where you don't care about
+people using other tools, or corporate intranets where you can
+dictate the client's environment.
+<LI>You could create a site in the hope that ActiveX documents
+will ultimately be supported by more operating systems and more
+browsers, and the expectation that your target audience will upgrade
+to the necessary tools as soon as possible.
+<LI>You could create a site in the expectation that it won't be
+long before everyone is running Microsoft Internet Explorer on
+Windows 95 or NT 4.0. (I think this is the one Microsoft would
+like you to choose.)
+<LI>You could create a hybrid site in which some scripting code
+in the HTML page detects the browser in use and sends the user
+to the ActiveX document pages if they have the right tools to
+support it. This is a good solution but does require that you
+effectively support two sites-one based on ActiveX documents and
+the other based on other technologies.
+<LI>You can stay away from ActiveX documents and go for technologies
+that may be less powerful but are designed to run on any possible
+system. (I think this is the one Netscape would like you to choose.)
+<LI>And, of course, you can choose any combination of the above.
+</UL>
+<P>
+Hmmm. Perhaps my skepticism about the importance of ActiveX documents
+is justified after all?
+<P>
+You can probably see why this chapter is short on good advice.
+I can see the advantages of ActiveX documents. I can see their
+potential. I can see they comprise a very cool technology that
+has the potential to bring about as great a revolution on the
+Internet as the invention of HTML. But I can't predict how ActiveX
+technology will spread to other platforms, or how important those
+platforms will be, or whether competing technologies might provide
+viable alternatives. It's just too soon to tell.
+<P>
+So I will leave the decision on whether or not to deploy this
+technology up to you, as we look into how these creatures are
+built.
+<H2><A NAME="ActiveXDocumentProgramming"><FONT SIZE=5 COLOR=#FF0000>
+ActiveX Document Programming</FONT></A></H2>
+<P>
+You already know 99 percent of everything you need to know in
+order to create ActiveX documents. So here, without further ado,
+is most of the other 1&nbsp;percent.
+<H3><A NAME="ShouldYouUseaDLLoranEXEServer">
+Should You Use a DLL or an EXE Server?</A></H3>
+<P>
+You are already well versed in the differences between the two
+approaches. All of the issues that have been discussed throughout
+this book regarding these apply to ActiveX documents as well.
+<P>
+DLL servers tend to be more efficient because they run in the
+process space of the browser. EXE servers run in their own thread,
+making some background operations easier to implement. An EXE
+server can be configured to run as a stand-alone executable as
+well. (Though you will not be able to use the UserDocument, you
+can load and display forms during the Sub Main procedure.) A single
+EXE server will support all of the user documents of a given type
+that are loaded.
+<P>
+Personally, I have yet to run into a case where I wanted to use
+an EXE server for an ActiveX document. The most likely case where
+you would do so is if you wanted to control access to a shared
+resource, as was the case with the StockQuote server in Chapter
+15.
+<H3><A NAME="ActiveXDocumentDisplay">
+ActiveX Document Display</A></H3>
+<P>
+ActiveX documents differ from both forms and controls in the way
+they are displayed.
+<P>
+As a programmer, you define the size of your document. You have
+no control over the amount of screen space that is actually allocated
+to your document display, but you do have complete information
+about the available space. If the space is smaller than the document
+size, the container will make it possible to view a portion of
+the document in a viewport. This is shown in Figure 23.1.
+<P>
+<A HREF="f23-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f23-1.gif"><B>Figure 23.1 :</B> <I>ActiveX Document Viewports</I>.</A>
+<P>
+The ScaleLeft, ScaleTop, ScaleWidth, and ScaleHeight properties
+work as they do with forms and ActiveX controls. They reflect
+the coordinates of the control from the programmer's perspective.
+The viewport defines the area that is actually displayed. The
+ViewportLeft and ViewportTop properties define the location within
+the document area that appears in the upper left corner of the
+viewport area. The ViewportWidth and ViewportHeight properties
+define the width and height of the viewport.
+<P>
+The UserDocument's SetViewport method can be used to set the apparent
+position of the document within the viewport. It, in turn, sets
+the ViewportLeft and ViewportTop properties.
+<P>
+The UserDocument's Resize event is triggered any time the size
+of the document's container is changed. It occurs even if the
+container is larger than the current ScaleWidth and ScaleHeight
+settings.
+<P>
+If the container width is smaller than the UserDocument's MinWidth
+property, and the UserDocument's ScrollBars is set to display
+horizontal scrollbars, scrollbars will appear around the container
+window. This allows you to scroll the horizontal position of the
+document in the viewport. If the container height is smaller than
+the UserDocument's MinHeight property and the UserDocument's ScrollBars
+is set to display vertical scrollbars, scrollbars will appear
+around the container window. They allow you to scroll the vertical
+position of the document in the viewport. The HScrollSmallChange
+and VScrollSmallChange indicate the distance the document window
+scrolls when the user clicks on one of the scrollbars.
+<P>
+The Scroll event is triggered when the user scrolls the document
+within the container. If the ContinuousScroll property is True,
+Scroll events will be triggered as the user drags the scrollbar
+thumb.
+<P>
+The scroll.vbp project demonstrates a simple ActiveX document
+that displays the viewport property values and allows you to experiment
+with scrolling as the size of the container changes.
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed
+' Simple scrolling example
+Option Explicit
+
+Private m_ScrollCount&amp;
+
+Private Sub UpdateLabels()
+   lblViewportLeft.Caption = ViewportLeft
+   lblViewportTop.Caption = ViewportTop
+   lblViewportWidth.Caption = ViewportWidth
+   lblViewportHeight.Caption = ViewportHeight
+   lblScrollCount.Caption = m_ScrollCount
+End Sub
+
+Private Sub UserDocument_Resize()
+   Debug.Print &quot;Resize&quot;
+End Sub
+
+Private Sub UserDocument_Scroll()
+   m_ScrollCount = m_ScrollCount + 1
+   UpdateLabels
+End Sub
+
+Private Sub UserDocument_Show()
+   UpdateLabels
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="TheLifeandTimesofanActiveXDocument">
+The Life and Times of an ActiveX Document</A></H3>
+<P>
+The Visual Basic documentation goes into quite a bit of depth
+regarding the life cycle of an ActiveX document. In a sense this
+is odd, because the key events (Initialize, InitProperties, Show,
+ReadProperties, WriteProperties, Hide, and Terminate) work the
+same way as they do with ActiveX controls. The biggest difference
+is that the container no longer has separate design-time and run-time
+modes.
+<P>
+While the behavior of the Microsoft Internet Explorer is very
+interesting as described in the VB documentation, it is also largely
+irrelevant. This is because you cannot assume that future versions
+of the browser will have the same cache size and behavior. Nor
+can you assume that other containers will behave similarly. So
+design your controls under the following assumptions:
+<UL>
+<LI>The container can ask your document to save itself using the
+WriteProperties event any time it feels like it. Generally speaking
+this will occur whenever you navigate away from a page containing
+the document and the UserDocument's PropertyChanged method has
+been called.
+<LI>The container can navigate to and from your document whenever
+it wishes. The document is reloaded from the .VBD file any time
+you navigate to the document.
+<LI>The container can hide and redisplay your document at any
+time.
+</UL>
+<H3><A NAME="Versioning">
+Versioning</A></H3>
+<P>
+<A HREF="ch25.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch25.htm" >Chapter 25</A> will discuss the issues of versioning and preserving
+backward compatibility when you upgrade your control. This issue
+is absolutely critical with regard to ActiveX documents, because
+if you break backward compatibility, all of your existing .VBD
+files supported by that server will fail to work.
+<H3><A NAME="Containers">
+Containers</A></H3>
+<P>
+You cannot test ActiveX documents using Visual Basic. You can
+use the Microsoft Office Binder, but I would recommend that you
+use the Microsoft Internet Explorer (version 3.01 or greater).
+This is in following our scenario that the most likely use for
+ActiveX documents is on Web sites. To load an ActiveX document,
+simply open the .VBD file using the browser's File, Open command.
+<P>
+The Microsoft Office Binder has its own metaphor for dealing with
+ActiveX documents, calling them Sections and saving properties
+into .OBD (Office BinDer) files instead of the .VBD files. You
+should refer to your Office Binder documentation for specifics
+on using ActiveX documents with this container.
+<H3><A NAME="Menus">
+Menus</A></H3>
+<P>
+ActiveX documents can have a menu. However, the menu will not
+appear on the document page. Instead, it is merged into the container
+application's menu bar. In order for this to occur, you must set
+the NegotiatePosition option to a value other than 0.
+<P>
+If the top-level menu name is &amp;Help, the menu will appear
+as a submenu under the container's Help menu, at least under Internet
+Explorer.
+<H3><A NAME="ErrorChecking">
+Error Checking</A></H3>
+<P>
+It is imperative that you trap run-time errors in your project.
+When a run-time error occurs, your server will stop executing.
+The browser will indicate that it cannot display documents that
+are handled by that server, typically by displaying a cross-hatched
+pattern over the page or an error message. The browser will not
+reload the server until it exits or unloads all of the cached
+page information, making it difficult for clients to figure out
+what is wrong.
+<H2><A NAME="TheUserDocumentObject"><FONT SIZE=5 COLOR=#FF0000>
+The UserDocument Object</FONT></A></H2>
+<P>
+The UserDocument object is to ActiveX document servers what the
+UserControl object is to ActiveX controls. It is the heart of
+the server.
+<P>
+More importantly, the UserDocument works almost identically to
+the UserControl object. So much so, in fact, that this short section
+will only focus on those areas in which the two differ.
+<H3><A NAME="AmbientandExtenderProperties">
+Ambient and Extender Properties</A></H3>
+<P>
+An ActiveX control is sited on a container that also contains
+other controls and objects. Thus the control has the need and
+ability to access ambient properties of the container.
+<P>
+An ActiveX document takes over the entire page or frame in which
+it is loaded. Whether this is enough of a reason to abandon the
+idea of ambient properties is not for me to say. But for good
+or for ill, the UserDocument object does not have an AmbientProperties
+property or Ambient object to access. Nor does an ActiveX document
+support an Extender object. It does, however, support a Parent
+property.
+<H3><A NAME="ParentandOtherClientProperties">
+Parent and Other Client Properties</A></H3>
+<P>
+The UserDocument object in an ActiveX document server has a Parent
+property, which allows you to access properties or methods the
+container chooses to provide. For example, the property UserDocument.Parent.Name
+returns the name of the container, such as Microsoft Internet
+Explorer.
+<P>
+The Parent object and other properties that relate to the container
+are not accessible until the document is sited. The property will
+be valid after the Show event occurs (assuming it is supported
+under the container) but may be valid during the InitProperties
+and ReadProperties events, depending on the container. It will
+not be valid during the Initialize event.
+<P>
+The Parent property provides access to the object model of the
+container. This can provide your server with a great deal of functionality,
+depending on the container. Specifics of individual containers
+are beyond the scope of this book. The object model for the Microsoft
+Internet Explorer can be found in the ActiveX SDK, which is available
+from Microsoft.
+<P>
+Naturally, any code you write that uses the container's object
+model will be highly container-dependent.
+<H3><A NAME="PropertyPersistence">
+Property Persistence</A></H3>
+<P>
+The initial .VBD document file that is created with your ActiveX
+document server is empty. It essentially contains nothing more
+than the information needed to create a default document. Every
+time this document is loaded, the UserDocument's InitProperties
+event is triggered. It is only after information has been written
+into the document that the ReadProperties event will be triggered.
+Once that happens, the InitProperties event will not be triggered
+again for that particular .VBD document file. 
+<P>
+The container will only try to write out properties using the
+WriteProperties event if the UserDocument object's PropertyChanged
+method has been called for the document. This differs from ActiveX
+controls where the InitProperties event occurs only once, and
+that in the development environment. 
+<P>
+Documents downloaded from a Web site using a browser cannot be
+saved directly back to the site, and it is not clear what kind
+of applications can benefit from having a user modify a downloaded
+ActiveX document and save it locally. This suggests two likely
+scenarios with regard to your deployment of ActiveX documents
+on a Web site:
+<UL>
+<LI>The blank document approach-There is no requirement that an
+ActiveX document save persisted information at all. This is especially
+true on documents downloaded through the Internet. The document
+server is, after all, a fully functional program, and there are
+any number of possible applications that do not require the use
+of properties at all. With this approach, the InitProperties event
+will occur every time the document is loaded.
+<LI>The predefined document approach-With this approach you provide
+your server with two different operating modes. One is an edit
+mode, which is triggered when the empty document is loaded as
+indicated by the InitProperties event. The other is a standard
+mode, which is indicated by the ReadProperties event. In edit
+mode, you would open the file locally on your system, edit the
+properties, and save the changes when you are done. In standard
+mode, the document might be downloaded through a Web server. The
+ActiveX server loads properties during the ReadProperties event
+and disables any options that could change the property values.
+This approach is demonstrated in the realty example in Chapter
+24.
+</UL>
+<P>
+Naturally, you can use any combination of the two approaches.
+The most important thing is that you consider how you wish your
+ActiveX document to be used and support it by handling the InitProperties
+and ReadProperties events accordingly.
+<H3><A NAME="TipsandTricks">
+Tips and Tricks</A></H3>
+<P>
+Here are some additional techniques you can use with ActiveX Documents.
+<P>
+You can set the MinHeight and MinWidth properties to a very large
+value to force scrollbars to always be displayed. 
+<P>
+Remember that you control the appearance of the document. Let's
+say you need a document with 100 text boxes in a vertical column
+(not that you would ever really want to do this). You could try
+to create one enormous document. A better approach would be to
+use a control array to create only enough text boxes to fill the
+available viewport, then turn on the scrollbars. When the user
+scrolls, you can programmatically redefine the meaning of the
+text boxes that are visible to make them appear as if they had
+scrolled, then use the SetViewport property to force the document
+to appear correctly in the window.
+<P>
+An ActiveX document can appear in a browser frame as well as in
+an independent window. This allows you to use any Web designer
+to create the navigation portion of your site (the links between
+the various pages), instead of coding navigation links into the
+document server. You'll see how this works in <A HREF="ch24.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch24.htm" >Chapter 24</A>.
+<P>
+The Show event occurs after the document is fully sited on the
+container. It also occurs any time you return to the page after
+moving to another page. You can improve your document's performance
+by performing any initialization necessary the first time the
+Show event is called, then setting a module or static variable
+to indicate that the initialization is complete so you need not
+repeat it on subsequent Show events.
+<P>
+Visual Basic includes a wizard that does much of the work of converting
+a stand-alone application into an ActiveX document.
+<P>
+Given our scenario that ActiveX documents will be used primarily
+on Web sites, it seems clear that our next step must be to take
+a closer look at how ActiveX documents can be deployed on an Internet
+or intranet site. This is the step that forms the basis for Chapter
+24.
+<HR>
+
+<CENTER><P><A HREF="part4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/part4.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch24.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch24.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

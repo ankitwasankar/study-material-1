@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.uk/JS/html5_canvas_timers.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 07:19:56 GMT -->
+<HEAD>
+		<TITLE>Javascript Timers</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-2.css">
+		<meta name="description" content="Javascript tutorials for beginners: Simple animation with the HTML5 canvas tag and timers.">
+		<meta itemprop="name" content="Home and Learn">
+		<meta itemprop="description" content="Free Javascript Course">
+		<meta itemprop="image" content="../logo5.jpg">
+		<link rel="publisher" href="https://plus.google.com/104045712242599534737" />
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">Javascript</SPAN> <SPAN class="Logo_Text">Courses</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+<ul>
+<LI><a href="../index-2.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2010.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign.html">Web Design</a></LI>
+<LI>&gt;<a href="javascript.html">Javascript</a>&lt;</LI>
+<LI><a href="../NET/vbNet.html">Visual Basic .NET</a></LI>
+<LI><a href="../php/php.html">Beginners PHP</a></LI>
+<LI><a href="../csharp/csharp.html">C# .NET</a></LI>
+<LI><a href="../java/java.html">Java for Beginners</a></LI>
+</ul>
+		
+</NAV> <SECTION ID="Wrapper"> <ARTICLE> <HEADER> 
+<H1 ID="Article">Javascript Timers and the HTML5 Canvas</H1>
+</HEADER> <SECTION> 
+<P class="section_part_size">Ongoing HTML5 Canvas Tutorial: <a href="html5_canvas_getting_started.html">1</a> 
+  <a href="html5_canvas_drawing_shapes.html">2</a> <a href="html5_canvas_circles_and_arcs.html">3</a> 
+  <a href="html5_canvas_paths_and_lines.html">4</a> <a href="html5_canvas_line_ends_and_joins.html">5</a> 
+  <a href="html5_canvas_gradients.html">6</a> <a href="html5_canvas_fill_style_patterns.html">7</a> 
+  <a href="html5_canvas_draw_scale_slice.html">8</a> <b>9</b> <a href="html5_canvas_keyboard_keys.html">10</a> 
+  <a href="html5_canvas_mouse_events.html">11</a> <a href="html5_canvas_touch_events.html">12</a> 
+  <a href="html5_canvas_adding_text.html">13</a> <a href="html5_canvas_text_alignment.html">14</a> 
+  <a href="html5_canvas_drop_shadows.html">15</a> </P>
+<P>&nbsp;</P>
+<P>You can do simple animations with the canvas tag. There are, however, limitations 
+  that make coding busy animated scenes quite difficult with Javascript and the 
+  canvas tag. This is mainly because everything has to be cleared before you can 
+  draw a new scene. For example, suppose you wanted to move a black rectangle. 
+  You can't just move it to a new position. If you do, you'll have a black rectangle 
+  at the new position and one at the old position. You need to clear the entire 
+  canvas to erase the old one. (You can save the canvas state, however, and then 
+  restore it. But this is just used for static, non-moving parts of the scene.)</P>
+    <P align="center"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-3498263538959058";
+/* js_top */
+google_ad_slot = "5820968310";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="../../pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></P>
+<P>To see what all this means, create a new web page. Add the following as the 
+  HTML for the BODY section:</P>
+<P><b>&lt;BODY&gt;</b></P>
+<P class="indent_small">&lt;SECTION style=&quot;border-style: solid; border-width: 
+  2px; width: 500px;&quot;&gt;</P>
+<P class="indent_big">&lt;CANVAS WIDTH=&quot;400&quot; HEIGHT=&quot;400&quot; 
+  ID=&quot;canvas_1&quot;&gt;<br>
+  Canvas tag not supported<br>
+  &lt;/CANVAS&gt;</P>
+<P class="indent_small">&lt;/SECTION&gt;</P>
+<p class="indent_small"> &lt;P&gt;&lt;INPUT TYPE =&quot;Button&quot; VALUE=&quot; 
+  START &quot; onClick=&quot;drawOnCanvas()&quot;&gt;&lt;/P&gt;</p>
+<p class="indent_small"> &lt;P&gt;&lt;INPUT TYPE=&quot;Button&quot; VALUE=&quot; 
+  STOP &quot; onclick=&quot;stopTimer()&quot;&gt;&lt;/P&gt;</p>
+<p><b>&lt;/BODY&gt;</b></p>
+<p>It's the same as before but with a new button to stop a timer.</p>
+<p>For your drawOnCanvas function, add the following:</p>
+<p class="indent_small">function drawOnCanvas() {</p>
+<p class="indent_big">var canvas = document.getElementById(&quot;canvas_1&quot;);</p>
+<p class="indent_big">if ( canvas.getContext ) { </p>
+<p class="indent_bigger">canvas_context = canvas.getContext(&quot;2d&quot;);<br>
+  doTimer();</p>
+<p class="indent_big">}</p>
+<p class="indent_small">}</p>
+<p>So we just want to call a doTimer function. Here it is:</p>
+<p class="indent_big">function doTimer() {</p>
+<p class="indent_bigger">x_pos = 0;<br>
+  timerID = setInterval( &quot;moveBox()&quot;, 200 );</p>
+<p class="indent_big">}</p>
+<p>We're setting up a variable called <b>x_pos</b> to begin with. We'll use this 
+  to move a black rectangle. Note that the variable doesn't start with <b>var</b>. 
+  This is because we want to make it a global function, meaning we need other 
+  functions to have access to it. If we set it up with var then x_pos would be 
+  local to the doTimer function.</p>
+<p>For the <b>setInterval</b> timer we want to call a function with the name of 
+  <b>moveBox</b>. We want to call it every 200 milliseconds.</p>
+<p>Here's the moveBox function to add to your code:</p>
+<p class="indent_big">function moveBox() {</p>
+<p class="indent_bigger">//canvas_context.clearRect( 0, 0, 400, 400 );<br>
+  canvas_context.fillRect( x, 25, 50, 30 );<br>
+  x = x + 10;</p>
+<p class="indent_big">}</p>
+<p>Notice the two comments before the call to <b>clearRect</b>:</p>
+<p class="indent_bigger">//canvas_context.clearRect( 0, 0, 400, 400 );</p>
+<p>You'll see why in a moment. To move the box, though, we have these two lines:</p>
+<p class="indent_bigger">canvas_context.fillRect( x_pos, 25, 50, 30 );<br>
+  x_pos = x_pos + 10;</p>
+<p>The first number for <b>fillRect</b> is the X coordinate - how far from the 
+  left you want your rectangle. We're replacing this with our <b>x_pos</b> variable. 
+  We're then adding to 10 to x_pos each time the moveBox function is called by 
+  the setInterval timer.</p>
+<p>The final part of the code to add is this:</p>
+<p class="indent_big">function stopTimer() {</p>
+<p class="indent_bigger">clearInterval( timerID );</p>
+<p class="indent_big">}</p>
+<p>This function stops the timer, and thus the animation.</p>
+<p>Once you've finished typing the code, load the page into a browser and try 
+  it out. Click the START button. Click STOP after a few seconds. What you should 
+  see on your canvas is something like this:</p>
+<p align="center"><img src="images/canvas/timer_not_cleared.gif" alt="Effect of not clearing a HTML5 canvas"></p>
+<p>The reason you get a black line stretching from left to right is because the 
+  canvas hasn't been cleared before each rectangle was drawn. So the previous 
+  one is still there.</p>
+<p>Take the comments out from clearRect:</p>
+<p class="indent_big">canvas_context.clearRect( 0, 0, 400, 400 );</p>
+<p>Save the change and reload the page. Now click the START button again. This 
+  time you should see a black rectangle moving from left to right, rather than 
+  a solid line. If you have a HTML5 capable browser, you can try out the two scripts 
+  above by clicking these two links:</p>
+<p align="center"><a href="move_box_not_cleared.html" target="_blank">Example 
+  without clearing the rectangle</a></p>
+<p align="center"><a href="move_box.html" target="_blank">Example with clearing 
+  the rectangle</a></p>
+<p>Another way to clear the canvas is by resetting the width property. Like this:</p>
+<p class="indent_big">var cvs = document.getElementById(&quot;canvas_1&quot;);<br>
+  cvs.width = cvs.width;</p>
+<p>This code gets a reference to the canvas again, with getElementById. The width 
+  is then rest. Resetting the width results in the canvas being erased.<br>
+</p>
+<p>&nbsp;</p>
+<p>In the next part, you'll learn how to move rectangles using the keyboard.</p>
+</SECTION></ARTICLE></SECTION> <FOOTER> 
+<P class="course_links"><a href="html5_canvas_draw_scale_slice.html">&lt; Draw, 
+  Scale, Slice</a> | <a href="html5_canvas_keyboard_keys.html">Keyboard keys and 
+  the HTML5 canvas &gt;</a></P>
+		<P><A HREF="javascript.html">Back to the Home Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.uk/JS/html5_canvas_timers.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 07:19:56 GMT -->
+</HTML>
+

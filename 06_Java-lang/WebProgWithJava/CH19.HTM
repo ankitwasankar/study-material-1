@@ -1,0 +1,638 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 19</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>Security Issues</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+<UL>
+<LI><A HREF="#TheJavaLanguage" >The Java Language</A>
+<LI><A HREF="#TheJavaCompiler" >The Java Compiler</A>
+<LI><A HREF="#TheJavaInterpreter" >The Java Interpreter</A>
+<UL>
+<LI><A HREF="#TheClassLoader" >The Class Loader</A>
+<LI><A HREF="#TheBytecodeVerifier" >The Bytecode Verifier</A>
+</UL>
+<LI><A HREF="#TheExecutionofCode" >The Execution of Code</A>
+<LI><A HREF="#JavaVirtualMachine" >Java Virtual Machine</A>
+<UL>
+<LI><A HREF="#TheBytecodeInstructionSet" >The Bytecode Instruction Set</A>
+<LI><A HREF="#TheJVMRegisterSet" >The JVM Register Set</A>
+<LI><A HREF="#TheJavaStack" >The Java Stack</A>
+<LI><A HREF="#TheGarbageCollectionHeap" >The Garbage Collection Heap</A>
+<LI><A HREF="#TheJVMMemoryAreas" >The JVM Memory Areas</A>
+</UL>
+<LI><A HREF="#Limitations" >Limitations</A>
+<LI><A HREF="#KnownBugs" >Known Bugs</A>
+<LI><A HREF="#FutureJavaSecurity" >Future Java Security</A>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+If you have been reading the trade magazines or browsing the Java
+sites on the Internet, you have probably heard a lot of the buzz
+about security in Java. Rightfully so, as the failure to provide
+adequate security to protect the systems that download Java applets
+guarantees Java's demise. Realistically, any Internet application
+that downloads and runs foreign executables, and dynamically links
+in classes at runtime that have been created by unknown programmers,
+can be as dangerous as it is powerful. While these features afford
+you the ability to seamlessly run code from anywhere on the Web,
+there is no guarantee that this code is not defective. Any programmer
+can intentionally or unintentionally produce code that can damage
+your system. There is no way you can predict that the code you
+plan to execute is faulty. Even the code provided by reputable
+organizations should not be completely trusted.
+<P>
+You might have already read that many bugs have been discovered
+in Java's security system. While it is true that many bugs have
+been found in Java, they are primarily related to the functionality
+of Java and not to its security. A few important security holes
+have been discovered at the time of this writing, and they are
+either fixed in the JDK 1.01 and Netscape Navigator 2.01, or are
+in the process of being fixed.
+<P>
+These bugs should not scare you away from using Java. Java has
+gone through beta testing. Sun Microsystems has distributed its
+JDK for free to anyone who wants it, and Sun has therefore reaped
+the rewards of the expeditious discovery of bugs and holes in
+its software by a huge user base that has exposed the product
+to high levels of scrutiny. With each new beta release, the Java
+team repaired new bugs. By the time Java 1.1 is released for general
+availability, it should have repaired the most serious holes in
+its security model. Inevitably, hackers will find ways to get
+around Java's security, as they do with many systems, but it is
+in the best interest of the Java team to be committed to providing
+constant security updates to its product as usage by the Java
+community evolves.
+<P>
+<TT><B><A TARGET="resource window" HREF="http://www.io.org/~mentor/J_Notes.html">http://www.io.org/~mentor/J_Notes.html</A>
+<P>
+<CENTER></B></TT><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=562>
+<BLOCKQUOTE>
+As you work with Java, be sure to keep an eye out for articles and announcements in magazines and on the Web about bugs and patches. One sight to add a bookmark for is Digital Espresso, a useful source of newly reported Java bugs. You can find it at the following address:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT><A TARGET="resource window" HREF="http://www.io.org/~mentor/J___Notes.html">http://www.io.org/~mentor/J___Notes.html</A></TT>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Java's security structure is actually quite promising and is better
+than anything else out there today with similar power. It is a
+multilayered security system. This means that Java's security
+system is implemented in separate steps at each layer of the Java
+environment that code travels through before it is actually executed
+on your machine. Such depth of security is important because the
+Java programming environment is divided into layers. It is conceivable
+that any Java tool in the environment can be rewritten to circumvent
+the Java security structure. Although the security specifications
+implemented at the language and compiler layers allow you to create
+code with <BR>
+confidence that it is reasonably secure, they do not guarantee
+the security of Java code run from the Internet that is created
+and compiled by unknown programmers. There is nothing stopping
+a programmer from building a new compiler that allows code with
+security violations to compile cleanly and therefore destroy your
+system if you run it. Therefore, the other layers of the Java
+environment must be able to subject compiled bytecode from foreign
+sources to extreme levels of scrutiny.
+<P>
+Java's runtime environment that you install on your own system
+trusts no executable, no class, no instruction, or no parameter.
+It provides several additional layers of security that interrogate
+code before it is executed. This chapter examines all of Java's
+layers of security in detail, as well as the bugs that currently
+exist in August, 1996.
+<H2><A NAME="TheJavaLanguage"><B><FONT SIZE=5 COLOR=#FF0000>The
+Java Language</FONT></B></A></H2>
+<P>
+The first place that security is implemented in Java is, appropriately,
+in its language. The Java language provides security through its
+class libraries. <A HREF="ch11.htm" >Chapter 11</A>, &quot;Reading
+and Writing with Java,&quot; and <A HREF="ch12.htm" >Chapter 12</A>,
+&quot;Network Programming with Java,&quot; cover the security
+features of two of the class libraries: <TT>Java.io</TT>
+and <TT>Java.net</TT>. To summarize,
+<TT>Java.net</TT> provides the interfaces
+to handle the various network protocols (FTP, HTTP, Telnet, and
+so on). This package guards against tampering at the network interface
+level. The networking package can be configured at different levels
+of security to
+<UL>
+<LI>Disallow all network accesses.
+<LI>Allow network accesses to only the sources from which the
+code was imported.
+<LI>Allow network accesses only outside the firewall if the code
+came from outside.
+<LI>Allow unlimited network accesses.
+</UL>
+<P>
+<TT>Java.io</TT> provides many classes
+that have already been extensively tested, so it is recommended
+that you use these abstract classes in your code. Using <TT>Java.io</TT>
+classes to receive and send data to different input and output
+devices ensures that such activities are performed in the most
+secure manner. This holds true for all of Java's built-in packages.
+They have all been tested and should be used to ensure that your
+code does not violate any rules.
+<P>
+The Java language also adds security by providing access restrictions
+for encapsulation of classes, methods, and variables. Any class
+not declared <TT>public</TT>, for
+instance, is inaccessible by foreign classes. Any class declared
+<TT>protected</TT> is accessible only
+by its objects and subclasses. Any class declared <TT>private</TT>
+limits access to objects instantiated from it.
+<P>
+The Java language also eliminates pointer arithmetic and prevents
+you from explicitly controlling pointers in any manner. Instead,
+the compiler assigns symbolic references to methods, and the interpreter
+automatically assumes the responsibility of managing memory allocation
+and deallocation. As you have learned, pointers and pointer arithmetic
+used in other C-type programs are a leading source of bugs that
+crash systems.
+<P>
+Moreover, you can use the Java language to create your own security
+manager. The Java runtime environment has its own security manager
+that is constantly active at runtime. This security manager is
+an object that authorizes all operations before they are executed.
+The security manager throws a <TT>SecurityException</TT>
+if it rejects an operation. Otherwise, it passes the operation
+and allows it to run.
+<P>
+The <TT>Java.lang</TT> package provides
+an abstract security manager class that you can subclass to create
+your own security manager. The class provides methods that inspect
+classloaders on the execution stack.
+<P>
+Note that you cannot install a new security manager in an applet.
+Applets are subject to the security manager of the application
+in which they are running (your browser or Java AppletViewer).
+<H2><A NAME="TheJavaCompiler"><B><FONT SIZE=5 COLOR=#FF0000>The
+Java Compiler</FONT></B></A></H2>
+<P>
+The Java compiler not only checks that your syntax is correct
+in your source code that was created in the Java language, but
+it ensures that the code doesn't violate the language's safety
+rules. The compiler ensures that you have not made any errors,
+such as casting objects that are incompatible or using incorrect
+parameters.
+<P>
+As discussed in <A HREF="ch2.htm" >Chapter 2</A>, &quot;Getting
+Started,&quot; the Java Compiler works similarly to compilers
+in C-type languages in that it takes intelligible source code
+and converts it to code for a machine to interpret. The difference
+is that the machine that the Java compiler compiles for is the
+Java Virtual Machine, and the code is not native machine code
+for your CPU, it is bytecode for the JVM. Additionally, the Java
+compiler does not convert references to numbers and does not create
+a memory layout for the program at compile time. Although performance
+takes a hit since references in Java must be looked up in an object
+index at runtime instead of referring to exact memory addresses
+with the code, these changes were made for security reasons.
+<P>
+The compiler enforces sizes for bytecode commands and symbolic
+address references it creates. Each bytecode command consists
+of an <I>opcode</I> and an <I>operand</I>. The opcode is the command
+that the interpreter recognizes. The operand is the data needed
+by the opcode. Opcodes are executed sequentially and stored in
+8-bit numbers. Operands vary in length, but are divided into bytes.
+Each opcode has a 32-bit symbolic address reference, or handle.
+The interpreter is able to locate pieces of code in memory using
+the opcodes assigned by the compiler. It is important that these
+sizes remain constant for portability, and the compiler ensures
+that they are.
+<H2><A NAME="TheJavaInterpreter"><B><FONT SIZE=5 COLOR=#FF0000>The
+Java Interpreter</FONT></B></A></H2>
+<P>
+The Java interpreter performs many functions, some of which are
+performed solely for the purpose of the security of the system,
+and others that are performed as a part of the execution of the
+Java application, but require that security is enforced at each
+step.
+<P>
+One function that the interpreter performs for the purpose of
+security is laying out the memory map at runtime. This is unlike
+C and C++, in which the memory map is laid out by the compiler.
+The interpreter's allocation of memory in a Java application might
+vary depending on the user's hardware and software platform. This
+prevents a hacker from predicting where a class exists in memory,
+and then directly manipulating it.
+<P>
+Because memory is allocated by the runtime interpreter, Java has
+the luxury of eliminating the use of pointers in the language
+that explicitly addresses memory space. This prevents an innocent
+programmer from accidentally placing the wrong memory address
+in the code for a method, which would result in crashing your
+system. The compiled code references memory with handles that
+are resolved to exact memory addresses at runtime by the Java
+interpreter. You are unable to forge pointers to memory in Java,
+because the memory layout and object index do not exist until
+runtime and are controlled entirely by the Java interpreter.
+<P>
+Without pointers to locate a method, for example, the Java interpreter's
+memory layout is used to locate the method during runtime. When
+a method is called for the first time in a program, the interpreter
+refers to an object index of symbolic references, created by the
+compiler, that it checks against the memory layout it has created
+and finds where it placed the method in memory when the class
+was loaded. Subsequent calls to this method do not require such
+a lookup because the index contains the proper memory address.
+<P>
+Such symbolic references solve the fragile superclass security
+problem, which occurs in programs created in C and C++ when a
+superclass has been updated, possibly changing the memory layout.
+If a subclass tries to call a method from the updated superclass,
+its placement might be different in memory, and the program jumps
+to an obscure area of memory, inadvertently jeopardizing the system.
+In Java, the subclass calls methods symbolically from the superclass,
+and the interpreter locates the method using its memory layout
+and object index. Therefore, the correct method is called from
+the correct area of memory every time.
+<P>
+In addition to the security inherent in its runtime memory layout
+and object index referencing, the interpreter enforces security
+in three layers: the <I>class loader</I>, <I>bytecode verifier,</I>
+and <I>runtime system</I>. The class loader brings in the Java
+file, plus any classes referenced or inherited by the classes
+in the code. The bytecode verifier ensures that the code adheres
+to Java standards and doesn't violate the integrity of your system.
+The runtime system executes the code on your hardware.
+<H3><A NAME="TheClassLoader"><B>The Class Loader</B></A></H3>
+<P>
+The class loader is responsible for loading classes that are called
+while a Java program is executing and laying them out in memory
+in such a way that they are not able to interfere with each other
+without explicit measures set forth in the language. It loads
+both local classes and foreign classes that have been determined
+clean by the bytecode verifier.
+<P>
+You can think of the execution environment of a Java application
+as a set of classes that are partitioned into separate namespaces.
+The class loader provides a layer of security by placing incoming
+classes in their own namespaces. Classes do not interfere with
+classes in other namespaces, or partitions, without explicit calls
+to their symbolic references and the permission of the target
+class to be accessed by the foreign classes (the target class
+must not have declared any access restrictions).
+<P>
+The class loader assigns one namespace for all of the classes
+that come from the local file system (built-in Java classes),
+and a separate namespace for the each source of imported classes.
+This protects local classes from foreign classes. When a class
+references another class, it first searches the local system's
+namespace, then the namespace of the referencing class. Foreign
+classes have no way of simulating a local class. Likewise, built-in
+classes cannot interfere with imported namespaces without referencing
+their classes explicitly. Foreign classes are similarly partitioned
+from each other because they are each assigned their own namespaces.
+<H3><A NAME="TheBytecodeVerifier"><B>The Bytecode Verifier</B></A>
+</H3>
+<P>
+The Java Interpreter passes all incoming code to a bytecode verifier.
+The responsibility of the bytecode verifier is to subject every
+piece of code that the interpreter passes it to a rigorous series
+of integrity tests. It performs a variety of tests that run from
+simple verification that the format of a line of code fragment
+is consistent with the language specification, to passing each
+line of code through a theorem prover to trap the following types
+of problems:
+<UL>
+<LI>Forged pointers
+<LI>Access restriction violations (private, public, or protected)
+<LI>Mismatching of object types
+<LI>Operand stack overflows and underflows
+<LI>Incorrect bytecode parameters
+<LI>Illegal data conversion
+</UL>
+<P>
+After code has been approved by the bytecode verifier, you can
+be reasonably sure that the language does not violate your system
+with harmful instructions that fit any of these conditions. To
+maintain system performance, after code passes the verifier tests
+and is approved it will not be checked again. This enables the
+interpreter to reliably execute the code at full speed without
+stopping to check its integrity.
+<P>
+The Java class loader and bytecode verifier make no assumptions
+about the primary source of the bytecode stream. The code may
+have come from the local system, or it may have come from a system
+in another country. The bytecode verifier is the last line of
+defense against errant code. Java requires that imported code
+passes the verifier's tests before it is executed by any means
+on the system.
+<H2><A NAME="TheExecutionofCode"><B><FONT SIZE=5 COLOR=#FF0000>The
+Execution of Code</FONT></B></A></H2>
+<P>
+Once the code has been loaded, laid out in memory, and verified,
+it is executed a piece at a time by the interpreter. The interpreter
+can execute bytecodes that have been coded for the Java Virtual
+Machine specification directly. It also provides a just-in-time
+compiler that compiles intermediate bytecode to native machine
+code at runtime for cases that you are willing to sacrifice portability
+to allow the bytecode to run at full speed. Security can be implemented
+at runtime by coding traps and exception handlers into your program.
+<H2><A NAME="JavaVirtualMachine"><B><FONT SIZE=5 COLOR=#FF0000>Java
+Virtual Machine</FONT></B></A></H2>
+<P>
+At this point in the book, you might be curious as to how the
+Java Virtual Machine actually works. A grasp of the fine points
+of the JVM gives you a greater understanding of the security structure
+of Java. This section unravels the mystery of the JVM.
+<P>
+The JVM is intended to provide a set of specifications that the
+Java language, compiler, and interpreter adhere to in order to
+ensure secure, portable programs and runtime environments. The
+JVM provides a strict set of rules that can be used by a developer
+to create an original implementation of an interpreter that runs
+Java code on any machine it is installed on. These rules require
+that the runtime interpreter include all of the following pieces:
+<UL>
+<LI>A set of <I>bytecode instructions</I> similar to that of a
+CPU, which contains opcodes and operands, and their values and
+alignments
+<LI>A set of <I>registers</I> that tracks the state of the program
+at a given time
+<LI>A <I>Java stack</I>, which stores information about the states
+of methods in stack frames
+<LI>A <I>garbage collection heap</I>, which stores memory that
+is to be allocated to objects
+<LI><I>Memory areas for storage,</I> which store constants and
+methods
+</UL>
+<H3><A NAME="TheBytecodeInstructionSet"><B>The Bytecode Instruction
+Set</B></A></H3>
+<P>
+When Java code is compiled, it is converted to bytecode, which
+is similar to the assembly <BR>
+language created by C and C++ compilers. Each instruction in the
+bytecode contains an opcode followed by an <I>operand</I>. The
+following list contains examples of opcodes and their descriptions:
+<UL>
+<LI><TT>iload</TT> loads an integer
+<LI><TT>aload</TT> loads a pointer
+<LI><TT>ior</TT> logically or two
+integer
+</UL>
+<P>
+Opcodes are represented by 8-bit numbers. Operands vary in length.
+They are aligned to eight bits, and therefore, operands larger
+than eight bits are divided into multiple bytes. The reason Java
+uses such small memory spaces is to maintain compactness of memory.
+The Java team felt that compact code was worth the performance
+hit on the CPU while locating each instruction, a hit that results
+from the inability of the interpreter to judge exactly where each
+instruction is due to the varying lengths of instructions. This
+decision reclaims lost performance as compact bytecode travels
+across networks more quickly than code found in other programming
+languages that contains unused memory space left free as a result
+of larger, fixed instruction lengths. Of course, code with fixed
+instruction lengths runs more quickly on the CPU because the interpreter
+can jump through instructions, anticipating their lengths and
+exact locations.
+<P>
+The instruction set provides specifications for opcode and operand
+syntax and values, and identifier values. It also includes instructions
+for invoking methods.
+<P>
+Opcode recognizes the primitive data types described in <A HREF="ch1.htm" >Chapter 1</A>,
+&quot; An Overview of Java.&quot; In addition, it recognizes the
+symbolic object reference, which is a type of 32-bit length. The
+Java compiler manages these types. It assigns bytecodes that are
+appropriate for each type and each method.
+<H3><A NAME="TheJVMRegisterSet"><B>The JVM Register Set</B></A>
+</H3>
+<P>
+The JVM contains four 32-bit registers that store information
+about the current state of the system. These registers are updated
+after the execution of each bytecode.
+<UL>
+<LI><TT>pc</TT>&nbsp;&nbsp;The counter
+that keeps track of which bytecode in the program is currently
+being executed.
+<LI><TT>optop</TT>&nbsp;&nbsp;The
+pointer to the top of the operand stack in the Java stack that
+is used when the program performs operations.
+<LI><TT>frame</TT>&nbsp;&nbsp;The
+pointer to the current execution environment of the current method
+in the Java stack.
+<LI><TT>vars</TT>&nbsp;&nbsp;The pointer
+to the first local variable of the current method that is executing
+in the Java stack.
+</UL>
+<P>
+The processor of your machine deals quickly with these registers.
+<H3><A NAME="TheJavaStack"><B>The Java Stack</B></A></H3>
+<P>
+The Java stack provides the current parameters to bytecodes during
+execution of methods. Each method of a class is assigned a stack
+frame that is stored in the Java stack. Each stack frame holds
+the current status of local variables, the operand stack, and
+the execution environment.
+<P>
+The local variables for the method are stored in an array of 32-bit
+variables indexed by the <TT>vars</TT>
+register. Larger variables are divided across two local variables.
+When local variables are used, they are loaded onto the operand
+stack for the method. The operand stack is a 32-bit first in,
+first out (FIFO) stack that stores operands for opcodes in the
+JVM instruction set. These operands are both parameters used in
+methods' instructions, as well as results of instructions. The
+execution environment provides information about the current state
+of the method in the Java stack. It stores pointers to the previous
+method, pointers to its local variables, and pointers to the top
+and bottom of the operand stack. It might also contain debugging
+information.
+<H3><A NAME="TheGarbageCollectionHeap"><B>The Garbage Collection
+Heap</B></A></H3>
+<P>
+As you learned in <A HREF="ch4.htm" >Chapter 4</A>, &quot;Creating
+Your Own Objects,&quot; Java's garbage collector keeps track of
+references to objects allocated in memory using symbolic handles.
+When an object is no longer being referenced during the execution
+of the program, the garbage collector returns the memory used
+by the object to its garbage collection heap. This heap is a separate
+area of memory in Java that is allocated when the runtime system
+is started. It is provided specially for allocation of memory
+to new objects. If the system the interpreter runs on supports
+virtual memory, the size of the garbage collection heap can grow
+as necessary.
+<H3><A NAME="TheJVMMemoryAreas"><B>The JVM Memory Areas</B></A>
+</H3>
+<P>
+The other memory areas provided in the JVM are for storing methods
+and the constant pool. All of the bytecode for Java methods is
+stored in the method area. It also stores symbol tables for dynamic
+linking of classes and additional debugging information associated
+with a method. The constant pool area encodes string constants,
+class names, method names, and field names for each class. It
+is created by the Java compiler. These memory areas are not required
+to be laid out in any particular location to avoid exposure to
+hackers who would be able to find their code if they knew the
+memory map before runtime.
+<H2><A NAME="Limitations"><B><FONT SIZE=5 COLOR=#FF0000>Limitations</FONT></B></A>
+</H2>
+<P>
+The JVM in JDK 1.01 has a few limitations due to its fixed operand
+and stack sizes that may be resolved in future releases of the
+JDK:
+<UL>
+<LI>Stack width of 32-bits limits the JVM's internal addressing
+to 4G of memory.
+<LI>8-bit offsets into objects limit the number of methods in
+a class to 256.
+<LI>16-bit offsets for branching and jumping instructions limit
+the size of a method to 32K.
+<LI>Unsigned 16-bit indexes into a constant pool limit the number
+of constant pool entries per method to 32K.
+<LI>Unsigned 8-bit argument counts limit the size of an argument
+to 255 32-bit words (only 127 long or double words).
+</UL>
+<P>
+These limitations are not issues today because 4G of internal
+addressing space is not necessary on today's machines that typically
+have 16 or 32M RAM. However, technology advances quickly, so this
+limit could conceivably become an issue in the near future. Keep
+in mind that these limitations might be relaxed in later releases
+of Java.
+<H2><A NAME="KnownBugs"><B><FONT SIZE=5 COLOR=#FF0000>Known Bugs</FONT></B></A>
+</H2>
+<P>
+It is important that you are aware of the bugs in Java that have
+already been discovered and reported before you spend time and
+energy struggling with them. The latest release of the Java Developer's
+Kit is version 1.0.1. You should be aware of several bugs that
+exist in this release. This section lists the open bugs in the
+JDK 1.0.1 as reported by Sun Microsystems, some workarounds and
+patches that Sun suggests using, the JDK 1.0 security bugs that
+have been announced by Sun as fixed in JDK version 1.0.1, and
+some newer security bugs that have not yet made it to Sun's official
+list of open bugs.
+<P>
+Additional bugs will be discovered as Java is used by an increasing
+number of programmers in increasing capacities. It is important
+that you regularly check Java's Web site for bugs that Sun confirms,
+and additionally, unofficial Java Web sites, like Digital Espresso,
+report bugs that have not yet been confirmed by Sun.
+<P>
+Keep in mind that the bulk of these bugs address minor problems
+with the functionality of Java, and not with Java's security.
+<P>
+An updated list of the open bugs in the JDK can be found at <TT><A TARGET="resource window" HREF="http://java.sun.com/products/JDK/1.0.2/KnownBugs.html">http://java.sun.com/products/JDK/1.0.2/KnownBugs.html</A></TT>.
+<H2><A NAME="FutureJavaSecurity"><B><FONT SIZE=5 COLOR=#FF0000>Future
+Java Security</FONT></B></A></H2>
+<P>
+Many organizations are currently racing to produce tools that
+will improve Java security. These organizations are creating their
+own bytecode verifiers, runtime environments, compilers, and virus
+scanning software. They are working on providing encryption of
+binaries that will make it difficult for hackers to reverse engineer
+Java code. They are developing internal versioning systems and
+object directory services that will allow for authentication of
+applets.
+<P>
+Two examples of such organizations are Symantec, which has recently
+announced its virus scan software package for Java, and The University
+of Illinois Systems Software Research Group, which has recently
+announced the release of a package that gives the Java programmer
+access to a security API. The details as announced are as follows
+in this excerpt from Symantec Corporation's home page:
+<P>
+<I><FONT SIZE=2>&quot;Symantec Corporation, a leading supplier
+of utilities software products, today announced the development
+of new technology that lays the foundation for delivery of leading
+edge antivirus solutions. The Symantec AntiVirus Research Center
+(SARC) has developed the first native-Java virus scanner for Java
+applets sent over the Internet. In addition, SARC has also designed
+an in-house automation technology that can be used to analyze,
+replicate, detect and define a large subset of the most common
+computer viruses.</FONT></I>
+<P>
+<I><FONT SIZE=2>One of the fastest growing development environments
+is Java. While no current Java virus threats exist, there is a
+possibility that a virus could be written. In addition, due to
+Java's inherent portability, a virus of this type could spread
+over a wide variety of platforms. To address this possibility,
+SARC has produced a Java class file scanner extension for NAV.
+This will enable NAV to provide real-time protection and monitor
+for Java virus activity within Netscape or any other Java supported
+Web browser.</FONT></I>
+<P>
+<I><FONT SIZE=2>The current AutoProtect capability in Norton AntiVirus
+(NAV) is configured to scan Java applets sent over the Internet
+in .CLASS files, and can detect a potential type of Java (Java
+Type I) virus that can be propagated by modifying HTML pages.</FONT></I>
+<P>
+<I><FONT SIZE=2>The new Java scanner technology can detect another,
+more complex, type of Java virus (Java Type II) that parasitically
+infects .CLASS files. The Java .CLASS file scanner provides a
+much faster and more efficient scan than that achieved with conventional
+brute-force scanning technology and represents the best scanning
+technology available today for the Java environment. At the first
+sign of a Java virus threat, Symantec will make this technology
+available to customers via an immediate virus definition update.&quot;</FONT></I>
+<P>
+<TT><B><A TARGET="resource window" HREF="http://choices.cs.uiuc.edu/Security/JGSS/jgss.html">http://choices.cs.uiuc.edu/Security/JGSS/jgss.html</A>
+<P>
+<CENTER></B></TT><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=590>
+<BLOCKQUOTE>
+This is a press release by the University of Illinois from the Digital Espresso home page:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<I>&quot;The University of Illinois Systems Software Research Group has released the first alpha version of their JGSS Java package. This package provides Java programs access to the Generic Security Service API defined in RFC-1508 and implemented by MIT's Kerberos system. The package is available for download for personal, educational, and research use at the following address </I><TT><I><A TARGET="resource window" HREF="http://choices.cs.uiuc.edu/Security/JGSS/jgss.html">http://choices.cs.uiuc.edu/Security/JGSS/jgss.html</A></I></TT><I>.&quot;</I>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="Summary"><B><FONT SIZE=5 COLOR=#FF0000>Summary</FONT></B></A>
+</H2>
+<P>
+The status of security in Java is ever-changing. This chapter
+has provided you with a solid comprehension of the inner workings
+of Java's security structure as it exists today. To remain informed
+of the state of this structure as it grows and changes, and to
+be sure that you are effectively protecting your code and your
+computer environment from hackers, you must be sure to regularly
+check Java's Web site, other Java sites, and magazine articles
+for announcements of new changes, additional functionality, patches,
+and bugs as they arise.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

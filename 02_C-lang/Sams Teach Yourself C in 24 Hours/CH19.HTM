@@ -1,0 +1,1329 @@
+
+
+<HTML>
+<HEAD>
+<TITLE>Sams Teach Yourself C in 24 Hours: Collecting Data Items of Different Types</TITLE>
+</head>
+
+<BODY BGCOLOR="#FFFFFF">
+
+
+<!-- ISBN=0672310686 //-->
+<!-- TITLE=Sams Teach Yourself C in 24 Hours//-->
+<!-- AUTHOR=Tony Zhang//-->
+<!-- PUBLISHER=Macmillan Computer Publishing//-->
+<!-- IMPRINT=Sams//-->
+<!-- CHAPTER=19 //-->
+<!-- PAGES=0289-0312 //-->
+<!-- UNASSIGNED1 //-->
+
+
+
+<H2 align="center">Sams Teach Yourself C in 24 Hours</H2>
+
+
+
+
+<P><CENTER>
+<a href="ch18.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch18/ch18.htm">Previous</A> | <a href="index.html" tppabs="http://pbs.mcp.com/ebooks/0672310686/index.html">Table of Contents</A> | <a href="ch20.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch20/ch20.htm">Next</A>
+</CENTER></P>
+
+<h2 align="center"><A NAME="ch19_ 2">Hour 19 - Collecting Data Items of Different Types</A></H2>
+
+<P>The art of programming is the art of organizing complexity.</p>
+
+<P><B>&#151;W. W. Dijkstra</B></p>
+
+<P>In Hour 12, &quot;Storing Similar Data Items,&quot; you learned how to store data
+of the same type into arrays. In this hour, you'll learn to use structures to
+collect data items that have different data types. The following topics are covered
+in this lesson:</p>
+
+<UL>
+<LI>          Declaring and defining structures
+<LI>          Referencing structure members
+<LI>          Structures and pointers
+<LI>          Structures and functions
+<LI>          Arrays of structures
+</UL>
+
+<H3><A NAME="ch19_ 4">
+What Is a Structure?
+</A></H3>
+
+<P>As you've learned, arrays can be used to collect groups of variables of the same type.
+The question now is how to aggregate pieces of data that are not identically typed.</p>
+
+<P>The answer is that you can group variables of different types with a data type called
+a structure. In C, a structure collects different data items in such a way that they can
+be referenced as a single unit.</p>
+
+<P>There are several major differences between an array and a structure. Besides the fact
+that data items in a structure can have different types, each data item has its own name
+instead of a subscript value. In fact, data items in a structure are called
+fields or members of the structure.</p>
+
+<P>The next two subsections teach you how to declare structures and define
+structure variables.</p>
+
+<H4><A NAME="ch19_ 5">
+Declaring Structures
+</A></H4>
+
+<P>The general form to declare a structure is</p>
+
+<!-- CODE //-->
+<PRE>
+struct struct_tag {
+     data_type1 variable1;
+     data_type2 variable2;
+     data_type3 variable3;
+     .
+     .
+     .
+     };
+</PRE>
+<!-- END CODE //-->
+
+<P>Here struct is the keyword used in C to start a structure declaration.
+struct_tag is the tag name of the structure.
+variable1, variable2, and variable3 are the members of the structure. Their
+data types are specified respectively by
+data_type1, data_type2, and data_type3. As you can see,
+the declarations of the members have to be enclosed within the opening and closing braces
+({ and }) in the structure declaration, and a semicolon
+(;) has to be included at the end of the declaration.</p>
+
+<P>The following is an example of a structure declaration:</p>
+<!-- CODE SNIP //-->
+<PRE>
+struct automobile {
+     int year;
+     char model[8];
+     int engine_power;
+     float weight;
+     };
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here struct is used to start a structure declaration.
+automobile is the tag name of the structure. In this example, there are three types of variables,
+char, int, and float. The variables have their own names, such as
+year, model, engine_power, and weight.</p>
+
+<P>Note that a structure tag name, like automobile, is a label to a structure. The compiler
+uses the tag name to identify the structure labeled by that tag name.</p>
+
+<H4><A NAME="ch19_ 6">
+Defining Structure Variables
+</A></H4>
+
+<P>After declaring a structure, you can define the structure variables. For instance,
+the following structure variables are defined with the structure data type of
+automobile from the previous section:</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+struct automobile sedan, pick_up, sport_utility;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here three structure variables, sedan, pick_up, and
+sport_utility, are defined by the structure of
+automobile. All three structure variables contain the four members of the structure data
+type of automobile.</p>
+
+<P>Also, you can combine the structure declaration and definition into one statement like this:</p>
+<!-- CODE SNIP //-->
+<PRE>
+struct automobile {
+     int year;
+     char model[8];
+     int engine_power;
+     float weight;
+     } sedan, pick_up, sport_utility;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here three structure variables, sedan, pick_up, and
+sport_utility, are defined with the structure data type of
+automobile in the single statement.</p>
+
+<H3><A NAME="ch19_ 7">
+Referencing Structure Members with the Dot Operator
+</A></H3>
+
+<P>Now, let's see how to reference a structure member. Given the structure data type
+of automobile and the structure of sedan, for instance, I can access its member,
+year, and assign an integer to it in the following way:</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+sedan.year = 1997;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here the structure name and its member's name are separated by the dot
+(.) operator so that the compiler knows that the integer value of
+1997 is assigned to the variable called year, which is a member of the structure
+sedan.</p>
+
+<P>Likewise, the following statement assigns the start address of the character array of
+model, which is another member of the structure
+sedan, to a char pointer, ptr:</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+ptr = sedan.model;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>The program in Listing 19.1 gives another example to reference the members of
+a structure.</p>
+
+
+<h4>TYPE</h4>
+<h4>Listing 19.1. Referencing the members of a structure.</h4>
+
+<!-- CODE //-->
+<PRE>
+1:  /* 19L01.c Access to structure members */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  main(void)
+5:  {
+6:     struct computer {
+7:        float cost;
+8:        int year;
+9:        int cpu_speed;
+10:       char cpu_type[16];
+11:       } model;
+12:
+13:    printf(&quot;The type of the CPU inside your computer?\n&quot;);
+14:       gets(model.cpu_type);
+15:    printf(&quot;The speed(MHz) of the CPU?\n&quot;);
+16:       scanf(&quot;%d&quot;, &amp;model.cpu_speed);
+17:    printf(&quot;The year your computer was made?\n&quot;);
+18:       scanf(&quot;%d&quot;, &amp;model.year);
+19:    printf(&quot;How much you paid for the computer?\n&quot;);
+20:       scanf(&quot;%f&quot;, &amp;model.cost);
+21:
+22:    printf(&quot;Here are what you entered:\n&quot;);
+23:    printf(&quot;Year: %d\n&quot;, model.year);
+24:    printf(&quot;Cost: $%6.2f\n&quot;, model.cost);
+25:    printf(&quot;CPU type: %s\n&quot;, model.cpu_type);
+26:    printf(&quot;CPU speed: %d MHz\n&quot;, model.cpu_speed);
+27:
+28:    return 0;
+29: }
+</PRE>
+<!-- END CODE //-->
+
+<P>I have the following output shown on the screen after I run the executable
+(19L01.exe) of the program in Listing 19.1 and enter my answers to the questions (in the
+output, the bold characters or numbers are the answers entered from my keyboard):</p>
+
+
+<P><b>OUTPUT</b></P>
+<!-- CODE //-->
+<PRE>
+C:\app&gt;19L01
+The type of the CPU inside your computer?
+Pentium
+The speed(MHz) of the CPU?
+100
+The year your computer was made?
+1996
+How much you paid for the computer?
+1234.56
+Here are what you entered:
+Year: 1996
+</PRE>
+<!-- END CODE //--> <!-- CODE SNIP //--> 
+<PRE>
+Cost: $1234.56<BR>
+CPU type: Pentium
+CPU speed: 100 MHz
+C:\app&gt;
+</PRE>
+<!-- END CODE SNIP //-->
+
+
+<P><b>ANALYSIS</b></P>
+<P>The purpose of the program in Listing 19.1 is to show you how to reference members
+of a structure. As you can see from the program, there is a structure called
+model that is defined with a structure data type of
+computer in lines 6_11. The structure has one
+float variable, two int variables, and one char array.</p>
+
+<P>The statement in line 13 asks the user to enter the type of CPU (central processing unit) <BR>
+used inside his or her computer. Then, line 14 receives the string of the CPU type
+entered by the user and saves the string into the char array called
+cpu_type. Because cpu_type is a member of the
+model structure, the model.cpu_type expression is used in line 14 to
+reference the member of the structure. Note that the dot operator
+(.) is used to separate the two names in the expression.</p>
+
+<P>Lines 15 and 16 ask for the CPU speed and store the value of an integer entered by
+the user to another member of the model structure&#151;the
+int variable cpu_speed. Note that in line 16, the address-of operator
+(&amp;)is prefixed to the model.cpu_speed expression inside the
+scanf() function because the argument should be an
+int pointer.</p>
+
+<P>Likewise, lines 17 and 18 receive the value of the year in which the user's computer
+was made, and lines 19 and 20 get the number for the cost of the computer. After the
+execution, the int variable year and the float variable
+cost in the model structure contain the
+corresponding values entered by the user.</p>
+
+<P>Then, lines 23_26 print out all values held by the members of the
+model structure. From the output, you can tell that each member of the structure has been accessed and assigned
+a number or string correctly.</p>
+
+<H4><A NAME="ch19_ 8">
+Initializing Structures
+</A></H4>
+
+<P>A structure can be initialized by a list of data called
+initializers. Commas are used to separate data items in a list of data.</p>
+
+<P>Listing 19.2 contains an example of initializing a structure before it's updated
+by the user.</p>
+
+
+<h4>TYPE</h4>
+<h4>Listing 19.2. Initializing a structure.</h4>
+<!-- CODE SNIP //-->
+<PRE>1:  /* 19L02.c Initializing a structure */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  main(void)
+5:  {
+6:     struct employee {
+7:        int id;<BR>
+8:        char name[32];
+9:        };
+10:    /* structure initialization */
+11:    struct employee info = {
+12:       1,
+13:       &quot;B. Smith&quot;
+14:       };
+15:
+16:    printf(&quot;Here is a sample:\n&quot;);
+17:    printf(&quot;Employee Name: %s\n&quot;, info.name);
+18:    printf(&quot;Employee ID #: %04d\n\n&quot;, info.id);
+19:
+20:    printf(&quot;What's your name?\n&quot;);
+21:       gets(info.name);
+22:    printf(&quot;What's your ID number?\n&quot;);
+23:       scanf(&quot;%d&quot;, &amp;info.id);
+24:
+25:    printf(&quot;\nHere are what you entered:\n&quot;);
+26:    printf(&quot;Name: %s\n&quot;, info.name);
+27:    printf(&quot;ID #: %04d\n&quot;, info.id);
+28:
+29:    return 0;
+30: }
+</PRE>
+<!-- END CODE //-->
+
+<P>When the executable 19L02.exe is being run, the initial content saved in a
+structure is displayed. Then, I enter my answers to the questions and get the
+updated information shown on the screen:</p>
+
+<P><b>OUTPUT</b></P>
+<!-- CODE //-->
+<PRE>
+C:\app&gt;19L02
+Here is a sample:
+Employee Name: B. Smith
+Employee ID #: 0001
+
+What's your name?
+T. Zhang
+What's your ID number?
+1234
+
+Here are what you entered:
+Name: T. Zhang
+ID #: 1234
+C:\app&gt;
+</PRE>
+<!-- END CODE //-->
+
+
+<P><b>ANALYSIS</b></P>
+<P>The purpose of the program in Listing 19.2 is to initialize a structure and then ask the
+user to update the content held by the structure.</p>
+
+<P>The structure data type, labeled as employee, is declared in lines
+6_9. Then, the variable, info, is defined with the structure data type and initialized with the integer
+1 and the string
+&quot;B. Smith&quot; in lines 11_14.</p>
+
+
+<P>You can also combine the declaration, definition, and initialization of a structure into
+a single statement. Here's an example:</p>
+
+<!-- CODE SNIP //-->
+<PRE>struct employee {
+       int id;
+       char name[32];
+       } info = {
+       1,
+       &quot;B. Smith&quot;
+       };
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>The statements in lines 17 and 18 display the initial contents stored by the two
+members of the info structure on the screen. Then, lines 20_23 ask the user to enter his or her
+name and employee ID number and save them into the two structure members,
+name and id, respectively.</p>
+
+<P>Before the end of the program, the updated contents contained by the two members
+are printed out by the statements in lines 26 and 27.</p>
+
+<P>Again, the dot operator (.) is used in the program to reference the structure members.</p>
+
+<H3><A NAME="ch19_ 9">
+Structures and Function Calls
+</A></H3>
+
+<P>The C language allows you to pass an entire structure to a function. In addition, a
+function can return a structure back to its caller.</p>
+
+<P>To show you how to pass a structure to a function, I rewrite the program in
+Listing 19.1 and create a function called
+DataReceive() in the program. The upgraded program is shown in Listing 19.3.</p>
+
+
+<h4>TYPE</h4>
+<h4>Listing 19.3. Passing a structure to a function.</h4>
+
+<!-- CODE //-->
+<PRE>
+1:  /* 19L03.c Passing a structure to a function */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  struct computer {
+5:     float cost;
+6:     int year;
+7:     int cpu_speed;
+8:     char cpu_type[16];
+9:  };
+10: /* create synonym */
+11: typedef struct computer SC;
+12: /* function declaration */
+13: SC DataReceive(SC s);
+14:
+15: main(void)
+16: {
+17:    SC model;
+18:
+19:    model = DataReceive(model);
+20:    printf(&quot;Here are what you entered:\n&quot;);
+21:    printf(&quot;Year: %d\n&quot;, model.year);
+22:    printf(&quot;Cost: $%6.2f\n&quot;, model.cost);
+23:    printf(&quot;CPU type: %s\n&quot;, model.cpu_type);
+24:    printf(&quot;CPU speed: %d MHz\n&quot;, model.cpu_speed);
+25:
+26:    return 0;
+27: }
+28: /* function definition */
+29: SC DataReceive(SC s)
+30: {
+31:    printf(&quot;The type of the CPU inside your computer?\n&quot;);
+32:       gets(s.cpu_type);
+33:    printf(&quot;The speed(MHz) of the CPU?\n&quot;);
+34:       scanf(&quot;%d&quot;, &amp;s.cpu_speed);
+35:    printf(&quot;The year your computer was made?\n&quot;);
+36:       scanf(&quot;%d&quot;, &amp;s.year);
+37:    printf(&quot;How much you paid for the computer?\n&quot;);
+38:       scanf(&quot;%f&quot;, &amp;s.cost);
+39:    return s;
+40: }
+</PRE>
+<!-- END CODE //-->
+
+<P>After I run the executable, 19L03.exe, and enter my answers to the questions, I
+get the following output, which is the same as the output from the executable
+program of List-<BR>
+ing 19.1:</p>
+
+
+<P><b>OUTPUT</b></P>
+<!-- CODE //-->
+<PRE>
+C:\app&gt;19L03
+The type of the CPU inside your computer?
+Pentium
+The speed(MHz) of the CPU?
+100
+The year your computer was made?
+1996
+How much you paid for the computer?
+1234.56
+Here are what you entered:
+Year: 1996
+Cost: $1234.56
+CPU type: Pentium
+CPU speed: 100 MHz
+C:\app&gt;
+</PRE>
+<!-- END CODE //-->
+
+
+<P><b>ANALYSIS</b></P>
+<P>The purpose of the program in Listing 19.3 is to show you how to pass a structure to
+a function. The structure in Listing 19.3, with the tag name of
+computer, is declared in lines 4_9.</p>
+
+
+<P>Note that in line 11 the typedef keyword is used to define a synonym,
+SC, for structure computer. 
+Then SC is used in the sequential declarations.</p>
+
+<P>The DataReceive() function is declared in line 13, with the structure of
+computer as its argument (that is, the synonym SC and the variable name
+s), so that a copy of the structure can be passed to the function.</p>
+
+<P>In addition, the DataReceive() function returns the copy of the structure back to the caller
+after the content of the structure is updated. To do this,
+SC is prefixed to the function in line 13 to indicate the data type of the value returned by the function.</p>
+
+<P>The statement in line 17 defines the structure
+model with SC. The DataReceive() function is passed with the name of the
+model structure in line 19, and then the value returned by
+the function is assigned back to model as well. Note that if the
+DataReceive() function return value is not assigned to
+model, the changes made to s in the function will not be evident in
+model.</p>
+
+<P>The definition of the DataReceive() function is shown in lines
+29_40, from which you can see that the new data values entered by the user are saved into the corresponding members
+of the structure that is passed to the function. At the end of the function, the copy of
+the updated structure is returned in line 39.</p>
+
+<P>Then, back to the main() function of the program, lines 21_24 print out the updated
+contents held by the members of the structure. Because the program in Listing 19.3 is basically
+the same as the one in Listing 19.1, I see the same output on my screen after running
+the executable file, 19L03.exe.</p>
+
+<H4><A NAME="ch19_ 10">
+Pointing to Structures
+</A></H4>
+
+<P>As you can pass a function with a pointer that refers to an array, you can also pass a
+function with a pointer that points to a structure.</p>
+
+<P>However, unlike passing a structure to a function, which sends an entire copy of
+the structure to the function, passing a pointer of a structure to a function is simply
+passing the address that associates the structure to the function. The function can then use
+the address to access the structure members without duplicating the structure. Therefore,
+it's more efficient to pass a pointer of a structure, rather than the structure itself, to a function.</p>
+
+<P>Accordingly, the program in Listing 19.3 can be rewritten to pass the
+DataReceive() function with a pointer that points to the structure. The rewritten program
+is shown in Listing 19.4.</p>
+
+
+
+<h4>TYPE</h4>
+<h4>Listing 19.4. Passing a function with a pointer that points to a structure.</h4>
+
+<!-- CODE SNIP //-->
+<PRE>
+1:  /* 19L04.c Pointing to a structure */
+2:  #include &lt;stdio.h&gt;
+3:
+4: struct computer {<BR>
+5:    float cost;
+6:    int year;
+7:    int cpu_speed;
+8:    char cpu_type[16];
+9: };
+10:
+11: typedef struct computer SC;
+12:
+13: void DataReceive(SC *ptr_s);
+14:
+15: main(void)
+16: {
+17:    SC model;
+18:
+19:    DataReceive(&amp;model);
+20:    printf(&quot;Here are what you entered:\n&quot;);
+21:    printf(&quot;Year: %d\n&quot;, model.year);
+22:    printf(&quot;Cost: $%6.2f\n&quot;, model.cost);
+23:    printf(&quot;CPU type: %s\n&quot;, model.cpu_type);
+24:    printf(&quot;CPU speed: %d MHz\n&quot;, model.cpu_speed);
+25:
+26:    return 0;
+27: }
+28: /* function definition */
+29: void DataReceive(SC *ptr_s)
+30: {
+31:    printf(&quot;The type of the CPU inside your computer?\n&quot;);
+32:       gets((*ptr_s).cpu_type);
+33:    printf(&quot;The speed(MHz) of the CPU?\n&quot;);
+34:       scanf(&quot;%d&quot;, &amp;(*ptr_s).cpu_speed);
+35:    printf(&quot;The year your computer was made?\n&quot;);
+36:       scanf(&quot;%d&quot;, &amp;(*ptr_s).year);
+37:    printf(&quot;How much you paid for the computer?\n&quot;);
+38:       scanf(&quot;%f&quot;, &amp;(*ptr_s).cost);
+39: }
+</PRE>
+<!-- END CODE //-->
+
+<P>Similarly, I obtain output that is the same as the one from the program in
+Listing 19.3 after I run the executable (19L04.exe) of the program in Listing 19.4:</p>
+
+
+<P><b>OUTPUT</b></P>
+<!-- CODE //-->
+<PRE>
+C:\app&gt;19L04
+The type of the CPU inside your computer?
+Pentium
+The speed(MHz) of the CPU?
+100
+The year your computer was made?
+1996
+How much you paid for the computer?
+1234.56
+Here are what you entered:
+Year: 1996
+Cost: $1234.56
+CPU type: Pentium
+CPU speed: 100 MHz<BR>
+C:\app&gt;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P><b>ANALYSIS</b></P>
+
+<P>The program in Listing 19.4 is almost identical to the one in Listing 19.3, except that
+the argument passed to the DataReceive() function is a pointer defined with
+SC&#151;that is, structure computer. (Refer to lines 11 and 13.) Also, the
+DataReceive() function does not need to return a copy of the structure because the function can access all members of the original
+structure, not the copy, via the pointer passed to it. That's why the
+void keyword is prefixed to the function name in line 13.</p>
+
+
+<P>The statement in line 17 defines the structure
+model. And in line 19, the address of the model structure is passed to the
+DataReceive function by applying the address-of operator
+(&amp;).</p>
+
+<P>When you look at the definition of the
+DataReceive() function in lines 29_39, you see that
+the dereferenced pointer *ptr_s is used to reference the members of the
+model structure. For instance, to access the char array of
+cpu_type, (*ptr_s) is used in the
+(*ptr_s).cpu_type expression to indicate to the compiler that
+cpu_type is a member in the structure pointed to by the
+pointer ptr_s. Note that the dereferenced pointer
+*ptr_s has to be enclosed within the parentheses
+(( and )).</p>
+
+<P>Another example is the &amp;(*ptr_s).cpu_speed expression in line 34, which leads to the
+address of the cpu_speed variable that is a member of the structure pointed to by the pointer
+ptr_s. Again, the dereferenced pointer *ptr_s is surrounded by the parentheses
+(( and )).</p>
+
+<P>The next subsection shows you how to use the arrow operator
+(-&gt;) to refer to a structure member with a pointer.</p>
+
+<H4><A NAME="ch19_ 11">
+Referencing a Structure Member with -&gt;
+</A></H4>
+
+<P>You can use the arrow operator -&gt; to refer to a structure member with a pointer that
+points to the structure.</p>
+
+<P>For instance, you can rewrite the
+(*ptr_s).cpu_type expression in Listing 19.4 with this:</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+ptr_s -&gt; cpu_type
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>or you could replace the
+&amp;(*ptr_s).cpu_speed expression with this:</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+&amp;(ptr_s-&gt;cpu_speed)
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Because of its clearness, the -&gt; operator is more frequently used in programs than the
+dot operator. Exercise 3, later in this hour, gives you a chance to rewrite the entire
+program in Listing 19.4 using the -&gt; operator.</p>
+
+<H3><A NAME="ch19_ 12">
+Arrays of Structures
+</A></H3>
+
+<P>In C, you can declare an array of a structure by preceding the array name with the
+structure name. For instance, given a structure with the tag name of
+x, the following statement</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+struct x array_of_structure[8];
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>declares an array, called array_of_structure, with the structure data type of
+x. The array has eight elements.</p>
+
+<P>The program shown in Listing 19.5 demonstrates how to use an array of a
+structure by printing out two pieces of Japanese haiku and their authors' names.</p>
+
+
+<h4>TYPE</h4>
+<h4>Listing 19.5. Using arrays of structures.</h4>
+
+<!-- CODE //-->
+<PRE>
+1:  /* 19L05.c Arrays of structures */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  struct haiku {
+5:     int start_year;
+6:     int end_year;
+7:     char author[16];
+8:     char str1[32];
+9:     char str2[32];
+10:    char str3[32];
+11: };
+12:
+13: typedef struct haiku HK;
+14:
+15: void DataDisplay(HK *ptr_s);
+16:
+17: main(void)
+18: {
+19:    HK poem[2] = {
+20:      { 1641,
+21:        1716,
+22:        &quot;Sodo&quot;,
+23:        &quot;Leading me along&quot;,
+24:        &quot;my shadow goes back home&quot;,
+25:        &quot;from looking at the moon.&quot;
+26:      },
+27:      { 1729,
+28:        1781,
+29:        &quot;Chora&quot;,
+30:        &quot;A storm wind blows&quot;,
+31:        &quot;out from among the grasses&quot;,
+32:        &quot;the full moon grows.&quot;
+33:      }
+34:    };
+35:    int i;
+36:
+37:    for (i=0; i&lt;2; i++)
+38:       DataDisplay(&amp;poem[i]);
+39:
+40:    return 0;
+41: }
+42: /* function definition */
+43: void DataDisplay(HK *ptr_s)
+44: {
+45:    printf(&quot;%s\n&quot;, ptr_s-&gt;str1);<BR>
+46:    printf(&quot;%s\n&quot;, ptr_s-&gt;str2);
+47:    printf(&quot;%s\n&quot;, ptr_s-&gt;str3);
+48:    printf(&quot;--- %s\n&quot;, ptr_s-&gt;author);
+49:    printf(&quot;   (%d-%d)\n\n&quot;, ptr_s-&gt;start_year, ptr_s-&gt;end_year);
+50: }
+</PRE>
+<!-- END CODE //-->
+
+<P>After running the executable (19L05.exe) of the program in Listing 19.5, I see the
+two pieces of Japanese haiku printed on the screen:</p>
+
+
+<P><b>OUTPUT</b></P>
+<!-- CODE //-->
+<PRE>
+C:\app&gt;19L05
+Leading me along
+my shadow goes back home
+from looking at the moon.
+--- Sodo
+   (1641-1716)
+
+A storm wind blows
+out from among the grasses
+the full moon grows.
+--- Chora
+   (1729-1781)
+C:\app&gt;
+</PRE>
+<!-- END CODE //-->
+
+
+<P><b>ANALYSIS</b></P>
+<P>In Listing 19.5, a structure data type, with the tag name of
+haiku, is declared in
+lines 4_11. The structure data type contains two
+int variables and four char arrays as its members. The statement in line 13 creates a synonym,
+HK, for the struct haiku data type.</P>
+
+<P>Then, in lines 19_34, an array of two elements,
+poem, is declared and initialized with two pieces of haiku written by Sodo and Chora, respectively. The following is a copy of the
+two pieces of haiku from poem:</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+&quot;Leading me along&quot;,
+&quot;my shadow goes back home&quot;,
+&quot;from looking at the moon.&quot;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>and</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+&quot;A storm wind blows&quot;,
+&quot;out from among the grasses&quot;,
+&quot;the full moon grows.&quot;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>The initializer also includes the authors' names and the years of their births and
+deaths (refers to lines 20_22 and lines 27_29). Note that the
+poem array, declared with HK, is indeed an array of the
+haiku structure.</p>
+
+<P>The DataDisplay() function is called twice in a for loop in lines 37 and 38. 
+  Each time, the address of an element of poem is passed to the DataDisplay() 
+  function. According to the definition of the function in lines 43_50, DataDisplay() 
+  prints out three strings of a haiku, the author's name, and the period of time 
+  in which he lived.</p>
+
+<P>From the output, you can see that the contents stored in the
+poem array of the haiku structure are displayed on the screen properly.</p>
+
+<H4><A NAME="ch19_ 13">
+Nested Structures
+</A></H4>
+
+<P>A structure is called a nested structure when one of the members of the structure is
+itself a structure. For instance, given a structure data type of
+x, the following statement</p>
+
+<!-- CODE SNIP //-->
+<PRE>struct y {
+   int i;
+   char ch[8];
+   struct x nested;
+};
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>declares a nested structure with a tag name of
+y, because one of the members of the y structure is a structure with the variable name of
+nested that is defined by the structure data type <BR>
+of x.</p>
+
+<P>Listing 19.6 contains an example of using a nested structure to receive and print
+out information about an employee.</p>
+
+
+<h4>TYPE</h4>
+<h4>Listing 19.6. Using nested structures.</h4>
+
+<!-- CODE //-->
+<PRE>
+1:  /* 19L06.c Using nested structures */
+2:  #include &lt;stdio.h&gt;
+3:
+4:  struct department {
+5:     int  code;
+6:     char name[32];
+7:     char position[16];
+8:  };
+9:
+10: typedef struct department DPT;
+11:
+12: struct employee {
+13:    DPT d;
+14:    int id;
+15:    char name[32];
+16: };
+17:
+18: typedef struct employee EMPLY;
+19:
+20: void InfoDisplay(EMPLY *ptr);
+21: void InfoEnter(EMPLY *ptr);
+22:
+23: main(void)
+24: {
+25:    EMPLY info = {
+26:       { 1,
+27:         &quot;Marketing&quot;,
+28:         &quot;Manager&quot;
+29:       },
+30:       1,
+31:       &quot;B. Smith&quot;
+32:    };
+33:
+34:    printf(&quot;Here is a sample:\n&quot;);
+35:    InfoDisplay(&amp;info);
+36:
+37:    InfoEnter(&amp;info);
+38:
+39:    printf(&quot;\nHere are what you entered:\n&quot;);
+40:    InfoDisplay(&amp;info);
+41:
+42:    return 0;
+43: }
+44: /* function definition */
+45: void InfoDisplay(EMPLY *ptr)
+46: {
+47:    printf(&quot;Name: %s\n&quot;, ptr-&gt;name);
+48:    printf(&quot;ID #: %04d\n&quot;, ptr-&gt;id);
+49:    printf(&quot;Dept. name: %s\n&quot;, ptr-&gt;d.name);
+50:    printf(&quot;Dept. code: %02d\n&quot;, ptr-&gt;d.code);
+51:    printf(&quot;Your position: %s\n&quot;, ptr-&gt;d.position);
+52: }
+53: /* function definition */
+54: void InfoEnter(EMPLY *ptr)
+55: {
+56:    printf(&quot;\nPlease enter your information:\n&quot;);
+57:    printf(&quot;Your name:\n&quot;);
+58:       gets(ptr-&gt;name);
+59:    printf(&quot;Your position:\n&quot;);
+60:       gets(ptr-&gt;d.position);
+61:    printf(&quot;Dept. name:\n&quot;);
+62:       gets(ptr-&gt;d.name);
+63:    printf(&quot;Dept. code:\n&quot;);
+64:       scanf(&quot;%d&quot;, &amp;(ptr-&gt;d.code));
+65:    printf(&quot;Your employee ID #:\n&quot;);
+66:       scanf(&quot;%d&quot;, &amp;(ptr-&gt;id));
+67: }
+</PRE>
+<!-- END CODE //-->
+
+<P>When the executable, 19L06.exe, is running, the initial content of the nested
+structure is printed out first. Then, I enter my employment information, which is in
+bold in the following output and displayed back on the screen, too:</p>
+
+<P><b>OUTPUT</b></P>
+
+<!-- CODE //-->
+<PRE>
+C:\app&gt;19L06
+Here is a sample:
+Name: B. Smith
+ID #: 0001
+Dept. name: Marketing
+Dept. code: 01
+Your position: Manager
+
+Please enter your information:\n&quot;);
+Your name:
+T. Zhang
+Your position:\n&quot;);
+Engineer
+Dept. name:
+R&amp;D
+Dept. code:
+3
+
+Your employee ID #:
+1234
+
+Here are what you entered:
+Name: T. Zhang
+ID #: 1234
+Dept. name: R&amp;D
+Dept. code: 03
+Your position: Engineer
+C:\app&gt;
+</PRE>
+<!-- END CODE //-->
+
+
+<P><b>ANALYSIS</b></P>
+<P>There are two structure data types in Listing 19.6. The first one, called
+department, is declared in lines 4_8. The second one,
+employee, declared in lines 12_16, contains a
+member of the department structure data type. Therefore, the
+employee structure data type is a nested structure data type.</p>
+
+<P>Two synonyms, DPT for the struct department data type, and
+EMPLY for the struct employee data type, are created in two
+typedef statements, respectively, in lines 10 and 18. In the program,
+there are two functions, InfoDisplay() and
+InfoEnter(), whose prototypes are declared with a pointer
+of EMPLY as the argument (see lines 20 and 21).</p>
+
+<P>The statement in 25_32 initializes a nested structure, which is called
+info and defined with EMPLY. Note that the nested braces
+({ and }) in lines 26 and 29 enclose the initializers
+for the d structure of DPT that is nested inside the
+info structure.</p>
+
+<P>Then, the statement in line 35 displays the initial contents held by the nested
+info structure by calling the InfoDisplay()
+function. Line 37 calls the InfoEnter() function to ask the user to
+enter his or her employment information and then save it into the
+info structure. The InfoDisplay() function is called again in line 40 to display the information that the user entered and
+is now stored in the nested structure.</p>
+
+<P>The definitions for the two functions,
+InfoDisplay() and InfoEnter(), are listed in lines 45_52
+and lines 54_67, respectively.</p>
+
+<H4><A NAME="ch19_ 14">
+Forward-Referencing Structures
+</A></H4>
+
+<P>If one of the members of a structure is a pointer pointing to another structure that has
+not been declared yet, the structure is called a forward-referencing
+structure.</p>
+
+<P>For example, the following statement declares a forward-referencing structure:</p>
+<!-- CODE SNIP //-->
+<PRE>
+struct x {
+   int i;
+   char ch[8];
+   struct y *ptr;
+};
+</PRE>
+<!-- END CODE SNIP //--> 
+<P>It is presumed that the structure y has not been declared yet.</p>
+
+<P>If the pointer in a structure points to the structure itself, the structure is called a
+self-referencing structure. The following declaration is an example of a
+self-referencing structure:</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+struct x {
+   int i;
+   char ch[8];
+   struct x *ptr;
+};
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Now, let's move to the program in Listing 19.7, which provides you with another
+example of declaring a forward-referencing structure.</p>
+
+
+<h4>TYPE</h4>
+<h4>Listing 19.7. Using forward-referencing structures.</h4>
+
+<!-- CODE //-->
+<PRE>
+1:  /* 19L07.c Forward-referencing structures */
+2:  #include &lt;stdio.h&gt;
+3:  /* forward-referencing structure */
+4:  struct resume {
+5:     char name[16];
+6:     struct date *u;
+7:     struct date *g;
+8:  };
+9:  /* referenced structure */
+10: struct date {
+11:    int year;
+12:    char school[32];
+13:    char degree[8];
+14: };
+15:
+16: typedef struct resume RSM;
+17: typedef struct date DATE;
+18:
+19: void InfoDisplay(RSM *ptr);
+20:
+21: main(void)
+22: {
+23:    DATE under = {
+24:        1985,
+25:        &quot;Rice University&quot;,
+26:        &quot;B.S.&quot;
+27:        };
+28:    DATE graduate = {
+29:        1987,
+30:        &quot;UT Austin&quot;,
+31:        &quot;M.S.&quot;
+32:        };
+33:    RSM new_employee = {
+34:        &quot;Tony&quot;,
+35:        &amp;under,
+36:        &amp;graduate
+37:        };
+38:
+39:    printf(&quot;Here is the new employee's resume:\n&quot;);
+40:    InfoDisplay(&amp;new_employee);
+41:
+42:    return 0;
+43: }
+44: /* function definition */
+45: void InfoDisplay(RSM *ptr)
+46: {
+47:    printf(&quot;Name: %s\n&quot;, ptr-&gt;name);
+48:    /* undergraduate */
+49:    printf(&quot;School name: %s\n&quot;, ptr-&gt;u-&gt;school);
+50:    printf(&quot;Graduation year: %d\n&quot;, ptr-&gt;u-&gt;year);
+51:    printf(&quot;Degree: %s\n&quot;, ptr-&gt;u-&gt;degree);
+52:    /* graduate */
+53:    printf(&quot;School name: %s\n&quot;, ptr-&gt;g-&gt;school);
+54:    printf(&quot;Graduation year: %d\n&quot;, ptr-&gt;g-&gt;year);
+55:    printf(&quot;Degree: %s\n&quot;, ptr-&gt;g-&gt;degree);
+56: }
+</PRE>
+<!-- END CODE //-->
+
+
+
+<P>I have the following output displayed on the screen after I run the
+executable, 19L07.exe, of the program in Listing 19.7:</p>
+
+
+<P><b>OUTPUT</b></P>
+<!-- CODE //-->
+<PRE>
+C:\app&gt;19L07
+Here is the new employee's resume:
+Name: Tony
+School name: Rice University
+Graduation year: 1985
+Degree: B.S.
+School name: UT Austin
+Graduation year: 1987
+Degree: M.S.
+C:\app&gt;
+</PRE>
+<!-- END CODE //-->
+
+
+<P>ANALYSIS</P>
+<P>The purpose of the program in Listing 19.7 is to show you how to declare and
+initialize a forward-referencing structure. As you can see, the forward-referencing structure
+data type, labeled with resume, is declared in lines 4_8. This structure data type has two
+members, u and g, which are pointers defined with the
+date structure data type. However, the date structure data type has not yet been declared at this moment. The structure data type
+of resume is thus called a forward-referencing structure data type.</p>
+
+<P>The referenced date structure data type is declared in lines 10_14. Then, I make
+two synonyms, RSM and DATE, to represent struct
+resume and struct date, respectively, in lines 16
+and 17.</p>
+
+<P>Because there are two pointers inside the
+resume structure data type that reference the date structure data type, I define and initialize two structures with
+DATE in lines 23_32. under and graduate are the names of the two structures.</p>
+
+<P>Then, in lines 33_37, a structure, called new_employee, is defined with RSM 
+  and initialized with the addresses of the two structures, under and graduate 
+  (see lines 35 and 36). In this way, the forward-referencing structure new_employee 
+  is assigned with access to the contents of the two referenced structures, under 
+  and graduate.<BR>
+</p>
+
+<P>The statement in line 40, which calls the
+InfoDisplay() function, prints out all the contents
+held by the new_employee structure, as well as that of the
+under and graduate structures.</p>
+
+<P>Lines 45_56 give the definition of the
+InfoDisplay() function, from which you can see that
+the expressions, such as ptr-&gt;u-&gt;school and
+ptr-&gt;g-&gt;school, are used to reference the members in
+the under and graduate structures. Since ptr, u, and
+g are all pointers, two arrows (-&gt;) are used in the expressions.</p>
+
+<P>In exercise 5, later in this hour, you'll be asked to rewrite the program in Listing 19.7
+with an array of pointers to replace the two pointers defined inside the
+forward-referencing structure of resume.</p>
+<P>
+
+<CENTER>
+<TABLE BGCOLOR="#FFFF99">
+<TR><TD><B>
+WARNING
+</B></TD></TR>
+<TR><TD>
+<BLOCKQUOTE>
+Don't include forward references in a typedef statement. It's not legal <BR>
+in C.
+</BLOCKQUOTE></TD></TR>
+</TABLE></CENTER><p></p>
+<H3><A NAME="ch19_ 15">
+Summary
+</A></H3>
+
+<P>In this lesson you've learned the following:</p>
+
+<UL>
+  <LI> You can group variables of different types with a data type called a structure. 
+  <LI> The data items in a structure are called fields or members of the structure. 
+  <LI> The struct keyword is used to start a structure declaration or a structure 
+    variable definition. 
+  <LI> The dot operator (.) is used to separate a structure name and a member 
+    name in referencing the structure member. 
+  <LI> The arrow operator (-&gt;) is commonly used to reference a structure member 
+    with a pointer. 
+  <LI> A structure can be passed to a function, and a function can return a structure 
+    back to the caller. 
+  <LI> Passing a function with a pointer that points to a structure is more efficient 
+    than passing the function with the entire structure.
+</UL>
+<UL>
+  <LI> Arrays of structures are permitted in C. 
+  <LI> You can enclose a structure within another structure. The latter is called 
+    a nested structure. 
+  <LI> It's legal to put a pointer into a structure even though the pointer may 
+    point to another structure that has not been declared yet. 
+</UL>
+
+<P>In the next lesson you'll learn to use unions to collect dissimilar data items in C.</p>
+
+<H3><A NAME="ch19_ 16">
+Q&amp;A
+</A></H3>
+
+<BLOCKQUOTE>
+<P>     <b>Q</b>     Why do you need structures?</P>
+<P>     <b>A</b>     In practice, you need to collect and group data items that are relevant but
+of different types. The structure data type provides a convenient way to
+aggregate those differently typed data items.</p>
+<P>     <b>Q</b>     Can you declare a structure and define a structure variable in a single
+statement?</P>
+<P>     <b>A</b>     Yes. You can put the struct keyword, a tag name, a list of declarations of
+structure members, and a variable name into a single statement to declare a structure
+and define a structure variable. Then, the structure can be identified by the tag
+name; the variable is of the struct data type of the tag name.</p>
+<P>     <b>Q</b>     How do you reference a structure member?</P>
+<P>     <b>A</b>     You can reference a structure member by prefixing the structure member's
+name with the structure variable name and a dot operator
+(.). If the structure is pointed to by a pointer, you can use the arrow operator
+(-&gt;), followed by the pointer name, to reference the structure member.</p>
+<P>     <b>Q</b>     Why is it more efficient to pass a pointer that refers to a structure to a
+function?</P>
+<P>     <b>A</b>     When an entire structure is passed to a function, a copy of the structure is
+made and saved in a temporary block of memory called the stack. After the copy
+is modified by the function, it has to be returned and written back to the
+storage that holds the original content of the structure. Passing a function with a
+pointer that points to a structure, on the other hand, simply passes the address of
+the structure to the function, not the entire copy of the structure. The function
+can then access the original memory location of the structure and modify the
+content held by the structure without duplicating the structure on the stack.
+Therefore, it's more efficient to pass a pointer of a structure than to </p>
+</BLOCKQUOTE>
+
+<A NAME="PAGENUM-311"><P>Page 311</P></A>
+
+<BLOCKQUOTE>
+<P>pass the structure
+itself to a
+function.</p>
+</BLOCKQUOTE>
+
+<H3><A NAME="ch19_ 17">
+Workshop
+</A></H3>
+
+<P>To help solidify your understanding of this hour's lesson, you are encouraged to
+answer the quiz questions and finish the exercises provided in the Workshop before you move
+to the next lesson. The answers and hints to the questions and exercises are given in
+Appendix E, &quot;Answers to Quiz Questions and Exercises.&quot;</p>
+
+<H4><A NAME="ch19_ 18">
+Quiz
+</A></H4>
+
+<OL>
+<LI>          What's wrong with the following structure declaration?
+<!-- CODE SNIP //-->
+<PRE>struct automobile {
+     int year;
+     char model[8];
+     int engine_power;
+     float weight;
+     }
+</PRE>
+<!-- END CODE SNIP //-->
+
+<LI>          How many structure variables are defined in the following statement?
+
+<!-- CODE SNIP //-->
+<PRE>
+struct x {int y; char z} u, v, w;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<LI>          Given a structure declaration
+
+<!-- CODE SNIP //-->
+<PRE>
+struct automobile {
+     int year;
+     char model[8]};
+</PRE>
+<!-- END CODE SNIP //-->
+<P>          and two car models, Taurus and
+Accord, which are made in 1997, initialize an
+array of two elements, car, that is defined with the
+automobile structure data type.</P>
+
+<LI>          In the following structure declarations, which one is a
+forward-referencing structure, and which one is a self-referencing structure? (Assume that the
+structures, employment and education, have not been declared yet.)
+
+<!-- CODE //-->
+<PRE>
+struct member {
+     char name[32];
+     struct employment *emp;
+     struct education *edu;};
+
+struct list {
+     int x, y;
+     float z;
+     struct list *ptr_list;};
+</PRE>
+<!-- END CODE //-->
+</OL>
+
+
+<H4><A NAME="ch19_ 19">
+Exercises
+</A></H4>
+
+<OL>
+  <LI> Given the following declaration and definition of a structure <!-- CODE //--> 
+    <PRE>struct automobile {
+     int year;
+     char model[10];
+     int engine_power;
+     double weight;
+     } sedan = {
+     1997,
+     &quot;New Model&quot;,
+     200,
+     2345.67};
+</PRE>
+</OL>
+
+<P><CENTER>
+<a href="ch18.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch18/ch18.htm">Previous</A> | <a href="index.html" tppabs="http://pbs.mcp.com/ebooks/0672310686/index.html">Table of Contents</A> | <a href="ch20.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch20/ch20.htm">Next</A>
+</CENTER></P>
+
+
+
+</body>
+
+</html>
+

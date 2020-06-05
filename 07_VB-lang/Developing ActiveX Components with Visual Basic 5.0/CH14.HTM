@@ -1,0 +1,1797 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 14 -- Multithreading</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;14</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Multithreading</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#OnThreadsandProcesses">
+On Threads and Processes</A>
+<UL>
+<LI><A HREF="#Multithreading">
+Multithreading</A>
+<LI><A HREF="#MultithreadingPitfalls">
+Multithreading Pitfalls</A>
+</UL>
+<LI><A HREF="#MultithreadedComponents">
+Multithreaded Components</A>
+<UL>
+<LI><A HREF="#OnThreadsandObjects">
+On Threads and Objects</A>
+<LI><A HREF="#ScopingRevisited">
+Scoping Revisited</A>
+</UL>
+<LI><A HREF="#TestingandDebuggingMultithreadedComponents">
+Testing and Debugging Multithreaded Components</A>
+<UL>
+<LI><A HREF="#Logging">
+Logging</A>
+<LI><A HREF="#DebugMonitor">
+Debug Monitor</A>
+</UL>
+<LI><A HREF="#MultithreadingExamples">
+Multithreading Examples</A>
+<UL>
+<LI><A HREF="#TheProofIsintheTiming">
+The Proof Is in the Timing</A>
+<LI><A HREF="#LettheTestingBegin">
+Let the Testing Begin</A>
+</UL>
+<LI><A HREF="#BackgroundOperationsRevisited">
+Background Operations Revisited</A>
+<UL>
+<LI><A HREF="#MultithreadingIsNotMagic">
+Multithreading Is Not Magic</A>
+<LI><A HREF="#YouHaveMoreControlThanYouThink">
+You Have More Control Than You Think</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+Multithreading. It's a subject that can send chills up the spines
+of even veteran programmers. The good news is that Visual Basic's
+support for multithreading is about as safe and easy as it gets.
+So take a deep breath and let us proceed.
+<H2><A NAME="OnThreadsandProcesses"><FONT SIZE=5 COLOR=#FF0000>
+On Threads and Processes</FONT></A></H2>
+<P>
+Until now we've taken a rather simplistic approach towards the
+idea of threads and processes. <A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm" >Chapter 8</A>introduced the idea of
+<I>threads of execution</I>, where a thread is the sequence of
+operations that will take place within a given application.
+<P>
+Each application runs as its own process, and has its own thread
+of execution. The operating system may be switching rapidly between
+the threads, but this is transparent to you as a programmer.
+<P>
+Each process runs in its own memory space, and its ability to
+interact with other applications is tightly controlled. From our
+perspective this interaction takes the form of method and property
+calls on COM objects. We trust OLE to marshal our commands and
+data from one process to the next.
+<P>
+COM objects can be implemented by in-process servers, in which
+case the object runs in the execution thread of the calling application.
+They can be implemented by EXE servers, in which case the object
+runs in the execution thread of the server. If you want each object
+in an EXE server to run in its own execution thread, you set the
+object to single-use, in which case a separate server instance
+(with its own process and execution thread) is created for each
+object.
+<P>
+The scenario described so far represents the way things work under
+Visual Basic 4.0, which first introduced COM object support under
+Visual Basic. However, this scenario suffers from two major weaknesses.
+<UL>
+<LI>Using a separate process to implement each EXE server object
+when you need each object in a separate thread can have a severe
+impact on system performance, especially when more than a few
+objects are involved.
+<LI>DLL-based objects perform poorly with multithreaded clients.
+</UL>
+<P>
+The first of these is easy to understand. Launching a new application
+in order to implement a single object has to be just about the
+most inefficient approach you can imagine. Yet you've already
+seen that there are situations where you want each object to run
+in its own execution thread, primarily in order to prevent one
+application from blocking the execution of others, but also to
+allow asynchronous background operations.
+<P>
+The second case is likely to be obscure to many Visual Basic programmers.
+This is in part because Visual Basic does not allow you to create
+multithreaded clients, but also because until recently there have
+not been too many multithreaded clients for which you might want
+to write in-process objects. But now with the increased use of
+both client server databases and Internet/intranet servers and
+browsers (all of which are frequently multithreaded), the need
+to write components for multithreading applications has become
+critical.
+<P>
+Visual Basic 5.0 addresses both of these issues by allowing you
+to create multithreaded components. But before we talk about developing
+components for multithreaded environments, perhaps we should take
+a look at the nature of multithreading and why it can be such
+a challenge.
+<H3><A NAME="Multithreading">
+Multithreading</A></H3>
+<P>
+You saw in <A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm" >Chapter 8</A>how the Windows operating system is able
+to multitask between different execution threads. In the simplistic
+approach we took earlier, each thread was in its own process.
+The operating system switches rapidly between the threads, so
+they seem to run simultaneously. 
+<P>
+If every process was restricted to having a single thread, we
+wouldn't need to distinguish between threads and processes. But
+it is possible for a single process to have multiple threads.
+The operating system divides available processor time among threads,
+not among processes. This is illustrated in Figure 14.1, which
+extends on Figure 8.1 in <A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm" >Chapter 8</A> which showed two single-threaded
+processes. 
+<P>
+<A HREF="f14-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f14-1.gif"><B>Figure 14.1 :</B> <I>Multithreading</I>.</A>
+<P>
+In this example, application A actually has two separate threads
+of execution. If you follow the arrows that indicate how the processor
+is spending its time, you'll see that the system is effectively
+running two different parts of application A at the same time
+in two separate execution threads.
+<P>
+Why would you want to multithread an application or component?
+There are a number of common situations that would cause you to
+want multithreading. We will discuss these next. 
+<H4>Data or Information Servers</H4>
+<P>
+Say you are developing an information server that receives requests
+from many different clients. Examples of this include database
+servers or Internet/intranet servers. Some of the requests can
+be very slow. Rather than locking out all of the other clients
+while the slow request is taking place, you can launch each request
+in its own thread so they will be perceived to be executing at
+the same time. You only have a finite amount of CPU time, so the
+slow operation will take longer with this approach (since it has
+to share time with the other client requests), but, with luck,
+the shorter client requests will not have to wait as long as they
+might have to otherwise. 
+<P>
+For example: If you have one 30-minute request ahead of four 1-minute
+requests, in a non-multithreaded server the long request will
+take 30 minutes and the others 31, 32, 33, and 34 minutes, respectively.
+In a multithreaded server, processor time would be divided among
+all five requests. The long request will take about 35 minutes,
+but the other four will take about 5 minutes each. 
+<P>
+This illustrates an important point. Multithreading can be very
+useful, but it does not have the miraculous ability to speed up
+your system. On the contrary, because of the overhead involved
+in switching between threads, the total time spent in a multithreaded
+server is likely to be longer than a non-multithreaded server.
+The four 1-minute client requests in the above example will actually
+take more than 5 minutes each due to system overhead.
+<P>
+In fact, multithreading can make your system seem slower. Let's
+say you had five client requests of 1 minute each. In a non-multithreaded
+server the client requests will be completed at 1, 2, 3, 4, and
+5 minutes (average of 3 minutes per request). On a multithreading
+server, the client requests will all be completed after 5 minutes,
+increasing the average request time to 5 minutes.
+<P>
+So, if you are implementing a server component and are looking
+for multithreading to provide an improvement in performance, think
+again. It can only help when you have a mix of large and short
+operations.
+<H4>Background Operations</H4>
+<P>
+You already read, in <A HREF="ch11.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch11.htm" >Chapter 11</A>, how to implement background operations
+using OLE callbacks. Background operations tend to fall into two
+categories. The first is calculations or operations you want your
+application to perform in the background while the user does something
+else. The second is cases where you want your application to wait
+for an outside event and notify the main portion of your program
+when it occurs.
+<P>
+<A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm" >Chapter 8</A>also discussed how a single-use EXE server can be used
+to implement background operations with the help of callbacks
+(both API callbacks and OLE callbacks).
+<H4>Advanced User Interfaces and Other Multithreaded Clients</H4>
+<P>
+An Internet browser is a good example of a multithreaded client.
+It is not uncommon for this type of application to be able to
+retrieve Web documents in multiple windows, perform e-mail transfers,
+and still be able to respond immediately to user input. These
+applications can be implemented by having each document retrieval
+operation take place in its own thread, while having a separate
+thread managing the e-mail window.
+<P>
+You might not be able to create this type of multithreaded application
+in Visual Basic 5.0, but multithreaded applications often support
+ActiveX components. That means it is important to create components
+that work well with them.
+<H3><A NAME="MultithreadingPitfalls">
+Multithreading Pitfalls</A></H3>
+<P>
+The first thing you need to know about this section is that most
+of the pitfalls I'm about to discuss do not apply to Visual Basic.
+Why discuss them? Because they will help you understand exactly
+what Microsoft did to make Visual Basic thread-safe (relatively
+speaking), as well as both the advantages and limitations that
+follow from their approach.
+<P>
+The next thing you need to know about multithreading is that all
+of the threads in an application share the same process space.
+In <A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm" >Chapter 8</A>you learned that one of the great advantages of 32-bit
+Windows over 16-bit Windows is that each application runs in its
+own process space. As such, each application has its own independent
+pool of memory and one process cannot easily interfere with the
+operation of another. One process cannot modify the memory of
+another, and in the case of an application fault, it is unlikely
+for one application to crash another or interfere with the operating
+system.
+<P>
+This protection applies to processes, not to threads. Every thread
+has complete access to all of the memory in its process space.
+This means that one thread can (and often does) interact with
+others. If one thread crashes, the application-not just the offending
+thread-may terminate.
+<P>
+Let's say you have a routine in your application that opens a
+file, writes some data, and closes the file. In pseudo code, it
+might look like this:
+<BLOCKQUOTE>
+<PRE>
+Global FileHandle As Long
+
+Procedure SaveFile(filename)
+    FileHandle = OpenFile (filename)
+    WriteToFile(FileHandle, &quot;This is line 1&quot;)
+    WriteToFile(FileHandle, &quot;This is line 2&quot;)
+    CloseFile(FileHandle)
+End Procedure
+</PRE>
+</BLOCKQUOTE>
+<P>
+As long as your program runs in a single thread, you have nothing
+to worry about. Once you make a call to the SaveFile procedure,
+the thread will continue to execute the function until it ends.
+The system may allow other threads in other processes to run,
+but they will not interfere with your program (unless you have
+file sharing enabled and they access the same file).
+<P>
+But let's say that you have a second thread enabled in your application
+and both threads are called upon to save a file at the same time.
+You have no way of knowing exactly which instructions will be
+called by the processor as it switches between threads. In fact,
+the results could look something like those shown in Table 14.1.
+<BR>
+<P>
+<CENTER><B>Table 14.1:&nbsp;Multithreading Operations and Their
+Results</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=192><B>Thread 1 Operation</B></TD><TD WIDTH=192><B>Thread 2 Operation</B>
+</TD><TD WIDTH=192><B>Result</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>FileHandle = 
+OpenFile(&quot;File1&quot;)
+</TD><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>FileHandle is now handle to File1
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>WriteToFile(FileHandle, &quot;This is Line 1&quot;)
+</TD><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>File1 contains &quot;This is Line 1&quot;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>FileHandle = OpenFile(&quot;File 2&quot;)
+</TD><TD WIDTH=192>FileHandle is now handle to File2</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>WriteToFile(FileHandle, &quot;This is Line 1&quot;)
+</TD><TD WIDTH=192>File2 contains &quot;This is Line 1&quot;</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>WriteToFile(FileHandle, &quot;This is Line 2&quot;)
+</TD><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>File2 contains: 
+<P>
+&quot;This is Line 1&quot;&quot;This is Line 2&quot;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>WriteToFile(FileHandle, &quot;This is Line 2&quot;)
+</TD><TD WIDTH=192>File2 contains: 
+<P>
+&quot;This is Line 1&quot;<BR>
+&quot;This is Line 2&quot;<BR>
+&quot;This is Line 2&quot;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>CloseFile(FileHandle)</TD><TD WIDTH=192>&nbsp;
+</TD><TD WIDTH=192>File2 is now closed. File1 remains open.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>CloseFile(FileHandle)
+</TD><TD WIDTH=192>Possible error on attempt to close a file handle that is no longer valid
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+As you can see, the possible results are quite serious. In this
+particular example you have two potentially corrupt files; one
+invalid operation that might be caught or might simply be ignored
+depending on whether you implemented error checking; and one file
+that remains open, meaning that it may be locked until the application
+terminates.
+<P>
+Worse, this is only one possible error. What are the chances that
+two threads will call the SaveFile procedure at the same time?
+One in five? One in a million? If it is infrequent, this might
+easily turn into one of those intermittent problems that don't
+show up until you have already widely distributed your application.
+And, these problems are hard to test for, hard to detect, and
+hard to debug.
+<P>
+This type of problem is not completely new to Visual Basic programmers.
+If you threw a DoEvents statement into the SaveFile function and
+did not add code to prevent it from being reentered, the same
+problem could occur. But most Visual Basic programmers know to
+avoid the DoEvents statement if at all possible and to disable
+controls or functions as necessary when the statement is used.
+<P>
+By the way, while the DoEvents statement does open the door to
+this type of reentrancy problem, DoEvents is not multithreading.
+With a DoEvents statement you are effectively giving Windows permission
+to have your thread start executing event code elsewhere in your
+application. When the events are finished, your thread continues
+to execute where it left off, much like a subroutine or function
+call. You still only have the one thread.
+<P>
+It is also true that this particular example is very simple and
+could easily be solved by avoiding the use of a global variable
+for the file handle. But the intent here is to demonstrate the
+dangers of using multiple threads within an application. Multithreading
+is dangerous precisely because applications and components have
+global variables and global functions and because they are able
+to access application-wide resources, be they forms, controls,
+or files. 
+<P>
+And unlike the DoEvents case, where you decide exactly where in
+your code you are going to allow Windows to move your execution
+thread, Windows switches at will between threads in a multithreaded
+application.
+<P>
+Programmers who write traditional multithreaded applications must
+be very careful in the way they access global variables and resources.
+Windows provides a number of synchronization commands and objects
+to help programmers control when parts of their application can
+run. 
+<P>
+In this example, a programmer could create an object called a
+<I>mutex</I>, which places a lock on the SaveFile function. When
+a thread tries to run the function, it checks the mutex to see
+if it is available. If it is, the thread begins to run the function
+but first locks the mutex. If another thread tries to run the
+function, it would see that the mutex is locked and would perform
+a wait operation on the mutex. This puts the thread to sleep,
+which means that Windows will not execute the thread until the
+mutex is released by the first thread.
+<P>
+The fact that most of the problems with multithreading derive
+from the use of global variables and common resources raises an
+interesting question. What if you could eliminate all global variables
+from an application or component and eliminate all forms and controls?
+Wouldn't this eliminate most of the danger involved in multithreading
+while still providing many of the benefits? The answer is: yes.
+<P>
+Eliminating forms and controls, the common resources in an application,
+is the first step. Eliminating all global variables is a bit more
+difficult. That would require a fundamental change to the language.
+On the other hand, what if you could simply allocate a separate
+set of global variables for each thread? In our example above,
+there would actually be two FileHandle variables: one for the
+first thread, one for the second. The code would remain the same.
+The variable would still be referred to as FileHandle, but Visual
+Basic would automatically keep track of the data for each thread
+so that each one would see its own copy of the variable. Table
+14.2 illustrates this approach using the SaveFile example shown
+earlier. The (T1) and (T2) symbols indicate whether the Thread
+1 or Thread 2 copy of the FileHandle variable is active.
+<P>
+This approach to handling multithreading is called the <I>apartment
+model</I> approach to multithreading, and it is supported by ActiveX
+EXE and DLL server components under Visual Basic 5.0.
+<P>
+<CENTER><B>Table 14.2:&nbsp;Multithreading with Apartment Model
+Threading</B></CENTER><P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=192><B>Thread 1 Operation</B></TD><TD WIDTH=192><B>Thread 2 Operation</B>
+</TD><TD WIDTH=192><B>Result</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>FileHandle = 
+OpenFile(&quot;File1&quot;)
+</TD><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>FileHandle(T1) is now handle to File1
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>WriteToFile(FileHandle, &quot;This is Line 1&quot;)
+</TD><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>File1 contains &quot;This is Line 1&quot;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>FileHandle = OpenFile(&quot;File 2&quot;)
+</TD><TD WIDTH=192>FileHandle(T2) is now handle to File2</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>WriteToFile(FileHandle, &quot;This is Line 1&quot;)
+</TD><TD WIDTH=192>Uses FileHandle(T2)
+<P>
+File2 contains &quot;This is Line 1&quot;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>WriteToFile(FileHandle, &quot;This is Line 2&quot;)
+</TD><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>Uses FileHandle(T1)
+<P>
+File1 contains: <P>
+&quot;This is Line 1&quot;<BR>
+&quot;This is Line 2&quot;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>WriteToFile(FileHandle, &quot;This is Line 2&quot;)
+</TD><TD WIDTH=192>uses FileHandle(T2)
+<P>
+File2 contains: <P>
+&quot;This is Line 1&quot;<BR>
+&quot;This is Line 2&quot;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>CloseFile(FileHandle)</TD><TD WIDTH=192>&nbsp;
+</TD><TD WIDTH=192>Uses FileHandle(T1)<BR>
+File1 is now closed.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>&nbsp;</TD><TD WIDTH=192>CloseFile(FileHandle)
+</TD><TD WIDTH=192>Uses FileHandle(T2)<BR>
+File2 is now closed.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="MultithreadedComponents"><FONT SIZE=5 COLOR=#FF0000>
+Multithreaded Components</FONT></A></H2>
+<P>
+In order to implement apartment model multithreading, Visual Basic
+first requires that no user interface elements be included in
+the project. This includes forms, controls, and message boxes.
+User interface elements are, by definition, available to any object
+in a project, so allowing them to exist would raise the problems
+discussed earlier with regard to shared resources in an application.
+More importantly, you can easily imagine how it would be possible
+for Visual Basic to keep a separate copy of global data for each
+thread in an application. But how could you do the same for a
+form or control? It would be exceedingly difficult, if not impossible.
+<P>
+So, before allowing you to make a project multithreading, Visual
+Basic requires that you turn off all user interaction by the project.
+This effectively eliminates standard projects, ActiveX controls,
+and ActiveX documents from consideration, so the only components
+Visual Basic can multithread are ActiveX EXE servers and DLL servers.
+You can turn on multithreading for a component if it has no forms
+or other designers with user interface elements by going to the
+General tab of the Project-Properties dialog box and selecting
+the Unattended Execution checkbox. The other two options, Thread
+per Object and Thread Pool, apply to EXE servers only and will
+be discussed shortly.
+<P>
+You will soon see there are other critical differences between
+EXE and DLL based servers.
+<H3><A NAME="OnThreadsandObjects">
+On Threads and Objects</A></H3>
+<P>
+What does it mean when we say that a Visual Basic component is
+multithreaded? It means that Visual Basic is able to run objects
+in different threads. Let's take a look first at what this means
+for an EXE server and how it compares with non-multithreaded servers.
+<H4>EXE Servers</H4>
+<P>
+Figure 14.2 shows a non-multithreaded EXE server that is implementing
+an object set to multiuse instancing. The server is providing
+three objects to three different applications. To be precise,
+it is providing three objects to three different threads. In this
+case those threads are in different processes, but this example
+applies also to objects requested by different threads in a multithreaded
+client.
+<P>
+<A HREF="f14-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f14-2.gif"><B>Figure 14.2 :</B> <I>Objects implemented by a non-multithreaded
+EXE server using multiuse instancing</I>.</A>
+<P>
+The server is represented by the lower block. There are two shaded
+rectangles; the outer one indicates the process space for the
+server, the inner one the thread. The white rectangles inside
+represent the objects. In this case all of the objects are contained
+in a single process and run in the same thread. If one of the
+client applications was to tie up one of the objects in a long
+operation, it would block the server's thread, preventing the
+other client applications from accessing methods or properties
+in the objects they are accessing until the long operation is
+completed.
+<P>
+Global variables are shared among all of the objects because they
+share the same thread.
+<P>
+Figure 14.3 shows a non-multithreaded EXE server that is implementing
+an object set to single-use instancing. Three separate instances
+of the EXE server are running as separate processes, each one
+implementing a single object. As such, each object naturally runs
+in its own thread. Because each object is in its own process space,
+it is evident that none of the global variables for the component
+can be shared among the objects.
+<P>
+<A HREF="f14-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f14-3.gif"><B>Figure 14.3 :</B> <I>Objects implemented by a non-multithreaded
+EXE server set to single-use instancing</I>.</A>
+<P>
+What happens when an EXE server has more than one class set to
+single-use instancing? Each server is allowed to implement one
+single-use object of each type. So if you have two objects set
+for single-use instancing, such as MyObjectA and MyObjectB, a
+single EXE server can provide one of each. In that case those
+two objects will both share the same global variables because
+they will be running in the same execution thread! This can lead
+to some peculiar situations.
+<P>
+Figure 14.4 illustrates a single-use EXE server where the following
+sequence of operations occurs. First, application A requests an
+object of type MyObjectA. The server creates an instance of this
+object for use by the application. Next, application B requests
+an object of type MyObjectB. The first server instance still has
+not created an object of this type, so it implements it. Note
+that these two objects share the same global variables within
+the component because they are running in the same thread. Also,
+a long operation by application A on its MyObjectA object will
+block access by application B on its MyObjectB object. If application
+A then requests an object of type MyObjectB, a new instance of
+the server will have to be launched, because the first server
+has already provided an object of this type.
+<P>
+<A HREF="f14-4.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f14-4.gif"><B>Figure 14.4 :</B> <I>Multiple single-use instanced objects</I>.</A>
+<P>
+In other words, when an EXE server component is implemented to
+provide multiple single-use instanced objects, you will never
+know which server process will actually be providing a particular
+object. So be careful, especially with regard to use of global
+variables in such situations.
+<P>
+Remember also that an EXE server that exposes a single-use object
+can provide additional objects of that type in the same thread
+by creating the objects itself and returning a reference to that
+object to the client.
+<P>
+Figure 14.5 illustrates a multithreaded EXE server implementing
+a multiuse instanced object. In this case the server is configured
+to provide one thread per object. All of the objects run in the
+same process space. However, due to the apartment model threading,
+each object has its own set of global variables within its own
+thread.
+<P>
+<A HREF="f14-5.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f14-5.gif"><B>Figure 14.5 :</B> <I>Objects implemented by a multithreaded
+EXE server component</I>.</A>
+<P>
+This approach is much more efficient than the non-multithreaded
+approach because it does not suffer from the system overhead of
+a separate process for each object. The system overhead for separate
+threads is not nearly as great.
+<P>
+Keep in mind that the server objects are running in their own
+threads, not in the thread of the calling process. Also that they
+are running in the server process, not the calling process. The
+efficiency that comes from running in process (which is the ability
+to avoid marshaling overhead) is the sole domain of DLL servers.
+<P>
+Figure 14.6 takes this a step further to illustrate some of the
+options that are available when implementing multithreaded EXE
+server objects. As with single-use objects, it is possible for
+an object in a multithreaded server to create additional objects
+within its own thread and pass those objects back to the client.
+Application C uses this approach to obtain object 4 (which presumably
+was created by a method in object 3). To create an object within
+the same thread, an object need only dimension an object variable
+of the desired type and create it using the New operator. Note
+that if it creates the object using the CreateObject function,
+the object will be created in a new thread.
+<P>
+<A HREF="f14-6.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f14-6.gif"><B>Figure 14.6 :</B> <I>More objects implemented by a multithreaded
+EXE server component</I>.</A>
+<P>
+But how did application D obtain object 5 in the first thread?
+In this example, instead of setting the project options to one
+thread per object, the unattended execution option in the General
+tab of the Project-Properties dialog box is set to thread pooling,
+and the thread count is set to three. This option tells the server
+to limit the number of threads available for implementing threads
+to the specified number. Once those threads are used, additional
+objects will be allocated in turn from the other threads.
+<P>
+Visual Basic does not perform any balancing; it allocates objects
+on threads in turn. This means that if you have four threads,
+each of which implements ten objects, and by coincidence all of
+the objects in one thread are destroyed, logic would suggest that
+additional objects should be allocated on the available thread
+to balance the load. Unfortunately, Visual Basic does not take
+this approach. 
+<P>
+In this case, when application D requested an object, the object
+was allocated off of the next thread in the sequence (objects
+created by internal objects don't count here). Thus the object
+is allocated on EXE thread 1.
+<P>
+One of the side effects of this approach is that now application
+A and application D both have objects in the same thread. Those
+objects share global variables, and operations on one of them
+can block operations on the other.
+<P>
+This demonstrates one of the major disadvantages of thread pooling.
+You can't know which thread will implement a particular object
+or which other objects might be sharing that thread (with all
+of the blocking and shared global variable implications that apply).
+Why, then, would you ever want to use thread pooling? Because
+each thread you launch does incur additional system overhead.
+You can quickly reach the point where the cost of this overhead
+exceeds any possible benefit due to multithreading. Thread pooling
+allows you to limit the number of threads, essentially putting
+a cap on the system resources that your server will use. Just
+be extra careful how you use global variables when you enable
+thread pooling (better yet, avoid them entirely).
+<H4>DLL Servers</H4>
+<P>
+DLL servers are somewhat different from EXE servers in that, unlike
+an EXE server, an object in a DLL server never runs in its own
+thread. The question with DLL servers is this: are objects run
+by the thread that launched the DLL or by the thread that creates
+the object? If the DLL is not multithreaded, all of the objects
+created by the DLL are implemented by the thread that created
+the object. This scenario is shown in Figure 14.7. All of the
+objects run in the same thread, thus they all share the same global
+variables.
+<P>
+<A HREF="f14-7.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f14-7.gif"><B>Figure 14.7 :</B> <I>Objects implemented by a non-multithreaded
+DLL server</I>.</A>
+<P>
+What is wrong with this scenario? You should be well acquainted
+by now with the material in <A HREF="ch6.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch6.htm" >Chapter 6</A> where you learned about
+the performance impact of marshaling across process spaces. Well,
+I didn't mention it until now, but it turns out that the impact
+of marshaling data across threads is nearly as great. You see,
+OLE itself uses apartment model threading. Other models exist
+now under NT 4.0 but are not supported by Visual Basic. This is
+necessary because if different threads were allowed unrestricted
+access to objects in other threads, the kinds of problems you
+saw earlier with multithreading could occur with every method
+and property call to an object. Because the objects run in the
+same process, marshaling of data is not as slow as it is with
+out-of-process objects. However, an internal proxy object is still
+necessary to insure that access to objects is properly synchronized-that
+only one thread can access an object at a time.
+<P>
+In this case, cross-process marshaling is necessary every time
+EXE thread 2 and thread 3 access object 2 or object 3. Let's say
+that EXE thread 2 performs a long operation on object 2 and thread
+3 tries to access object 3. Thread 3 will be blocked by OLE because
+thread 1 is busy running the operation started by thread 2.
+<P>
+This problem is avoided by making the DLL multithreading (setting
+unattended execution), as shown in Figure 14.8. Note that the
+DLL does not create any new threads. When a DLL is multithreading
+it simply means that each object runs in the thread that creates
+the object. Assuming that object 1 is created by EXE thread 1,
+object 2 by EXE thread 2, and so forth, no cross-thread marshaling
+will be necessary as long as each thread accesses only those objects
+that it creates. Threads can still access objects created by other
+threads, but doing so requires cross-task marshaling again.
+<P>
+<A HREF="f14-8.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f14-8.gif"><B>Figure 14.8 :</B> <I>Objects implemented by a multithreaded
+DLL server</I>.</A>
+<P>
+In this example, each object exists in the thread that creates
+it, and global variables are only shared by those objects that
+are in the same thread.
+<H3><A NAME="ScopingRevisited">
+Scoping Revisited</A></H3>
+<P>
+<A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A> discussed scoping rules, the rules by which the lifetime
+and visibility of variables is determined based on where they
+are declared. You may wish to review that section before you continue.
+<P>
+In the previous section you saw many references to the sharing
+of global variables. The fact that global variables are not shared
+between threads in the apartment model of multithreading clearly
+suggests that some major changes to the scoping rules are necessary.
+<P>
+Some things haven't changed. Variables that are declared at the
+module level of a class are still created for each class object
+and exist for the lifetime of an object. Variables declared in
+non-static procedures or in a procedure without the static keyword
+are still created for each procedure call and exist until the
+procedure exits. Variables declared at the module level of form
+modules&#133; you guessed it: there are no forms in a multithreading
+component, so this situation won't arise.
+<P>
+So the only variables we are concerned with are global variables
+defined in a standard module or static variables defined within
+procedures. These variables used to be created once per application
+and exist for the life of the application.
+<P>
+For multithreaded components, these variables are created once
+per thread and exist for the life of the thread. The visibility
+of the variable is local to an individual thread. In other words,
+all of the objects in a given thread share the same global variable
+data. Objects in other threads see their own copy of the data.
+<H2><A NAME="TestingandDebuggingMultithreadedComponents"><FONT SIZE=5 COLOR=#FF0000>
+Testing and Debugging Multithreaded Components</FONT></A></H2>
+<P>
+Each instance of Visual Basic can work with a single thread. Thus,
+you cannot test the multithreading characteristics of your components
+using the Visual Basic environment. This means that your testing
+will have to use the compiled components. You can still run the
+component in the VB environment, but it will not use multiple
+threads.
+<P>
+Of course, since components have no user interface, you can't
+exactly bring up a message box to let you know what is going on
+in the component. And since they aren't running in the VB environment,
+you can't use debug.print statements. 
+<P>
+One option is to compile the component to native code, including
+debugging information, and to use a stand-alone debugger such
+as the one that comes with Visual C++. But there are alternatives.
+<H3><A NAME="Logging">
+Logging</A></H3>
+<P>
+While multithreading does require that you disable all user interface
+output, it does not completely eliminate your component's ability
+to notify the system when problems or other events occur. The
+LogMode property of the App object allows you direct information
+to either a log file or the system event log. This includes text
+that would have shown up in message boxes, system errors, and
+text strings that are written using the App object's LogEvent
+method. This information will appear in the Immediate window when
+debugging within the VB environment.
+<P>
+Still, reading a log file or the system event log during debugging
+is awkward. Fortunately, ActiveX technology itself provides an
+excellent alternative.
+<H3><A NAME="DebugMonitor">
+Debug Monitor</A></H3>
+<P>
+Your multithreading component may not be able to generate messages,
+but there is nothing to prevent it from accessing an object that
+can. 
+<P>
+The DebugMonitor project (DmDebMon.vbp) in the <A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch14.htm" >Chapter 14</A> directory
+consists of one class module and two forms. This component is
+configured as an ActiveX EXE server because it will be receiving
+messages from many different applications and threads. Objects
+that it creates will be used by many threads. Yet they will all
+need to share the same centralized data in order to allow the
+server to display messages from all of the objects in the order
+they are received. The Trace class module is set to multiuse so
+all of its objects will come from the same server.
+<P>
+The Trace class is shown in Listing 14.1. The class exposes a
+single public method called Add, which takes a string parameter.
+Applications call this method to send a message that will be displayed
+on the monitor's main form. The method simply calls the Add method
+on the frmDebug form, the main form for the component.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 14.1:&nbsp;The Trace Class (File DMTrace.cls)<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' DebugMonitor trace program
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+' Add the message to the form
+Public Sub Add(msg As String)
+    frmDebug.Add msg
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Listing 14.2 shows the code for the main form module. The form
+contains a View menu with three commands: Update, Clear, and Options.
+It also contains a list box called lstDebug, which displays the
+incoming messages in the order in which they are received. This
+form is shown during the Sub Main routine in the DmDebug.bas module,
+which is set as the Startup object for the project. That way it
+will automatically be loaded and displayed as soon as the component
+is loaded for the first time. The form also contains a single
+timer named Timer1.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 14.2:&nbsp;The frmDebug Form Listing (File DmDeb.frm)
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' DebugMonitor trace program
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+Option Explicit
+Dim StartPos&amp;
+Dim EndPos&amp;
+Dim MaxStrings&amp;
+
+Dim StringArray() As String
+
+Private Sub Form_Load()
+    SetArraySize 200
+End Sub
+
+' Set the number of strings
+' Clears the current contents
+Public Sub SetArraySize(ByVal maxsize%)
+    If maxsize &lt; 10 Then maxsize = 10
+    If maxsize &gt; 1000 Then maxsize = 1000
+    MaxStrings = maxsize
+    ' Update the array size
+    ReDim StringArray(MaxStrings)
+    StartPos = 1
+    EndPos = 1
+    UpdateList
+End Sub
+
+' Update the listbox
+Public Sub UpdateList()
+    Dim counter&amp;
+    Dim currenttop&amp;
+    currenttop = lstDebug.TopIndex
+    lstDebug.Clear
+    counter = StartPos
+    Do While counter &lt;&gt; EndPos
+        lstDebug.AddItem StringArray(counter)
+        counter = counter + 1
+        If counter &gt; MaxStrings Then
+            counter = 1
+        End If
+    Loop
+    If currenttop &lt; lstDebug.ListCount Then
+        lstDebug.TopIndex = currenttop
+    End If
+End Sub
+
+' Add a string to the list
+Public Sub Add(newstring$)
+    StringArray(EndPos) = newstring
+    EndPos = EndPos + 1
+    If EndPos &gt; MaxStrings Then EndPos = 1
+    If EndPos = StartPos Then
+        StartPos = StartPos + 1
+        If StartPos &gt; MaxStrings Then StartPos = 1
+    End If
+End Sub
+
+Private Sub mnuClear_Click()
+    StartPos = 1
+    EndPos = 1
+    UpdateList
+End Sub
+
+' Bring up options page
+Private Sub mnuOptions_Click()
+    Hide
+    frmOptions.Show 1
+    Show
+End Sub
+
+Private Sub mnuUpdate_Click()
+    UpdateList
+End Sub
+
+Private Sub Timer1_Timer()
+    UpdateList
+End Sub
+
+' Copy the contents to the clipboard
+Private Sub mnuCopy_Click()
+    Dim counter&amp;
+    Dim s$
+    counter = StartPos
+    Do While counter &lt;&gt; EndPos
+        s$ = s$ &amp; StringArray(counter) &amp; vbCrLf
+        counter = counter + 1
+        If counter &gt; MaxStrings Then
+            counter = 1
+        End If
+    Loop
+    Clipboard.SetText s$
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+A simple implementation of this type of program could add information
+directly to the list box. This approach suffers from two major
+disadvantages:
+<UL>
+<LI>You run the risk of poor performance as the list box fills
+with messages. Or you must incur the overhead needed to check
+the list count and make sure that the list box contents do not
+get out of hand.
+<LI>There is substantial overhead involved in adding data to a
+list box. This is overhead you may not want to incur every time
+a message is sent to the component. This is especially true if
+you wish to use this component as part of the benchmarking process.
+</UL>
+<P>
+To avoid these problems, the component maintains a separate array
+named StringArray. The SetArraySize method sets the maximum array
+size and initializes the StartPos and EndPos variables. These
+variables implement a rotating first-in-first-out buffer. The
+StartPos variable indicates the first item in the buffer. The
+EndPos variable represents the next entry in the array to be loaded.
+When the two variables are equal, the buffer is considered empty.
+<P>
+The UpdateList method clears the list box, then reloads it from
+the current buffer by looping from the StartPos to the EndPos
+positions in the array. The function keeps track of the current
+display location so that excessive scrolling does not occur. This
+method is called by expiration of the timer or by selection of
+the cmdUpdate menu command.
+<P>
+The mnuClear menu command clears the current buffer. The mnuCopy
+menu command copies the buffer to the clipboard. The frmOptions
+form, shown in Listing 14.3, controls the timer control, allowing
+you to disable the timer and set the interval from 1 to 60 seconds.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 14.3:&nbsp;The frmOptions Form Listing (File DmOpt.frm)
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' DebugMonitor trace program
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+Option Explicit
+
+Private Sub cmdOK_Click()
+    Dim delayval&amp;
+    delayval = Val(txtInterval)
+    If chkAutoUpdate.Value Then
+        frmDebug.Timer1.Enabled = True
+        If delayval &lt; 1 Or delayval &gt; 60 Then
+            MsgBox &quot;Select a delay between 1 and 60&quot;, vbOKOnly, &quot;Invalid value&quot;
+            Exit Sub
+        End If
+        frmDebug.Timer1.Interval = Val(txtInterval.Text) * 1000
+    Else
+        frmDebug.Timer1.Enabled = False
+    End If
+    Unload Me
+End Sub
+
+Private Sub Form_Load()
+    If frmDebug.Timer1.Enabled Then
+        chkAutoUpdate.Value = 1
+    End If
+    txtInterval.Text = frmDebug.Timer1.Interval / 1000
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The chkAutoUpdate checkbox controls the timer's enabled property.
+The txtInterval text control is used to set and display the timer
+interval. The cmdOK button accepts the changes and sets them into
+the form.
+<P>
+In the next section, you will see how this component is used.
+<H2><A NAME="MultithreadingExamples"><FONT SIZE=5 COLOR=#FF0000>
+Multithreading Examples</FONT></A></H2>
+<P>
+Multithreading does take getting used to. You've seen graphical
+descriptions, but there is no substitute for code. We'll briefly
+review the code, then analyze the results closely in order to
+understand what is actually happening.
+<H3><A NAME="TheProofIsintheTiming">
+The Proof Is in the Timing</A></H3>
+<P>
+It's easy to see how you would test a multithreading EXE server
+from Visual Basic. Just create objects from several different
+applications and show that they don't block each other. But how
+can you test a multithreading DLL server from Visual Basic? The
+only way to see the benefits of multithreading in a DLL is through
+a multithreading client application, right?
+<P>
+Right. And Visual Basic can't create a multithreading client application.
+But it can create a multithreading EXE server. That server can
+take advantage of a multithreading client! So we test the DLL
+server through the EXE server.
+<P>
+We'll use four different projects (in addition to the DebugMonitor
+project described earlier) to perform these multithreading tests.
+<H4>MT3.VBP and MT4.VBP</H4>
+<P>
+Let's start on the DLL side with the MT3.VBP and MT4.VBP projects.
+These are both ActiveX DLL servers.
+<P>
+All of the projects use the clsElapsedTime class from Chapter
+12 to measure elapsed time. It will not be described further here.
+<P>
+Listing 14.4 shows the listing for the ClassMT4 class module.
+The code is identical to that of the ClassMT3 class module. In
+fact, the only differences between the MT3 and MT4 projects are
+the class names, project description, and the fact that the MT4
+project has the option for unattended execution set. In other
+words, it has multithreading enabled.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 14.4:&nbsp;Class ClassMT4 (mt4cls4.cls) and ClassMT3
+(mt3cls3.cls)<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+
+Private CurrentMessage$
+Private InProgress As Boolean
+Private DebugMon As DebugMonitor.Trace
+
+Private Declare Function GetCurrentThreadId Lib &quot;kernel32&quot; () As Long
+
+' Performs a long operation
+' Measures the time to do it and
+' reports it
+Public Sub LongOp(msg$)
+    Dim ctr&amp;
+    Dim x&amp;
+    Dim s$
+    Dim Elapsed As New clsElapsedTime
+    CurrentMessage = msg
+    ' A nice long operation that can't
+    ' be optimized away
+    Elapsed.StartTheClock
+    
+    For ctr = 1 To 5000
+        For x = 1 To 255
+            s$ = Chr$(x)
+        Next x
+    Next ctr
+    Elapsed.StopTheClock
+    Report Elapsed
+End Sub
+
+' We don't actually do anything, just marshal the string
+Public Sub ShortOp(ByVal msg$)
+
+End Sub
+
+Public Sub ShowTID(ByVal msg$)
+    DebugMon.Add msg &amp; &quot; TID: &quot; &amp; GetCurrentThreadId()
+End Sub
+
+Private Sub Class_Initialize()
+    Set DebugMon = New DebugMonitor.Trace
+End Sub
+
+Private Sub Class_Terminate()
+    Set DebugMon = Nothing
+End Sub
+
+' Report the current message and elapsed time
+Friend Sub Report(elp As clsElapsedTime)
+    Dim msg$
+    msg$ = CurrentMessage$ &amp; &quot; Time: &quot; &amp; elp.Elapsed &amp; &quot; TID: &quot; &amp; GetCurrentThreadId()
+    DebugMon.Add msg
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The LongOp method performs a time consuming operation that takes
+about 5 seconds on a medium speed Pentium machine. You'll probably
+want to tune this value to set the same approximate delay. The
+string operations within this function have no real purpose. Without
+them the native code optimization would optimize away most of
+the contents of the loop.
+<P>
+The ShortOp method does nothing. It demonstrates a method that
+can be called quickly, but since it takes a string parameter,
+it does perform marshaling of the string data. This will be used
+to demonstrate the performance impact of cross-thread marshaling.
+<P>
+The DebugMon object is available by adding a reference to the
+DebugMonitor component to this project. Its Trace object is used
+to send a message to the DebugMonitor component. The ShowTID option
+routine is used to have the component send a message to the DebugMonitor
+tool indicating which thread it is.
+<P>
+What does &quot;which thread&quot; mean? Every thread in the system
+has a unique thread identifier. You can obtain this value by using
+the GetCurrentThreadId() API function as shown here, or the ThreadId
+property of the App object you will see later.
+<H4>MT2.VBP</H4>
+<P>
+The two DLL servers will be tested by the EXE server (under instruction
+from a test program). The MT2.VBP project is an ActiveX EXE server
+that is set for unattended execution (multithreading) and is configured
+to create a new thread for each object. The code for the ClassMT2
+module is shown in Listing 14.5. The Instancing property for this
+class is set to multiuse. The project has references to the DebugMonitor
+object and the MT3 and MT4 projects.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 14.5:&nbsp;Class ClassMT2 (mt2cls2.cls)<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Multithreading EXE example
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+'
+Option Explicit
+
+Private CurrentMessage$
+Private InProgress As Boolean
+Private DebugMon As DebugMonitor.Trace
+
+
+' Performs a long operation
+' Measures the time to do it and
+' reports it
+Public Sub LongOp(msg$)
+    Dim ctr&amp;
+    Dim x&amp;
+    Dim s$
+    Dim Elapsed As New clsElapsedTime
+    CurrentMessage = msg
+    ' A nice long operation that can't
+    ' be optimized away
+    Elapsed.StartTheClock
+    
+    For ctr = 1 To 1000
+        For x = 1 To 255
+            s$ = Chr$(x)
+        Next x
+    Next ctr
+    Elapsed.StopTheClock
+    Report Elapsed
+End Sub
+
+
+Private Sub Class_Initialize()
+    ' Preload objects so they aren't included in elapsed time
+    Set DebugMon = New DebugMonitor.Trace
+End Sub
+
+Private Sub Class_Terminate()
+    Set DebugMon = Nothing
+End Sub
+
+' Report the current message and elapsed time
+Friend Sub Report(elp As clsElapsedTime)
+    Dim msg$
+    msg$ = CurrentMessage$ &amp; &quot; Time: &quot; &amp; elp.Elapsed &amp; &quot; TID: &quot; &amp; App.ThreadID
+    DebugMon.Add msg
+End Sub
+
+' Call a long op in a non multithreaded DLL
+Public Sub CallDllNoMTLong(ByVal msg$)
+    Dim dllNonMT As New gtpMT3.ClassMT3
+    dllNonMT.LongOp msg
+End Sub
+
+' Call a long op in a multithreaded DLL
+Public Sub CallDllMTLong(ByVal msg$)
+    Dim dllMT As New gtpMT4.ClassMT4
+    dllMT.LongOp msg
+End Sub
+
+
+' Call a non multithreading DLL
+Public Sub CallDllNoMT(ByVal msg$)
+    Dim Elapsed As New clsElapsedTime
+    Dim dllNonMT As New gtpMT3.ClassMT3
+    Dim x&amp;
+    CurrentMessage = msg
+    dllNonMT.ShowTID &quot;CallDllNoMT in TID: &quot; &amp; App.ThreadID &amp; &quot; on DLL object&quot;
+    Elapsed.StartTheClock
+    For x = 1 To 4000
+        dllNonMT.ShortOp &quot;This string must be marshaled&quot;
+    Next x
+    Elapsed.StopTheClock
+    Report Elapsed
+End Sub
+
+' Call a multithreading DLL
+Public Sub CallDllMT(ByVal msg$)
+    Dim Elapsed As New clsElapsedTime
+    Dim x&amp;
+    Dim dllMT As New gtpMT4.ClassMT4
+    CurrentMessage = msg
+    dllMT.ShowTID &quot;CallDllMT in TID: &quot; &amp; App.ThreadID &amp; &quot; on DLL object&quot;
+    Elapsed.StartTheClock
+    For x = 1 To 400000  ' Note: factor of 10 slower
+        dllMT.ShortOp &quot;This string must be marshaled&quot;
+    Next x
+    Elapsed.StopTheClock
+    Report Elapsed
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The LongOp method of the class is essentially identical to that
+of the MT3 and MT4 projects. It is used to demonstrate the fact
+that each object is in its own thread. The DebugMon object is
+again used to access the DebugMonitor component and provide a
+mechanism for tracing output.
+<P>
+The CallDllMTLong and CallDllNoMTLong methods create MT4 and MT3
+objects, respectively, and call the LongOp methods on the objects.
+This allows us to see the different characteristics of objects
+under multithreading and non-multithreading DLL servers.
+<P>
+The CallDllMT and CallDllNoMT methods perform repetitive calls
+on the ShortOp method on the multithreading and non-multithreading
+DLL server objects. These are used to demonstrate the impact of
+cross-thread marshaling on object performance. The only difference
+between these two functions is that the method is called 100 times
+more often on the multithreading server, which should give a preview
+of how great an impact this marshaling can have.
+<H4>MTTest1.VBP</H4>
+<P>
+This project includes references to the DebugMonitor and MT2 components.
+It also includes the clsElapsedTime class in order to measure
+the total elapsed time for each test. The main form for the project
+is shown in Figure 14.9. Listing 14.6 shows the listing for the
+test form.
+<P>
+<A HREF="f14-9.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f14-9.gif"><B>Figure 14.9 :</B> <I>The MTTest1 project main form in action</I>.</A>
+<UL>
+<LI>EXE Loop Test measures the time to perform a LongOp call on
+the MT2 server.
+<LI>DLL (many short) measures the time to perform CallDllNoMT
+and CallDllMT calls on the MT2 server.
+<LI>DLL (long) measures the time to perform a CallDllNoMTLong
+and CallDllMTLong calls on the MT2 server.
+</UL>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 14.6:&nbsp;Listing for Form frmMTTest1 (MTTest1.frm)
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Multithreading test program
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+Dim MT2obj As ClassMT2
+Dim elapse As New clsElapsedTime
+Dim debugmon As DebugMonitor.Trace
+
+Private Sub cmdDLLMT_Click()
+    elapse.StartTheClock
+    MT2obj.CallDllMT &quot;Called from TID: &quot; &amp; App.ThreadID
+    elapse.StopTheClock
+    debugmon.Add &quot;Elapsed on TID: &quot; &amp; App.ThreadID &amp; &quot; was &quot; &amp; elapse.Elapsed
+End Sub
+
+Private Sub cmdDllMTLong_Click()
+    elapse.StartTheClock
+    MT2obj.CallDllMTLong &quot;Long - Called from TID: &quot; &amp; App.ThreadID
+    elapse.StopTheClock
+    debugmon.Add &quot;Elapsed on TID: &quot; &amp; App.ThreadID &amp; &quot; was &quot; &amp; elapse.Elapsed
+End Sub
+
+Private Sub cmdDLLNoMT_Click()
+    elapse.StartTheClock
+    MT2obj.CallDllNoMT &quot;Called from TID: &quot; &amp; App.ThreadID
+    elapse.StopTheClock
+    debugmon.Add &quot;Elapsed on TID: &quot; &amp; App.ThreadID &amp; &quot; was &quot; &amp; elapse.Elapsed
+End Sub
+
+Private Sub cmdDllNonMTL_Click()
+    elapse.StartTheClock
+    MT2obj.CallDllNoMTLong &quot;Long - Called from TID: &quot; &amp; App.ThreadID
+    elapse.StopTheClock
+    debugmon.Add &quot;Elapsed on TID: &quot; &amp; App.ThreadID &amp; &quot; was &quot; &amp; elapse.Elapsed
+End Sub
+
+Private Sub cmdTest1_Click()
+    elapse.StartTheClock
+    MT2obj.LongOp &quot;Called from TID: &quot; &amp; App.ThreadID
+    elapse.StopTheClock
+    debugmon.Add &quot;Elapsed on TID: &quot; &amp; App.ThreadID &amp; &quot; was &quot; &amp; elapse.Elapsed
+End Sub
+
+Private Sub Form_Load()
+    ' We don't want the load time to be included
+    ' in the elapsed time
+    Set debugmon = New DebugMonitor.Trace
+    Set MT2obj = New ClassMT2
+    lblTID = &quot;TID: &quot; &amp; App.ThreadID
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    Set MT2obj = Nothing
+    Set debugmon = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<H3><A NAME="LettheTestingBegin">
+Let the Testing Begin</A></H3>
+<P>
+To exercise the mttest1 project and the various servers, be sure
+to first register the servers. You can do this by running the
+MT2.EXE and DmDebMon.exe programs and by using regsrv32.exe to
+register files MT3.DLL and MT4.DLL.
+<H4>Testing the Multithreading EXE Server</H4>
+<P>
+Run three instances of the MTTest1.exe program. They will also
+bring up the DebugMonitor screen. (The caption for the project
+is Trace Display.) Arrange the three MTTest1 projects so they
+are easily accessible.
+<P>
+Each MTTest1 program displays its thread identifier. Since this
+is a standard VB executable, it uses a single thread, so this
+thread ID uniquely identifies the project.
+<P>
+Now click on the EXE Loop Test button of all three instances as
+quickly as you can. Keep in mind that the times shown here are
+measured on one system. Your times are sure to differ. The results
+are as follows:
+<BLOCKQUOTE>
+<PRE>
+Called from TID: 243 Time: 1733. TID: 241
+Elapsed on TID: 243 was 1933.
+Called from TID: 108 Time: 2304. TID: 242
+Elapsed on TID: 108 was 2474.
+Called from TID: 236 Time: 2003. TID: 213
+Elapsed on TID: 236 was 2063.
+</PRE>
+</BLOCKQUOTE>
+<P>
+The first message was generated as follows: The message &quot;Called
+from TID: 243&quot; was generated in the cmdTest1_Click routine.
+This identifies the originating thread. The elapsed time of the
+LongOp call on the MT2 server was 1733 ms. This is the time the
+server spent in the loop. The LongOp routine ran on thread 241.
+When the operation concluded, the total elapsed time of 1933 ms
+was reported.
+<P>
+To get an idea of how long a single LongOp operation takes, try
+clicking on the EXE Loop Test button for a single MTTest1 instance.
+Here are the results:
+<BLOCKQUOTE>
+<PRE>
+Called from TID: 243 Time: 1052. TID: 241
+Elapsed on TID: 243 was 1062.
+</PRE>
+</BLOCKQUOTE>
+<P>
+About 1052 ms. Now, if the three LongOp operations were taking
+place sequentially, you would expect each one to measure a time
+of about 1 second. You would expect the total elapsed time to
+be about 1 second for the first, 2 seconds for the second, and
+3 for the third. The actual results showed all of the operations
+taking about the same time (2 seconds) and the total elapsed time
+for all of them is about the same as well. These are exactly the
+results you would expect when each object runs in its own thread,
+which is clearly the case based on the thread identifiers that
+are reported here.
+<P>
+Perhaps the most important result of this test is that we have
+verified that we have, in fact, created a single process (the
+EXE server) that can run three separate threads simultaneously.
+We'll be using those threads to test the DLL servers.
+<H4>Testing the Impact of Cross-Thread Marshaling</H4>
+<P>
+Still using the three MTTest1 instances, try clicking on the DLL
+(many short) command button for the non-multithreading DLL. The
+results are as follows. (Once again, your results will differ.)
+<BLOCKQUOTE>
+<PRE>
+CallDllNoMT in TID: 241 on DLL object TID: 247
+CallDllNoMT in TID: 242 on DLL object TID: 247
+CallDllNoMT in TID: 213 on DLL object TID: 247
+Called from TID: 243 Time: 8603. TID: 241
+Elapsed on TID: 243 was 9173.
+Called from TID: 108 Time: 8922. TID: 242
+Elapsed on TID: 108 was 9063.
+Called from TID: 236 Time: 6329. TID: 213
+Elapsed on TID: 236 was 11106.
+</PRE>
+</BLOCKQUOTE>
+<P>
+Each instance generates three messages. Let's follow the sequence
+for thread 108.
+<P>
+The mdDLLNoMT_Click() first passes the message &quot;Called from
+TID: 108&quot; to the server. The server saves this message. It
+first lets you know who it is by using the DLL object's ShowTID
+method to display:
+<BLOCKQUOTE>
+<PRE>
+CallDllNoMT in TID: 242 on DLL object TID: 247
+</PRE>
+</BLOCKQUOTE>
+<P>
+It then calls the DLL object's ShortOp method 4000 times. After
+that it reports on the elapsed time by displaying: 
+<BLOCKQUOTE>
+<PRE>
+Called from TID: 108 Time: 8922. TID: 242
+</PRE>
+</BLOCKQUOTE>
+<P>
+It uses the stored message from earlier. We now know that MTTest1
+thread 108 used server object in thread 242 to call the ShortOp
+method on a DLL server object in thread 247. The ShortOp loop
+took about 8.7 seconds. Finally, the call returns to the MTTest1
+program which displays the message:
+<BLOCKQUOTE>
+<PRE>
+Elapsed on TID: 108 was 9063.
+</PRE>
+</BLOCKQUOTE>
+<P>
+The total elapsed time from click to return was about 9 seconds.
+<P>
+It's interesting to note that all of the tests ran in about the
+same time and the total elapsed time was the same. How can this
+be when we are not using a multithreading DLL server? Simple:
+we're not performing a long operation. Objects on a thread only
+block the thread while in the middle of a method call. The method
+calls to the DLL are extremely short, so there is no reason why
+all three of the EXE server threads can't take turns, each calling
+its DLL object in turn!
+<P>
+Then what is the point of this test? Note how all of the DLL objects
+run in thread 247, the EXE server thread that actually loaded
+the component. (Yes, this is another thread in the EXE server,
+one that handles server overhead rather than an individual object.)
+<P>
+Try the same operation using the DLL (many short) command buttons
+under the multithreading group. Here are the results:
+<BLOCKQUOTE>
+<PRE>
+CallDllMT in TID: 241 on DLL object TID: 241
+CallDllMT in TID: 242 on DLL object TID: 242
+CallDllMT in TID: 213 on DLL object TID: 213
+Called from TID: 243 Time: 3044. TID: 241
+Elapsed on TID: 243 was 3435.
+Called from TID: 108 Time: 3786. TID: 242
+Elapsed on TID: 108 was 4376.
+Called from TID: 236 Time: 2914. TID: 213
+Elapsed on TID: 236 was 3895.
+</PRE>
+</BLOCKQUOTE>
+<P>
+The big difference here is the DLL object thread ID. Note how
+each object runs in the same thread as the EXE server object that
+calls it! This is seen in the first three lines of the listing.
+<P>
+At first glance it may seem that the operation is only slightly
+faster-3 seconds instead of 9 seconds. But look back at the listing.
+We aren't performing 4000 calls to the ShortOp function in this
+case, we're performing 400,000! In other words, the performance
+improvement is a factor of about 200.
+<P>
+The conclusion is inescapable. If you are writing a DLL server
+object intended to be used by a multithreaded client such as a
+Web server or browser, turning on multithreading can improve the
+performance dramatically. Of course, this is a best-case scenario,
+where the function we call is not doing anything. Real-world improvement
+will be substantially less, depending on how big a factor the
+cross-thread marshaling is in the total time spent on each method
+or property call.
+<H4>Testing Long Operations on DLL Servers</H4>
+<P>
+Now click on the button marked DLL Long for non-multithreading
+DLL calls. Here are the results:
+<BLOCKQUOTE>
+<PRE>
+Long - Called from TID: 243 Time: 5698. TID: 247
+Long - Called from TID: 236 Time: 5508. TID: 247
+Elapsed on TID: 236 was 8803.
+Elapsed on TID: 243 was 11427.
+Long - Called from TID: 108 Time: 5508. TID: 247
+Elapsed on TID: 108 was 15793.
+</PRE>
+</BLOCKQUOTE>
+<P>
+Here you can see clear evidence of blocking. The time to perform
+a LongOp call on the DLL object is about 5.5 seconds in each case.
+The total elapsed time increased for each operation because each
+one is blocked by the prior long operation. Once the first long
+operation ends, there is an additional delay before the total
+elapsed time is measured because the other thread is tying up
+CPU time. You can see that the total elapsed time to finish all
+three is about 15.7 seconds, very close to the sum of the three
+individual operations.
+<P>
+Now try the DLL Long button for multithreaded DLL calls.
+<BLOCKQUOTE>
+<PRE>
+Long - Called from TID: 243 Time: 14621. TID: 241
+Elapsed on TID: 243 was 15162.
+Long - Called from TID: 108 Time: 15302. TID: 242
+Elapsed on TID: 108 was 15963.
+Long - Called from TID: 236 Time: 15072. TID: 213
+Elapsed on TID: 236 was 15813.
+</PRE>
+</BLOCKQUOTE>
+<P>
+The total time for each call and the total elapsed time is almost
+the same in each case. This is exactly the situation that was
+described earlier in the chapter. The proof is indeed in the timing.
+<H2><A NAME="BackgroundOperationsRevisited"><FONT SIZE=5 COLOR=#FF0000>
+Background Operations Revisited</FONT></A></H2>
+<P>
+You've seen that Visual Basic 5.0 allows you to create multithreading
+components. You've seen that it does not allow you to create multithreaded
+applications. Or does it?
+<P>
+What if you could create an object in a multithreaded EXE server,
+call a method on the object and return immediately, then have
+the object begin a background operation and notify you when it
+is complete. Well, for all practical purposes you've just created
+a new thread for your application.
+<P>
+You saw this work with single-user EXE servers in the Tick1 project
+in <A HREF="ch11.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch11.htm" >Chapter 11</A>. Could it work with multiple-use classes in a multithreaded
+EXE server? Yes, but with some caveats. 
+<P>
+Listing 14.7 shows an implementation that is very similar to that
+of the Tick1 project from <A HREF="ch11.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch11.htm" >Chapter 11</A>. The standard module used
+to implement the timer is shown in Listing 14.8.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 14.7:&nbsp;The ClassMT5 Class Module (File cls5mt5.cls)
+in the <BR>
+<B>MT5 Project<BR>
+</B></B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed: Background Thread Launcher
+' Copyright (c) 1997 by Desaware Inc.
+Option Explicit
+
+Private CurrentMessage$
+Private InProgress As Boolean
+Private debugmon As DebugMonitor.Trace
+Private CallerToNotify As Object
+
+' Performs a long operation
+' Measures the time to do it and
+' reports it
+Public Sub LongOp(msg$)
+    Dim ctr&amp;
+    Dim x&amp;
+    Dim s$
+    Dim Elapsed As New clsElapsedTime
+    CurrentMessage = msg
+    ' A nice long operation that can't
+    ' be optimized away
+    Elapsed.StartTheClock
+    
+    For ctr = 1 To 5000
+        For x = 1 To 255
+            s$ = Chr$(x)
+        Next x
+    Next ctr
+    Elapsed.StopTheClock
+    Report Elapsed
+End Sub
+
+
+Private Sub Class_Initialize()
+    ' Preload objects so they aren't included in elapsed time
+    Set debugmon = New DebugMonitor.Trace
+End Sub
+
+Private Sub Class_Terminate()
+    Set debugmon = Nothing
+End Sub
+
+' Report the current message and elapsed time
+Friend Sub Report(elp As clsElapsedTime)
+    Dim msg$
+    msg$ = CurrentMessage$ &amp; &quot; Time: &quot; &amp; elp.Elapsed &amp; &quot; TID: &quot; &amp; App.ThreadID
+    debugmon.Add msg
+End Sub
+
+' Get the thread ID of an object
+Public Function ObjectThreadId() As Long
+    ObjectThreadId = App.ThreadID
+End Function
+
+' Tries to start a background operation using a timer
+Public Sub StartBackground1(ToNotify As Object)
+    Set CallerToNotify = ToNotify
+    debugmon.Add &quot;Starting timer from TID: &quot; &amp; App.ThreadID
+    StartTimer Me
+End Sub
+
+' Background operation is starting
+Friend Sub TimerExpired()
+    debugmon.Add &quot;Starting Background Op in TID: &quot; &amp; App.ThreadID
+    LongOp &quot;Background Op Done &quot;
+    ' OLE callback to calling object
+    If CallerToNotify Is Nothing Then Exit Sub
+    CallerToNotify.BackgroundNotify
+    Set CallerToNotify = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 14.8:&nbsp;Module modMT5.bas<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed: MT5
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+
+' Timer identifier
+Dim TimerID&amp;
+
+' Object for this timer
+Dim TimerObject As ClassMT5
+Declare Function SetTimer Lib &quot;user32&quot; (ByVal hwnd As Long, ByVal nIDEvent
+As Long,ByVal uElapse As Long, ByVal lpTimerFunc As Long) As Long
+Declare Function KillTimer Lib &quot;user32&quot; (ByVal hwnd As Long, ByVal nIDEvent
+As Long) As Long
+
+Public Sub StartTimer(callingobject As ClassMT5)
+   Set TimerObject = callingobject
+   TimerID = SetTimer(0, 0, 100, AddressOf TimerProc)
+End Sub
+
+' Callback function
+Public Sub TimerProc(ByVal hwnd&amp;, ByVal msg&amp;, ByVal id&amp;, ByVal currentime&amp;)
+   Call KillTimer(0, TimerID)
+   TimerID = 0
+   TimerObject.TimerExpired
+   ' And clear the object reference so it can delete
+   Set TimerObject = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The client application creates a ClassMT5 object and calls the
+StartBackground1 method to start the background thread. This method
+receives a reference to the form object to use as an OLE callback.
+The StartBackground1 method sends a debug method to the DebugMonitor
+component and calls the StartTimer function in the modMT5 module.
+This starts a short duration timer. The StartBackground1 method
+then returns.
+<P>
+When the timer event occurs, the TimerProc function is called.
+It kills the timer and calls the TimerExpired method in the ClassMT5
+object. This method displays another debug method, then begins
+a long operation. This operation is running in a separate thread
+from the original client, the thread of the EXE server object.
+<P>
+When the long operation is complete, another debugging message
+is displayed and the OLE callback's BackgroundNotify method is
+called.
+<P>
+The MTTest2 project is shown in Listing 14.9. It creates an object
+in the MT5 component, then starts the background operation when
+you click the test button. When the operation is complete, as
+indicated by a call to the BackgroundNotify method, it displays
+the total elapsed time in the DebugMonitor application.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 14.9:&nbsp;The MTTest2 Project<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed: Background thread demonstration
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+Option Explicit
+
+Dim MTTestObj As gtpMT5.ClassMT5
+Dim Debugmon As DebugMonitor.Trace
+Dim Elapsed As New clsElapsedTime
+
+Private Sub cmdTest_Click()
+    Elapsed.StartTheClock
+    MTTestObj.StartBackground1 Me
+End Sub
+
+
+Private Sub Form_Load()
+    Set MTTestObj = New gtpMT5.ClassMT5
+    Set Debugmon = New DebugMonitor.Trace
+    lblTID.Caption = &quot;TID: &quot; &amp; App.ThreadID
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    Set MTTestObj = Nothing
+    Set Debugmon = Nothing
+End Sub
+
+Public Sub BackgroundNotify()
+    Elapsed.StopTheClock
+    Debugmon.Add &quot;Total elapsed in TID: &quot; &amp; App.ThreadID &amp; &quot; was: &quot; &amp; Elapsed.Elapsed
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+After registering the MT5.EXE component, try running two instances
+of the MTTest2.exe program. Then click on the Background Using
+Timer button on both. Here are some typical results:
+<BLOCKQUOTE>
+<PRE>
+Starting timer from TID: 59
+Starting Background Op in TID: 59
+Starting timer from TID: 213
+Starting Background Op in TID: 213
+Background Op Done  Time: 9794. TID: 59
+Total elapsed in TID: 223 was: 10024.
+Background Op Done  Time: 9824. TID: 213
+Total elapsed in TID: 77 was: 10184.
+</PRE>
+</BLOCKQUOTE>
+<P>
+As you can see, both of the long background operations took about
+10 seconds, and the total elapsed time was 10 seconds. Clearly
+the operations were taking place in different threads.
+<H3><A NAME="MultithreadingIsNotMagic">
+Multithreading Is Not Magic</A></H3>
+<P>
+In this chapter you've seen that you have even more options for
+implementing components. I'd like to leave you with two final
+thoughts.
+<P>
+Before Visual Basic 5.0, many VB programmers prayed for native
+code compilation as the solution to all of their performance problems.
+Only a small fraction of them, those who created code intensive
+applications, actually saw the benefit they had hoped for. The
+rest found that native code is not a magical solution and certainly
+not a substitute for good design practices. Neither is multithreading.
+<P>
+Multithreading can serve you well in certain cases. It is very
+useful for in-process components intended for use with multithreaded
+clients. It is very useful as a replacement for single-use EXE
+server components that do not need to share data among objects.
+In other cases it can actually slow your application down. So
+consider your choice carefully.
+<H3><A NAME="YouHaveMoreControlThanYouThink">
+You Have More Control Than You Think</A></H3>
+<P>
+Don't forget that while the choice of multithreading and class
+instancing does dictate how Visual Basic will implement created
+objects, you always have the ability to have your server create
+objects for you. This means that you have a great deal of flexibility
+in terms of how you allocate objects to threads. If you don't
+like VB's allocation, create your own.
+<P>
+You can even get sophisticated and implement your server simultaneously
+as both an EXE server and a DLL server (with different server
+and program names, of course). Your server can look at incoming
+requests and estimate their complexity. Long, complex operations
+can be serviced by objects created on a multithreading EXE server.
+Shorter operations can be serviced by objects created on a non-multithreading
+DLL server.
+<P>
+This concludes our discussion of multithreading. In <A HREF="ch15.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch15.htm" >Chapter 15</A>
+we'll tie many of the subjects covered in the preceding 7 chapters
+by taking an in-depth look at the long-promised stock quoting
+component.
+<HR>
+<P>
+<BR>
+
+<CENTER><P><A HREF="ch13.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch13.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch15.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch15.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

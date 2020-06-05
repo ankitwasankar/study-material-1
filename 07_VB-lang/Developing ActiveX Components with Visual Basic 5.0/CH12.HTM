@@ -1,0 +1,1340 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 12 -- Collecting Objects</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;12</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Collecting Objects</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#TheCharacteristicsofCollections">
+The Characteristics of Collections</A>
+<UL>
+<LI><A HREF="#EvaluationCriteria">
+Evaluation Criteria</A>
+</UL>
+<LI><A HREF="#TheSTRIKEThreeSTRIKEFourApproachestoExposingCollectionsinComponents">
+The <STRIKE>Three</STRIKE> Four Approaches to Exposing Collections
+in Components</A>
+<UL>
+<LI><A HREF="#TheHouseofStraw">
+The House of Straw</A>
+<LI><A HREF="#TheHouseofSticks">
+The House of Sticks</A>
+<LI><A HREF="#TheHouseofBricks">
+The House of Bricks</A>
+<LI><A HREF="#TheCustomHome">
+The Custom Home </A>
+</UL>
+</UL>
+
+<HR>
+<P>
+This is a chapter about collections.
+<P>
+Well, actually it isn't. It is really a chapter that deals with
+managing groups of objects. I suspect that you can divide Visual
+Basic programmers into three groups on this subject:
+<UL>
+<LI>There are those who &quot;know&quot; that the best way to
+manage groups of objects is to use a collection.
+<LI>Then there are those who aren't really familiar with collections
+and thus manage groups of objects using arrays.
+<LI>And finally, there are those who understand the advantages
+and disadvantages of both collections and arrays and thus wrestle
+with the decision on which one to use each time they have to deal
+with more than one object in a project.
+</UL>
+<P>
+By the end of this chapter, I hope you will find yourself firmly
+in the third group-though you may not always enjoy it.
+<H2><A NAME="TheCharacteristicsofCollections"><FONT SIZE=5 COLOR=#FF0000>
+The Characteristics of Collections</FONT></A></H2>
+<P>
+You may be wondering why I don't start with an introduction to
+arrays before diving into the somewhat more complex subject of
+collections. It's quite simple really: arrays are a fundamental
+language construct that should be very familiar to any Visual
+Basic programmer past the level of absolute beginner. In other
+words, by the time you tackle this book, you should already know
+what an array is and how to use it. If you don't, I would encourage
+you to take a break and visit the Programming Fundamentals section
+in Part 1 of the VB programmer's guide.
+<P>
+So what exactly is a collection? You already know that a variant
+is a special kind of variable that can hold any type of data.
+A collection is an object that holds a bunch of variants-as many
+as you care to place in it. For our purposes we will focus exclusively
+on collections as a tool to hold objects. Just keep in mind throughout
+this chapter that almost everything discussed here can apply to
+other types of variables as well. It's just that in component
+development, the most common use of collections is to hold object
+references.
+<P>
+Each item in a collection has two values associated with it. First
+is the position within the collection (starting from one up to
+the number of items in the collection). Second is an optional
+<I>key value</I>, which is a string that uniquely identifies the
+object.
+<P>
+A collection has the following properties and methods:
+<UL>
+<LI>Count property: This read-only property allows you to obtain
+the number of items in the collection.
+<LI>Item method: Returns a variant containing the value of the
+item specified in a variant parameter. You can specify the item
+by passing either a number containing the position (index) of
+the item or a string containing the key of the item you want to
+retrieve. Refer to the section on &quot;Overloaded Properties
+and Functions&quot; in <A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A> for more information on how
+the operation of a method can change based on the type of data
+passed in a variant parameter.
+<LI>Add method: This method takes four parameters: <I>item, key,
+before, after</I>. All but the first are optional. The item is
+a variant containing the item to add. The key is a unique key
+identifying the object or an empty string if you don't wish to
+use a key. The before and after parameters are variants that contain
+either a number or a string that refer to the position or key
+of an existing item in the collection. The Add method then adds
+the current item before or after the specified item (depending
+on whether you are using the before or after parameter; you can't
+use both).
+<LI>Remove method: This removes an item specified in a variant
+parameter that contains a numeric position or a string key value.
+</UL>
+<P>
+The Collection object is discussed extensively in the Microsoft
+documentation, and I'm devoting quite a bit of space to it here.
+How can such a simple object be deserving of such a fuss? To answer
+this question, let's take a look at some of the advantages that
+this component offers Visual Basic programmers. These include:
+<UL>
+<LI>It's easy to use.
+<LI>It automatically handles all necessary memory allocation and
+deallocation.
+<LI>It can handle any data type.
+<LI>Its support for keys makes it easy to retrieve items based
+on the identifier of your choice.
+<LI>Like any other variable that supports objects, it handles
+object reference counting for you (so you don't have to worry
+that objects in a collection will vanish or be freed accidentally).
+<LI>Collections make it easy to transfer large amounts of data
+between objects-simply pass a reference to the collection.
+</UL>
+<P>
+Of course, the Collection object does have a number of disadvantages:
+<UL>
+<LI>It's so easy to use that sometimes it is used inappropriately.
+<LI>It imposes memory allocation and deallocation overhead that
+may not be necessary.
+<LI>Like any use of variants, it is less efficient and suffers
+performance limitations when compared to use of a specific data
+type.
+<LI>Objects are identified by variants containing either key strings
+or numeric indexes. When using an index you have the internal
+overhead involved in testing a variant. When using keys you have
+the overhead of allocating and deallocating strings.
+<LI>By holding references to objects, it may prevent an object
+from ever being freed if you do not handle cleanup properly.
+<LI>Collections make it easy to expose large amounts of data from
+your component, which can potentially be modified in dangerous
+ways by the component's client.
+</UL>
+<P>
+Call it the law of conservation of collections: for every advantage
+there is an equal and opposite disadvantage. If ever an object
+can be considered to be a double-edged sword, the Collection object
+is the one. So let's tackle some of these features and consider
+how and when they should really be used by component builders.
+<H3><A NAME="EvaluationCriteria">
+Evaluation Criteria</A></H3>
+<P>
+You will face many situations in your components where you need
+to manage groups of objects (or other types of data). Visual Basic
+provides two mechanisms for doing this: collections and arrays.
+<P>
+When should you use arrays and when should you use collections?
+I can't tell you. You see, before you can decide which one is
+better for your application, you need to evaluate the task at
+hand by a number of criteria:
+<UL>
+<LI>How critical is performance? Are you willing to spend extra
+time coding to obtain better performance?
+<LI>How critical is development time? Will you take a performance
+penalty to finish your program more quickly?
+<LI>Are you exposing the objects to other applications or using
+the group only within your component. If the group is within your
+component, you have less need to implement a robust external interface
+with extensive type and error checking.
+</UL>
+<P>
+These criteria will be addressed in each of the sections that
+follow.
+<H2><A NAME="TheSTRIKEThreeSTRIKEFourApproachestoExposingCollectionsinComponents"><FONT SIZE=5 COLOR=#FF0000>
+The <STRIKE>Three</STRIKE> Four Approaches to Exposing Collections
+in Components</FONT></A></H2>
+<P>
+The Microsoft documentation on collections discusses three approaches
+to working with collections of objects. The example used deals
+with managing a group of employees using a form. The three approaches
+are as follows.
+<P>
+In the House of Straw approach, the form uses a public Collection
+object to manage employee objects. This example shows how another
+part of the program can access this object and possibly add an
+invalid object to the collection.
+<P>
+In the House of Sticks approach, the form uses a private Collection
+object to manage employee objects and exposes a limited number
+of public methods and properties to allow other parts of the program
+to manipulate the collection. This makes the collection more robust
+as far as the rest of the program is concerned but does not protect
+the collection from bugs within the form code. It also makes it
+impossible to use the For&#133;Each statement to iterate the collection.
+<P>
+In the House of Bricks approach, a separate collection class is
+created to manage employees.
+<P>
+Now, this is a fine example for what it is intended to show, which
+is different ways of grouping objects within an application. But
+this book focuses on developing components, and while these examples
+do apply within components, they miss a more critical issue. How
+can, and should, components expose groups of objects to client
+applications?
+<P>
+To demonstrate this, let's look at three examples that demonstrate
+the same principles on a component level.
+<H3><A NAME="TheHouseofStraw">
+The House of Straw</A></H3>
+<P>
+As a breeder of prize rabbits, you've created an application to
+manage your breeding program. The Rabbit1.vbp component forms
+the basis of this application. It exposes a public object called
+PetStore1 that creates Rabbit1 objects. The PetStore1 module contains
+the following code:
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed:
+' Rabbit1 example
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+' The petstore lets you buy a collection of rabbits
+Public Function BuyRabbits(ByVal RabbitCount As Integer) As Collection
+    Dim counter%
+    Dim col As New Collection
+    Dim obj As clsRabbit1
+    ' Create the requested number of rabbits
+    For counter = 1 To RabbitCount
+        Set obj = New clsRabbit1
+        col.Add obj
+    Next counter
+    ' Return a collection containing the rabbits
+    Set BuyRabbits = col
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+This is a common technique for creating and retrieving a collection
+of objects.
+<P>
+The clsRabbit1 object describes a single rabbit and is quite simple.
+Each rabbit has a color and a number. Numbers are created sequentially
+as rabbits are born. The clsRabbit1 class module code is shown
+in the listing below.
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed:
+' Rabbit1 example
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+' The color of the rabbit
+Public Color As String
+
+Private m_RabbitNumber As Long
+
+Public Property Get Number() As Long
+    Number = m_RabbitNumber
+End Property
+
+' We use a counter in a standard module to
+' obtain a count of rabbit objects that have been
+' created
+Private Sub Class_Initialize()
+    RabbitCounter = RabbitCounter + 1
+    m_RabbitNumber = RabbitCounter
+    ' Assign a random color
+    Select Case Int(Rnd * 6)
+        Case 0
+            Color = &quot;White&quot;
+        Case 1
+            Color = &quot;Pink&quot;
+        Case 2
+            Color = &quot;Grey&quot;
+        Case 3
+            Color = &quot;Blue&quot;
+        Case 4
+            Color = &quot;Brown&quot;
+        Case Else
+            Color = &quot;Black&quot;
+    End Select
+    Debug.Print &quot;Rabbit &quot; &amp; m_RabbitNumber &amp; &quot; born.&quot;
+End Sub
+
+Private Sub Class_Terminate()
+    Debug.Print &quot;Rabbit &quot; &amp; m_RabbitNumber &amp; &quot; died.&quot;
+End Sub
+
+' Inoculates this rabbit
+Public Sub Inoculate()
+    ' Doesn't actually do anything in this example
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Color property is a string that contains the color of the
+rabbit. It is initialized randomly during the class initialization
+event. In a robust component you would probably implement this
+with a read-only property and a private variable, as is done here
+with the Number property and the m_RabbitNumber variable.
+<P>
+How can a class assign a sequential number to each object created?
+To do this you need a counter that is global to the project. The
+RabbitCounter variable is defined in module modRbt1.bas. The counter
+variable must be kept in a standard module because all global
+and static variables within a class module are associated with
+a single object of the class. The counter is incremented when
+an object is created during the class initialization function,
+and the current value assigned to a class member. Note that even
+this technique will not work with multithreaded servers-but that
+is a subject for <A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch14.htm" >Chapter 14</A>.
+<P>
+The Class_Initialize and Class_Terminate events also use a debug.print
+statement to help you keep track of object creation and destruction.
+This combination of using a global variable to assign a unique
+object identifier and debug.print statements to track object creation
+and deletion is a common and useful technique which you will see
+more of in the next chapter.
+<P>
+Meanwhile, let's take a look at the test program, RbtTest1.vbp.
+This project contains a form and a single class module of its
+own that describes a Fox object. The frmRabbitTest form is shown
+in action in Figure 12.1.
+<P>
+<A HREF="f12-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f12-1.gif"><B>Figure 12.1 :</B> <I>The RabbitTest form in action</I>.</A>
+<P>
+This form contains four buttons and a list box. The Buy Rabbits
+command button, which triggers the cmdBuy_Click event is used
+to invoke the BuyRabbits method of the PetStore1 class. This loads
+the Hutch collection, which is a form module level variable. The
+following listing shows this and the rest of the form code.
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Rabbit Test
+' Copyright (c) 1997 by Desaware Inc. all Rights Reserved
+
+Option Explicit
+
+' We need a petstore to buy from
+Dim PetStore As New PetStore1
+
+' A hutch to hold rabbits we buy
+Dim Hutch As Collection
+
+
+' Buy some rabbits
+Private Sub cmdBuy_Click()
+    Set Hutch = PetStore.BuyRabbits(15)
+End Sub
+
+Public Sub ListRabbits()
+    Dim obj As clsRabbit1
+    
+    lstRabbits.Clear    ' Clear the list
+    For Each obj In Hutch
+        lstRabbits.AddItem obj.Number &amp; &quot; - &quot; &amp; obj.color
+    Next
+End Sub
+
+' List all rabbits in the hutch
+Private Sub cmdList_Click()
+    ListRabbits
+End Sub
+
+' This subroutine fakes a bug
+Private Sub cmdAddFox_Click()
+    Dim obj As New clsFox1
+    Hutch.Add obj
+End Sub
+
+' Inoculate all rabbits
+Private Sub cmdInoculate_Click()
+    Dim obj As Object
+    For Each obj In Hutch
+        obj.Inoculate
+    Next
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The ListRabbits button triggers the cmdList_Click event when clicked.
+This function displays the list of rabbits in the Hutch variable
+in a list box.
+<P>
+There are disadvantages to having the BuyRabbits method of the
+PetStore1 object return a collection. Because a collection can
+hold any type of object, it is possible for your code to accidentally
+add the wrong kind of object to the collection. This is demonstrated
+by clicking the Add Fox button to trigger the cmdAddFox_Click
+event. This function adds a clsFox1 object (one that belongs to
+the application) into the hutch.
+<P>
+After clicking on this button, try clicking on the ListRabbits
+and Inoculate hutch buttons. The ListRabbits function will fail
+during the enumeration of the hutch (the For&#133;Each operation).
+Visual Basic will try to obtain a clsRabbit1 interface for the
+clsFox1 object during the enumeration because the obj enumeration
+variable is defined as type clsRabbit1. This will fail because
+the clsFox1 object does not have a clsRabbit1 interface. (You
+could make this work using the Implements statement, but what
+point is there in having a fox implement a rabbit?)
+<P>
+The cmdInoculate event will fail differently. With this function
+the obj enumeration object is defined <I>as object</I>, so it
+can refer to a clsFox1 object. This function does not fail until
+Visual Basic attempts a late-bound call to the Inoculate method.
+This method does not exist in the clsFox1 object, so an error
+will occur when VB attempts to invoke it.
+<P>
+These error scenarios are bad enough, but what would happen if,
+instead of returning a collection containing a hutch, the Hutch
+collection was instead exposed as a public property of the PetStore
+class? (In other words, your component manages the collection
+instead of having the form manage it.) Then you open the door
+to client applications placing illegal data into your component's
+variables-a very big problem.
+<P>
+What can we conclude from this? Objects in a component should
+never contain collection object variables that are public. Allowing
+client applications to arbitrarily access your component's collections
+is asking for trouble.
+<P>
+Returning Collection objects that are created by a component is
+not nearly as bad. At least your client application knows that
+the collection is valid when it receives it. Invalid data placed
+in the collection is likely to only impact the client application
+unless you provide a mechanism to pass the collection back to
+your component. If your component returns collections that are
+intended for temporary use, say, as a technique to provide a large
+amount of data to a client application quickly for it to examine,
+and it is unlikely that the client will hold the collection or
+add items to it, then returning collections is quite safe. It
+may not be worth your trouble to find an alternate approach.
+<H3><A NAME="TheHouseofSticks">
+The House of Sticks</A></H3>
+<P>
+A somewhat more robust example of this application can be created
+by placing the Hutch collection in the PetStore class. However,
+it is not exposed as a public variable (which would be equivalent
+to the preceding House of Straw example). Instead it is implemented
+as a private collection, and functions are added to the PetStore
+class as shown in the listing below. PetStore2 is part of projects
+Rabbit2.vbp and RbtTest2.vbp, which are part of the Rabbit2.vbg
+group. All of the file suffixes (except for the clsFox1 class,
+which remains unchanged) have been incremented from 1 to 2 for
+this example.
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed:
+' Rabbit1 example
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Private m_Hutch As Collection
+
+' The petstore lets you buy a collection of rabbits
+Public Sub BuyRabbits(ByVal RabbitCount As Integer)
+    Dim counter%
+    Dim col As New Collection
+    Dim obj As clsRabbit2
+    ' Create the requested number of rabbits
+    For counter = 1 To RabbitCount
+        Set obj = New clsRabbit2
+        col.Add obj
+    Next counter
+    ' Return a collection containing the rabbits
+    Set m_Hutch = col
+End Sub
+
+' Access items in the rabbit hutch
+Public Function Hutch(ByVal idx%) As clsRabbit2
+    Set Hutch = m_Hutch(idx)
+End Function
+
+' Retrieve the number of rabbits
+Public Function RabbitCount()
+    RabbitCount = m_Hutch.Count
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+Since you can no longer access the Hutch collection directly,
+it is necessary to implement a separate RabbitCount function to
+retrieve the number of items in the collection.
+<P>
+The clsRabbit2 object is essentially unchanged from the clsRabbit1
+class (only the name has been changed). However, this approach
+does require changes in the RabbitTest form, as shown in the following
+listing.
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Rabbit Test
+' Copyright (c) 1997 by Desaware Inc. all Rights Reserved
+
+Option Explicit
+
+' We need a petstore to buy from
+Dim PetStore As New PetStore2
+
+' Buy some rabbits
+Private Sub cmdBuy_Click()
+    PetStore.BuyRabbits 15
+End Sub
+
+Public Sub ListRabbits()
+    Dim obj As clsRabbit2
+    Dim counter%
+    
+    lstRabbits.Clear    ' Clear the list
+    For counter = 1 To PetStore.RabbitCount
+        lstRabbits.AddItem PetStore.Hutch(counter).Number &amp; &quot; - &quot; &amp; _
+        PetStore.Hutch(counter).color
+    Next
+End Sub
+
+' This subroutine fakes a bug
+Private Sub cmdAddFox_Click()
+    MsgBox &quot;Can't add a fox to a hutch&quot;
+End Sub
+
+' Inoculate all rabbits
+Private Sub CmdInoculate_Click()
+    Dim obj As Object
+    Dim counter%
+    
+    For counter = 1 To PetStore.RabbitCount
+        PetStore.Hutch(counter).Inoculate
+    Next
+End Sub
+
+' List all rabbits in the hutch
+Private Sub cmdList_Click()
+    ListRabbits
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The biggest advantage of this approach is that you can no longer
+add illegal objects to the Hutch collection because you no longer
+have access to that collection.
+<P>
+What is so wrong with this approach that Microsoft would slap
+the label House of Straw on it? Well, you can no longer use the
+For&#133;Each operator to enumerate it. Second, while you no longer
+have to worry about insertion of invalid data by external clients
+you still need to worry about it within the PetStore2 class.
+<P>
+My gut reaction to both of these points is: big deal. Unless the
+PetStore2 class is extremely complex, chances are that you will
+not have problems with insertion of invalid objects into the collection,
+or that you will catch those problems early in the testing process.
+<P>
+And frankly, I have a hard time seeing what the fuss about the
+For&#133;Each operator is in cases such as this one. It simply
+isn't that hard to implement the same functionality using a counter.
+Take a look at the code to inoculate all rabbits as implemented
+in the PetStore2 module:
+<BLOCKQUOTE>
+<PRE>
+' Enumerate Rabbits using For..Each
+Public Sub InnoculateAll1()
+    Dim obj As clsRabbit2
+    For Each obj In m_Hutch
+        obj.Inoculate
+    Next
+End Sub
+
+' Enumerate Rabbits using counter
+Public Sub InnoculateAll2()
+    Dim obj As clsRabbit2
+    Dim counter As Integer
+    For counter = 1 To m_Hutch.Count
+        Set obj = m_Hutch.Item(counter)
+        obj.Inoculate
+    Next
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The only other time where there is a significant difference between
+the approaches is when it is possible for an object to be deleted
+during the enumeration. In this case, the For&#133;Each method
+is somewhat easier to implement because it automatically keeps
+track of the next object to be enumerated. With the counter approach
+you need to decrement the counter in order to avoid skipping objects.
+<P>
+So if you don't expect to need to reuse the code that manages
+groups of objects (in this case, rabbits), go ahead and implement
+them using this approach if you find it easier. Especially use
+it if you don't need to implement all of the functionality of
+a collection.
+<H3><A NAME="TheHouseofBricks">
+The House of Bricks</A></H3>
+<P>
+The most robust solution to managing a group of objects may be
+to create your own collection that is designed specifically to
+handle those objects. Projects Rabbit3.vbp and RbtTest3.vbp, which
+are part of the Rabbit3.vbg group, illustrate this technique.
+All files in this project have a numeric suffix of 3. This project
+goes back to the approach taken in the Rabbit1 groups, where the
+Hutch collection is a collection that is stored in a form variable
+and created and returned by the BuyRabbits method of the PetStore
+project. The difference is that instead of returning a generic
+collection, it returns a new collection called RabbitCollection3,
+shown in the following listing. The RabbitCollection3 object only
+holds clsRabbit3 objects. It uses an internal m_Hutch collection
+to hold the collection's data. 
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Rabbit Test
+' Copyright (c) 1997 by Desaware Inc. all Rights Reserved
+
+Option Explicit
+
+'local variable to hold collection
+Private m_Hutch As Collection
+
+' Delegate to the collection
+Public Sub Add()
+    'create a new object
+    Dim obj As New clsRabbit3
+    m_Hutch.Add obj
+End Sub
+
+Public Property Get Count() As Long
+    Count = m_Hutch.Count
+End Property
+
+Public Property Get Item(IndexKey As Long) As clsRabbit3
+    Set Item = m_Hutch(IndexKey)
+End Property
+
+Public Sub Remove(IndexKey As Long)
+    m_Hutch.Remove IndexKey
+End Sub
+
+' Enable For...Each support
+Public Property Get NewEnum() As IUnknown
+    Set NewEnum = m_Hutch.[_NewEnum]
+End Property
+
+' Initialize and destruct the internal collection
+
+Private Sub Class_Initialize()
+    Set m_Hutch = New Collection
+End Sub
+
+Private Sub Class_Terminate()
+    Set m_Hutch = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+There are a number of advantages to this approach. First the NewEnum
+function allows you to use the For&#133;Each operation to enumerate
+items in the collection. To use this you must have a public NewEnum
+property that returns an IUnknown object type (the generic interface
+for any object). This property obtains the _NewEnum property from
+the internal collection (you must surround it with brackets to
+handle the illegal underscore character, which indicates a hidden
+property). You must use the Procedure Attributes dialog box (under
+the Tools menu) to set the procedure ID (dispatch ID) for this
+property to -4. When Visual Basic sees this dispatch ID, it knows
+that it represents an enumerator. You should also set this property
+to be hidden.
+<P>
+The second advantage is that even though the internal m_Hutch
+collection within the RabbitCollection3 object can hold any type
+of object, the RabbitCollection3 object's Add method only allows
+you to add clsRabbit3 objects to the collection. This makes it
+impossible for the client application to add an invalid object
+to the collection.
+<P>
+Third, because all access to the internal m_Hutch collection is
+by way of methods and properties that you implement, you have
+complete control over the types of objects supported. You can
+do additional data validation and error checking as needed to
+maintain the robustness of the collection.
+<P>
+In addition, a private collection of this type is easily reusable.
+And the Visual Basic Class Builder Wizard can speed the process
+of building a custom collection class. Unlike the regular Class
+Builder Wizard, I've found that this one does save some time.
+<P>
+Finally, you need not limit yourself to the standard Collection
+object methods and properties when implementing your own collections.
+Any general purpose method that you might want to apply to all
+objects in the collection can and should be added to the collection
+class. 
+<P>
+Let's look at this last feature more closely. For example: you
+might want to create a method that returns a new RabbitCollection3
+object that only includes the White rabbits. To do this, add the
+following functions to the RabbitCollection3 class:
+<BLOCKQUOTE>
+<PRE>
+' The AddExisting function should not be exposed externally
+Friend Sub AddExisting(ExistingRabbit As clsRabbit3)
+    m_Hutch.Add ExistingRabbit
+End Sub
+
+' Function to obtain a new collection containing
+' only white rabbits
+Public Function GetWhiteRabbits() As RabbitCollection3
+    Dim col As New RabbitCollection3
+    Dim obj As clsRabbit3
+    For Each obj In m_Hutch
+        If obj.Color = &quot;White&quot; Then
+            col.AddExisting obj
+        End If
+    Next
+    Set GetWhiteRabbits = col
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+AddExisting is a project-only function that allows you to add
+an existing rabbit reference to the class (since the Add method
+creates a new rabbit from scratch). You can test this by adding
+the following code to the form:
+<BLOCKQUOTE>
+<PRE>
+' Obtain a list of white rabbits
+Private Sub cmdWhite_Click()
+    Set Hutch = Hutch.GetWhiteRabbits()
+    ListRabbits
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+There are some disadvantages to this approach as well. The major
+disadvantage is that there is more coding involved in this approach-slightly
+more than the House of Sticks approach and substantially more
+than just returning a collection. A minor disadvantage is the
+extra overhead in requiring two objects-the high level object
+and the contained collection object-for each collection.
+<P>
+Conclusion: If you are exposing a collection as a property from
+your component, always use a custom collection (though, as you
+will soon see, there may be better ways to implement it). If you
+are returning a collection that the client will be holding and
+working with, as is the case in this example, you should seriously
+consider this approach.
+<H3><A NAME="TheCustomHome">
+The Custom Home </A></H3>
+<P>
+If you'll pardon my extending the analogy, all of the houses you've
+seen up to now are ultimately tract homes. They are based on the
+generic Collection object, which, like any tract house, is designed
+to satisfy most of the people most of the time. It usually works
+pretty well. It isn't necessarily the most efficient approach,
+and it may not have all of the features you want, but you can
+make do with it. It's good enough.
+<P>
+But if you have time to spare, or if you really want a home that
+fits you to a tee, nothing matches finding an architect and designing
+and building your dream house from scratch.
+<P>
+So much for analogies.
+<P>
+The Rabbit4.vbg program group contains two applications, Rabbit4.vbp
+and RbtTest4.vbp. Once again, all of the project files have had
+their suffix character incremented, in this case from 3 to 4.
+The DLL server in Rabbit4.vbp is similar to the one shown in the
+Rabbit3 project, except that it contains two different solutions
+to grouping clsRabbit4 objects. The RabbitCollection4 object is
+collection-based just like RabbitCollection3. Only three functions
+are changed. The GetWhiteRabbits() function shown here now returns
+a collection instead of another RabbitCollection4 object. This
+change was made to provide a fair comparison with the new array-based
+approach.
+<BLOCKQUOTE>
+<PRE>
+' Function to obtain a new collection containing
+' only white rabbits
+' We'll use a generic collection in this case
+' to provide a fair comparison
+Public Function GetWhiteRabbits() As Collection
+    Dim col As New Collection
+    Dim obj As clsRabbit4
+    For Each obj In m_Hutch
+        If obj.Color = &quot;White&quot; Then
+            col.Add obj
+        End If
+    Next
+    Set GetWhiteRabbits = col
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+A new SellRabbit function is used to remove a rabbit from the
+collection. It takes a clsRabbit4 object reference as a parameter
+and scans the collection to find the matching object. It then
+removes the matching object.
+<BLOCKQUOTE>
+<PRE>
+' Sell a specified rabbit
+Public Function SellRabbit(rabbit As clsRabbit4) As Long
+    Dim counter&amp;
+    Dim RabbitCount As Long
+    ' Note simple optimization of taking m_Hutch.Count out of the loop
+    RabbitCount = m_Hutch.Count
+    For counter = 1 To RabbitCount
+        If m_Hutch(counter) Is rabbit Then
+            m_Hutch.Remove counter
+            Exit Function
+        End If
+    Next counter
+    SellRabbit = -1 ' API style error reporting
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+A completely different approach to collecting clsRabbit4 objects
+is in the RabbitArray4 class (RbtArry4.cls) shown in the next
+listing. In this class, the clsRabbit4 objects are kept in an
+array rather than in a collection. Because it uses an array, it
+cannot take advantage of all of the features of an embedded collection
+such as keys, support for the For&#133;Each syntax, and support
+for any data type. However, this particular example does not require
+features such as keys, support for For&#133;Each syntax and support
+for data types other than clsRabbit4 objects. Thus it avoids the
+overhead that collection objects must have to support these features.
+Could you add those features if you wish? Yes! You could use an
+array of variants to support any type of object. You could have
+a separate array of strings, longs, or variants to support keys.
+And you could use a third-party product, such as Desaware's SpyWorks,
+to add For&#133;Each support to array-based collections.
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Rabbit Test
+' Copyright (c) 1997 by Desaware Inc. all Rights Reserved
+
+Option Explicit
+
+'local variable to hold array of rabbit objects
+Private m_Hutch() As clsRabbit4
+Private m_LastValidEntry As Long
+Private m_HutchSize As Long
+
+' Delegate to the collection
+Public Sub Add()
+    'create a new object
+    Dim obj As New clsRabbit4
+    ' Make sure array is large enough
+    On Error GoTo AddResizeError
+    If m_HutchSize = m_LastValidEntry Then
+        ' Granularity on additions is arbitrary
+        m_HutchSize = m_HutchSize + 4
+        ReDim Preserve m_Hutch(m_HutchSize)
+    End If
+    m_LastValidEntry = m_LastValidEntry + 1
+    Set m_Hutch(m_LastValidEntry) = obj
+    Exit Sub
+AddResizeError:
+    ' Raise a memory allocation error here
+End Sub
+
+Public Property Get Count() As Long
+    Count = m_LastValidEntry
+End Property
+
+Public Property Get Item(IndexKey As Long) As clsRabbit4
+    Set Item = m_Hutch(IndexKey)
+End Property
+
+' Removes a rabbit at the specified position
+Public Sub Remove(IndexKey As Long)
+    Dim counter&amp;
+    If IndexKey &lt; 0 Or IndexKey &gt; m_LastValidEntry Then
+        ' You would probably want to raise an error here
+        Exit Sub
+    End If
+    For counter = IndexKey To m_LastValidEntry - 1
+        Set m_Hutch(counter) = m_Hutch(counter + 1)
+    Next counter
+    Set m_Hutch(m_LastValidEntry) = Nothing
+    m_LastValidEntry = m_LastValidEntry - 1
+    ' Shrink the array to avoid accumulating too much space
+    If m_LastValidEntry + 4 &lt; m_HutchSize Then
+        ReDim Preserve m_Hutch(m_LastValidEntry + 4)
+        m_HutchSize = m_LastValidEntry + 4
+    End If
+End Sub
+
+' Initialize and destruct the internal collection
+
+
+' Clears all the objects in the array
+Private Sub Class_Terminate()
+    ReDim m_Hutch(0)
+End Sub
+
+' Function to obtain a new collection containing
+' only white rabbits
+' We'll use a generic collection in this case
+' to provide a fair comparison
+Public Function GetWhiteRabbits() As Collection
+    Dim col As New Collection
+    Dim counter&amp;
+    For counter = 1 To m_LastValidEntry
+        ' Array itself is early bound by definition
+        If m_Hutch(counter).Color = &quot;White&quot; Then
+            col.Add m_Hutch(counter)
+        End If
+    Next counter
+    
+    Set GetWhiteRabbits = col
+End Function
+
+' Sell a specified rabbit
+Public Function SellRabbit(rabbit As clsRabbit4) As Long
+    Dim counter&amp;
+    Dim RabbitCount As Long
+    For counter = 1 To m_LastValidEntry
+        If m_Hutch(counter) Is rabbit Then
+            ' The class method does the removal
+            Remove counter
+            Exit Function
+        End If
+    Next counter
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Add function first increases the size of the m_Hutch array.
+It keeps track of the number of objects in the array separately
+from the size of the array. When you add an object into the collection,
+the Add routine first checks to see if space is available by comparing
+the m_HutchSize variable to the m_LastValidEntry variable. If
+new space needs to be allocated, the function uses the ReDim statement
+with the Preserve option to preserve the current values in the
+array. It redimensions the array size to a larger size than is
+actually needed to hold the new item. This is because the object
+assumes that if you add one object, you are likely to add more.
+By allocating four spaces in the array each time, you potentially
+reduce the number of redimension operations by a factor of four.
+<P>
+This is a typical memory vs. performance trade-off, risking a
+potential waste of memory space to improve performance. Most array-based
+collections use this technique. The number of extra spaces to
+allocate is up to you to determine. Larger values waste additional
+memory but can lead to even further improvements in performance.
+<P>
+The Count and Item properties are identical to the collection-based
+approach.
+<P>
+The Remove property is somewhat more complex. Since there is no
+embedded collection to delegate the operation to, you must remove
+the object from the array yourself. This particular implementation
+does not allow for empty spaces in the array, so once the location
+to delete has been found, all subsequent objects in the array
+are moved forward.
+<P>
+The GetWhiteRabbits function is virtually identical to that of
+the RabbitCollection4 object. One difference has to do with the
+internal access to the collection or array. With an internal collection,
+you must assign the object you are working with to an object variable
+with the clsRabbit4 type. This is demonstrated in the RabbitCollection4
+objects using the For&#133;Each construct as follows:
+<BLOCKQUOTE>
+<PRE>
+Dim obj As clsRabbit4
+For Each obj In m_Hutch
+</PRE>
+</BLOCKQUOTE>
+<P>
+If you do not do this, access to the object will be late bound,
+which will have a significant impact on performance. With the
+array approach shown in the RabbitArray4 object, this is not necessary.
+All access to items in the array can be early bound because they
+are already defined as clsRabbit4 objects. Thus the line
+<BLOCKQUOTE>
+<PRE>
+If m_Hutch(counter).Color = &quot;White&quot; Then
+</PRE>
+</BLOCKQUOTE>
+<P>
+is early bound. The SellRabbit function takes an object reference
+as a parameter, searches for it in the array, and removes it once
+found.
+<P>
+Both the RabbitCollection4 and RabbitArray4 objects provide exactly
+the same functionality. Which one works better?
+<H4>Performance Testing</H4>
+<P>
+Benchmarking is always tricky. The RbtTest4 project attempts to
+provide a fair comparison between the collection and array-based
+approaches. The code listing can be found in the following listing.
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Rabbit Test
+' Copyright (c) 1997 by Desaware Inc. all Rights Reserved
+
+Option Explicit
+
+' We need a petstore to buy from
+Dim PetStore As New PetStore4
+
+' Once again we hold the collection
+Dim Hutch1 As RabbitCollection4
+' But this time we have an array as well
+Dim Hutch2 As RabbitArray4
+
+' Buy some rabbits
+Private Sub cmdBuy_Click()
+    Dim tempdouble As Double
+    Dim repetitions As Long
+    repetitions = 1
+    Dim counter As Long
+    
+    ' We use a clsElapsedTime object to measure the time
+    Dim time1 As New clsElapsedTime
+    Dim time2 As New clsElapsedTime
+    tempdouble = Rnd(-1)    ' Reset random number sequence
+    time1.StartTheClock
+    For counter = 1 To repetitions
+        Set Hutch1 = PetStore.BuyRabbits(10000)
+    Next counter
+    time1.StopTheClock
+    tempdouble = Rnd(-1)    ' Reset random number sequence
+    time2.StartTheClock
+    For counter = 1 To repetitions
+        Set Hutch2 = PetStore.BuyRabbitArray(10000)
+    Next counter
+    time2.StopTheClock
+    lstRabbits.AddItem &quot;Collection Adds: &quot; &amp; time1.Elapsed(repetitions) _
+    &amp; &quot; ms/10000&quot;
+    lstRabbits.AddItem &quot;Array Adds: &quot; &amp; time2.Elapsed(repetitions) &amp; &quot; ms/10000&quot;
+End Sub
+
+' Sell starting at the beginning of the collection
+Private Sub cmdSell_Click()
+    Dim time1 As New clsElapsedTime
+    Dim time2 As New clsElapsedTime
+    Dim col1 As Collection
+    Dim col2 As Collection
+    Dim obj As clsRabbit4
+    Set col1 = Hutch1.GetWhiteRabbits
+    Set col2 = Hutch2.GetWhiteRabbits
+    If col1.Count = 0 Then Exit Sub
+    time1.StartTheClock
+    Call Hutch1.SellRabbit(col1(1))
+    time1.StopTheClock
+    time2.StartTheClock
+    Call Hutch2.SellRabbit(col2(1))
+    time2.StopTheClock
+    lstRabbits.AddItem &quot;Sell White Col: &quot; &amp; time1.Elapsed() &amp; &quot; ms&quot;
+    lstRabbits.AddItem &quot;Sell White Array: &quot; &amp; time2.Elapsed() &amp; &quot; ms&quot;
+    
+End Sub
+
+' Sell starting at the end of the collection
+Private Sub cmdSell2_Click()
+    Dim time1 As New clsElapsedTime
+    Dim time2 As New clsElapsedTime
+    Dim col1 As Collection
+    Dim col2 As Collection
+    Dim obj As clsRabbit4
+    Set col1 = Hutch1.GetWhiteRabbits
+    Set col2 = Hutch2.GetWhiteRabbits
+    
+    time1.StartTheClock
+    Call Hutch1.SellRabbit(col1(col1.Count))
+    time1.StopTheClock
+    time2.StartTheClock
+    Call Hutch2.SellRabbit(col2(col2.Count))
+    time2.StopTheClock
+    lstRabbits.AddItem &quot;Sell White Col: &quot; &amp; time1.Elapsed() &amp; &quot; ms&quot;
+    lstRabbits.AddItem &quot;Sell White Array: &quot; &amp; time2.Elapsed() &amp; &quot; ms&quot;
+End Sub
+
+' Time to extract the white rabbits
+Private Sub cmdWhite_Click()
+    Dim time1 As New clsElapsedTime
+    Dim time2 As New clsElapsedTime
+    Dim col1 As Collection
+    Dim col2 As Collection
+    Dim repetitions As Long
+    Dim counter As Long
+    repetitions = 5
+    time1.StartTheClock
+    For counter = 1 To repetitions
+        Set col1 = Hutch1.GetWhiteRabbits
+    Next counter
+    time1.StopTheClock
+    time2.StartTheClock
+    For counter = 1 To repetitions
+        Set col2 = Hutch2.GetWhiteRabbits
+    Next counter
+    time2.StopTheClock
+    lstRabbits.AddItem &quot;Find White Col: &quot; &amp; time1.Elapsed(repetitions) &amp; _
+    &quot; ms/&quot; &amp; col1.Count
+    lstRabbits.AddItem &quot;Find White Array: &quot; &amp; time2.Elapsed(repetitions) &amp; _
+    &quot; ms/&quot; &amp; col2.Count
+End Sub
+
+
+Private Sub Form_Unload(Cancel As Integer)
+    Set Hutch1 = Nothing
+    Set Hutch2 = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This test program contains two module level variables, Hutch1,
+which uses the RabbitCollection4 object, and Hutch2, which uses
+the RabbitArray4 object. These objects are loaded with 10000 clsRabbit4
+objects by the cmdBuy_Click command. There is a call to the function
+Rnd(-1) in the PetStore BuyRabbits and BuyRabbitArray routines
+that create the rabbit lists. This is because each list uses random
+numbers to assign colors, and the positions and numbers of rabbit
+colors will have an impact on later tests. The Rnd(-1) call resets
+the random number list so that both Hutch1 and Hutch2 will contain
+the exact same rabbit types.
+<P>
+The times to load the collections are measured using two clsElapsedTime
+objects. These objects are based on the elapsed time code that
+was used in early examples in the book. I finally decided I was
+using it often enough to turn it into a reusable class. The listing
+for this object can be seen in the following listing. The initial
+time is set using the StartTheClock method and the ending time
+using the StopTheClock method. The Elapsed method returns a string
+containing the elapsed time in milliseconds.
+<BLOCKQUOTE>
+<PRE>
+' Elapsed time class
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Private Declare Function GetTickCount&amp; Lib &quot;kernel32&quot; ()
+
+Private m_CreationTime As Long
+Private m_StopTime As Long
+
+
+' Update the creation time. This should always
+' be called because class initialization is not
+' as controllable.
+Public Sub StartTheClock()
+    m_CreationTime = GetTickCount()
+End Sub
+
+' Mark the stop time. This is called automatically
+' the first time you request the elapsed time for an
+' object.
+Public Sub StopTheClock()
+    m_StopTime = GetTickCount()
+End Sub
+
+' Get a formatted string for the time in microseconds
+Public Function Elapsed(Optional ByVal repetitions As Long = 1) As String
+    Dim timeval As Long
+    If m_StopTime = 0 Then StopTheClock
+    timeval = m_StopTime - m_CreationTime
+    ' timeval &lt;0 indicates StartTheClock was never called
+    ' You could raise an error here instead
+    If timeval &lt; 0 Then timeval = 0
+    ' timeval is the difference in milliseconds
+    Elapsed = Format$(CDbl(timeval) / repetitions, &quot;0.###&quot;)
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+There are four buttons on the form, as shown in Figure 12.2. Each
+one corresponds to a benchmark test. You should click the Buy
+Many Rabbits button before any of the others to load the Hutch1
+and Hutch2 objects. The Find White button measures the time it
+takes to scan through the list and build a collection of clsRabbit4
+objects whose color property is White. This allows you to compare
+the time to both scan a list and perform a property comparison.
+<P>
+<A HREF="f12-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f12-2.gif"><B>Figure 12.2 :</B> <I>The RabbitTest4 program in action</I>.</A>
+<P>
+There are two buttons that remove clsRabbit4 objects from the
+collections. The Sell First White Rabbit command removes the first
+white rabbit found. The Sell Last White Rabbit button removes
+the last rabbit. As you will soon see, there is a significant
+difference between the two.
+<H4>Results</H4>
+<P>
+Before performing the test you should compile both the DLL and
+the test executable using the native code compilation option.
+This provides the fairest test between the two approaches. In
+fact, it is this kind of low-level operation that can often benefit
+most from native code.
+<P>
+Table 12.1 shows results of these tests on my test system. (Your
+results probably will differ.) Like all benchmarks, you need to
+use care interpreting these results.
+<P>
+<CENTER><B>Table 12.1:&nbsp;Result Times for the RabbitTest4 Project</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=60%>
+<TR VALIGN=TOP><TD WIDTH=192><B>Command</B></TD><TD WIDTH=144><CENTER><B>Collection-Based</B></CENTER>
+</TD><TD WIDTH=138><CENTER><B>Array-Based</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Buy Many Rabbits</TD><TD WIDTH=144><CENTER>3816</CENTER>
+</TD><TD WIDTH=138><CENTER>2774</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Find White Rabbits</TD><TD WIDTH=144><CENTER>248</CENTER>
+</TD><TD WIDTH=138><CENTER>126</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Sell First White Rabbit</TD><TD WIDTH=144><CENTER>0</CENTER>
+</TD><TD WIDTH=138><CENTER>30</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Sell Last White Rabbit</TD><TD WIDTH=144><CENTER>16554</CENTER>
+</TD><TD WIDTH=138><CENTER>30</CENTER></TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The Buy Many Rabbits operation is about 10 percent faster with
+the array-based approach. Does this mean that the array approach
+is only marginally faster than the embedded collection approach
+in general? No. Keep in mind that this delay includes the overhead
+of the BuyRabbit and BuyRabbitArray functions in the PetStore
+object. It also contains the overhead involved in the creation
+of clsRabbit4 objects, which includes a string assignment during
+color assignment. This overhead takes up a substantial percentage
+of the total time, which suggests that if you were to only measure
+the performance of a simple Add operation using both techniques,
+the array approach would be substantially faster than the collection
+approach.
+<P>
+The array approach is about 50 percent faster than the collection
+approach when it comes to scanning the array and extracting a
+specific type of object. The cmdWhite_Click function actually
+performs the operation five times and divides the result by five
+in order to obtain more accurate values.
+<P>
+The rabbit removal results differ radically depending on whether
+you are removing an object at the beginning of the list or at
+the end of the list. The results suggest that collections are
+extremely efficient at removing objects that are towards the start
+of a collection. The array approach is least efficient when it
+comes to objects at the start of the array because while they
+are found quickly, all of the rest of the objects in the array
+need to be moved to fill in the space that is freed in the array
+by the missing object.
+<P>
+It is truly shocking how the performance of the collection approach
+degrades when it comes to removing objects at the end of the collection.
+Because the internal implementation of collection objects is hidden,
+there is no way to tell exactly why this problem occurs, but the
+results here show that the collection approach is 250 times slower
+than the array approach in this example.
+<H4>Conclusions</H4>
+<P>
+Do these results suggest that you should avoid collection objects
+and implement your own collections using arrays instead? Not necessarily.
+It does look as if collections containing thousands of objects
+may be too slow to be practical, but this does not mean that they
+are not useful for smaller numbers of objects. The array-based
+approach did require additional coding and testing. And the amount
+of code increases dramatically as you implement more of the features
+of a collection.
+<P>
+In fact, with the exception of the For&#133;Each support, you
+could implement an exact clone of the collection object using
+Visual Basic. With a third-party product such as Desaware's SpyWorks,
+you could implement For..Each support as well. In fact, you can
+do so with more flexibility than is possible with a standard collection
+because it gives you full control over the enumeration order and
+insertion/deletion handling. 
+<P>
+If you did decide to implement an exact clone of the Visual Basic
+collection object using VB, I suspect you would find that the
+performance is no better than the one provided with VB. The benefits
+of the array approach come from the fact that in most cases you
+do not need to implement all of the features of a collection.
+<P>
+Clearly there is a development time vs. performance trade-off
+to consider here. You will have to make your own call based on
+the needs of your own applications.
+<P>
+The true power of the array-based approach is that it is infinitely
+customizable. You can apply traditional computer science techniques,
+such as linked lists, binary searches, and hash tables to optimize
+searching, insertion, or deletion instead of depending on the
+trade-offs Microsoft chose for the Collection object.
+<P>
+You have the flexibility to define your own keying scheme or use
+multiple keys. For example: the Collection object key is always
+string-based, meaning that every key-based operation requires
+string comparisons or string allocation and deallocation. If your
+application can use a numeric key, you can achieve significant
+improvements in performance by using an array-based collection
+with your own keying scheme.
+<P>
+Keep in mind that a well-designed private collection class should
+be reusable, so the extra investment it demands for the initial
+implementation may pay off in the long run.
+<P>
+Finally, you can see in this example one of the overwhelming advantages
+of object-oriented programming. Did you notice that the RabbitTest
+form code that handles the Hutch1 and Hutch2 variables is identical
+(except for the place where they are created)? This means when
+you are creating a private collection it is quite practical to
+first implement a collection-based solution, then change it later
+to an array-based solution to improve performance!
+<P>
+Remember that with COM objects all you need to do is preserve
+the interface-the implementation can be changed at will.
+<P>
+If you are not sure whether you are writing performance-critical
+code, go ahead and take the easier collection-based approach and
+avoid using the For&#133;Each operator. You can then change your
+mind later without changing any code outside of the object's class
+module. If the object is in a DLL, you won't even need to recompile
+the client applications.
+<P>
+You may also notice that this sample program seems to take forever
+to close. This is because when you close the test form, all of
+the objects (all 20000 of them in both Hutch1 and Hutch2) need
+to be deleted.
+<P>
+Speaking of deletion, in the current RabbitTest example, the only
+way to sell a rabbit is to call a Sell operation on one of the
+Hutch variables. Logically, you would think it would be possible
+to add a Sell function to the clsRabbit4 object itself. Of course
+to do this, the clsRabbit4 object would have to keep track of
+which collection it is in. (A rabbit shouldn't really be in two
+hutches at once.) The idea may seem simple, but as you will see
+in the next chapter, this idea opens the door to one of the most
+important, potentially confusing, and often frustrating subjects
+relating to ActiveX component development: object referencing.
+<HR>
+
+<CENTER><P><A HREF="ch11.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch11.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch13.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch13.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

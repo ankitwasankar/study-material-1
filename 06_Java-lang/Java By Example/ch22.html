@@ -1,0 +1,2283 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 22 -- Panels and Layout Managers</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;22</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Panels and Layout Managers</FONT>
+
+</H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#Panels">
+
+Panels</A>
+
+<UL>
+
+<LI><A HREF="#ExampleCreatingandUsingPanels">
+
+Example: Creating and Using Panels</A>
+
+</UL>
+
+<LI><A HREF="#LayoutManagers">
+
+Layout Managers</A>
+
+<LI><A HREF="#TheIFlowLayoutIManager">
+
+The <I>FlowLayout</I> Manager</A>
+
+<UL>
+
+<LI><A HREF="#ExampleCreatingaIFlowLayoutIManager">
+
+Example: Creating a <I>FlowLayout</I> Manager</A>
+
+</UL>
+
+<LI><A HREF="#TheIGridLayoutIManager">
+
+The <I>GridLayout</I> Manager</A>
+
+<UL>
+
+<LI><A HREF="#CreatingaIGridLayoutIManager">
+
+Creating a <I>GridLayout</I> Manager</A>
+
+</UL>
+
+<LI><A HREF="#TheIBorderLayoutIManager">
+
+The <I>BorderLayout</I> Manager</A>
+
+<UL>
+
+<LI><A HREF="#CreatingaIBorderLayoutIManager">
+
+Creating a <I>BorderLayout</I> Manager</A>
+
+</UL>
+
+<LI><A HREF="#TheICardLayoutIManager">
+
+The <I>CardLayout</I> Manager</A>
+
+<UL>
+
+<LI><A HREF="#TheICardLayoutIManagerMethods">
+
+The <I>CardLayout</I> Manager Methods</A>
+
+<LI><A HREF="#ExampleCreatingaICardLayoutIManager">
+
+Example: Creating a <I>CardLayout</I> Manager</A>
+
+</UL>
+
+<LI><A HREF="#TheIGridBagLayoutIManager">
+
+The <I>GridBagLayout</I> Manager</A>
+
+<UL>
+
+<LI><A HREF="#CreatingandSettingtheIGridBagLayoutIManager">
+
+Creating and Setting the <I>GridBagLayout</I> Manager</A>
+
+<LI><A HREF="#CreatingandSettingaIGridBagConstraintsIObject">
+
+Creating and Setting a <I>GridBagConstraints</I> Object</A>
+
+<LI><A HREF="#ExampleUsingaIGridBagLayoutIManagerinanApplet">
+
+Example: Using a <I>GridBagLayout</I> Manager in an Applet
+
+</A>
+
+<LI><A HREF="#UnderstandingtheIGridBagAppletIApplet">
+
+Understanding the <I>GridBagApplet</I> Applet</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+Up until the previous chapter, when you've added controls to your
+
+applets, you've let Java place those controls wherever it felt
+
+like it. The only way you could control positioning was by changing
+
+the size of the applet. Obviously, if you're going to produce
+
+attractive applets that are organized logically, you need some
+
+way to tell Java exactly where you want things placed. Java's
+
+layout managers were created for exactly this purpose. Working
+
+in conjunction with layout managers are components called panels,
+
+which enable you to organize other applet components. In this
+
+chapter, you learn about these two important layout components.
+
+<H2><A NAME="Panels"><FONT SIZE=5 COLOR=#Ff0000>
+
+Panels</FONT></A></H2>
+
+<P>
+
+A panel is a special type of container object that acts as a parent
+
+to other components that you want to organize in your applet.
+
+For example, you can add several panels to an applet, each with
+
+their own layout. By using panels in this way, you can create
+
+many different creative displays. Creating a panel is as easy
+
+as calling the <TT>Panel</TT> class's constructor, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Panel panel = new Panel();
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+As you can see, the <TT>Panel</TT> class's constructor requires
+
+no arguments.
+
+<P>
+
+Once you create a panel, you add it to the applet in the normal
+
+way, by calling the <TT>add()</TT> method:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+add(panel);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<H3><A NAME="ExampleCreatingandUsingPanels">
+
+Example: Creating and Using Panels</A></H3>
+
+<P>
+
+Using panels can be a little confusing at first, so an example
+
+is in order. Suppose you need to create an applet that displays
+
+four buttons, but you don't want Java to place the buttons one
+
+after the other in the display, which Java will do with its default
+
+layout. Instead, you want the buttons displayed in two rows of
+
+two. One way to accomplish this feat is to add two panels to the
+
+applet and then add two buttons to each panel. Listing 22.1 shows
+
+how this is done, whereas Figure 22.1 shows what the display looks
+
+like.
+
+<P>
+
+<IMG SRC="f22-1.gif"><B> Figure 22.1 : </B><I>Using panels, <r>you can more easily organize components in an applet.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 22.1&nbsp;&nbsp;PanelApplet.java: Using Panels.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class PanelApplet extends Applet
+
+{
+
+    Panel panel1, panel2;
+
+    Button button1, button2, button3, button4;
+
+
+
+    public void init()
+
+    {
+
+        panel1 = new Panel();
+
+        panel2 = new Panel();
+
+
+
+        add(panel1);
+
+        add(panel2);
+
+
+
+        button1 = new Button(&quot;Button1&quot;);
+
+        button2 = new Button(&quot;Button2&quot;);
+
+        button3 = new Button(&quot;Button3&quot;);
+
+        button4 = new Button(&quot;Button4&quot;);
+
+
+
+        panel1.add(button1);
+
+        panel1.add(button2);
+
+        panel2.add(button3);
+
+        panel2.add(button4);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>PanelApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the panel and button objects.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create the panels.<BR>
+
+        Add the panels to the applet.<BR>
+
+        Create the four buttons.<BR>
+
+        Add the buttons to the panels.
+
+</BLOCKQUOTE>
+
+<P>
+
+Notice how, when adding the panels to the applet, the program
+
+calls the <TT>PanelApplet</TT> class's <TT>add()</TT> method (which
+
+adds the panels to the applet's display). However, when adding
+
+the buttons, the program calls the panel objects' <TT>add()</TT>
+
+method (which adds the buttons to the panels). This is how you
+
+build a hierarchy of components into your applets. In this case,
+
+you've got a stack of components three high, with the applet's
+
+display on the bottom, the two panels on top of that, and the
+
+four buttons on top of the panels. As you create more sophisticated
+
+applets, this type of component stacking will be more common.
+
+<P>
+
+Panels are kind of a &quot;plain vanilla&quot; container for organizing
+
+components in an applet. As you'll discover in the next section,
+
+you can combine panels with layout managers to create truly complex
+
+displays.
+
+<H2><A NAME="LayoutManagers"><FONT SIZE=5 COLOR=#Ff0000>
+
+Layout Managers</FONT></A></H2>
+
+<P>
+
+Layout Managers are special objects that determine how elements
+
+of your applet are organized in the applet's display. When you
+
+create an applet, Java automatically creates and assigns a default
+
+layout manager. In many of the applets you've created so far in
+
+this book, it's the default layout manager that's determined where
+
+your controls appear. You can, however, create different types
+
+of layout managers in order to better control how your applets
+
+look. The layout managers you can use are listed below:
+
+<UL>
+
+<LI>FlowLayout
+
+<LI>GridLayout
+
+<LI>BorderLayout
+
+<LI>CardLayout
+
+<LI>GridBagLayout
+
+</UL>
+
+<P>
+
+Each of these layout managers is represented by a class of the
+
+same name. To create a layout manager for your applet, you first
+
+create an instance of the appropriate layout class and then call
+
+the <TT>setLayout()</TT> method to tell Java which layout object
+
+you want to use. In the following sections, you get a chance to
+
+see the various layout managers in action.
+
+<H2><A NAME="TheIFlowLayoutIManager"><FONT SIZE=5 COLOR=#Ff0000>
+
+The <I>FlowLayout</I> Manager</FONT></A></H2>
+
+<P>
+
+In the previous section, I mentioned that, when you create an
+
+applet, Java assigns to it a default layout manager. It just so
+
+happens that this default manager is an object of the <TT>FlowLayout</TT>
+
+class. The <TT>FlowLayout</TT> manager places controls, in the
+
+order in which they're added, one after the other in horizontal
+
+rows. When the layout manager reaches the right border of the
+
+applet, it begins placing controls on the next row. In its default
+
+state, the <TT>FlowLayout</TT> manager centers controls on each
+
+row. However, you can set the alignment when you create the layout
+
+manager for your applet, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+FlowLayout layout = new FlowLayout(align, hor, ver);
+
+SetLayout(layout);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>FlowLayout</TT> constructor takes three arguments, which
+
+are the alignment (<TT>FlowLayout.LEFT</TT>, <TT>FlowLayout.CENTER</TT>,
+
+or <TT>FlowLayout.RIGHT</TT>), the horizontal spacing between
+
+components, and the vertical spacing.
+
+<H3><A NAME="ExampleCreatingaIFlowLayoutIManager">
+
+Example: Creating a <I>FlowLayout</I> Manager</A></H3>
+
+<P>
+
+Suppose that you want to arrange three buttons in an applet using
+
+a <TT>FlowLayout</TT> manager set to left alignment. Listing 22.2
+
+shows how you'd create the manager and the buttons for the applet.
+
+Figure 22.2 shows the resultant control layout. Figures 22.3,
+
+and 22.4 show the center and right alignments for the same controls.
+
+<P>
+
+<IMG SRC="f22-2.gif"><B> Figure 22.2 : </B><I>These buttons are left aligned by the FlowLayout manager.
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f22-3.gif"><B> Figure 22.3 : </B><I>These buttons are center aligned by the FlowLayout manager.
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f22-4.gif"><B> Figure 22.4 : </B><I>These buttons are right aligned by the FlowLayout manager.
+
+</I></A><P>
+
+
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 22.2&nbsp;&nbsp;LST22_2.TXT: Creating a </B><I>FlowLayout</I><B>
+
+Manager.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+FlowLayout layout =
+
+    new FlowLayout(FlowLayout.LEFT, 10, 10);
+
+setLayout(layout);
+
+button1 = new Button(&quot;Button1&quot;);
+
+button2 = new Button(&quot;Button2&quot;);
+
+button3 = new Button(&quot;Button3&quot;);
+
+add(button1);
+
+add(button2);
+
+add(button3);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+The <TT>FlowLayout()</TT> constructor shown in this chapter takes four arguments. However, you can actually construct a <TT>FlowLayout</TT> object with no arguments, <TT>FlowLayout()</TT>, or with a single argument for the alignment, 
+<TT>FlowLayout(FlowLayout.LEFT)</TT>. Many of Java's classes have multiple constructors.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="TheIGridLayoutIManager"><FONT SIZE=5 COLOR=#Ff0000>
+
+The <I>GridLayout</I> Manager</FONT></A></H2>
+
+<P>
+
+Once you start creating more sophisticated applets, you'll quickly
+
+discover that the <TT>FlowLayout</TT> manager may not give you
+
+the control you need to create the kind of display you want for
+
+your applet. When you need more control over the placement of
+
+components, you can try out the <TT>GridLayout</TT> manager.
+
+<P>
+
+Java's <TT>GridLayout</TT> manager organizes your applet's display
+
+into a rectangular grid, similar to the grid used in a spreadsheet.
+
+Java then places the components you create for the applet into
+
+each cell of the grid, working from left to right and top to bottom.
+
+You create a <TT>GridLayout</TT> manager like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+GridLayout layout = new GridLayout(rows, cols, hor, ver);
+
+SetLayout(layout);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The constructor's four arguments are the number of rows in the
+
+grid, the number of columns, and the horizontal and vertical space
+
+between the grid cells.
+
+<H3><A NAME="CreatingaIGridLayoutIManager">
+
+Creating a <I>GridLayout</I> Manager</A></H3>
+
+<P>
+
+To test the <TT>GridLayout</TT> manager, suppose you want to place
+
+four buttons into a 2<TT>x</TT>2 grid, with no space between the
+
+buttons. Listing 22.3 shows how you'd create the manager and the
+
+buttons for the applet. Figure 22.5 shows the resultant control
+
+layout. Figure 22.6 shows the same layout manager, except created
+
+with horizontal and vertical spacing of 10, and Figure 22.7 shows
+
+the layout with a single row of four cells.
+
+<P>
+
+<IMG SRC="f22-5.gif"><B> Figure 22.5 : </B><I>This GridLayout manager is set to two rows and two columns.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f22-6.gif"><B> Figure 22.6 : </B><I>This is the same GridLayout manager with horizontal and vertical spacing.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f22-7.gif"><B> Figure 22.7 : </B><I>This GridLayout manager has one row and four columns.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 22.3&nbsp;&nbsp;LST22_3.TXT: Creating a </B><I>GridLayout</I><B>
+
+Manager.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+GridLayout layout =
+
+    new GridLayout(2, 2, 0, 0);
+
+setLayout(layout);
+
+button1 = new Button(&quot;Button1&quot;);
+
+button2 = new Button(&quot;Button2&quot;);
+
+button3 = new Button(&quot;Button3&quot;);
+
+button4 = new Button(&quot;Button4&quot;);
+
+add(button1);
+
+add(button2);
+
+add(button3);
+
+add(button4);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H2><A NAME="TheIBorderLayoutIManager"><FONT SIZE=5 COLOR=#Ff0000>
+
+The <I>BorderLayout</I> Manager</FONT></A></H2>
+
+<P>
+
+You'll probably use the <TT>GridLayout</TT> manager most of the
+
+time, but there may be cases where you need to put together something
+
+a little more unusual. One layout you can try is provided by the
+
+<TT>BorderLayout</TT> manager, which enables you to position components
+
+using the directions north, south, east, west, and center. You
+
+create a <TT>BorderLayout</TT> manager object like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+BorderLayout layout = new BorderLayout(hor, ver);
+
+setLayout(layout);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This constructor's two arguments are the horizontal and vertical
+
+spacing between the cells in the layout.
+
+<P>
+
+After you create the <TT>BorderLayout</TT> object, you must add
+
+the components using a different version of the <TT>add()</TT>
+
+method:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+add(position, object);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Here, <TT>position</TT> is where to place the component and must
+
+be the string <TT>North</TT>, <TT>South</TT>, <TT>East</TT>, <TT>West</TT>,
+
+or <TT>Center</TT>. The second argument, <TT>object</TT>, is the
+
+component you want to add to the applet.
+
+<H3><A NAME="CreatingaIBorderLayoutIManager">
+
+Creating a <I>BorderLayout</I> Manager</A></H3>
+
+<P>
+
+Suppose you have five buttons that you want to place in the five
+
+areas supported by a <TT>BorderLayout</TT> manager. First, you
+
+create and set the manager. Then, you create the five buttons
+
+and add them to the applet, using the special version of <TT>add()</TT>
+
+that includes the object's position as the first argument. Listing
+
+22.4 shows how this is done. Figure 22.8 shows the resultant display,
+
+whereas Figure 22.9 shows the same applet with the <TT>BorderLayout</TT>
+
+manager with horizontal and vertical spacing.
+
+<P>
+
+<IMG SRC="f22-9.gif"><B> Figure 22.9 : </B><I>This is the same applet with horizontal and vertical spacing.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f22-8.gif"><B> Figure 22.8 : </B><I>This applet displays five buttons using a BorderLayout manager.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 22.4&nbsp;&nbsp;LST22_4.TXT: Creating a </B><I>BorderLayout</I><B>
+
+Manager.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+BorderLayout layout = new BorderLayout(0, 0);
+
+setLayout(layout);
+
+button1 = new Button(&quot;Button1&quot;);
+
+button2 = new Button(&quot;Button2&quot;);
+
+button3 = new Button(&quot;Button3&quot;);
+
+button4 = new Button(&quot;Button4&quot;);
+
+button5 = new Button(&quot;Button5&quot;);
+
+add(&quot;North&quot;, button1);
+
+add(&quot;South&quot;, button2);
+
+add(&quot;East&quot;, button3);
+
+add(&quot;West&quot;, button4);
+
+add(&quot;Center&quot;, button5);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H2><A NAME="TheICardLayoutIManager"><FONT SIZE=5 COLOR=#Ff0000>
+
+The <I>CardLayout</I> Manager</FONT></A></H2>
+
+<P>
+
+One of the most complex layout managers is <TT>CardLayout</TT>.
+
+Using this manager, you can create a stack of layouts not unlike
+
+a stack of cards and then flip from one layout to another. This
+
+type of display organization is not unlike Windows 95's tabbed
+
+dialogs, usually called property sheets. To create a layout with
+
+the <TT>CardLayout</TT> manager, you first create a parent panel
+
+to hold the &quot;cards.&quot; Then, you create the <TT>CardLayout</TT>
+
+object and set it as the panel's layout manager. Finally, you
+
+add each &quot;card&quot; to the layout by creating the components
+
+and adding them to the panel.
+
+<P>
+
+To create a <TT>CardLayout</TT> manager, call its constructor
+
+and then add it to the applet, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+CardLayout cardLayout = new CardLayout(hor, ver);
+
+panel.setLayout(cardLayout);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The constructor's two arguments are the horizontal and vertical
+
+spacing.
+
+<H3><A NAME="TheICardLayoutIManagerMethods">
+
+The <I>CardLayout</I> Manager Methods</A></H3>
+
+<P>
+
+Because the <TT>CardLayout</TT> manager enables you to switch
+
+between a stack of layouts, you need some way to tell the manager
+
+what to do. For this reason, the <TT>CardLayout</TT> manager has
+
+a number of public methods that you can call to specify which
+
+card is visible on the screen. Table 22.1 lists the most useful
+
+of these methods along with their descriptions.<BR>
+
+<P>
+
+<CENTER><B>Table 22.1&nbsp;&nbsp;</B><I>CardLayout</I><B> Manager
+
+Methods.</B></CENTER>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD WIDTH=258><I><B>Method</B></I></TD><TD WIDTH=196><I><B>Description</B></I>
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=258>first(Container parent)</TD><TD WIDTH=196>Displays the first card.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=258>last(Container parent)</TD><TD WIDTH=196>Displays the last card.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=258>next(Container parent)</TD><TD WIDTH=196>Displays the next card.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=258>previous(Container parent)</TD><TD WIDTH=196>Displays the previous card.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=258>show(Container parent, String name)</TD><TD WIDTH=196>Displays the specified card.
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H3><A NAME="ExampleCreatingaICardLayoutIManager">
+
+Example: Creating a <I>CardLayout</I> Manager</A></H3>
+
+<P>
+
+Putting the <TT>CardLayout</TT> manager to work is a lot easier
+
+if you always keep in mind the hierarchy of components. At the
+
+bottom of the stack is the applet's display area. On top of this
+
+stack is the component (usually a panel) that will hold the &quot;cards.&quot;
+
+On top of the parent component is the <TT>CardLayout</TT> manager,
+
+which you can think of as a deck of cards. The cards in this deck
+
+are the components that you add to the panel.
+
+<P>
+
+Listing 22.5 is an applet that demonstrates how all this works.
+
+The cards in this applet are the three buttons. When you run the
+
+applet, you see a single button in the display (Figure 22.10).
+
+Click the button to switch to the next button in the stack. When
+
+you get to button three and click it, you end up back at button
+
+one. You can cycle through the buttons as often as you like.
+
+<P>
+
+<IMG SRC="f22-10.gif"><B> Figure 22.10 : </B><I>Clicking the button switches the manager to a new card.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 22.5&nbsp;&nbsp;CardApplet.java: Using a </B><I>CardLayout</I><B>
+
+Manager.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class CardApplet extends Applet
+
+{
+
+    CardLayout cardLayout;
+
+    Panel panel;
+
+    Button button1, button2, button3;
+
+
+
+    public void init()
+
+    {
+
+        panel = new Panel();
+
+        add(panel);
+
+
+
+        cardLayout = new CardLayout(0, 0);
+
+        panel.setLayout(cardLayout);
+
+
+
+        button1 = new Button(&quot;Button1&quot;);
+
+        button2 = new Button(&quot;Button2&quot;);
+
+        button3 = new Button(&quot;Button3&quot;);
+
+
+
+        panel.add(&quot;Button1&quot;, button1);
+
+        panel.add(&quot;Button2&quot;, button2);
+
+        panel.add(&quot;Button3&quot;, button3);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        cardLayout.next(panel);
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>CardApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the layout, panel, and button objects.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create and add the parent panel.<BR>
+
+        Create and set the layout.<BR>
+
+        Create the buttons (which act as the cards).<BR>
+
+        Add the buttons to the panel.<BR>
+
+    Override the <TT>action()</TT> method.<BR>
+
+        Switch to the next card (button).<BR>
+
+        Tell Java that the event was handled okay.<BR>
+
+</BLOCKQUOTE>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+The stack of cards that are arranged by a <TT>CardLayout</TT> manager can be any type of component. For example, you can create several different panels, each with their own controls, and switch between the panels. This enables you to switch between whole 
+sets of controls, just like Windows 95's property sheets.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="TheIGridBagLayoutIManager"><FONT SIZE=5 COLOR=#Ff0000>
+
+The <I>GridBagLayout</I> Manager</FONT></A></H2>
+
+<P>
+
+The most complex of the layout managers is <TT>GridBagLayout</TT>,
+
+which pretty much lets you organize objects any way you like.
+
+However, the price for this power is meticulous planning and a
+
+lot of experimentation. At the time of this writing, the documentation
+
+for the <TT>GridBagLayout</TT> manager was sketchy and incomplete.
+
+I did the best I could to figure out exactly how this layout manager
+
+worked, but there's no question that to get the best out of <TT>GridBagLayout</TT>,
+
+you're going to have to spend some time experimenting with different
+
+layouts.
+
+<P>
+
+To create a layout using <TT>GridBagLayout</TT>, you must follow
+
+these steps:
+
+<OL>
+
+<LI>Create a <TT>GridBagLayout</TT> object.
+
+<LI>Set the layout manager.
+
+<LI>Create a <TT>GridBagConstraints</TT> object.
+
+<LI>Initialize and set the constraints for the object about to
+
+be added to the layout.
+
+<LI>Add the object to the layout.
+
+<LI>Repeat steps 4 and 5 for each object you're adding to the
+
+layout.
+
+</OL>
+
+<P>
+
+Yep, there's much to be done to use a <TT>GridBagLayout</TT> manager.
+
+In the sections that follow, you'll learn how to perform each
+
+of the required steps.
+
+<H3><A NAME="CreatingandSettingtheIGridBagLayoutIManager">
+
+Creating and Setting the <I>GridBagLayout</I> Manager</A></H3>
+
+<P>
+
+To create a <TT>GridBagLayout</TT> manager, call the class's constructor,
+
+like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+GridBagLayout layout = new GridBagLayout();
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The constructor requires no arguments. When you've created the
+
+<TT>GridBagLayout()</TT> object, set the manager by calling <TT>setLayout()</TT>:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+setLayout(layout);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This method's single argument is a reference to the layout object.
+
+<H3><A NAME="CreatingandSettingaIGridBagConstraintsIObject">
+
+Creating and Setting a <I>GridBagConstraints</I> Object</A></H3>
+
+<P>
+
+Because the position of each component in a layout controlled
+
+by a <TT>GridBagLayout</TT> object is determined by the currently
+
+set <TT>GridBagConstraints</TT> object, you must create the <TT>GridBagConstraints</TT>
+
+object before you can start building your layout. To do this,
+
+call the class's constructor:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+GridBagConstraints constraints = new GridBagConstraints();
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Like the <TT>GridBagLayout</TT> class, the <TT>GridBagConstraints</TT>
+
+constructor requires no arguments. However, although the class's
+
+fields start off initialized to default values, you'll almost
+
+always change some of those values before adding components to
+
+the layout. You perform this task with lines something like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+constraints.fill = GridBagConstraints.BOTH;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This line sets the <TT>GridBagConstraints</TT> object's <TT>fill</TT>
+
+field to a constant defined in the class. Table 22.2 shows the
+
+<TT>fields</TT> of the <TT>GridBagConstraints</TT> class and what
+
+they mean.<BR>
+
+<P>
+
+<CENTER><B>Table 22.2&nbsp;&nbsp;Fields of the </B><I>GridBagConstraints</I><B>
+
+Class.</B></CENTER>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><I><B>Field</B></I></CENTER></TD><TD WIDTH=472><I><B>Description</B></I>
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>anchor</TT></CENTER></TD><TD WIDTH=472>Where within a component's area the component should be placed. Predefined values are <TT>GridBagConstraints.NORTH</TT>, 
+
+<BR>
+
+<TT>GridBagConstraints.NORTHEAST</TT>, <BR>
+
+<TT>GridBagConstraints.EAST</TT>,<BR>
+
+<TT>GridBagConstraints.SOUTHEAST</TT>,<BR>
+
+<TT>GridBagConstraints.SOUTH</TT>,<BR>
+
+<TT>GridBagConstraints.SOUTHWEST</TT>,<BR>
+
+<TT>GridBagConstraints.WEST</TT>,<BR>
+
+<TT>GridBagConstraints.NORTHWEST</TT>, and<BR>
+
+<TT>GridBagConstraints.CENTER</TT>.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>fill</TT></CENTER></TD><TD WIDTH=472>Determines how to size a component when the display area is larger than the component. Predefined values you can use are <TT>GridBagConstraint.NONE</TT>,<BR>
+
+<TT>GridBagConstraint.HORIZONTAL</TT>,<BR>
+
+<TT>GridBagConstraint.VERTICAL</TT>, and<BR>
+
+<TT>GridBagConstraint.BOTH</TT>.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>gridheight</TT></CENTER></TD><TD WIDTH=472>The number of cells in each column of a component's display area.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>gridwidth</TT></CENTER></TD><TD WIDTH=472>The number of cells in each row of a component's display area.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>gridx</TT></CENTER></TD><TD WIDTH=472>The X coordinate of the cell at the upper left of a component's display area.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>gridy</TT></CENTER></TD><TD WIDTH=472>The Y coordinate of the cell at the upper left of the component's display area.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>insets</TT></CENTER></TD><TD WIDTH=472>The minimum amount of space between a component and the edges of its display area.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>ipadx</TT></CENTER></TD><TD WIDTH=472>The amount of horizontal space around a component.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>ipady</TT></CENTER></TD><TD WIDTH=472>The amount of vertical space around a component.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>weightx</TT></CENTER></TD><TD WIDTH=472>Determines whether components stretch horizontally to fill the applet's display area.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=118><CENTER><TT>weighty</TT></CENTER></TD><TD WIDTH=472>Determines whether components stretch vertically to fill the applet's display area.
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+Once you have the <TT>GridBagConstraints</TT> object created and
+
+initialized, you must set the constraints by calling the layout
+
+object's <TT>setConstraints()</TT> method:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+layout.setConstraints(component, constraints);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This method's two arguments are a reference to the component whose
+
+constraints you're setting and a reference to the constraints
+
+object. You need to call <TT>setConstraints()</TT> for each component
+
+you add to the layout. After setting the constraints for the component,
+
+you add the component to the layout in the normal way, by calling
+
+the <TT>add()</TT> method.
+
+<H3><A NAME="ExampleUsingaIGridBagLayoutIManagerinanApplet">
+
+Example: Using a <I>GridBagLayout</I> Manager in an Applet
+
+</A></H3>
+
+<P>
+
+As I said before, the only way to really understand how the <TT>GridBagLayout</TT>
+
+manager works is to experiment with it on your own. This book
+
+just doesn't have the room to cover every detail of using this
+
+complex manager. Still, I won't send you off without at least
+
+the basics. So, Listing 22.6 is an applet, called GridBagApplet,
+
+that demonstrates how to create and use a <TT>GridBagLayout</TT>
+
+manager. Figure 22.11 shows what the applet looks like when it's
+
+run under Appletviewer.
+
+<P>
+
+<IMG SRC="f22-11.gif"><B> Figure 22.11 : </B><I>GridBagLayout manager enables you to create unusual layouts.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 22.6&nbsp;&nbsp;GridBagApplet.java: A </B><I>GridBagLayout</I><B>
+
+Applet.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class GridBagApplet extends Applet
+
+{
+
+    public void init()
+
+    
+
+{
+
+        GridBagLayout layout = new GridBagLayout();
+
+        setLayout(layout);
+
+
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+
+
+        Button button1 = new Button(&quot;Button1&quot;);
+
+        Button button2 = new Button(&quot;Button2&quot;);
+
+        Button button3 = new Button(&quot;Button3&quot;);
+
+        Button button4 = new Button(&quot;Button4&quot;);   
+
+        Button button5 = new Button(&quot;Button5&quot;);
+
+        Button button6 = new Button(&quot;Button6&quot;);
+
+        Button button7 = new Button(&quot;Button7&quot;);
+
+        Button button8 = new Button(&quot;Button8&quot;);
+
+        Button button9 = new Button(&quot;Button9&quot;);
+
+   
+
+        constraints.fill = GridBagConstraints.BOTH;
+
+
+
+        layout.setConstraints(button1, constraints);
+
+        add(button1);
+
+
+
+        constraints.gridwidth = GridBagConstraints.RELATIVE;
+
+        layout.setConstraints(button2, constraints);
+
+        add(button2);
+
+
+
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+
+        layout.setConstraints(button3, constraints);
+
+        add(button3);
+
+
+
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+
+        layout.setConstraints(button4, constraints);
+
+        add(button4);
+
+    
+
+        constraints.gridwidth = GridBagConstraints.RELATIVE;
+
+        layout.setConstraints(button5, constraints);
+
+        add(button5);
+
+    
+
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+
+        layout.setConstraints(button6, constraints);
+
+        add(button6);
+
+    
+
+        constraints.gridwidth = 1;
+
+        constraints.gridheight = 2;
+
+        layout.setConstraints(button7, constraints);
+
+        add(button7);
+
+
+
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+
+        constraints.gridheight = 1;
+
+        layout.setConstraints(button8, constraints);
+
+        add(button8);
+
+
+
+        layout.setConstraints(button9, constraints);
+
+        add(button9);
+
+
+
+        resize(300, 200);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>GridBagApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create and set the layout.<BR>
+
+        Create the constraints object.<BR>
+
+        Create nine buttons.<BR>
+
+        Initialize the fill for both vertical and horizontal.
+
+<BR>
+
+        Set the constraints for the buttons and add the buttons.
+
+<BR>
+
+        Set the applet's size.
+
+</BLOCKQUOTE>
+
+<H3><A NAME="UnderstandingtheIGridBagAppletIApplet">
+
+Understanding the <I>GridBagApplet</I> Applet</A></H3>
+
+<P>
+
+Although <TT>GridBagApplet</TT> contains only the <TT>init()</TT>
+
+method, there's a lot going on in the program. In this section,
+
+you'll see, line by line, exactly how the applet works. The first
+
+two lines in the <TT>init()</TT> method look like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+GridBagLayout layout = new GridBagLayout();
+
+setLayout(layout);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This is where the applet creates its <TT>GridBagLayout</TT> object
+
+and sets it as the applet's layout. In the next line, the applet
+
+creates its <TT>GridBagConstraints</TT> object, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+GridBagConstraints constraints = new GridBagConstraints();
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The applet will use this single <TT>GridBagConstraints</TT> object
+
+in order to set the constraints for each component added to the
+
+layout. Before components can be added, however, they must be
+
+created, which the applet does as shown in Listing 22.7.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 22.7&nbsp;&nbsp;LST22_7.TXT: Creating the Applet's
+
+Buttons.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Button button1 = new Button(&quot;Button1&quot;);
+
+Button button2 = new Button(&quot;Button2&quot;);
+
+Button button3 = new Button(&quot;Button3&quot;);
+
+Button button4 = new Button(&quot;Button4&quot;);
+
+Button button5 = new Button(&quot;Button5&quot;);
+
+Button button6 = new Button(&quot;Button6&quot;);
+
+Button button7 = new Button(&quot;Button7&quot;);
+
+Button button8 = new Button(&quot;Button8&quot;);
+
+Button button9 = new Button(&quot;Button9&quot;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+After creating the buttons, the program can start adding them
+
+to the layout. But before the first button gets added, the constraints
+
+object must contain the appropriate values. In this case, only
+
+the <TT>fill</TT> field must be initialized, since the first button
+
+component will use all the other default values:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+constraints.fill = GridBagConstraints.BOTH;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Setting the <TT>fill</TT> field to both ensures that the components
+
+(in this case, buttons) will expand both vertically and horizontally
+
+to completely fill their display areas. After initializing the
+
+constraints for the first button, the applet sets the constraints
+
+and adds the button:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+layout.setConstraints(button1, constraints);
+
+add(button1);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Now that you have the first button added, it's time to consider
+
+how the second button will fit in the layout. The value the applet
+
+initialized the <TT>fill</TT> field to will remain in effect for
+
+all buttons, so the applet doesn't need to change it again. However,
+
+the layout manager is going to want to know how <TT>button2</TT>
+
+should be placed. The following lines set the constraints and
+
+add the button:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+constraints.gridwidth = GridBagConstraints.RELATIVE;
+
+layout.setConstraints(button2, constraints);
+
+add(button2);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+By setting <TT>gridwidth</TT> to <TT>GridBagConstraints.RELATIVE</TT>,
+
+the applet tells the layout manager that this button is the next
+
+to the last component in this row, which will determine its width.
+
+The <TT>button3</TT> object is the last component for the first
+
+row, so it sets <TT>gridwidth</TT> to <TT>GridBagConstraints.REMAINDER</TT>:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+constraints.gridwidth = GridBagConstraints.REMAINDER;
+
+layout.setConstraints(button3, constraints);
+
+add(button3);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>REMAINDER</TT> constant tells the layout manager that
+
+this control should fill the first row all the way to the end.
+
+<P>
+
+The <TT>button4</TT> component is the only object on its row,
+
+so it too uses a <TT>gridwidth</TT> of <TT>REMAINDER</TT>:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+constraints.gridwidth = GridBagConstraints.REMAINDER;
+
+layout.setConstraints(button4, constraints);
+
+add(button4);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Yes, it's true that the first line above really isn't necessary,
+
+since <TT>gridwidth</TT> was already set to <TT>REMAINDER</TT>.
+
+However, I like leaving this kind of line around because it tells
+
+me that I haven't forgotten something here, that I do indeed want
+
+a width of <TT>REMAINDER</TT> for this button too.
+
+<P>
+
+Because <TT>button5</TT> is both the first and next-to-last button
+
+in its row, it uses a width of <TT>RELATIVE</TT>:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+constraints.gridwidth = GridBagConstraints.RELATIVE;
+
+layout.setConstraints(button5, constraints);
+
+add(button5);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Because there's only two buttons in this row, the <TT>button6</TT>
+
+component gets a width of <TT>REMAINDER</TT>:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+constraints.gridwidth = GridBagConstraints.REMAINDER;
+
+layout.setConstraints(button6, constraints);
+
+add(button6);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Now, things get a little tricky (like they weren't tricky enough,
+
+right?). If you look at Figure 22.11, you'll see that <TT>button7</TT>
+
+is one cell wide but two cells high. Buttons seven and eight,
+
+on the other hand are two cells wide but only one cell high. Even
+
+though <TT>button7</TT> is technically the next-to-last button
+
+in its row, you don't want to give it the <TT>RELATIVE</TT> width
+
+because then Java will make the button twice as wide. So, the
+
+applet sets the width of <TT>button7</TT> to 1 and the height
+
+to 2, as shown in Listing 22.8.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 22.8&nbsp;&nbsp;LST22_8.TXT: Setting </B><I>button7's</I><B>
+
+size.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+constraints.gridwidth = 1;
+
+constraints.gridheight = 2;
+
+layout.setConstraints(button7, constraints);
+
+add(button7);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+Now, because <TT>button8</TT> is the last button in its row, it
+
+gets the <TT>REMAINDER</TT> width. However, the button also must
+
+be set back to a normal one-cell height, as shown in Listing 22.9.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 22.9&nbsp;&nbsp;LST22_9.LST: Creating<I> </I></B><I>button8</I><B>.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+constraints.gridwidth = GridBagConstraints.REMAINDER;
+
+constraints.gridheight = 1;
+
+layout.setConstraints(button8, constraints);
+
+add(button8);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+Finally, <TT>button9</TT> can use exactly the same restraints,
+
+which means simply setting the constraints and adding the button,
+
+like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+layout.setConstraints(button9, constraints);
+
+add(button9);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+All of the lines described in this section work together to create
+
+the applet's layout. Every layout will work differently, requiring
+
+that you carefully plan ahead how you want the applet's components
+
+laid out. There's almost an infinite number of ways to use the
+
+constraints along with the <TT>GridBagLayout</TT> manager.
+
+<P>
+
+You may wonder how changes to this example layout will affect
+
+the appearance of the applet. Suppose, for example, you left the
+
+<TT>fill</TT> field set to its default value of <TT>GridBagConstraints.NONE</TT>.
+
+You would then end up with a layout like that shown in Figure
+
+22.12. Figure 22.13 shows the applet with a <TT>fill</TT> setting
+
+of <TT>GridBagConstraints.VERTICAL</TT>.
+
+<P>
+
+<IMG SRC="f22-13.gif"><B> Figure 22.13 : </B><I>The vertical fill stretches sone controls vertically.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f22-12.gif"><B> Figure 22.12 : </B><I>The fill setting can make a huge difference in how a layout looks.
+
+
+
+</I></A><P>
+
+<P>
+
+Another change you might make is to set <TT>weightx</TT> and <TT>weighty</TT>,
+
+which tells Java how to use the extra space that usually surrounds
+
+the controls in the layout. For example, in <TT>GridBagApplet</TT>,
+
+if you set <TT>weightx</TT> to 1, you get a display like Figure
+
+22.14, because you've told Java that you want the layout to fill
+
+the entire horizontal space in the applet. Setting <TT>weighty</TT>
+
+stretches the layout in the vertical direction, as shown in Figure
+
+22.15, which has both <TT>weightx</TT> and <TT>weighty</TT> set.
+
+<P>
+
+<IMG SRC="f22-14.gif"><B> Figure 22.14 : </B><I>Setting the weightx field stretches the layout horizontally.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f22-15.gif"><B> Figure 22.15 : </B><I>Setting both weightx and weighty stretches the layout in both directions.
+
+
+
+</I></A><P>
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+Java gives you many options when it comes to creating a layout
+
+for the components that make up your applet. However, having so
+
+many possibilities at your fingertips can be daunting at first,
+
+because there may be several ways to get the effect that you want.
+
+The better you learn to use Java's layout managers, the more easily
+
+you'll know which is the appropriate manager for a specific situation.
+
+Mastering the <TT>GridBagLayout</TT> manager especially requires
+
+time and patience.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>Why would you add multiple <TT>Panel</TT> objects to an applet?
+
+<LI>What are the names of Java's five layout managers?
+
+<LI>Which layout manager is the default manager for an applet?
+
+<LI>How does the <TT>FlowLayout</TT> manager organize components?
+
+<LI>What are the arguments for the <TT>GridLayout</TT> manager's
+
+constructor?
+
+<LI>What component positions can use with a <TT>BorderLayout</TT>
+
+manager?
+
+<LI>How do you add a component to an applet that uses the <TT>BorderLayout</TT>
+
+manager?
+
+<LI>How does the <TT>CardLayout</TT> manager enable you to mimic
+
+Windows 95's property sheets?
+
+<LI>How do you switch from one card to another when using a <TT>CardLayout</TT>
+
+manager?
+
+<LI>How does a <TT>GridBagConstraints</TT> object work in conjunction
+
+with a <TT>GridBagLayout</TT> manager?
+
+<LI>What does the <TT>GridBagConstraints</TT>.fill field control?
+
+<LI>How do you add a component to a layout controlled by a <TT>GridBagLayout</TT>
+
+manager?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Write an applet that uses a <TT>FlowLayout</TT> manager to
+
+display a button on the left side of the applet.
+
+<LI>Write an applet that displays nine buttons in a 3<TT>x</TT>3
+
+grid.
+
+<LI>Write an applet that uses a <TT>BorderLayout</TT> object to
+
+display a single button at the bottom of the applet.
+
+<LI>Write an applet that uses two panels to group two sets of
+
+three buttons.
+
+<LI>Write an applet called CardApplet2 that contains three pages
+
+of controls. The first page should contain three buttons, the
+
+second page should contain a scrolling list, and the third page
+
+should contain a <TT>TextField</TT> control. Clicking on any control
+
+should cause the applet to switch to the next page (except for
+
+the <TT>TextField</TT> control, which only sends an event when
+
+you press Enter). Figure 22.16 shows what CardApplet2 looks like
+
+when its scrolling list card is visible. (You can find the solution
+
+to this exercise in the CHAP22 folder of this book's CD-ROM.)
+
+<BR>
+
+<IMG SRC="f22-16.gif"><B> Figure 22.16 : </B><I>This is the second page of the CardApplet2 applet.
+
+
+
+</I></A><P>
+
+<LI>Write an applet called GridBagApplet2 that displays three
+
+rows of buttons. The first row should contain two buttons, with
+
+the first button twice as wide as the second. The second row should
+
+contain two buttons, with the second button twice as wide as the
+
+first. The third row should contain three normal-width buttons.
+
+Figure 22.17 shows the completed applet running under Appletviewer.
+
+(You can find the solution for this exercise in the CHAP22 folder
+
+of this book's CD-ROM.)<BR>
+
+<IMG SRC="f22-17.gif"><B> Figure 22.17 : </B><I>This is GridBagApplet2 running under Appletviewer.
+
+
+
+</I></A><P>
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch21.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch23.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

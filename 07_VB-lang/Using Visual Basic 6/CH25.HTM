@@ -1,0 +1,1431 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 25 -- Using VBA to Connect Your VB Programs with Microsoft Office</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch24.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch24/ch24.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch26.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch26/ch26.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 25 -<BR>
+Using VBA to Connect Your VB Programs with Microsoft Office</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Working with VBA</A>
+	<LI><A HREF="#Heading2">Using VBA with Microsoft Office</A>
+	<UL>
+		<LI><A HREF="#Heading3">Using the Record Macro Tool</A>
+		<LI><A HREF="#Heading4">Using the Object Browser</A>
+		<LI><A HREF="#Heading5">Making a Simple VB/Microsoft Office Application</A>
+	</UL>
+	<LI><A HREF="#Heading6">Making a Spelling Checker with VB and Word</A>
+	<LI><A HREF="#Heading7">Making a Word Search Program</A>
+	<LI><A HREF="#Heading8">Working with Visual Basic, Access, and Excel</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Working with VBA</H2>
+<P>Visual Basic for Applications (VBA) is the superset language from which all other
+flavors of Visual Basic are derived. For the most part, the Visual Basic that you're
+accustomed to is VBA. For instance, VBA holds the math functions, such as Sqr(),
+Sin(), and Tan(). It has the common string functions, including (but not limited
+to) Format(), Mid(), Left(), Right(), and Instr(). VBA is also where you find the
+conversion functions, such as CStr(), CInt(), and CDbl(). The ability to declare
+and manipulate different types of variables (standard and object) is part of VBA.
+Again, apart from the graphical elements of the programming environment and the ability
+to create standalone programs, most of the functionality that you've come to know
+as VB is really VBA.</P>
+<P>As of the Office 97 version, all applications in the Microsoft Office suite have
+VBA built in to them. Microsoft Project also contains VBA. Other software vendors
+have licensed VBA to be the underlying scripting language for their applications.
+One such prominent non-Microsoft application with built-in VBA is Visio, a popular
+program for making technical drawings and schematics.</P>
+<P>You might wonder what having VBA &quot;built in&quot; to an application means
+in a hands-on sense. When VBA is built in to an application, the application is enabling
+itself to be scripted by VBA. The application is also exposing its functionality
+in a way that allows other applications access to it via VBA.</P>
+<P>An application exposes its functionality through <I>objects</I>. Applications
+such as Word and Excel have hundreds of objects that they expose and that can be
+manipulated via VBA. For example, if you want to work with a Word table--either within
+Word or through another application--you use the Table object within Word. If you
+want to work with the grammar engine in Word, you use the CheckGrammar() method of
+the Word Document object. Getting a grasp on all these objects can be a chore, but
+you can use some tricks and tools to make working with objects a bit easier.</P>
+<P>
+<H2><A NAME="Heading2"></A>Using VBA with Microsoft Office</H2>
+<P>All Microsoft Office applications have VBA built in. You work with VBA just as
+you would with VB, through an Integrated Development Environment (IDE). In Office,
+the IDE is called the Visual Basic Editor. You can access the Visual Basic Editor
+for Word 97, Excel, and PowerPoint by choosing <B>Macro</B> from the <B>Tools</B>
+menu or by pressing Alt+F11 (see Figure 25.1). To get to the Visual Basic Editor
+in Access 97, you create a new module by selecting <B>Module</B> from the <B>Insert</B>
+menu.</P>
+<P><A HREF="javascript:popUp('25fig01.gif')"><B>FIGURE 25.1</B></A> <I>In MS Office,
+you access the Visual Basic Editor as a macro tool.</I></P>
+
+<P>Inside the Visual Basic Editor, you can code objects within the application or
+in other applications just as you would in a standard Visual Basic IDE. All the editing
+tools that you're accustomed to in the Visual Basic IDE--such as automatic word completion,
+parameter help, and Quick Info--are readily available to you in the Microsoft Office
+Visual Basic Editor.</P>
+<P>
+<H3><A NAME="Heading3"></A>Using the Record Macro Tool</H3>
+<P>As mentioned earlier, VBA allows you to do some very sophisticated programming
+to Microsoft Office after you have a grasp of the different objects residing within
+the various Microsoft Office applications. However, learning to manipulate all the
+properties, methods, and events of the various objects is difficult for the inexperienced.
+Luckily, Microsoft Office comes with a tool that not only gives you a quick introduction
+to the mysteries of the various objects and <I>object models</I> within Microsoft
+Office, but also writes code for you as you go along. This tool is known as the Macro
+Recorder.</P>
+<P>Writing <I>macros</I> in Microsoft Office is the same as writing a <I>procedure</I>
+in VBA. When you use the Macro Recorder, you're required to declare a name for the
+macro that you want to record. This process is the same as naming a procedure in
+VBA. When you look at the resulting code generated by the Macro Recorder, you'll
+see that the name you assigned to the resulting VBA procedure is the same as the
+one that you assigned to the macro that you recorded.</P>
+<P><B>Write a simple macro that automatically inserts a blank line</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open a new Word document.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>From the <B>Tools</B> menu, choose <B>Macro</B> and then <B>Record
+	New Macro</B>.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>In the Record Macro dialog, type in the <B>Macro Name</B> text box
+	the name of the macro that you plan to record. For now, leave the name as the default,
+	Macro1 (see Figure 25.2).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('25fig02.gif')"><B>FIGURE 25.2</B></A> <I>Naming a macro
+is operationally the same as naming a procedure.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>4. </B>Select the new document--<I>Document#</I> (document)--from the <B>Store
+	Macro In</B> drop-down list. (This prevents this new macro from being a permanent
+	addition to the normal.dot template, thus keeping the macro from becoming forever
+	part of your Microsoft Word working environment.)
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Click <B>OK</B> in the Record Macro dialog. The small Macro Recorder
+	toolbar appears onscreen.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Press <B>Enter</B> to insert a line in the new document.
+	<P>
+	<DT></DT>
+	<DD><B>7. </B>Click the <B>Stop Recording</B> button in the Macro Recorder toolbar
+	(see Figure 25.3).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('25fig03.gif')"><B>FIGURE 25.3</B></A> <I>Use the Record
+Macro toolbar to pause or stop recording a macro.</I></P>
+<P><B>View the code that you've generated</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>From the Tools menu, choose Macro and then Macros, or press Alt+F8.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>From the list in the Macros dialog, select the macro that you've just
+	recorded. Click the <B>Edit</B> button to display the macro procedure in the Visual
+	Basic Editor (see Figure 25.4).
+	<P>
+</DL>
+
+<P>Although this use of the Macro Recorder is somewhat simplistic, it's a practical
+way to show how to use it as a tool to generate and understand VBA code as it pertains
+to the Word object model. The Microsoft Office object model is tricky and takes some
+getting use to. If you don't know that within the Word object model, you use the
+TypeParagraph method of the Selection object to insert a blank line, you will be
+hacking VBA and Office for a long time, trying to figure out how to do a simple line
+insert. Clearly, the Macro Recorder is a good tool for learning how to manipulate
+the Word object model with VBA.</P>
+<P><A HREF="javascript:popUp('25fig04.gif')"><B>FIGURE 25.4</B></A> <I>You access
+the Visual Basic code for a macro through the Macros dialog.</I></P>
+<P>
+<H3><A NAME="Heading4"></A>Using the Object Browser</H3>
+<P>Microsoft Office is composed of hundreds of objects. The relation between these
+objects can be complex. Microsoft understood that having a detailed understanding
+of and operational facility with the properties, methods, and events of each object
+in the applications suite are nearly impossible tasks for the average programmer.
+To simplify working with objects, Microsoft made a tool that allows you to look at
+the different objects that reside within the various applications, <I>ActiveX controls</I>,
+and <I>ActiveX components</I> that you use when you program with VB and VBA. This
+tool is the Object Browser.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Access the Object Browser</STRONG></P>
+	<P>You access the Object Browser by pressing F2 from within the Visual Basic Editor
+	in Microsoft Office or the Visual Basic IDE. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The Object Browser shows you all the properties, methods, and events for all objects
+contained in the ActiveX controls included in the project on which you're working.
+If your project references <I>VB class libraries </I>or <I>ActiveX components</I>,
+these also appear in the Object Browser. In addition to showing you various objects,
+the Object Browser allows you to access a description of an object's various properties,
+methods, and events. If you need more detailed information, the Object Browser lets
+you access the help file for a particular item. The Object Browser also allows you
+to search the various components for a specified object, property, method, or event.</P>
+<P>The Object Browser displays only the ActiveX controls, ActiveX components, and
+class libraries added to a given project. If your project contains a class module
+in the Project Explorer, the methods, properties, and events of that class module
+will also appear in the Object Browser. If an ActiveX control or ActiveX component
+is <I>referenced</I> in your project, it too will appear in the Object Browser (see
+Figure 25.5).</P>
+<P><A HREF="javascript:popUp('25fig05.gif')"><B>FIGURE 25.5</B></A> <I>You can see
+all the libraries accessible to the Object Browser from the Libraries drop-down list.</I></P>
+<P>If you want to work within an ActiveX control that doesn't appear in the Object
+Browser, you must add it to your project by choosing <B>Components</B> from the <B>Project</B>
+menu (within the Visual Basic IDE) or by pressing Ctrl+T. If you're in the Visual
+Basic Editor of Microsoft Office, choose <B>Additional Controls</B> from the <B>Tools</B>
+menu. In the Component dialog, you can select the ActiveX control that you want to
+add.</P>
+<P>If you want to add an ActiveX component to your project from within the VB IDE,
+choose <B>References</B> from the <B>Project</B> menu. If you are in the Microsoft
+Office Visual Basic Editor, choose <B>References</B> from the <B>Tools</B> menu.
+The References dialog shows all the ActiveX components registered on your computer.
+You select a component from this dialog.</P>
+<P>Granted, the terminology can be confusing--going to the Components dialog to choose
+an ActiveX control and going to the References dialog to choose an ActiveX component--but
+you'll grow accustomed to it after a while. In the next section, where you interact
+with Word, you learn how to add ActiveX components to your project.</P>
+<P>
+<H3><A NAME="Heading5"></A>Making a Simple VB/Microsoft Office Application</H3>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Download this project's code</STRONG></P>
+	<P>You can download the code for this program from http://www. mcp.com/info. At that
+	site, you'll be asked to enter an ISBN; enter 078971633x and then click the Search
+	button to go to the Book Info page for Using Visual Basic 6. The project name is
+	SmpleVBA.prj. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Now that you have a fundamental understanding of the concepts and tools that you
+need in order to work with VBA and Microsoft Office applications, it's time to build
+a simple VB/Microsoft Office application. The application that you'll build allows
+you to take some textual data from a standalone Visual Basic program and insert that
+data into a Word document.</P>
+<P>The tasks of this program are straightforward. When users click a button, the
+program will open a Word document, write a simple sentence (the contents of which
+come from a text box on a form in the VB application), save the document to a file
+with a serialized naming convention, close the document, and quit Word.</P>
+<P><B>Create the sample application</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open a new Visual Basic Project. Name the startup form frmMain. (This
+	is only a suggestion. You can name the form whatever you like, but be mindful of
+	the naming differences when you're coding or adding pre-existing code.)
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Choose <B>References</B> from the <B>Project</B> menu. In the References
+	dialog, select <B>Microsoft Word 8.0 Object Library</B> from the <B>Available References</B>
+	list, as shown Figure 25.6. (This is very important. The code won't run unless you
+	select this ActiveX component.)
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('25fig06.gif')"><B>FIGURE 25.6</B></A> <I>The References
+dialog shows all the ActiveX components registered on your computer.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>3. </B>Add two CommandButtons, a Label, and a TextBox, as shown in Figure
+	25.7. Name one CommandButton cmdWordApp and the other cmdQuit. Name the label lblMain.
+	Set the Caption property of the form, CommandButtons, and Label as shown in Figure
+	25.7. Name the TextBox txtMain. Set the Text property of the TextBox so that no text
+	appears in it.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('25fig07.gif')"><B>FIGURE 25.7</B></A> <I>The text that
+you enter in the TextBox will be transferred to a Word document.</I></P>
+
+<DL>
+	<DD><B>4. </B>Enter the statement End in the cmdQuit_Click() <I>event handler</I>.
+	This causes the application to terminate when the button is clicked.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Add the code in Listing 25.1 to the cmdWordApp_Click() event handler.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Save the code and run the program (see Figure 25.8).
+	<P>
+</DL>
+
+<H4>LISTING 25.1&#160;&#160;25LIST01.TXT--Adding Text to a Word Document by Using
+VBA Code in a VB Application</H4>
+<PRE><B>01 </B>Static i As Integer</PRE>
+<PRE><B>02 </B>Dim strMsg As String</PRE>
+<PRE><B>03 </B>Dim w As New Word.Application</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>cmdWordApp.Enabled = False</PRE>
+<PRE><B>06</B></PRE>
+<PRE><B>07 </B>If txtMain.Text = &quot;&quot; Then</PRE>
+<PRE><B>08 </B>MsgBox &quot;You cannot use a blank TextBox&quot;, vbCritical, _</PRE>
+<PRE>&quot;Entry Error&quot;</PRE>
+<PRE><B>09 </B>txtMain.SetFocus</PRE>
+<PRE><B>10 </B>cmdWordApp.Enabled = True</PRE>
+<PRE><B>11 </B>Exit Sub</PRE>
+<PRE><B>12 </B>Else</PRE>
+<PRE><B>13</B></PRE>
+<PRE><B>14 </B>strMsg = txtMain.Text</PRE>
+<PRE><B>15 </B>End If</PRE>
+<PRE><B>16</B></PRE>
+<PRE><B>17 </B>w.Documents.Add</PRE>
+<PRE><B>18</B></PRE>
+<PRE><B>19 </B>w.Selection.TypeText (strMsg)</PRE>
+<PRE><B>20</B></PRE>
+<PRE><B>21 </B>w.ChangeFileOpenDirectory (App.Path)</PRE>
+<PRE><B>22</B></PRE>
+<PRE><B>23</B> w.ActiveDocument.SaveAs filename:=&quot;VBAsmpl_&quot; &amp; _</PRE>
+<PRE>CStr(i) &amp; &quot;.doc&quot;, _</PRE>
+<PRE>FileFormat:=wdFormatDocument, _</PRE>
+<PRE>LockComments:=False, Password:=&quot;&quot;, _</PRE>
+<PRE>AddToRecentFiles:=True, WritePassword:=&quot;&quot;, _</PRE>
+<PRE>ReadOnlyRecommended:=False, EmbedTrueTypeFonts:=False, _</PRE>
+<PRE>SaveNativePictureFormat:=False, SaveFormsData:=False, _</PRE>
+<PRE>SaveAsAOCELetter:=False</PRE>
+<PRE><B>24</B></PRE>
+<PRE><B>25 </B>w.ActiveDocument.Close SaveChanges:=wdDoNotSaveChanges</PRE>
+<PRE><B>26 </B>w.Application.Quit</PRE>
+<PRE><B>27 </B>Set w = Nothing</PRE>
+<PRE><B>28</B></PRE>
+<PRE><B>29 </B>strMsg = &quot;The document, &quot; &amp; &quot;VBAsmpl_&quot; &amp; CStr(i) &amp; _</PRE>
+<PRE>&quot;.doc&quot; &amp; vbCrLf</PRE>
+<PRE><B>30 </B>strMsg = strMsg &amp; &quot;has be saved in the directory, &quot; &amp; _</PRE>
+<PRE>App.Path &amp; &quot;.&quot;</PRE>
+<PRE><B>31 </B>MsgBox strMsg</PRE>
+<PRE><B>32</B></PRE>
+<PRE><B>33 </B>cmdWordApp.Enabled = True</PRE>
+<PRE><B>34</B></PRE>
+
+<PRE><B>35 </B>i = i + 1</PRE>
+<P><A HREF="javascript:popUp('25fig08.gif')"><B>FIGURE 25.8</B></A> <I>The simple
+VBA program connects Visual Basic to Word.</I></P>
+
+<P>The key to understanding the code is to understand the Word Application object.
+Look at line 3 of the code:</P>
+
+<P></P>
+<PRE>Dim w As New Word.Application
+</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Confirm that MS Office is on the computer</STRONG></P>
+	<P>Don't be misled into thinking that because you reference the Word Object Library
+	at design time, Word magically goes with your program to the end user's system when
+	he or she runs your program. It doesn't. You should provide some functionality in
+	your code that confirms that Word is indeed installed on the user's computer. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Line 3 declares an object variable, w, that references a Word.Application object
+with the New keyword. The Word.Application object is, for all intents and purposes,
+a fully functional instance of Microsoft Word. After you create this object variable,
+you can access nearly all the functionality of Word through that object, provided
+that the user has Word installed on his or her computer.</P>
+<P>Lines 7-15 are error-checking code to make sure that the user has typed in some
+text to enter into Word.</P>
+<P>Line 17 is important; it adds a new document to the Word session. Just because
+you've opened an instance of a Word application, it doesn't automatically follow
+that you have a document on which to work. You don't. This line addresses this issue.
+(If you go to Word, you can close all the documents in Word and still have the application
+running without a document in it. You can't do much, but the application is running.)</P>
+<P>Line 19 inserts the text from the text box into the Word document by using the
+Word.Application's Selection child object's TypeText method. Line 21 changes the
+Word's save directory to be the same as the VB application's.</P>
+<P>Line 23 saves the document by using the ActiveDocument object's SaveAs method.
+ActiveDocument is a <I>child object</I> of the Word.Application object. (If you save
+a document in Word while running the Macro Recorder, you'll see this code generated.)</P>
+<P>Line 25 closes the document. Line 26 closes the Word application. Line 27 clears
+the object variable's value. Lines 29-31 create and report a message to users, informing
+them where the saved Word document is located.</P>
+<P>Line 35 increments the counter variable. This variable is concatenated to new
+filenames to accommodate the creation and addition of new Word document files should
+the user want to keep making documents, as shown in line 23.</P>
+<P>
+<H2><A NAME="Heading6"></A>Making a Spelling Checker with VB and Word</H2>
+<P>Let's develop the techniques for having VB &quot;talk to&quot; Word a little further.
+Now, no edition of Visual Basic comes with an ActiveX control that enables you to
+check the spelling of a word. You can buy an ActiveX control from a third party to
+do spell checking, or you can use Word to accomplish this task.</P>
+<P>One of Word's most commonly used features is the ability to check spelling. Word
+<I>encapsulates</I> this functionality into two methods: CheckSpelling and GetSpellingSuggestions.
+The GetSpellingSuggestions method is a <I>member function</I> of the Application
+and Range objects in Word. CheckSpelling is a member function of the Application,
+Range, and Document objects. You use CheckSpelling to determine whether a word is
+spelled correctly. If a word is misspelled, you use the GetSpellingSuggestions method
+to return a <I>collection</I> of SpellingSuggestion objects for the misspelled word.
+The SpellingSuggestion object has a number of properties that describe the object
+(see Figure 25.9).</P>
+<P><A HREF="javascript:popUp('25fig09.gif')"><B>FIGURE 25.9</B></A> <I>You use the
+search area of the Object Browser to locate an object such as SpellingSuggestion,
+in addition to a property, method, or event for any object.</I></P>
+<P>The Name property is a string that represents a suggested word to replace the
+misspelled word. Thus, if you want to find out whether a word is correctly spelled
+and obtain a list of suggested corrections in case of error, you pass the word in
+question to the CheckSpelling method as a <I>parameter</I>. If the method returns
+False, you pass the misspelled word to GetSpellingSuggestions. As described earlier,
+you'll receive a SpellingSuggestions collection. When you have the SpellingSuggestions
+collection in hand, you cycle through the collection, examining the Name property
+of each SpellingSuggestion object in the collection to determine which string is
+the suggestion.</P>
+<P><B>Create a SpellCheck program</B>
+
+
+<BLOCKQUOTE>
+	<P>
+	<P>
+<HR>
+<STRONG>View the sample code</STRONG></P>
+	<P>The sample code for this exercise is in the project prjSplCk.vbp, which you can
+	find on the Web at <A target="_new" HREF="javascript:if(confirm('http:// www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http:// www.mcp.com/info'" tppabs="http:// www.mcp.com/info">http:// www.mcp.com/info</A>.
+	This code is fully commented. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open a new Visual Basic project.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add a TextBox, two CommandButtons, two Label controls, and a ListBox
+	to the startup form, as shown in Figure 25.10. Name the form frmMain, the CommandButtons
+	cmdCheck and cmdQuit, and the TextBox txtMain. Name the Label controls lblMsg and
+	lblSugs and name the ListBox lstSuggestions. Set the Caption property of the CommandButtons,
+	Labels, and form as shown in Figure 25.10. (The names are merely suggestions. You
+	can name the controls what you like; just be mindful of your naming as you enter
+	code.)
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('25fig10.gif')"><B>FIGURE 25.10</B></A> <I>The word
+you enter to spell check in the text box is passed on to Word.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>3. </B>Add the following code to the Declaration section of the form:
+	<P>
+</DL>
+
+<PRE>	  Private Const NUM_OF_SUGS = _[sr]
+	     &quot;Number of Spelling Suggestions: &quot;
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code to the Form_Load() event handler so that the
+	label caption shows the number of suggestions to be zero:
+	<P>
+</DL>
+
+<PRE>	  lblSugs.Caption = NUM_OF_SUGS &amp; CStr(0)
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the following code to the cmdQuit_Click() event handler:
+	<P>
+</DL>
+
+<PRE>	  End
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the code in Listing 25.2 to the cmdCheck_Click() event handler.
+	<P>
+	<DT></DT>
+	<DD><B>7. </B>Save the project and run the code (see Figure 25.11).
+	<P>
+</DL>
+
+<H4>LISTING 25.2&#160;&#160;25LIST02.TXT--The Core Code for Accessing Word's Spell-<BR>
+Checking Functionality with VB</H4>
+<PRE><B>01 </B>Dim wd As New Word.Application</PRE>
+<PRE><B>02 </B>Dim wdsp As Word.SpellingSuggestions</PRE>
+<PRE><B>03 </B>Dim i%</PRE>
+<PRE><B>04 </B>Dim strBuffer As String</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>On Error GoTo cmdCheckErr</PRE>
+<PRE><B>07</B></PRE>
+<PRE><B>08 </B>lblSugs.Caption = NUM_OF_SUGS &amp; CStr(0)</PRE>
+<PRE><B>09 </B>lblMsg.Caption = &quot;&quot;</PRE>
+<PRE><B>10 </B>lstSuggestions.Clear</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>strBuffer = txtMain.Text</PRE>
+<PRE><B>13</B></PRE>
+<PRE><B>14 </B>cmdCheck.Enabled = False</PRE>
+<PRE><B>15 </B>cmdQuit.Enabled = False</PRE>
+<PRE><B>16</B></PRE>
+<PRE><B>17 </B>frmMain.MousePointer = vbHourglass</PRE>
+<PRE><B>18</B></PRE>
+<PRE><B>19 </B>If Not wd.CheckSpelling(strBuffer) Then</PRE>
+<PRE><B>20 </B>txtMain.ForeColor = vbRed</PRE>
+<PRE><B>21 </B>lblMsg.Caption = &quot;Spelling Incorrect!&quot;</PRE>
+<PRE><B>22 </B>wd.Documents.Add</PRE>
+<PRE><B>23 </B>Set wdsp = wd.GetSpellingSuggestions(strBuffer)</PRE>
+<PRE><B>24 </B>lblSugs.Caption = NUM_OF_SUGS &amp; CStr(wdsp.Count)</PRE>
+<PRE><B>25</B></PRE>
+<PRE><B>26 </B>For i% = 1 To wdsp.Count</PRE>
+<PRE><B>27 </B>lstSuggestions.AddItem wdsp(i%).Name</PRE>
+<PRE><B>28 </B>Next i%</PRE>
+<PRE><B>29</B></PRE>
+<PRE><B>30 </B>wd.Documents.Close</PRE>
+<PRE><B>31 </B>Else</PRE>
+<PRE><B>32 </B>lblMsg.Caption = &quot;Spelling OK&quot;</PRE>
+<PRE><B>33 </B>End If</PRE>
+<PRE><B>34</B></PRE>
+<PRE><B>35 </B>wd.Quit</PRE>
+<PRE><B>36 </B>set wd = nothing</PRE>
+<PRE><B>37 </B>txtMain.ForeColor = vbBlack</PRE>
+<PRE><B>38 </B>frmMain.MousePointer = vbDefault</PRE>
+<PRE><B>39 </B>cmdCheck.Enabled = True</PRE>
+<PRE><B>40 </B>cmdQuit.Enabled = True</PRE>
+<PRE><B>41 </B>Exit Sub</PRE>
+<PRE><B>42 </B>cmdCheckErr:</PRE>
+<PRE><B>43 </B>MsgBox Err.Description</PRE>
+<PRE><B>44</B> wd.Q'uit</PRE>
+<P><A HREF="javascript:popUp('25fig11.gif')"><B>FIGURE _25.11</B></A> <I>The Spell
+Check utility uses Word's SpellingSuggestions collection to report back corrections
+to the misspelled word.</I></P>
+<P>With regard to declaring variables, line 1 declares an object variable, wd, that
+creates an instance of the Word.Application object. Line 2 declares an instance of
+the Word.SpellingSuggestions collection. Line 3 is a counter integer, and line 4
+is a string buffer that holds message-box message strings. Line 6 puts some fundamental
+error checking in place through the On Error keywords. Lines 8-17 initialize the
+GUI for the Click() event procedure and disable the CommandButtons (Lines 14 and
+15) so that users can't reinvoke the process until the spelling check is complete.
+(Hooking up to Word can take a bit of time--hence, the need to set the mouse pointer
+to an hourglass and disable the CommandButtons.)</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Setting an object variable to Nothing</STRONG></P>
+	<P>An object variable doesn't hold a value the way data variables (such as Integer
+	and Double) do. A variable of type Integer or Double actually contains the value
+	you assign to it. When you assign a value to an object variable by using the Set
+	keyword, you're assigning the location of the object in computer memory to be the
+	value of the object variable. This is somewhat similar to the use of pointers in
+	C++. When you're through with an object variable, it's good practice to reset it
+	so that it doesn't contain any object's memory location as its value (this is called
+	garbage collection). You do this with the keyword Nothing. The following code creates
+	an object variable, sets it to a Word application object, and then releases the object
+	variable from Word:</P>
+	<PRE>Dim wd As New Word.Application
+Set wd = Nothing</PRE>
+	<P>
+<HR>
+</P>
+
+</BLOCKQUOTE>
+
+<P>Line 19 begins the spelling check. Embedded in the If...Then...Else statement
+in lines 29-33 is a call to the Word.Application's CheckSpelling method (line 19),
+by way of the object variable wd. The string strBuffer assigned from the Text property
+of txtMain is passed as a parameter to CheckSpelling. If the return is True, flow
+of the program passes to line 32; if CheckSpelling returns False, the program offers
+some suggested spellings in the lstSuggestions ListBox (lines 26-28).</P>
+<P>A document is added to the Word application as shown in line 23. This is important
+because the GetSpellingSuggestions method won't work if the instance of the Word.Application
+object<I> </I>doesn't have a document in its Documents collection. The collection
+variable wdsp is set to <I>reference</I> the SpellingSuggestions collection returned
+by the method GetSpellingSuggestions, as shown in line 24. After you set the collections
+variable, you cycle through each SpellingSuggestion in the collection by using a
+For...Next statement and add the suggestion to the ListBox, lstSuggestions. You find
+out how many SpellingSuggestion objects are in the SpellingSuggestions collection
+by examining the Count property of the collection. This is done on lines 23-29.</P>
+<P>After this process, it's pretty much cleaned up. You close the document on line
+30, quit the Word application on line 35, release the object variable its reference
+in line 36, reset the user interface on lines 37 and 38, and enable the CommandButtons
+in lines 39 and 40. You then Exit the click event handler in line 41 to avoid flow-through
+to the Error label in the line below.</P>
+<P>
+<H2><A NAME="Heading7"></A>Making a Word Search Program</H2>
+<P>You can use VBA with objects in Microsoft Word to find a word within one or more
+Word documents. Finding a word in a document is similar to checking the spelling
+of a word, except that you use some previously unused objects and a few different
+method calls.</P>
+<P>To find a word within a Word document, you use the Range object and its <I>child
+object</I>, the Find object. The Range object can be thought of as a continuous area
+of a Word document, very similar to dragging your mouse pointer across a portion
+of a page or pages within Word. A Range object can contain a few words, a few sentences
+or paragraphs, or the entire contents of a document. In this case, the Range object
+will be the entire contents of an active document.</P>
+<P>The Find object is almost identical to the Find dialog in Word. The Find object
+has many different properties--Font, ParagraphFormat, and Style, to name a few. With
+the proper amount of forethought, you can program the Find object to do anything
+that you would do within the Find (and Replace) dialog, were you working directly
+in Word.</P>
+<P>For this WordSearch application, you'll program the Find object's Execute method
+and Found property to search multiple documents for a word. Then, if the sought-after
+word is found, the WordSearch program adds the document's filename to a ListBox control.</P>
+<P><B>Create the WordSearch program</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open a new Visual Basic project.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>On the left side of the startup form, add a Frame control. Within this
+	control, add DriveListBox, DirListBox, and FileListBox controls.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>On the right side of the form, add three CommandButtons, a TextBox,
+	and a ListBox, as shown in Figure 25.12.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('25fig12.gif')"><B>FIGURE _25.12</B></A> <I>Numbering
+the steps necessary to utilize the Word Find program makes it easier for end users
+to use.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>4. </B>Name the frame frMain. Leave the DirListBox, DriveListBox, FileListBox,
+	and ListBox with their default names. Name the TextBox txtWord. Name one CommandButton
+	cmdFind, the second CommandButton cmdOpenDoc, and the third CommandButton cmdQuit.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Add two Label controls to the form. Name one lblWord and the other
+	lblDocs.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Set the <B>MultiSelect</B> property of the FileListBox to <B>2</B>-<B>Extended</B>.
+	This allows you to select more than one file within the FileListBox.
+	<P>
+	<DT></DT>
+	<DD><B>7. </B>Arrange the controls on the form and set the Label, CommandButtons,
+	and form Caption property as shown in Figure 25.12.
+	<P>
+	<DT></DT>
+	<DD><B>8. </B>To make the DirListBox react to a change of drives in the DriveListBox,
+	add the following line of code to the Drive1_Change() event handler:
+	<P>
+</DL>
+
+<PRE>		Dir1.Path = Drive1.Drive
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>To make the FileListBox react to a change of directories in the DirListBox,
+	add the following line of code to the Dir1_Change() event handler:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>File1.Path = Dir1.Path</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>To have the application terminate when the user clicks the Quit CommandButton,
+	add the following line of code to the cmdQuit_Click() event handler:
+	<P>
+</DL>
+
+<PRE>	  End
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Add the code in Listing 25.3 to the cmdFind_Click() event handler.
+	<P>
+</DL>
+
+<H4>LISTING 25.3&#160;&#160;25LIST03.TXT--Doing a Document Word Search by Using Word
+Objects with VB</H4>
+<PRE><B>01 </B>Dim wd As New Word.Application</PRE>
+<PRE><B>02 </B>Dim myRange As Word.Range</PRE>
+<PRE><B>03 </B>Dim i%, j%, k%</PRE>
+<PRE><B>04 </B>Dim strPath As String</PRE>
+<PRE><B>05 </B>Dim NumOfFiles%</PRE>
+<PRE><B>06 </B>Dim strFileBuff() As String</PRE>
+<PRE><B>07 </B>Dim strMsg As String</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>If txtWord.Text = &quot;&quot; Then</PRE>
+<PRE><B>10 </B>strMsg = &quot;No word has been entered for a seach.&quot; &amp; _</PRE>
+<PRE>bCrLf &amp; vbCrLf</PRE>
+<PRE><B>11 </B>strMsg = strMsg &amp; &quot;Please enter a word.&quot;</PRE>
+<PRE><B>12 </B>MsgBox strMsg, vbCritical, &quot;Missing Search Word&quot;</PRE>
+<PRE><B>13 </B>txtWord.SetFocus</PRE>
+<PRE><B>14 </B>Exit Sub</PRE>
+<PRE><B>15 </B>End If</PRE>
+<PRE><B>16</B></PRE>
+<PRE><B>17 </B>i% = File1.ListCount</PRE>
+<PRE><B>18</B></PRE>
+<PRE><B>19 </B>For j% = 0 To i% - 1</PRE>
+<PRE><B>20 </B>If File1.Selected(j%) = True Then</PRE>
+<PRE><B>21 </B>NumOfFiles% = NumOfFiles% + 1</PRE>
+<PRE><B>22 </B>End If</PRE>
+<PRE><B>23 </B>Next j%</PRE>
+<PRE><B>24</B></PRE>
+<PRE><B>25 </B>If NumOfFiles = 0 Then</PRE>
+<PRE><B>26 </B>strMsg = &quot;A document file has not been selected.&quot; &amp; _</PRE>
+<PRE>vbCrLf &amp; vbCrLf</PRE>
+<PRE><B>27 </B>strMsg = strMsg &amp; &quot;Please select one or more document &quot;</PRE>
+<PRE><B>28 </B>strMsg = strMsg &amp; &quot;files.&quot;</PRE>
+<PRE><B>29 </B>MsgBox strMsg, vbCritical, &quot;File Selection Error&quot;</PRE>
+<PRE><B>30 </B>File1.SetFocus</PRE>
+<PRE><B>31 </B>Exit Sub</PRE>
+<PRE><B>32 </B>End If</PRE>
+<PRE><B>33</B></PRE>
+<PRE><B>34 </B>ReDim strFileBuff(NumOfFiles% - 1)</PRE>
+<PRE><B>35</B></PRE>
+<PRE><B>36 </B>For j% = 0 To i% - 1</PRE>
+<PRE><B>37 </B>If File1.Selected(j%) = True Then</PRE>
+<PRE><B>38 </B>strFileBuff(k%) = File1.Path &amp; &quot;\&quot; &amp; File1.List(j%)</PRE>
+<PRE><B>39 </B>k% = k% + 1</PRE>
+<PRE><B>40 </B>End If</PRE>
+<PRE><B>41 </B>Next j%</PRE>
+<PRE><B>42</B></PRE>
+<PRE><B>43 </B>i% = 0</PRE>
+<PRE><B>44 </B>j% = 0</PRE>
+<PRE><B>45 </B>k% = 0</PRE>
+<PRE><B>46</B></PRE>
+<PRE><B>47 </B>For j% = 0 To UBound(strFileBuff)</PRE>
+<PRE><B>48 </B>strPath = strFileBuff(j%)</PRE>
+<PRE><B>49 </B>cmdFind.Enabled = False</PRE>
+<PRE><B>50 </B>frmMain.MousePointer = vbHourGlass</PRE>
+<PRE><B>51 </B>frmMain.Caption = &quot;Searching &quot; &amp; strPath</PRE>
+<PRE><B>52 </B>wd.Documents.Open (strPath)</PRE>
+<PRE><B>53 </B>wd.Documents(1).Activate</PRE>
+<PRE><B>54 </B>Set myRange = wd.ActiveDocument.Content</PRE>
+<PRE><B>55 </B>myRange.Find.Execute FindText:=txtWord.Text, _</PRE>
+<PRE>Forward:=True</PRE>
+<PRE><B>56</B></PRE>
+<PRE><B>57 </B>While myRange.Find.Found = True</PRE>
+<PRE><B>58 </B>i% = i% + 1</PRE>
+<PRE><B>59 </B>myRange.Find.Execute FindText:=txtWord.Text</PRE>
+<PRE><B>60 </B>Wend</PRE>
+<PRE><B>61</B></PRE>
+<PRE><B>62 </B>If i% &gt; 0 Then</PRE>
+<PRE><B>63 </B>List1.AddItem strPath</PRE>
+<PRE><B>64 </B>i% = 0</PRE>
+<PRE><B>65 </B>End If</PRE>
+<PRE><B>66 </B>Next j%</PRE>
+<PRE><B>67</B></PRE>
+<PRE><B>68 </B>wd.Quit</PRE>
+<PRE><B>69 </B>set wd = nothing</PRE>
+<PRE><B>70 </B>frmMain.Caption = &quot;Search Complete&quot;</PRE>
+<PRE><B>71 </B>frmMain.MousePointer = vbDefault</PRE>
+<PRE><B>72 </B>cmdFind.Enabled = True</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>12. </B>Add the code in Listing 25.4 to the cmdOpenDoc_Click() event handler.
+	<P>
+</DL>
+
+<H4>LISTING 25.4&#160;&#160;25LIST04.TXT--Opening a Word Document by Using the <BR>
+Object's Open Method in VBA Document</H4>
+<PRE><B>01 </B>Dim wd As New Word.Application</PRE>
+<PRE><B>02</B></PRE>
+<PRE><B>03 </B>On Error GoTo cmdOpenDocErr</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>If List1.Selected(List1.ListIndex) = True Then</PRE>
+<PRE><B>06 </B>wd.Documents.Open (List1.List(List1.ListIndex))</PRE>
+<PRE><B>07 </B>wd.Visible = True</PRE>
+<PRE><B>08 </B>End If</PRE>
+<PRE><B>09 </B>Exit Sub</PRE>
+<PRE><B>10</B></PRE>
+<PRE><B>11 </B>cmdOpenDocErr:</PRE>
+<PRE><B>12 </B>Select Case Err.Number</PRE>
+<PRE><B>13 </B>Case 381</PRE>
+<PRE><B>14 </B>MsgBox &quot;Please select a document.&quot;, vbCritical, _</PRE>
+<PRE>&quot;Document Selection Error&quot;</PRE>
+<PRE><B>15 </B>List1.SetFocus</PRE>
+<PRE><B>16</B></PRE>
+<PRE><B>17 </B>End Select</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>13. </B>Add the code in Listing 25.5 to the List1_DblClick() event handler.
+	<P>
+</DL>
+
+<H4>LISTING 25.5&#160;&#160;25LIST05.TXT--Opening a Word Document by Using the Document
+Object's Open Method in VBA</H4>
+<PRE><B>01 </B>Dim wd As New Word.Application</PRE>
+<PRE><B>02</B></PRE>
+<PRE><B>03 </B>If List1.Selected(List1.ListIndex) = True Then</PRE>
+<PRE><B>04 </B>wd.Documents.Open (List1.List(List1.ListIndex))</PRE>
+<PRE><B>05 </B>wd.Visible = True</PRE>
+<PRE><B>06 </B>End If</PRE>
+
+
+<BLOCKQUOTE>
+	<P><B>14. </B>Save the project and run the code (see Figure 25.13).
+
+</BLOCKQUOTE>
+
+<P><A HREF="javascript:popUp('25fig13.gif')"><B>FIGURE 25.13</B></A> <I>The Word
+Search program allows you to open the Word documents in which the sought-after word
+is located.</I></P>
+<P>Let's examine how the program works. The code behind the CommandButton cmdQuit,
+the DriveListBox, and the DirListBox was explained as you built the code. The areas
+of code that need detailed review are Listings 25.3 and 25.4, the cmdFind_Click()
+and cmdOpenDoc_Click() event handlers.</P>
+<P>The cmdFind_Click() event handler in Listing 25.3 first ensures that there is
+indeed a search word entered in the TextBox (line 9). If there isn't, some error
+messages and behaviors are generated, and the event handler is terminated (lines
+10-14). If a word is in the TextBox, the program figures out how many document files
+are in the FileListBox by using the FileListBox's ListCount property (line 17). Then,
+it cycles through the FileListBox to determine which files have been selected (lines
+19-23). Another error trap is inserted to make sure that filenames have been selected
+(lines 25-32). The selected files are added to a string array for further manipulation
+(lines 34-41). The counting variables i%, j%, and k% reinitialize on lines 43-45.</P>
+<P>The purpose of the code at this point is to set up for the subsequent work of
+opening an instance of a Word Document object. All the filenames for the files to
+be searched are stored in the string array strFileBuff(). Lines 47-66 are a For...Next
+loop in which one file at a time is opened as a Word.Document object (line 52) and
+set to be the document with the focus (line 53). The contents of the open document
+are set to the object variable for the Range object myRange (line 54). The Range
+object variable then implements the Execute method of its child object, the Find
+object. The Execute method takes two <I>named parameters</I>, FindText (the word
+to search for) and Forward (a Boolean value that directs Word to search forward).
+A While loop is set up around the condition of the Find object's Found property (line
+57). If the word being sought is found, the Found property is automatically set to
+True. While the Found property is True (line 57), a counter variable is incremented
+(line 58) and the Execute method is reinvoked (line 59), keeping the While loop in
+force. After the counter variable i% is incremented, this means that the sought-after
+word has been identified within the document and that the document's filename should
+be added to the ListBox (line 63).</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>LBound() and Ubound()</STRONG></P>
+	<P>You use the LBound() and UBound() functions to determine the lower and upper elements
+	of an array, respectively. For example, if you have the array MyArray(25), LBound(MyArray)
+	evaluates to zero and UBound(MyArray) evaluates to 25. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The For...Next loop continues for all the filenames in the string array strFileBuff
+(line 66). When the upper bound of the string array strFileBuff is reached, the For...Next
+loop is exhausted. Then the Quit method of the Word.Application object wd is invoked,
+terminating the Word session (line 68). The user interface is reset. The user is
+notified that the search is complete (line 70). The mouse pointer resets to default
+(line 71), and the cmdFind CommandButton is enabled to allow the user to search other
+documents (line 72).</P>
+<P>Listing 25.4 is the code for the CommandButton cmdOpenDoc_Click() event handler.
+This event handler opens the document selected in the ListBox that denotes a list
+of files in which a sought-after word was found.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Word can run unseen</STRONG></P>
+	<P>Remember, one tricky thing about accessing Word through VBA by using Word.Application
+	object variables is that although Word is working hard in memory, it doesn't appear
+	on the taskbar or onscreen unless the Visible property of the object is set to True.
+	The only evidence that Word is active is the Winword entry in the task list that
+	shows itself when you press Ctrl+Alt+Delete. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The code in Listing 25.4 creates an object variable, wd, which is an instance
+of the Word.Application object (line 1). An error handler is inserted at line 3 in
+case the ListBox doesn't have any document filenames or one hasn't been selected.
+After the document is selected, the Open method of the Window.Application's Documents
+collection is invoked on the file selected in the ListBox (line 6). When the document
+is opened, the Word application running in memory is brought forth to the user. This
+is done by setting the Word.Application's Visible property to True (line 7).</P>
+<P>Listing 25.5 is similar to Listing 25.4, except that the error- handling code
+has been omitted. Logic dictates that the Dbl_Click() event handler of the ListBox
+wouldn't be invoked unless there were files listed in it.</P>
+<P>
+<H2><A NAME="Heading8"></A>Working with Visual Basic, Access, and Excel</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Data access</STRONG></P>
+	<P>We won't cover the basics of data access using DAO here. If your DAO is rusty,
+	you might want to review Chapter 30, &quot;Database Basics and the Data Control,&quot;
+	and Chapter 32, &quot;Enhancing Your Programs Using the Advanced Data Controls.&quot;
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Until now, all the work you've done to make VB work with Office has centered on
+using Microsoft Word. Let's move on to two other applications in the Microsoft Office
+suite: Excel and Access. In this section, you'll build a utility named DBTransporter,
+which opens an Access database file, reads the tables and associated fields within
+the file, and then transports records from selected fields into an Excel spreadsheet.</P>
+<P>You locate the data in the Access database .MDB file by using Data Access Objects
+(DAO). After you obtain the data from the Access database, use the Excel Application,
+Workbook, Worksheet, and Range objects to insert the retrieved data into an Excel
+spreadsheet.</P>
+<P><B>Create the DBTransporter Utility</B>
+
+
+<BLOCKQUOTE>
+	<P>
+	<P>
+<HR>
+<STRONG>Download the project's code</STRONG></P>
+	<P>Again, the sample code for this exercise (in the project DBtoXLS.vbp) is available
+	on the Web at http://www. mcp.com/info. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open a new Visual Basic project.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>On the startup form, add three CommandButtons, a ComboBox, a ListBox,
+	a CommonDialog control, and two Label controls. (If the CommonDialog control isn't
+	visible in the toolbox, press Ctrl+T to open the Components dialog and select <B>Microsoft
+	Common Dialog Control 5.0</B> from the <B>Controls</B> list.)
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Name the startup form frmMain, the ComboBox cboTables, and the ListBox
+	lstFields. Name the first CommandButton cmdOpenDB, the second CommandButton cmdSave,
+	and the last CommandButton cmdQuit. Name the CommonDialog control cdlgMain. Let the
+	Label controls keep their default names.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Arrange the controls and set their Caption and Text properties as shown
+	in Figure 25.14. Set the value of the MultiSelect property of the ListBox to 2 -
+	Extended so that users can choose more than one line.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('25fig14.gif')"><B>FIGURE 25.14</B></A> <I>You use a
+CommonDialog control to locate the database from which to access data to send to
+Excel. The cdlgMain CommonDialog control is a windowless control.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>5. </B>To have the application terminate when users click the Quit CommandButton,
+	add the following line of code to the cmdQuit_Click() event handler:
+	<P>
+</DL>
+
+<PRE>	  End
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code to the Declarations section of the startup form:
+	<P>
+</DL>
+
+<PRE>	  Private Const ACCESS_SYSTEM_PREFIX = &quot;MSYS&quot;
+	  Private Const MAXIMUM_RECS = 20
+	  Private Const TRANS_MSG = &quot;DBTransporter is _     transporting...&quot;
+	  Private Const DEFAULT_XLS_FILENAME = &quot;DBTrans&quot;
+	  Private gf_strDbPath As String
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the code in Listing 25.6 to the cmdOpenDB_Click() event handler.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Getting commented code</STRONG></P>
+	<P>The code in the sample application, although completely identical in syntax and
+	operation to the code listed here, is more highly commented. Much of what you'll
+	read in this section is built in to the comments in that code. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>LISTING 25.6&#160;&#160;25LIST06.TXT--Finding Table Names in a Database by Using
+DAO</H4>
+<PRE><B>01 </B>Dim ws As Workspace</PRE>
+<PRE><B>02 </B>Dim db As Database</PRE>
+<PRE><B>03 </B>Dim strTblName As String</PRE>
+<PRE><B>04 </B>Dim strFilter As String</PRE>
+<PRE><B>05 </B>Dim strMsg As String</PRE>
+<PRE><B>06 </B>Dim iReturn As Integer</PRE>
+<PRE><B>07 </B>Dim i%</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>strFilter = &quot;Access DB (*.mdb)|*.mdb&quot;</PRE>
+<PRE><B>10 </B>cdlgMain.Filter = strFilter</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>cdlgMain.ShowOpen</PRE>
+<PRE><B>13</B></PRE>
+<PRE><B>14 </B>While gf_strDbPath = &quot;&quot;</PRE>
+<PRE><B>15 </B>gf_strDbPath = cdlgMain.filename</PRE>
+<PRE><B>16 </B>If gf_strDbPath = &quot;&quot; Then</PRE>
+<PRE><B>17 </B>strMsg = &quot;You have not selected a file.&quot;</PRE>
+<PRE><B>18 </B>strMsg = strMsg &amp; vbCrLf &amp; vbCrLf</PRE>
+<PRE><B>19 </B>strMsg = strMsg &amp; &quot;Do you want to select one now?&quot;</PRE>
+<PRE><B>20 </B>iReturn = MsgBox(strMsg, vbCritical + vbYesNo, _</PRE>
+<PRE>&quot;Selection Error&quot;)</PRE>
+<PRE><B>21 </B>If iReturn = vbNo Then</PRE>
+<PRE><B>22 </B>Exit Sub</PRE>
+<PRE><B>23 </B>Else</PRE>
+<PRE><B>24 </B>cdlgMain.ShowOpen</PRE>
+<PRE><B>25 </B>End If</PRE>
+<PRE><B>26 </B>End If</PRE>
+<PRE><B>27 </B>Wend</PRE>
+<PRE><B>28</B></PRE>
+<PRE><B>29 </B>Set ws = DBEngine.Workspaces(0)</PRE>
+<PRE><B>30 </B>Set db = ws.OpenDatabase(gf_strDbPath)</PRE>
+<PRE><B>31</B></PRE>
+<PRE><B>32 </B>cboTables.Clear</PRE>
+<PRE><B>33</B></PRE>
+<PRE><B>34 </B>For i% = 0 To db.TableDefs.Count - 1</PRE>
+<PRE><B>35 </B>strTblName = db.TableDefs(i%).Name</PRE>
+<PRE><B>36 </B>If Left(UCase(strTblName), 4) &lt;&gt; _</PRE>
+<PRE>ACCESS_SYSTEM_PREFIX Then</PRE>
+<PRE><B>37 </B>cboTables.AddItem strTblName</PRE>
+<PRE><B>38 </B>End If</PRE>
+<PRE><B>39 </B>Next i%</PRE>
+<PRE><B>40</B></PRE>
+<PRE><B>41 </B>db.Close</PRE>
+<PRE><B>42 </B>ws.Close</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>LCase() and UCase()</STRONG></P>
+	<P>Use the LCase() and UCase() functions to change all characters in a given string
+	to lowercase or uppercase, respectively. Suppose that you have the string strFirstName,
+	containing the characters &quot;Dorothy&quot;. LCase(strFirstName) evaluates to &quot;dorothy&quot;
+	and UCase(strFirstName) evaluates to &quot;DOROTHY&quot;. LCase() and UCase() are
+	useful functions to use to avoid user typing errors. If you want to ensure that users
+	enter the correct characters into your program, regardless of case, you can convert
+	all the characters to either lowercase or uppercase and then check them. If, however,
+	you require the data to be case-sensitive correct (a password, for example), you
+	should check the characters as is. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Add the code in Listing 25.7 to the cboTables_Click() event handler.
+	<P>
+</DL>
+
+<H4>LISTING 25.7&#160;&#160;25LIST07.TXT--Finding the Field Names in a Table by Using
+DAO</H4>
+<PRE><B>01 </B>Dim ws As Workspace</PRE>
+<PRE><B>02 </B>Dim db As Database</PRE>
+<PRE><B>03 </B>Dim tdef As TableDef</PRE>
+<PRE><B>04 </B>Dim i%</PRE>
+<PRE><B>05 </B>Dim strFieldName As String</PRE>
+<PRE><B>06</B></PRE>
+<PRE><B>07 </B>lstFields.Clear</PRE>
+<PRE><B>08 </B>Set ws = DBEngine.Workspaces(0)</PRE>
+<PRE><B>09 </B>Set db = ws.OpenDatabase(gf_strDbPath)</PRE>
+<PRE><B>10 </B>Set tdef = _</PRE>
+<PRE>db.TableDefs(cboTables.List(cboTables.ListIndex))</PRE>
+<PRE><B>11 </B>For i% = 0 To tdef.Fields.Count - 1</PRE>
+<PRE><B>12 </B>lstFields.AddItem tdef.Fields(i%).Name</PRE>
+<PRE><B>13 </B>Next i%</PRE>
+<PRE><B>14</B></PRE>
+<PRE><B>15 </B>db.Close</PRE>
+<PRE><B>16 </B>ws.Close</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Add the code in Listing 25.8 to the cmdSave_Click() event handler.
+	<P>
+</DL>
+
+<H4>LISTING 25.8&#160;&#160;25LIST08.TXT--Taking Data from Access and Sending It
+to Excel by Using VBA</H4>
+<PRE><B>01 </B>Dim xla As New Excel.Application</PRE>
+<PRE><B>02 </B>Dim xlb As New Excel.Workbook</PRE>
+<PRE><B>03 </B>Dim xls As New Excel.Worksheet</PRE>
+<PRE><B>04 </B>Dim xlr As Excel.Range</PRE>
+<PRE><B>05 </B>Dim ws As Workspace</PRE>
+<PRE><B>06 </B>Dim db As Database</PRE>
+<PRE><B>07 </B>Dim rs As Recordset</PRE>
+<PRE><B>08 </B>Dim strSQL As String</PRE>
+<PRE><B>09 </B>Dim i%, j%, k%</PRE>
+<PRE><B>10 </B>Dim rc%</PRE>
+<PRE><B>11 </B>Dim r%, c%</PRE>
+<PRE><B>12 </B>Dim strFields() As String</PRE>
+<PRE><B>13 </B>Dim strTable As String</PRE>
+<PRE><B>14 </B>Dim strMsg As String</PRE>
+<PRE><B>15 </B>Dim strBuffer As String</PRE>
+<PRE><B>16 </B>Dim strFilter As String</PRE>
+<PRE><B>17</B></PRE>
+<PRE><B>18 </B>For i% = 0 To lstFields.ListCount - 1</PRE>
+<PRE><B>19 </B>If lstFields.Selected(i%) = True Then</PRE>
+<PRE><B>20 </B>j% = j% + 1</PRE>
+<PRE><B>21 </B>End If</PRE>
+<PRE><B>22 </B>Next i%</PRE>
+<PRE><B>23</B></PRE>
+<PRE><B>24 </B>If j% - 1 = -1 Then</PRE>
+<PRE><B>25 </B>strMsg = &quot;You must select at least one field.&quot;</PRE>
+<PRE><B>26 </B>strMsg = strMsg &amp; vbCrLf &amp; vbCrLf</PRE>
+<PRE><B>27 </B>strMsg = strMsg &amp; _</PRE>
+<PRE>&quot;Please select a field in the Field Listbox&quot;</PRE>
+<PRE><B>28 </B>MsgBox strMsg, vbCritical, &quot;Field Selection Error&quot;</PRE>
+<PRE><B>29 </B>lstFields.SetFocus</PRE>
+<PRE><B>30 </B>Exit Sub</PRE>
+<PRE><B>31 </B>End If</PRE>
+<PRE><B>32</B></PRE>
+<PRE><B>33 </B>ReDim strFields(j% - 1)</PRE>
+<PRE><B>34</B></PRE>
+<PRE><B>35 </B>cmdQuit.Enabled = False</PRE>
+<PRE><B>36 </B>cmdOpenDB.Enabled = False</PRE>
+<PRE><B>37 </B>cboTables.Enabled = False</PRE>
+<PRE><B>38 </B>lstFields.Enabled = False</PRE>
+<PRE><B>39</B></PRE>
+<PRE><B>40 </B>frmMain.MousePointer = vbHourGlass</PRE>
+<PRE><B>41 </B>strBuffer = frmMain.Caption</PRE>
+<PRE><B>42 </B>frmMain.Caption = TRANS_MSG</PRE>
+<PRE><B>43</B></PRE>
+<PRE><B>44 </B>j% = 0</PRE>
+<PRE><B>45</B></PRE>
+<PRE><B>46 </B>For i% = 0 To lstFields.ListCount - 1</PRE>
+<PRE><B>47 </B>If lstFields.Selected(i%) = True Then</PRE>
+<PRE><B>48 </B>strFields(j%) = lstFields.List(i%)</PRE>
+<PRE><B>49 </B>j% = j% + 1</PRE>
+<PRE><B>50 </B>End If</PRE>
+<PRE><B>51 </B>Next i%</PRE>
+<PRE><B>52</B></PRE>
+<PRE><B>53 </B>strTable = cboTables.Text</PRE>
+<PRE><B>54</B></PRE>
+<PRE><B>55 </B>Set ws = DBEngine.Workspaces(0)</PRE>
+<PRE><B>56 </B>Set db = ws.OpenDatabase(gf_strDbPath)</PRE>
+<PRE><B>57</B></PRE>
+<PRE><B>58 </B>Set xlb = xla.Workbooks.Add</PRE>
+<PRE><B>59 </B>Set xls = xlb.Worksheets.Add</PRE>
+<PRE><B>60</B></PRE>
+<PRE><B>61 </B>xls.Activate</PRE>
+<PRE><B>62</B></PRE>
+<PRE><B>63 </B>For i% = 0 To UBound(strFields)</PRE>
+<PRE><B>64 </B>strSQL = &quot;SELECT &quot; &amp; strTable &amp; &quot;.[&quot; _</PRE>
+<PRE>&amp; strFields(i%) &amp; &quot;]&quot;</PRE>
+<PRE><B>65 </B>strSQL = strSQL &amp; &quot; FROM &quot; &amp; strTable</PRE>
+<PRE><B>66 </B>Set rs = db.OpenRecordset(strSQL)</PRE>
+<PRE><B>67</B></PRE>
+<PRE><B>68 </B>rs.MoveLast</PRE>
+<PRE><B>69 </B>rs.MoveFirst</PRE>
+<PRE><B>70</B></PRE>
+<PRE><B>71 </B>c% = i% + 1</PRE>
+<PRE><B>72 </B>j% = 0</PRE>
+<PRE><B>73 </B>`Set the column name</PRE>
+<PRE><B>74 </B>xls.Cells(1, c%) = strFields(i%)</PRE>
+<PRE><B>75 </B>Set xlr = xls.Cells(1, c%)</PRE>
+<PRE><B>76 </B>`Make the top row bold</PRE>
+<PRE><B>77 </B>xlr.Select</PRE>
+<PRE><B>78 </B>xlr.Font.Bold = True</PRE>
+<PRE><B>79</B></PRE>
+<PRE><B>80 </B>If rs.RecordCount &gt; MAXIMUM_RECS Then</PRE>
+<PRE><B>81 </B>rc% = MAXIMUM_RECS</PRE>
+<PRE><B>82 </B>Else</PRE>
+<PRE><B>83 </B>rc% = rs.RecordCount</PRE>
+<PRE><B>84 </B>End If</PRE>
+<PRE><B>85</B></PRE>
+<PRE><B>86 </B>For r% = 2 To rc% + 1</PRE>
+<PRE><B>87 </B>xls.Cells(r%, c%) = rs(strFields(i%))</PRE>
+<PRE><B>88 </B>rs.MoveNext</PRE>
+<PRE><B>89 </B>Next r%</PRE>
+<PRE><B>90 </B>Next i%</PRE>
+<PRE><B>91</B></PRE>
+<PRE><B>92 </B>frmMain.MousePointer = vbDefault</PRE>
+<PRE><B>93 </B>frmMain.Caption = strBuffer</PRE>
+<PRE><B>94</B></PRE>
+<PRE><B>95 </B>strMsg = &quot;Access file: &quot; &amp; vbCrLf &amp; vbCrLf</PRE>
+<PRE><B>96 </B>strMsg = strMsg &amp; gf_strDbPath &amp; vbCrLf &amp; vbCrLf</PRE>
+<PRE><B>97 </B>strMsg = strMsg &amp; &quot;has been successfully transported.&quot;</PRE>
+<PRE><B>98</B> MsgBox strMsg, vbExclamation, &quot;Transport successful&quot;</PRE>
+<PRE><B>99</B></PRE>
+<PRE><B>100</B> cmdQuit.Enabled = True</PRE>
+<PRE><B>102</B> cmdSave.Enabled = True</PRE>
+<PRE><B>103</B> cmdOpenDB.Enabled = True</PRE>
+<PRE><B>104</B> cboTables.Enabled = True</PRE>
+<PRE><B>105</B> lstFields.Enabled = True</PRE>
+<PRE><B>106</B></PRE>
+<PRE><B>107</B> strMsg = &quot;DBTransporter has transported &quot; _</PRE>
+<PRE>&amp; &quot;the Access data &quot;</PRE>
+<PRE><B>108</B> strMsg = strMsg &amp; &quot;to an Excel spreadsheet.&quot;</PRE>
+<PRE><B>109</B> strMsg = strMsg &amp; vbCrLf &amp; vbCrLf</PRE>
+<PRE><B>110</B> strMsg = strMsg &amp; &quot;Do you want to save &quot; _</PRE>
+<PRE>&amp; &quot;the Excel spreadsheet?&quot;</PRE>
+<PRE><B>111</B></PRE>
+<PRE><B>112</B> If MsgBox(strMsg, vbQuestion &amp; vbYesNo) = vbYes Then</PRE>
+<PRE><B>113</B> strFilter = &quot;Excel Spreadsheet (*.xls)|*.xls&quot;</PRE>
+<PRE><B>114</B> cdlgMain.Filter = strFilter</PRE>
+<PRE><B>115</B> cdlgMain.filename = DEFAULT_XLS_FILENAME</PRE>
+<PRE><B>116</B> cdlgMain.ShowSave</PRE>
+<PRE><B>117</B></PRE>
+<PRE><B>118</B> If cdlgMain.filename &lt;&gt; &quot;&quot; Then</PRE>
+<PRE><B>119</B> xls.SaveAs (cdlgMain.filename)</PRE>
+<PRE><B>120</B> strMsg = &quot;Access data has been saved to file:&quot;</PRE>
+<PRE><B>121</B> strMsg = strMsg &amp; vbCrLf &amp; vbCrLf</PRE>
+<PRE><B>122</B> strMsg = strMsg &amp; cdlgMain.filename</PRE>
+<PRE><B>123</B> MsgBox strMsg, vbExclamation, &quot;Spreadsheet saved&quot;</PRE>
+<PRE><B>124</B> End If</PRE>
+<PRE><B>125</B> End If</PRE>
+<PRE><B>126</B></PRE>
+<PRE><B>127</B> xlb.Saved = True</PRE>
+<PRE><B>128</B></PRE>
+<PRE><B>129</B> xla.Quit</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Save the project and run the code (see Figure 25.15).
+	<P>
+</DL>
+
+<P>The code for DBTransporter is divided into three areas. The first area is the
+code that allows users to select a database and then automatically populates the
+ComboBox cboTables with the tables from the database. The second area is the code
+that populates the ListBox lstFields with the fields of a selected table. The last
+part is the code that does the actual transporting of data between the Access and
+Excel.</P>
+<P><A HREF="javascript:popUp('25fig15.gif')"><B>FIGURE 25.15</B></A> <I>DBTransporter
+boldfaces the first row of the Excel sheet to distinguish the field names from the
+data.</I></P>
+<P>Listing 25.6 is the code that presents a CommonDialog to users for selecting a
+database from which to transport data. Lines 1-7 set up the variables that you'll
+use throughout the event handler. For users to see only Access database files (.MDB),
+the code sets a file <I>filter</I> string to the string variable strFilter (line
+9). That string is assigned to the Filter property of the CommonDialog control (line
+10). The CommonDialog is shown in line 12, using the ShowOpen method.</P>
+<P>An error trap loop is set up on lines 14-27 with a While loop. When users select
+a valid .MDB file, the program flow will move out of the loop. However, should users
+not choose a valid file, they will be prompted with a message box asking them whether
+they want to try again or discontinue the process (line 20). If they choose not to
+go on, the event handler is exited (line 22).</P>
+<P>After an .MDB file is selected, the Workspace and Database object variables are
+set (lines 29 and 30), and the contents of the ComboBox are cleared (line 32). The
+database is examined for all the tables within it. The examination is done by running
+the counter variable i% from the For...Next loop as the index parameter of the database's
+TableDefs collection (line 35). As each TableDef is determined, it's checked to make
+sure that it isn't an Access system table (line 36). Access system tables begin with
+the letters Msys. These letters have been assigned to the constant ACCESS_SYSTEM_PREFIX
+in the Declarations section of the form. If a table isn't a system table, it's added
+to the ComboBox (line 37). Having exhausted the For...Next loop, the code disconnects
+from the database (lines 41 and 42).</P>
+<P>The next order of business is getting all the field names from a chosen table
+listed in the lstFields ListBox (Listing 25.7). Lines 1-5 declare variables, some
+of which are DAO object variables, as you've seen before. Line 7 uses the Clear method
+to eliminate any field names that might exist in the ListBox because of a previous
+inspection.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Collections within databases are hierarchical</STRONG></P>
+	<P>To get a handle on the hierarchy of collections of a database, remember this:
+	All databases contain a collection of tables, and each table contains a collection
+	of fields. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Lines 8 and 9 open the database that the user has previously chosen. Line 10 determines
+the string that the user has clicked, using the ListBox's ListIndex property as the
+index of the ListBox's List property, and uses that string to determine which TableDef
+in the TableDefs collection should be set to the TableDef object variable tdef. After
+a table is determined, a For...Next loop is used to cycle through the Fields collection
+of the TableDef object and to add the field names to the ListBox lstFields by using
+the AddItem method (line 12). Having cycled through all the fields of a given table,
+the event handler disconnects the database from the program (lines 15 and 16).</P>
+<P>The work of moving the data from Access to Excel begins after a database is chosen,
+a table is determined, and a set of fields is chosen to transport. This activity
+takes place in Listing 25.7.</P>
+<P>Lines 1-16 declare many variables; most you've seen before, but a few are new.
+The new ones are Excel objects. To make this whole procedure more comprehensible,
+let's take a moment to review the hierarchy of objects in Excel. The base object
+is Excel.Application, which can hold multiple Workbooks during a session. Each Workbook
+can hold one or more Worksheets. Each Worksheet contains cells. A collection of geometrically
+contiguous cells is a Range. Lines 1-4 declare object variables for an Application,
+Workbook, Worksheet, and Range.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Resizing arrays</STRONG></P>
+	<P>You can resize an array by using the ReDim keyword. If you have MyArray(25), you
+	can increase the size of the array to 50 by using Redim MyArray(50). When you resize
+	an array, however, all its elements lose their values. To resize an array and allow
+	its elements to keep their values, use the Preserve keyword: Redim Preserve MyArray(50).
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>After the variables are declared, the program cycles through all the field names
+listed in the lstField ListBox to determine how many have been selected. If none
+have been selected (line 24), a message is sent to users, informing them of such
+(lines 25-28). The focus is returned to the ListBox (line 29), and the event handler
+is then terminated (line 30). If a field name or set of field names is selected,
+the string array that holds the field names for further manipulation is redimensioned
+(line 33). The CommandButtons are disabled on lines 35-38. The mouse pointer is set
+to an hourglass icon (line 40). Also, users are told that data is about to be transported
+by using the string constant TRANS_MSG, defined in the Declarations section of the
+form, as the value of the form's Caption property (lines 35-42).</P>
+<P>The program cycles through the strings in the lstFields ListBox a second time,
+adding the selected strings to the string array strFields (lines 46-51). The database
+object variables are set, as are object variables for an Excel workbook and worksheet
+(lines 55-59). This effectively has Access and Excel open so that data can be passed
+between them. The added worksheet is brought to the foreground on line 61.</P>
+<P>A For...Next loop is set up to accommodate each field listed in the strFields
+string array (line 63). The logic is that for each field in the For...Next loop,
+a SQL statement will be created, asking the table for all the records for that field
+(lines 64 and 65). The request is made on line 66, and a quick move is made through
+the returned <I>recordset</I> to figure out how many records were retrieved (lines
+68 and 69). Data in hand, the appropriate column of the Excel worksheet in which
+to list the retrieved records of the field is determined (line 71). The program moves
+to the first row of the Excel worksheet (line 74) where the field name in the strFields()
+array is inserted as a column heading. A cell is assigned to the Excel Range object
+variable xlr (line 75) to take advantage of the Range object's Font.Bold property.
+The font in the first row of the column is set to boldface (lines 77 and 78).</P>
+<P>For the program to execute more quickly, a limit has been placed on the number
+of records that the program will write to a given column. This limit is determined
+by the constant MAXIMUM_RECS, as defined in the Declarations section of the startup
+form. The Count of the retrieved recordset is compared with the maximum constant
+(lines 80-84).</P>
+<P>When the column header has been written and set to boldface, the program proceeds
+through another For...Next loop, which retrieves the pertinent data from the recordset,
+writes the data to the cell, and then moves to the next recordset and next cell (lines
+86-89). When the original For...Next loop cycle for the field is completed (line
+90), the program repeats the cycle again, moving to the next column and using the
+next field name in the strFields() string array.</P>
+<P>After the Excel sheet is filled with all data retrieved from the fields of a given
+table, the user interface is reset (lines 92 and 93), and users see a message box
+that tells them that the process has been successful (lines 95-98). The CommandButtons
+are enabled on lines 100-105. Then users are asked whether they want to save the
+newly created spreadsheet (lines 107-110). If they answer yes, the CommonDialog is
+presented again by using the ShowSave method to get a filename (line 116). The spreadsheet
+is saved by using the Worksheet object's SaveAs method. A message is sent to users,
+informing them that the file is saved. The Workbook object's SaveAs property is set
+to True (line 127) so that the Excel application object doesn't prompt users when
+DBTransporter quits Excel (line 129).</P>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch24.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch24/ch24.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch26.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch26/ch26.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> <BR>
+</P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

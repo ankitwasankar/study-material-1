@@ -1,0 +1,2097 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 5 - Selecting, Viewing, and Ordering Data</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch04.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch06.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;5</H1>
+<H1>Selecting, Viewing, and Ordering Data</H1>
+
+<UL>
+<LI><A HREF="#OpeningaDataTable">
+Opening a Data Table</A>
+<LI><A HREF="#OpeningTablesinWorkAreas">
+Opening Tables in Work Areas</A>
+<UL>
+<LI><A HREF="#OpeningFreeTables">
+Opening Free Tables</A>
+<LI><A HREF="#OpeningTablesMoreThanOnce">
+Opening Tables More Than Once</A>
+<LI><A HREF="#OpeningTablesBoundtoaDatabase">
+Opening Tables Bound to a Database</A>
+</UL>
+<LI><A HREF="#ListingDatatotheScreenorPrinter">
+Listing Data to the Screen or Printer</A>
+<UL>
+<LI><A HREF="#FindingRecordswithTTLOCATETT">
+Finding Records with <TT>LOCATE</TT></A>
+<LI><A HREF="#SeekingRecordsonIndexValues">
+Seeking Records on Index Values</A>
+<LI><A HREF="#SelectingGroupsofRecords">
+Selecting Groups of Records</A>
+<LI><A HREF="#ProcessingRecordswithWHILE">
+Processing Records with WHILE</A>
+</UL>
+<LI><A HREF="#SortingDataintheTable">
+Sorting Data in the Table</A>
+<UL>
+<LI><A HREF="#CreatingPermanentSortings">
+Creating Permanent Sortings</A>
+<LI><A HREF="#CreatingVirtualSortswithIndexes">
+Creating Virtual Sorts with Indexes</A>
+</UL>
+<LI><A HREF="#PlanningIndexesforRushmore">
+Planning Indexes for Rushmore</A>
+<UL>
+<LI><A HREF="#TurningRushmoreOff">
+Turning Rushmore Off</A>
+<LI><A HREF="#HelpingRushmoreAlong">
+Helping Rushmore Along</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="OpeningaDataTable"><FONT SIZE=5 COLOR=#FF0000>
+Opening a Data Table</FONT></A></H2>
+<P>
+A fundamental operation of any data-management system is opening
+tables and viewing the data that they contain. With Visual FoxPro
+6, the way that you open and view data is determined by how you
+store data. In this new release, you have the capability to store
+tables of information either as free tables or as part of an associated
+group of tables called a database. Although a database offers
+many new data-management options that previously were unavailable
+to FoxPro users, you might find yourself supporting many existing
+applications that still use the standalone table model. Fortunately,
+working with tables bound into databases is not much more difficult
+than working with free tables. In fact, databases provide additional
+features, such as persistent relations, that make working with
+them easier.
+<P>
+Critical to the viewing of data is the effective use of indexes.
+The use (and misuse) of indexes greatly affects the way that you
+retrieve and view data from a table. Visual FoxPro 6 supports
+three major types of indexes: independent single-index files,
+structural compound indexes, and non-structural compound indexes.
+<P>
+Indexes serve two primary purposes. You use some indexes primarily
+to form relations between tables; you use others to help retrieve
+data and to improve the performance of queries and reports.
+<H2><A NAME="OpeningTablesinWorkAreas"><FONT SIZE=5 COLOR=#FF0000>
+Opening Tables in Work Areas</FONT></A></H2>
+<P>
+Before you view data that is stored in a table or work with table
+data in any other way, you need to open the table in a work area.
+Visual FoxPro 6 supports 32,767 work areas. Each work area can
+hold one table and its related indexes, both independent and compound.
+It is unlikely that you will ever need to use all 32,767 areas-at
+least, not at the same time. Other system restrictions typically
+restrict most users to fewer than 256 files.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro does have more than 32,767 work areas available. If you use private data sessions, you will have 32,767 available in each private data session you open. See <A HREF="ch09.htm" >Chapter 9</A> &quot;Creating Forms,&quot; and <A HREF="ch10/ch10.htm" >Chapter 10</A>, &quot;Creating Reports,&quot; for more information about private data sessions.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="OpeningFreeTables">
+Opening Free Tables</A></H3>
+<P>
+How do you open a table to look at it? If the table is a free
+table, select one of the 32,767 areas and issue a <TT>USE</TT>
+command, as shown in this example:
+<BLOCKQUOTE>
+<PRE>
+SELECT 2
+USE CUST
+</PRE>
+</BLOCKQUOTE>
+<P>
+The first command tells Visual FoxPro 6 to use the second work
+area. The second command tries to open <TT>CUST.DBF</TT> from
+the current directory. If <TT>CUST.DBF</TT> is not there, Visual
+FoxPro 6 displays the following message, which includes the current
+drive and directory:
+<BLOCKQUOTE>
+<PRE>
+File '&lt;current directory&gt;\CUST.DBF' does not exist
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can also retrieve the current directory with this command:
+<BLOCKQUOTE>
+<PRE>
+? CURDIR()
+</PRE>
+</BLOCKQUOTE>
+<P>
+A safer way to open a file is to first test to see whether it
+exists before issuing the <TT>USE</TT> command. You can do this
+with the <TT>FILE</TT> function, as shown in Listing 5.1.<P>
+
+<HR>
+<B>Listing 5.1&nbsp;&nbsp;</B><TT><B>05CODE01.PRG</B></TT><B>-The
+</B><TT><B>FILE </B></TT><B>Function
+<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Program 5.1 - Testing if a file exists before using it
+SELECT 2
+IF FILE('CUST.DBF')
+      USE CUST
+ELSE
+      = MESSAGEBOX('File CUST.DBF does not exist in ' ;
+       + CurDir())
+ENDIF
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Of course, you can include a drive and directory with the table's
+name to open it:
+<BLOCKQUOTE>
+<PRE>
+USE C:\VFP5BOOK\DATA\CUST
+</PRE>
+</BLOCKQUOTE>
+<P>
+The preceding examples select the second work area without first
+checking to see whether another file is open there. Visual FoxPro
+6 automatically closes any file that is open in the selected area
+when you issue a <TT>USE</TT> command, whether the command succeeds
+or not. This means that even if the file being opened is not in
+the current directory or if VFP cannot open it, VFP closes the
+file that was open in the selected area. Therefore, you should
+find out whether the work area contains a file before you use
+it. Use the <TT>ALIAS</TT> function, which returns the alias name
+of a file when present, to test whether a work area is empty,
+as shown in Listing 5.2.<P>
+
+<HR>
+<B>Listing 5.2&nbsp;&nbsp;</B><TT><B>05CODE02.PRG</B></TT><B>-The
+</B><TT><B>ALIAS </B></TT><B>Function
+<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Program 5.2 - Use ALIAS to see if table is already open
+* Check if work area 2 is available (empty)
+  IF EMPTY(ALIAS(2)) &amp;&amp; Returns .T. If no file is open in area 2
+      SELECT 2
+  ELSE
+      = MESSAGEBOX('Work area 2 is in use')
+  ENDIF
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Of course, you should test successive work areas to find an empty
+one. Although you could write the code to perform such an iteration,
+there is a faster way. If you use <TT>SELECT 0</TT>, rather than
+open a specific work area, Visual FoxPro 6 begins with work area
+1 and continues searching until it finds the first empty one.
+You do not really need to know in which work area VFP opens a
+file. Visual FoxPro assigns an alias name to a work area when
+a table is open in it. This alias name is usually the same as
+the table's name, but it doesn't have to be. Always reference
+work areas by their alias name after opening them instead of using
+their work-area numbers.
+<P>
+You don't even need a separate <TT>SELECT</TT> statement to open
+a table. Select the work area and open the table at the same time
+by adding the <TT>IN</TT> clause to the <TT>USE</TT> statement.
+But before I show you the modified code that you use to open a
+file this way, consider an additional enhancement. If the file
+is not in the current or specified directory, open a dialog box
+to enable the user to locate the file. The <TT>GETFILE</TT> function,
+shown in Listing 5.3, provides this capability.<P>
+
+<HR>
+<B>Listing 5.3&nbsp;&nbsp;</B><TT><B>05CODE03.PRG</B></TT><B>-The
+</B><TT><B>GETFILE </B></TT><B>Function
+<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Program 5.3 - Use ALIAS and FILE to open table in next
+*               available work area.
+*
+* Open CUST.DBF in the next available work area
+  IF FILE('CUST.DBF')
+      USE CUST IN 0
+  ELSE
+      = MESSAGEBOX('File CUST.DBF does not exist in ' ;
+       + CURDIR())
+      lcNewFile = GETFILE('DBF', 'Pick table:', 'Select', 1)
+      IF !EMPTY(lcNewFile)
+            USE (lcNewFile) IN 0
+      ENDIF
+  ENDIF
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice that <TT>GETFILE()</TT> enables you to select a table from
+any drive or directory and returns the fully qualified pathname
+to the variable <TT>lcNewFile</TT>. Use this variable in <TT>USE</TT>
+to open the file. The parentheses in this statement tell Visual
+FoxPro 6 to use the contents of the variable <TT>pcNewFile</TT>,
+rather than the name <TT>pcNewFile</TT> itself.
+<P>
+What if the file that you want to open is already open in a different
+work area? By default, Visual FoxPro 6 considers this situation
+to be an error and displays the message <TT>File is in use</TT>.
+<P>
+Test for this condition with the <TT>USED()</TT> function, which
+requires the file alias as its parameter.  As shown in Listing
+5.4, the function checks to see whether the file alias exists
+in any work area.<P>
+
+<HR>
+<B>Listing 5.4&nbsp;&nbsp;</B><TT><B>05CODE04.PRG</B></TT><B>-</B><TT><B>USED()
+</B></TT><B>Function<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+  CLOSE DATABASES
+  CLEAR
+
+* Test if CUST is already in use
+  IF USED(&quot;CUST&quot;)
+    = MESSAGEBOX(&quot;File CUST.DBF is already in use.&quot;)
+    SELECT CUST
+  ELSE
+  * If file CUST.DBF exists, open it
+    cCurDirectory = CURDIR()
+    CD \VFP5BOOK\DATA
+    IF FILE(&quot;CUST.DBF&quot;)
+      USE CUST.DBF IN 0
+      = MESSAGEBOX(&quot;File CUST.DBF successfully opened.&quot;)
+    ELSE
+
+    * File CUST.DBF is not in default drive,
+    * ask user to locate it
+      = MESSAGEBOX(&quot;File CUST.DBF does not exist in &quot;;
+        + CURDIR())
+      lcNewFile  = GETFILE(&quot;DBF&quot;, &quot;Select a table:&quot;, &quot;Select&quot;, 1)
+      lcFileName = SUBSTR(lcNewFile, RAT(&quot;\&quot;, lcNewFile) + 1)
+      lcRootName = LEFT(lcFileName, LEN(lcFileName) - 4)
+
+    * Check if used selected file is already open.  If not, open it
+      IF !EMPTY(lcNewFile)
+        IF USED(lcRootName)
+          = MESSAGEBOX(&quot;File &quot; + lcNewFile + &quot; is already in use.&quot;)
+          SELECT(lcRootName)
+        ELSE
+          USE (lcNewFile) IN 0
+          = MESSAGEBOX(&quot;File CUST.DBF successfully opened.&quot;)
+        ENDIF
+      ENDIF
+    ENDIF
+    CD &amp;cCurDirectory
+  ENDIF
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice that you have to extract the filename from the value returned
+by <TT>GETFILE</TT> before you can use <TT>USED()</TT> to test
+for it.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you ever try to open a table in an empty work area and VFP tells you that the file is in use, but you don't see that file listed when you use the View window to look at the work areas, don't panic. Remember that <TT>USED()</TT> looks for files based on their alias names. If you open the file <TT>CUST.DBF</TT> and assign an alias of <TT>BUYERS</TT> to it, <TT>USED('CUST')</TT> returns false, even though any attempt to open <TT>CUST.DBF</TT> a second time in a different work area fails with a <TT>File is in use</TT> error message. If you open tables with alias names other than their filenames, document this information in the program so that other programmers can find it.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="OpeningTablesMoreThanOnce">
+Opening Tables More Than Once</A></H3>
+<P>
+At times, you might want to open a file twice, such as when you
+perform a recursive reference on a file. <A HREF="/ch03.htm" >Chapter 3</A> &quot;Defining
+Databases, Tables, and Indexes,&quot; includes an example of a
+self-referencing relation that finds the supervisor of every employee.
+That example uses a query and the relation to find each supervisor's
+name. You can achieve the same result by opening the file in two
+different work areas using the <TT>AGAIN</TT> clause of <TT>USE</TT>.
+<TT>AGAIN</TT> enables you to open a file more than once. The
+advantage is that you can use different indexes and move the record
+pointer independently in each work area. The following two lines
+show how to open a table a second time:
+<BLOCKQUOTE>
+<PRE>
+USE empl1 IN 0
+USE empl1 IN 0 AGAIN
+</PRE>
+</BLOCKQUOTE>
+<P>
+Although Visual FoxPro 6 enables you to open a file multiple times
+by including the <TT>AGAIN</TT> clause in <TT>USE</TT>, remember
+that it is really the same file. You can even turn an index on
+in one area and set a relation to it from the other; the record
+pointer is independent in each work area. Therefore, you can step
+through the first file to read the employee information, including
+supervisor IDs, and then you can switch to the second work area
+to search for the employee who has the first employee's supervisor
+ID and report their name. Listing 5.5 shows this technique.<P>
+
+<HR>
+<B>Listing 5.5&nbsp;&nbsp;</B><TT><B>05CODE05.PRG</B></TT><B>-Including
+the </B><TT><B>AGAIN </B></TT><B>Clause
+in </B><TT><B>USE<BR>
+</B></TT>
+<BLOCKQUOTE>
+<PRE>
+  CLOSE DATABASES
+  CLEAR
+
+* Open EMPL1.DBF in two work areas
+  SELECT 0
+  USE \VFP5BOOK\DATA\EMPL1
+  SELECT 0
+  USE \VFP5BOOK\DATA\EMPL1 AGAIN ;
+      ALIAS SUPERVISOR ;
+      ORDER EMPLOYEEID
+
+* Step through the first area
+  SELECT Empl1
+  SCAN
+    ? EmplID, ;
+      LastName FONT &quot;Foxfont&quot;, 10, ;
+      FirstName FONT &quot;Foxfont&quot;, 10, ;
+      Supervisor FONT &quot;Foxfont&quot;, 10
+  * Now find the employee corresponding to the supervisor id
+    IF SEEK(Supervisor, 'SUPERVISOR')
+      ?? supervisor.LastName FONT &quot;Foxfont&quot;, 10, ;
+         supervisor.FirstName FONT &quot;Foxfont&quot;, 10
+    ENDIF
+  ENDSCAN
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<H3><A NAME="OpeningTablesBoundtoaDatabase">
+Opening Tables Bound to a Database</A></H3>
+<P>
+If you try to open a table that is bound to a database without
+first opening the database, VFP uses a <I>back link</I> to identify
+and open the corresponding database automatically.
+<P>
+VFP stores this back link in the table to identify its parent
+database. It stores this information at the end of the field list
+in the table header. The reference includes the name of the database
+and a relative path to the database from the table. If you open
+the table with a full pathname, VFP bases its relative path search
+for the database on that pathname rather than the current directory.
+<P>
+If you ever attempt to open a table and VFP reports that it cannot
+locate the database, one of two things probably happened: Either
+you moved the table relative to the database, or you moved the
+database relative to the table.
+<P>
+Suppose that you begin with database <TT>PTOFSALE</TT> and table
+<TT>CUSTOMER</TT> in the same directory. In this case, the back
+link in <TT>CUSTOMER</TT> simply is <TT>PTOFSALE.DBC</TT>. In
+other words, VFP looks in the same directory as the table for
+the database.
+<P>
+On the other hand, suppose that you store the database as <TT>\app1\PTOFSALE.DBC</TT>
+and the table as <TT>\app1\data\CUSTOMER.DBF</TT>. Now the back
+link is <TT>..\PTOFSALE</TT>. In this case, the double dot at
+the beginning of the back link means to return to the parent directory
+of the current directory.
+<P>
+Similarly, suppose that you store the database as <TT>\app1\database\PTOFSALE.DBC</TT>
+and the table as <TT>\app1\data\CUSTOMER.DBF</TT>. Now the back
+link becomes <TT>..\database\PTOFSALE</TT>. In this case, the
+back link returns first to the parent directory and then goes
+down a different branch: the <TT>\database</TT> subdirectory.
+<P>
+Following this logic, you can see that moving the entire tree
+structure that contains the database and table continues to work
+because the relative paths remain the same. You can even move
+the tree to a different directory or drive without a problem.
+You cannot move the tables relative to the database, however.
+<P>
+To be more explicit in your coding, precede commands that open
+a bound table with a command that opens the database, as shown
+in the following example:
+<BLOCKQUOTE>
+<PRE>
+OPEN DATABASE C:\VFP5BOOK\DATA\PTOFSALE
+USE C:\VFP5BOOK\DATA\CUSTOMER
+</PRE>
+</BLOCKQUOTE>
+<P>
+VFP requires the database to be open because bound tables can
+use long table names, validation rules, triggers, or other database
+enhancements. Visual FoxPro would know nothing about these new
+features unless it opened the database first.
+<H2><A NAME="ListingDatatotheScreenorPrinter"><FONT SIZE=5 COLOR=#FF0000>
+Listing Data to the Screen or Printer</FONT></A></H2>
+<P>
+Visual FoxPro has two commands-<TT>DISPLAY</TT> and <TT>LIST</TT>-that
+create simple data listings. Following is the syntax for both
+commands:
+<BLOCKQUOTE>
+<PRE>
+DISPLAY
+      [[FIELDS] FieldList]
+      [Scope][FOR IExpression1][WHILE Iexpression2]
+      [OFF]
+      [TO PRINTER [PROMPT]|TO FILE FileName]
+      [NOCONSOLE]
+      [NOOPTIMIZE]
+LIST
+      [FIELDS FieldList]
+      [Scope][FOR IExpression1][WHILE Iexpression2]
+      [OFF]
+      [TO PRINTER [PROMPT]|TO FILE FileName]
+      [NOCONSOLE]
+      [NOOPTIMIZE]
+</PRE>
+</BLOCKQUOTE>
+<P>
+In addition to listing the contents of tables, Table 5.1 lists
+other clauses that are available with <TT>LIST</TT> and <TT>DISPLAY</TT>.
+<BR>
+<P>
+<CENTER><B>Table 5.1&nbsp;&nbsp;Clauses of LIST and DISPLAY</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>Clause</B></CENTER></TD><TD WIDTH=384><CENTER><B>What It Lists</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>CONNECTIONS</TT></TD><TD WIDTH=384>Information on named connections to external data sources, such as SQL Server, Access, dBASE, and Paradox
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>DATABASE</TT></TD><TD WIDTH=384>Information about the current database
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>FIELDS</TT></TD><TD WIDTH=384>Contents of table fields
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>FILES</TT></TD><TD WIDTH=384>Filenames</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>MEMORY</TT></TD><TD WIDTH=384>Contents of memory variables
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>OBJECTS</TT></TD><TD WIDTH=384>Information about objects
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>PROCEDURES</TT></TD><TD WIDTH=384>Information on stored procedures
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>STATUS</TT></TD><TD WIDTH=384>System status
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>STRUCTURE</TT></TD><TD WIDTH=384>File structures
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>TABLES</TT></TD><TD WIDTH=384>Tables in an open database
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>VIEWS</TT></TD><TD WIDTH=384>Information on SQL views
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<TT>DISPLAY</TT> with no additional clauses shows the current
+record of the current table. On the other hand, <TT>LIST</TT>
+shows all the records from the current table, beginning with the
+first one. You can modify the scope of either command with <TT>ALL</TT>,
+<TT>NEXT</TT>, <TT>RECORD</TT>, or <TT>REST</TT>.   Table 5.2
+defines these modifiers.<BR>
+<P>
+<CENTER><B>Table 5.2&nbsp;&nbsp;Record Scope Modifiers</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>Scope</B></CENTER></TD><TD WIDTH=384><CENTER><B>What It Includes</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>ALL</TT></TD><TD WIDTH=384>Every record in the table
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>NEXT <I><FONT FACE="Courier New">n</I></TT>
+</TD><TD WIDTH=384>The next <TT><I>n</I></TT> records, where <TT><I>n</I></TT> can be any integer, beginning with the current record
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>RECORD <I><FONT FACE="Courier New">n</I></TT>
+</TD><TD WIDTH=384>The <TT><I>n</I></TT>th record in the table (based on physical record numbers, not logical orders defined by a sort)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>REST</TT></TD><TD WIDTH=384>All records from the current one to the end of the table
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+You can also specify a subset of fields by using the <TT>FIELDS</TT>
+clause for both commands. You need to list only the fields; the
+keyword <TT>FIELDS</TT> is optional. Following are the various
+syntax forms for these two commands:
+<BLOCKQUOTE>
+<PRE>
+USE C:\VFP5BOOK\DATA\CUST
+DISPLAY           &amp;&amp; Displays the first record only
+LIST              &amp;&amp; Lists all records, scrolling if necessary
+DISPLAY NEXT 4    &amp;&amp; Displays the next four records
+DISPLAY REST      &amp;&amp; Display the rest of the record in the table
+                  &amp;&amp; from the current record pointer position
+DISPLAY ALL       &amp;&amp; Display all the records in the table
+LIST cLast, cFirst        &amp;&amp; List the last and first names of
+                              &amp;&amp; every record in the table
+</PRE>
+</BLOCKQUOTE>
+<P>
+Another difference between these two commands appears when you
+are displaying more records than will fit onscreen. When <TT>LIST</TT>
+reaches the bottom of the screen, it does not stop; it simply
+clears the screen and begins again from the top without pausing.
+<TT>DISPLAY</TT> pauses when it reaches the bottom of the screen
+and waits until you press a key to continue. Therefore, you might
+want to use <TT>LIST</TT> with the <TT>TO PRINTER</TT> clause
+to redirect output to the printer so that Visual FoxPro 6 does
+not pause. On the other hand, when you are viewing records onscreen,
+use <TT>DISPLAY</TT> to see each record. You can also list records
+to a file by using the <TT>TO FILE</TT> clause.
+<P>
+To display records onscreen, use the following:
+<BLOCKQUOTE>
+<PRE>
+DISPLAY ALL cCustId, cCompany
+</PRE>
+</BLOCKQUOTE>
+<P>
+To list records to the printer, use the following:
+<BLOCKQUOTE>
+<PRE>
+LIST cCustId, cCompany TO PRINTER
+</PRE>
+</BLOCKQUOTE>
+<P>
+To list records to a file, use the following:
+<BLOCKQUOTE>
+<PRE>
+LIST cCustId, cCompany TO FILE CUSTOMER.TXT<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When you issue a <TT>LIST REST</TT>, you might not get all the records that you expect to get. The scope modifiers <TT>REST</TT> and <TT>NEXT</TT> both begin retrieving records from the current record pointer. If you move the record pointer before issuing either of these commands, you might not get the records that you expect.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="FindingRecordswithTTLOCATETT">
+Finding Records with <TT>LOCATE</TT></A></H3>
+<P>
+If you have only a few records in a table, listing or displaying
+all records in a table to find the one that you want might not
+seem to be a bad idea. As tables grow to hundreds or thousands
+of records, however, <TT>LIST</TT> and <TT>DISPLAY</TT> by themselves
+become impractical. You need to jump immediately to the record
+or records that match the desired condition.
+<P>
+<TT>LOCATE</TT> helps you find records for a specific condition,
+even if the records are scattered throughout the table. Suppose
+that you want to see records for customers who have outstanding
+bills. Unless you have a really bad collection history, you really
+do not want to see every record. The following statement jumps
+to the first record that matches the search condition:
+<BLOCKQUOTE>
+<PRE>
+SELECT CUST
+LOCATE FOR cBillDue &gt; 0
+</PRE>
+</BLOCKQUOTE>
+<P>
+<TT>LOCATE</TT> always begins at the first record in a file and
+checks records sequentially until it finds the first one that
+passes the condition test. To see more information about this
+customer, use <TT>DISPLAY</TT> by itself to print to the screen
+all fields for the current record. You can also use <TT>LIST NEXT
+1</TT>.
+<P>
+But suppose you suspect that more customers have outstanding bills.
+If you reissue the <TT>LOCATE</TT> command, Visual FoxPro 6 merely
+displays the same record because it always begins its search from
+the top of the file. If you use <TT>CONTINUE</TT> instead, the
+search begins at the record immediately after the current one
+and finds the next record that matches the condition. In fact,
+you can continue issuing <TT>CONTINUE</TT> until VFP reaches the
+end of the file. The code segment in Listing 5.6 shows you how
+to use these commands to view all customers who have outstanding
+bills.<P>
+
+<HR>
+<B>Listing 5.6&nbsp;&nbsp;</B><TT><B>05CODE06.PRG</B></TT><B>-Using
+</B><TT><B>LOCATE </B></TT><B>and
+</B><TT><B>CONTINUE<BR>
+</B></TT>
+<BLOCKQUOTE>
+<PRE>
+* View customers with outstanding bills
+USE CUST
+LOCATE FOR cBillDue &gt; 0
+DISPLAY OFF cCustId, cBillDue
+DO WHILE !EOF()
+  CONTINUE
+  IF NOT EOF()
+    DISPLAY OFF cCustId, cBillDue
+  ENDIF
+ENDDO
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When you use <TT>LOCATE</TT> or <TT>CONTINUE</TT>, <TT>EOF()</TT> remains <TT>.F.</TT> until the search fails to find additional records that match the condition. Alternatively, you can use <TT>FOUND()</TT>, which returns <TT>.T.</TT> as long as records are found.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The advantage with <TT>LOCATE</TT> is that you can define a condition
+on any field or portion of a field in the table; it does not need
+an index. To find all customers who have the word <TT>CONSULTANTS</TT>
+in their company names, use the commands in Listing 5.7.<P>
+
+<HR>
+<B>Listing 5.7&nbsp;&nbsp;</B><TT><B>05CODE07.PRG</B></TT><B>-Putting
+Them All Together<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Locate all customers who are consultants
+USE CUST
+LOCATE FOR 'CONSULTANTS' $ UPPER(cCompany)
+LIST OFF cCompany
+DO WHILE !EOF()
+  CONTINUE
+  IF FOUND()
+    LIST OFF cCompany
+  ENDIF
+ENDDO
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When you compare strings, convert both sides of the string to all uppercase or all lowercase before comparing them to make comparisons independent of case.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Even though the <TT>LOCATE</TT> command does not require that any indexes exist, it is a good idea to maintain indexes on all the fields that you refer to in your <TT>LOCATE</TT> commands. This is because the optimizing technology in Visual FoxPro 6, Rushmore, uses available indexes to improve the speed at which it can evaluate your <TT>FOR</TT> clause on the <TT>LOCATE</TT> command.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+You can even use <TT>LOCATE</TT> with a condition that combines
+several fields. Although <TT>LOCATE</TT> does not require an index,
+if one exists that matches the form of the condition, <TT>LOCATE</TT>
+automatically optimizes the search for matching records. What
+this means to you is improved performance with almost instantaneous
+response, even in tables that have millions of records.
+<H3><A NAME="SeekingRecordsonIndexValues">
+Seeking Records on Index Values</A></H3>
+<P>
+Another command that you can use to find selected records in a
+table is <TT>SEEK</TT>. Unlike <TT>LOCATE</TT>, <TT>SEEK</TT>
+requires the use of an index. Furthermore, if the index is a compound
+one, or if you open multiple simple indexes, <TT>SEEK</TT> works
+only with the current one. Therefore, first <TT>SET ORDER TO</TT>
+the index that you want <TT>SEEK</TT> to use. <TT>SEEK</TT> has
+a simple syntax. Simply follow <TT>SEEK</TT> with the value that
+you want it to find. To find <TT>CUSTOMER 0025</TT>, enter the
+code shown in Listing 5.8.<P>
+
+<HR>
+<B>Listing 5.8&nbsp;&nbsp;</B><TT><B>05CODE08.PRG</B></TT><B>-Using
+</B><TT><B>SEEK<BR>
+</B></TT>
+<BLOCKQUOTE>
+<PRE>
+* Locate customer '0025'
+USE CUST
+SET ORDER TO TAG custid
+SEEK '0025'
+IF FOUND()
+  DISPLAY
+ELSE
+  = MESSAGEBOX('CUSTOMER 0025 was not found')
+ENDIF
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+<TT>SEEK</TT> requires a value of the same data type as the current
+index. A seek expression does not always have to match the index
+value exactly, however. If <TT>SET EXACT</TT> is <TT>OFF</TT>,
+the index value needs to match character-for-character for only
+as many characters as are in the seek value. Suppose that you
+want to search <TT>CUST.DBF</TT> for a company whose name begins
+with Laser. Use the following code:
+<BLOCKQUOTE>
+<PRE>
+USE C:\VFP5BOOK\DATA\CUST
+SET ORDER TO TAG company
+SEEK 'Laser'
+</PRE>
+</BLOCKQUOTE>
+<P>
+If <TT>SET EXACT</TT> is <TT>OFF</TT>, Visual FoxPro 6 finds the
+record. If <TT>SET EXACT</TT> is <TT>ON</TT>, the seek value must
+match the index value exactly, in total number of characters as
+well as each individual character. Thus, if you index <TT>CUSTOMER.DBF</TT>
+by company and perform the following <TT>SEEK</TT> with <TT>SET
+EXACT OFF</TT>, VFP places the record pointer at the first company
+whose name begins with L:
+<BLOCKQUOTE>
+<PRE>
+SET EXACT OFF
+SEEK 'L'
+</PRE>
+</BLOCKQUOTE>
+<P>
+The <TT>SET EXACT</TT> command also works for other conditional
+tests, such as in the <TT>FOR</TT> clause described earlier in
+this chapter. In these cases, however, an inexact search matches
+characters from left to right until a mismatch is found or until
+the expression on the right side of the <TT>=</TT> operator ends.
+You can temporarily override inexact comparisons for a single
+conditional test by using the <TT>==</TT> operator. Therefore,
+the following two <TT>LOCATE</TT>s are equivalent:
+<BLOCKQUOTE>
+<PRE>
+SET EXACT ON
+LOCATE FOR cFirst = 'NATASHA   '
+</PRE>
+</BLOCKQUOTE>
+<P>
+and
+<BLOCKQUOTE>
+<PRE>
+SET EXACT OFF
+LOCATE FOR cFirst == 'NATASHA   '<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Even though <TT>==</TT> and <TT>SET EXACT ON</TT> seem to be equivalent, they are slightly different. <TT>SET EXACT ON</TT> compares two strings until the one on the right side of the <TT>=</TT> is exhausted, and then checks to see if both strings are of equal length. <TT>==</TT>, on the other hand, pads the shorter string with spaces to force it to be the same length and then checks the two strings to see if they are the same.
+<BR>
+The following code listing explains the difference:<BR>
+<PRE>
+LcVar1 = 'SMITH'
+LcVar2 = 'SMITH     '
+? lcVar1 == lcVar2 &amp;&amp; Displays .T. that they are equal
+SET EXACT ON
+? lcVar1 = lcVar2 &amp;&amp; Displays .F. that they are not equal</PRE>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Normally, when a <TT>LOCATE</TT> or <TT>SEEK</TT> fails, Visual
+FoxPro 6 leaves the record pointer at the end of the table. In
+some cases, however, you might not know exactly what value to
+search for, so you guess. You want the pointer to stop at the
+next record after the position of the search value, if that value
+exists.
+<P>
+Suppose that you don't know the exact name of the company, but
+you think that it's Golf Heaven, so you write the code shown in
+Listing 5.9. If no company name in <TT>CUST.DBF</TT> has this
+exact spelling, the record pointer moves to the end of the file.
+If you first enter the command <TT>SET NEAR ON</TT>, however,
+VFP stops at the first company name that alphabetically follows
+Golf Heaven: Goofer's Arcade Heaven in table <TT>CUST.DBF</TT>.
+<P>
+Table 5.3 might help clarify interpreting a <TT>SEEK</TT> with
+<TT>SET NEAR ON</TT> and <TT>SET EXACT OFF</TT>.<BR>
+<P>
+<CENTER><B>Table 5.3&nbsp;&nbsp;Results of SEEK with SET NEAR
+ON and SET EXACT OFF</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT><B>EOF()</B></TT></CENTER>
+</TD><TD WIDTH=96><CENTER><TT><B>FOUND()</B></TT></CENTER>
+</TD><TD WIDTH=288><CENTER><B>Search Result</B></CENTER></TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>.F.</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>.T.</TT></CENTER>
+</TD><TD WIDTH=288>Exact match of search string found.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>.F.</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>.F.</TT></CENTER>
+</TD><TD WIDTH=288>No exact match found, but record pointer is on the next record alphabetically.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>.T.</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>.F.</TT></CENTER>
+</TD><TD WIDTH=288>No exact match found; search string is beyond the last value in the table.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<HR>
+<P>
+<B>Listing 5.9&nbsp;&nbsp;</B><TT><B>05CODE09.PRG</B></TT><B>-Results
+of </B><TT><B>SEEK </B></TT><B>with
+</B><TT><B>SET NEAR ON<BR>
+</B></TT>
+<BLOCKQUOTE>
+<PRE>
+* Locate customer data for GOLF HEAVEN
+* Open table and set tag to COMPANY
+  USE C:\VFP5BOOK\DATA\CUST
+  SET ORDER TO TAG company
+
+* Save current setting of NEAR, and turn NEAR ON
+  curnear = SYS(2001, 'NEAR')
+  SET NEAR ON
+
+* Find record closest to 'GOLF HEAVEN'
+  SEEK 'GOLF HEAVEN'
+
+* If search goes beyond last records, display last record.
+  IF EOF()
+    GOTO BOTTOM
+  ENDIF
+  DISPLAY
+
+* Reset NEAR to original value
+  SET NEAR &amp;curnear
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Use <TT>SET EXACT ON</TT> only if you search or compare with strings of the same length as the index or comparison field. Otherwise, <TT>SET EXACT OFF</TT> enables you to search by entering a substring. If you know that the substring that you want to search with matches a field in the table character for character, you can <TT>SET NEAR OFF</TT>. Otherwise, <TT>SET NEAR ON</TT> finds the next record alphabetically after the substring.
+<BR>
+Whenever you use a <TT>SET</TT> command in a program, consider capturing the current state of the <TT>SET</TT> parameter by using the <TT>SET()</TT> function. Remember to restore the parameter to its original value when you leave the program. Always begin programs with a common <TT>SET</TT> definition. Then program by exception only those <TT>SET</TT> parameters that must change from this default.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+If you are not sure that an entered value will exactly match a
+value in the table, use <TT>SET NEAR ON</TT> to find the next
+record alphabetically. Use this technique when you are setting
+ranges for parameters in reports. On the other hand, if you need
+to create a relation between customer ID in the order file and
+in the customer file, you want an exact match and should use both
+<TT>SET EXACT ON</TT> and <TT>SET NEAR OFF</TT>.
+<H3><A NAME="SelectingGroupsofRecords">
+Selecting Groups of Records</A></H3>
+<P>
+Many operations call for a subset of the table that is being used.
+Perhaps you want to see only the customers in Pennsylvania or
+those customers in California who have outstanding bills. In either
+case, define a filter condition using the <TT>SET FILTER TO</TT>
+command followed by <TT>LIST</TT> or <TT>DISPLAY</TT>, as follows:
+<BLOCKQUOTE>
+<PRE>
+USE C:\VFP5BOOK\DATA\CUST
+SET FILTER TO cBState = 'PA'
+LIST<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Even though it does not use a <TT>FOR</TT> clause, <TT>SET FILTER</TT> is Rushmore-optimizable.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+You have the same capability to filter records directly from within
+both <TT>LIST</TT> and <TT>DISPLAY</TT>. The <TT>FOR</TT> clause
+enables you to define a condition that selects records from the
+table. To select records for Pennsylvania customers, for example,
+use an expression like the following:
+<BLOCKQUOTE>
+<PRE>
+FOR cBState = 'PA'
+</PRE>
+</BLOCKQUOTE>
+<P>
+Use the following expression to <TT>DISPLAY</TT> the results:
+<BLOCKQUOTE>
+<PRE>
+DISPLAY ALL cCustId, cCompany FOR cBState = 'PA'
+</PRE>
+</BLOCKQUOTE>
+<P>
+This command steps through the records sequentially from the first
+record and displays only those that match the condition of the
+<TT>FOR</TT> expression. The potential problem with this method
+is apparent if you envision that the customer records will be
+sorted but not indexed by state: Visual FoxPro reads more records
+than it needs to. When Visual FoxPro reads the table using a <TT>FOR</TT>
+clause, it tests each record to find the Pennsylvania ones. Furthermore,
+even after VFP displays the last record for Pennsylvania customers,
+it continues reading records until it reaches the end of the file.
+The <TT>FOR</TT> clause makes no assumptions about sort orders;
+it is a brute-force way of processing all records that match the
+condition.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If the <TT>FOR</TT> expression is Rushmore-optimizable, performance is greatly improved. If the <TT>FOR</TT> expression is not optimized, it can be extremely slow because it reads every record in the table. The programmer has the responsibility of ensuring that the <TT>FOR</TT> expression is Rushmore-optimizable.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="ProcessingRecordswithWHILE">
+Processing Records with WHILE</A></H3>
+<P>
+An alternative method of finding records that match an expression
+uses the <TT>WHILE</TT> clause. To begin, open a table and an
+index that uses the same order as the search condition. Next,
+find the first record that matches the search condition. To do
+so, use <TT>LOCATE</TT> or <TT>SEEK</TT>. If <TT>EOF()</TT> returns
+<TT>.T.</TT> or <TT>FOUND()</TT> returns <TT>.F.</TT>, no records
+match the search condition. Having found the first record that
+matches the condition, you know that all additional matching records
+in the table follow it sequentially. Read these records one at
+a time, using a simple loop such as <TT>DO WHILE</TT> or <TT>SCAN</TT>,
+until the search condition fails. Then you can ignore the rest
+of the table without searching it because you know that no other
+records will match.
+<P>
+Listing 5.10 shows a variation on the preceding search. It requires
+a nonoptimizable search, because it uses a substring expression
+to find a customer whose name begins with the letter M.<P>
+
+<HR>
+<B>Listing 5.10&nbsp;&nbsp;</B><TT><B>05CODE10.PRG</B></TT><B>-Using
+</B><TT><B>WHILE<BR>
+</B></TT>
+<BLOCKQUOTE>
+<PRE>
+  SELECT CUST
+  SET ORDER TO TAG COMPANY
+  LOCATE FOR LEFT(cCompany,1) =  'M'
+  SCAN WHILE LEFT(cCompany,1) =  'M'
+    ? cCustId, cCompany
+  ENDSCAN
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The real difference between <TT>FOR</TT> and <TT>WHILE</TT> is that <TT>FOR</TT> will check every record in the command scope and only affect those that meet the condition. <TT>WHILE</TT> will affect records until it encounters one that does not meet the condition. This means that <TT>WHILE</TT> is always faster than <TT>FOR</TT> because it deals with fewer records.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+You can combine <TT>FOR</TT> and <TT>WHILE</TT> clauses in the
+same command line. For example, if you want to see the customers
+in Texas that owe you more than $1,000, you could use the following:
+<BLOCKQUOTE>
+<PRE>
+USE Customer ORDER TAG State
+SEEK 'TX'
+DISPLAY WHILE State = 'TX' FOR Balance &gt; 1000
+</PRE>
+</BLOCKQUOTE>
+<P>
+You might wonder which condition is best to put in the <TT>WHILE</TT>
+and which in the <TT>FOR</TT>. You want to put the most restrictive
+condition-that is, the one that provides the smallest number of
+records-in the <TT>WHILE</TT>. In the preceding example, if there
+were 20,000 customers in Texas and 1,000 that owe more than $1,000,
+the fastest way would be the following:
+<BLOCKQUOTE>
+<PRE>
+USE Customer ORDER TAG Balance
+SEEK 1000
+DISPLAY WHILE Balance&gt;1000 FOR State = 'TX'<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you need to retrieve records based on an expression that does not have a corresponding index, you probably need to use a nonoptimized <TT>FOR</TT>. Because such expressions are slow, you might want to consider creating a separate index for this situation if it occurs frequently.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Using <TT>SEEK</TT> and a <TT>WHILE</TT> clause provides performance
+that is better than that of a Rushmore-optimized <TT>FOR</TT>
+expression.
+<P>
+One additional enhancement can be added to this example. <TT>SEEK</TT>
+has an equivalent function call that returns <TT>.T.</TT> when
+it finds a match. You can place this function directly in the
+<TT>DO WHILE</TT> statement, as shown in Listing 5.11.<P>
+
+<HR>
+<B>Listing 5.11&nbsp;&nbsp;</B><TT><B>05CODE11.PRG</B></TT><B>-Using
+</B><TT><B>SEEK</B></TT><B> and
+</B><TT><B>DO</B></TT><B> </B><TT><B>WHILE
+<BR>
+</B></TT>
+<BLOCKQUOTE>
+<PRE>
+SELECT CUST
+SET ORDER TO TAG CUSTSTATE
+IF SEEK('PA')   &amp;&amp; Execute the code block on if PA is found
+  DISPLAY REST cCustId, cCompany ;
+        WHILE cBState = 'PA'
+ENDIF
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+In the example in Listing 5.11, notice the scope word <TT>REST</TT> used on the <TT>DISPLAY</TT> command. This scope word is optional in this situation because a <TT>WHILE</TT> clause implicitly includes a scope of <TT>REST</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="SortingDataintheTable"><FONT SIZE=5 COLOR=#FF0000>
+Sorting Data in the Table</FONT></A></H2>
+<P>
+You can sort data in a table in two fundamental ways.  The first
+is a <I>physical sort</I>, also called a <I>permanent sort</I>.
+To create a physical sort, you need to rewrite the table in the
+desired sort order. The advantage of this method is that you need
+no additional file other than the data file itself. The disadvantage
+is that the sort order is difficult to maintain if users make
+frequent updates to the data. A physical sort requires more code
+to maintain or requires frequent re-sorting.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+A further disadvantage to sorting occurs with large files. If your tables get large, a sort will take considerable time to execute.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The second type of sort uses a second file called an index. An
+<I>index</I> stores values for the indexed field(s) and pointers
+to the location of those values in the database. The <I>pointer</I>
+is a record number. Visual FoxPro 6 stores the indexed field values
+in a b-tree (balanced binary tree) structure that it can search
+quickly.
+<H3><A NAME="CreatingPermanentSortings">
+Creating Permanent Sortings</A></H3>
+<P>
+As mentioned earlier in this chapter, you are unlikely to add
+records to the table in a sorted order. But if you do, what happens
+if you need more than one sort order? You certainly cannot have
+two physical sort orders in one table. The alternative-maintaining
+two or more separate copies of the data in tables with different
+sort orders-is a major nightmare. Yet at times, you want to store
+data in sorted order. Other than entering the records that way,
+how can you create a sorted table?
+<P>
+The <TT>SORT</TT> command creates another copy of the table and
+enables you to sort on any field or combination of fields. <TT>SORT</TT>'s
+syntax is rather rich, as follows:
+<BLOCKQUOTE>
+<PRE>
+SORT TO TableName
+      ON FieldName1 [/A][/D][/C]
+      [FieldName2 [/A][/D][/C]...]
+      [ASCENDING|DESCENDING]
+      [Scope][FOR Iexpression1][WHILE Iexpression2]
+      [FIELDS FieldNameList|FIELDS LIKE Skeleton
+      |FIELDS EXCEPT Skeleton]
+      [NOOPTIMIZE]
+</PRE>
+</BLOCKQUOTE>
+<P>
+Suppose that you need to generate a report that lists customers
+alphabetically by state, and that within each state you want to
+list customers with the largest annual purchases first and continue
+to the smallest. You need an ascending sort on state and a descending
+sort on purchases. <TT>SORT</TT> can create this file with the
+following statement:
+<BLOCKQUOTE>
+<PRE>
+USE \VFP5BOOK\DATA\CUSTOMER
+SORT TO STATSALE ON cBillingStateProvince /A/C + ;
+          nPurchasesYearToDate /D<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+<TT>SORT</TT> creates a free table. Therefore, it truncates the long field names defined in the original table of the example to 10-character fields.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can create indexes that have different orders (ascending/descending) on the parts of the index, such as:<BR>
+<PRE>
+<TT>INDEX ON cState + STR(999999.99-nPurchases,9,2)</TT>
+</PRE>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Another disadvantage of using <TT>SORT</TT> is the quick obsolescence
+of the data. As soon as you create the table, it begins to become
+obsolete. Someone else might immediately add, delete, or modify
+a record. One situation in which physically sorting the records
+in a table can benefit an application is when a table has a very
+large number of records and there is one primary order in which
+those records are used. In this case, it is beneficial to sort
+the table on that order whenever you are doing maintenance on
+the table (such as re-creating the indexes or something else).
+<P>
+In <A HREF="ch06.htm" >Chapter 6</A> &quot;Creating Basic Queries,&quot; you learn to
+create <TT>CURSORS</TT> with the SQL <TT>SELECT</TT> command.
+Cursors provide the same advantages as <TT>SORT</TT> (sort directions
+by field). In addition, Visual FoxPro 6 automatically deletes
+cursors when you exit VFP or open another table in the same work
+area.
+<H3><A NAME="CreatingVirtualSortswithIndexes">
+Creating Virtual Sorts with Indexes</A></H3>
+<P>
+Indexes are the best way to provide different sort orders for
+data. Visual FoxPro 6 can create, use, and maintain three types
+of indexes:
+<UL>
+<LI>Independent indexes (<TT>.IDX</TT>)
+<LI>Compound structural indexes (<TT>.CDX</TT>)
+<LI>Compound non-structural indexes (<TT>.CDX</TT>)
+</UL>
+<P>
+Indexes are not static in the same way that tables created with
+<TT>SORT</TT> are. Rather, indexes are dynamic. Indexes adapt
+automatically to added, deleted, and modified records, as long
+as you keep them open. The following is the syntax for the <TT>INDEX</TT>
+command:
+<BLOCKQUOTE>
+<PRE>
+INDEX ON eExpression ;
+      TO IDXFileName|TAG TagName [OF CDXFileName]
+      [FOR IExpression]
+      [COMPACT]
+      [ASCENDING|DESCENDING]
+      [UNIQUE|CANDIDATE]
+      [ADDITIVE]
+</PRE>
+</BLOCKQUOTE>
+<P>
+<A HREF="ch03/ch03.htm" >Chapter 3</A> &quot;Defining Databases, Tables, and Indexes,&quot;
+discusses how to create compound structural indexes by using the
+index page of the Table Designer. You can also create and use
+any of the three indexes directly from the Command window or from
+within a program.
+<P>
+<B>Simple Independent Indexes</B>&nbsp;&nbsp;<I>Independent indexes</I>
+on a single expression were the first indexes used by FoxBase,
+the predecessor of FoxPro. For each index expression, you create
+a separate index file with its own name. The root names of the
+table (<TT>.DBF</TT>) and index (<TT>.IDX</TT>) do not have to
+be the same. In fact, if you have more than one simple index,
+it is not possible for all the indexes to have the same root name.
+Many programmers developed the habit of naming the primary index
+with the same root name as the table. The following lines use
+the <TT>INDEX</TT> command to create an independent index on customer
+ID in <TT>CUST.DBF</TT>, which has 10-character field names:
+<BLOCKQUOTE>
+<PRE>
+USE CUST
+INDEX ON cCustId TO CUSTID.IDX
+</PRE>
+</BLOCKQUOTE>
+<P>
+At this point, the table and index are open. But in most programs,
+you need to specifically open previously created indexes with
+the table, as in the following command:
+<BLOCKQUOTE>
+<PRE>
+USE CUST INDEX CUSTID
+</PRE>
+</BLOCKQUOTE>
+<P>
+If you have more than one index for a table, open the indexes
+at the same time if you plan to make modifications to the records,
+as follows:
+<BLOCKQUOTE>
+<PRE>
+USE CUST INDEX CUSTID, COMPANY, ZIPCODE
+</PRE>
+</BLOCKQUOTE>
+<P>
+If you do not open each index, VFP cannot maintain the indexes
+that are not open if you add, delete, or modify records. (Because
+the indexes can have any name, how would FoxPro know about them?)
+If you attempt to use the table with one of these indexes later,
+VFP might display records out of order or even point outside the
+table due to deleted records.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+To get the best performance, use the <TT>COMPACT</TT> option with single indexes. Except for backward compatibility, continued use of independent indexes is not recommended. It is too easy for the indexes to get out of sync, and they are much slower than compact indexes. The exception is when you need to use an index temporarily and will delete it when the task is complete.&nbsp;n
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Compact independent indexes are not compatible with older versions of FoxBase.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Compound Indexes&nbsp;&nbsp;</B>Although independent indexes
+work, <I>compound indexes</I> are a better alternative for most
+indexing needs. These indexes enable an unlimited number of separate
+index expressions in one file. You cannot lose files or forget
+the names of all the index files that belong to one table. If
+you assign the same root name to the index files used by the table,
+you do not even have to worry about opening the index file; Visual
+FoxPro 6 opens that file automatically when it opens the table.
+These compound indexes  have a special name: <I>structural indexes</I>.
+<P>
+When you are working with compound indexes, you need to know not
+only how to set a tag, but also which tag is current, the names
+of the defined tags associated with a table, and their index expressions.
+You saw earlier that <TT>SET ORDER TO</TT> sets the current index
+when you are using standalone index files and <TT>SET ORDER TO
+TAG</TT> sets the current tag for compound tags. But how can you
+determine which indexes are associated with a table?<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The <TT>TAG</TT> word in <TT>SET ORDER TO</TT> is optional. <TT>SET ORDER TO TAG City</TT> and <TT>SET ORDER TO City</TT> are equivalent as long as there is no simple index file named <TT>City.idx</TT> open.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+You can use a combination of <TT>TAG()</TT> and <TT>TAGCOUNT()</TT>
+to get a list of the index tags in a compound index. <TT>TAGCOUNT()</TT>
+tells you how many tags the index has and <TT>TAG()</TT> tells
+you name of each tag.
+<P>
+No relation exists between a table and its independent indexes
+or non-structural indexes. The only index that you can automatically
+associate with a table is its structural index. Even in the context
+of a program that opens independent and non-structural indexes
+with their table, you cannot be sure that you have opened all
+the indexes.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+For all the reasons just mentioned, it is recommended that you use structural compound indexes on your tables. The only exception is when you are creating a temporary index that will be deleted immediately after its use.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+You can examine the indexes opened with a table, however, by using
+several functions. The <TT>NDX()</TT> function returns the names
+of any open <TT>.IDX</TT> files. (Originally, index files had
+an <TT>.NDX</TT> extension, and they still do in dBASE.  Therefore,
+the function to list them became <TT>NDX()</TT>. The name <TT>NDX()</TT>
+remains the same in Visual FoxPro 6, even though its indexes have
+an <TT>.IDX</TT> extension.)
+<P>
+To find the names of open compound indexes, use the <TT>CDX()</TT>
+or <TT>MDX()</TT> functions. These two functions perform the same
+task. At minimum, each function requires a numeric parameter.
+A value of <TT>1</TT> returns the name of the structural index,
+if present. Subsequent values return the names of other compound
+indexes in the order in which they are opened. These two functions,
+along with <TT>NDX()</TT>, return an empty string when the index
+number exceeds the number of open indexes. Therefore, test for
+this condition to determine when to stop.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Both the <TT>CDX()</TT> and <TT>MDX()</TT> functions support a second parameter that enables you to determine the index names associated with tables in another work area. Enter the second parameter as the work-area number or the file alias, as in the following example:
+<BR>
+<PRE>
+? CDX(1,'customer')</PRE>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+When you know the names of the compound indexes, find their tag
+names. The <TT>TAG()</TT> function returns the name of each tag
+in the current compound index, as in the following example:
+<BLOCKQUOTE>
+<PRE>
+i = 1
+DO WHILE !EMPTY(TAG(i))
+      ? TAG(i)
+      i = i + 1
+ENDDO
+</PRE>
+</BLOCKQUOTE>
+<P>
+You also can include arguments to specify the compound-index name,
+as well as the table name or work area.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Although the preceding functions help you define the index files and tag names that are associated with an open table, they do not tell you which index or tag currently controls the order. Two functions provide this information. <TT>ORDER()</TT> returns the controlling index tag name, and <TT>SET('ORDER')</TT> returns the controlling index tag name and the compound index file's name with the full path.
+<BR>
+You can obtain the index expression easily with the <TT>KEY()</TT> function, which enables both a <TT>.CDX</TT> filename and a tag number relative to that file.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Listing 5.12 provides a routine that documents the tables and
+indexes that are currently open in an application.<P>
+
+<HR>
+<B>Listing 5.12&nbsp;&nbsp;</B><TT><B>05CODE12.PRG</B></TT><B>-Determining
+Which Tables and Indexes Are Open<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+  LOCAL lnCurArea, lnHighestArea, lnIwork, lnIndx, lnIcdx, lnItag
+  CLEAR
+
+* Current information on open tables
+* Save the current work area
+  lnCurArea = SELECT()
+
+* Find the highest work area in use
+  SELECT 0
+  lnHighestArea = SELECT(0) - 1
+
+* Loop through the work areas
+  FOR lnWork = 1 to lnHighestArea
+    WAIT WINDOW &quot;Examining workarea: &quot;+STR(m.lnWork,5) NOWAIT
+    SELECT (lnWork)
+    IF EMPTY(DBF())
+      LOOP
+    ENDIF
+    ? 'Work area ' + STR(m.lnWork,5) + ': '
+    ? '  Table: ' + DBF()
+
+  * Next scan for simple indexes
+    ? '  Simple Indexes'
+    FOR lnIdx = 1 to 256
+      IF EMPTY(NDX(lnIdx))
+        IF lnIdx = 1
+          ? '      NONE'
+        ENDIF
+        EXIT
+      ENDIF
+      ? '    Index: ' + NDX(lnIdx)
+      ? '      Expression: ' + TAG(lnIdx)
+
+    * Check if this IDX is the master index
+      IF ORDER(ALIAS(),1) = NDX(lnIdx)
+        ? '      This is the MASTER index'
+      ENDIF
+
+    ENDFOR
+
+  * Scan for compound indexes
+    ? '  Compound Indexes'
+    FOR lnCdx = 1 to 256
+      IF EMPTY(CDX(lnCdx))
+        IF lnCdx = 1
+          ? '      NONE'
+        ENDIF
+        EXIT
+      ENDIF
+      ? '    Index: ' + CDX(lnCdx)
+
+    * Check if this CDX holds the master index
+      IF ORDER(ALIAS(),1) = CDX(lnCdx)
+        ? '       MASTER index:      ' + SYS(22)
+        ? '              expression: ' + TAG(VAL(SYS(21)))
+      ENDIF
+
+    * Loop for each tag in the compound index
+      FOR lnTag = 1 TO 256
+        IF EMPTY(TAG(CDX(lnCdx),lnTag))
+          EXIT
+        ENDIF
+        ? '      Tag Name:       ' + TAG(CDX(lnCdx),lnTag)
+        ? '          Expression: ' + KEY(CDX(lnCdx),lnTag)
+      ENDFOR
+      ?
+    ENDFOR
+  ENDFOR
+
+* Return to original area
+  SELECT (lnCurArea)
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+To keep the index tags balanced, Visual FoxPro 6 retains the old tags and marks them obsolete in a <TT>.CDX</TT> file after re-creating a specific tag. This arrangement causes the <TT>.CDX</TT> file to grow. To prevent this growth, <TT>DELETE TAG ALL</TT> for the table and re-create the tags using <TT>INDEX ON</TT>. How can you do this in a program? Use the concepts from the preceding program to save the tag names and expressions for your selected <TT>.CDX</TT> in an array; then delete the <TT>.CDX</TT> and re-create the tags from the array.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When dealing with tables in a database, things can get tricky. The persistent relations stored in the database are based on index tags. If you use <TT>DELETE TAG ALL</TT>, you will destroy any persistent relationships for that table in the database. To solve this problem, you need to use <TT>DbGetProp</TT> to get all the relations for the table into memory variables or an array. After you create the index tags again, you need to use the <TT>ALTER TABLE</TT> command to reset all the persistent relationships.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="PlanningIndexesforRushmore"><FONT SIZE=5 COLOR=#FF0000>
+Planning Indexes for Rushmore</FONT></A></H2>
+<P>
+Indexing is more than just sorting records for views or reports.
+Indexes have a more direct impact on the application's performance
+than ever before. Since the release of FoxPro 2.0, when Microsoft
+introduced Rushmore, this optimization technique has dramatically
+improved the performance of applications by locating records in
+large tables faster. Rushmore achieves this task through the use
+of indexes. It uses any index type-<TT>.IDX</TT> files, compact
+<TT>.IDX</TT>s, or <TT>.CDX</TT>s. In fact, it is common today
+to define indexes that you never intend to use for retrieving
+or viewing data; rather, these indexes exist solely to enhance
+the performance of <TT>SEEK</TT>s and <TT>REPORT</TT>s. Developers
+have reported search improvements 100 to 1,000 times faster when
+they use an optimizable Rushmore expression compared with a nonoptimized
+expression. The greatest improvements come from using compact
+<TT>.IDX</TT> or <TT>.CDX</TT> files, principally because VFP
+can read more of the index into memory at one time.
+<P>
+Listing 5.13 times how long it takes to count the number of zip
+codes in Pennsylvania.<P>
+
+<HR>
+<B>Listing 5.13&nbsp;&nbsp;</B><TT><B>05CODE13.PRG</B></TT><B>-Testing
+Index Search Time<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+  CLOSE ALL
+  CLEAR
+
+  SET OPTIMIZE OFF
+  ? &quot;Counting the number of zip codes in Pennsylvania.&quot;
+  USE \VFP5BOOK\DATA\ZIPCODE
+  nStart = SECONDS()
+  COUNT FOR (STATE == 'PA') TO nZipCnt
+  nEnd   = SECONDS()
+  ? '       COUNT WAS: ' + STR(nZipCnt, 12, 0)
+  ? 'ELAPSED TIME WAS: ' + STR(nEnd - nStart, 8, 2)
+  SET OPTIMIZE ON
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+On a test system, it took 4.61 seconds to find 2,217 records out
+of 42,818. Elapsed time on your system will vary depending on
+the processor speed, drive speed, physical sector allocation,
+and other factors. If you remove both <TT>SET OPTIMIZE</TT> statements,
+the required time drops to 0.16 second. Although this figure is
+an increase of only 29 times, the sample table is small; improvements
+become more dramatic as the number of records grows. The difference
+can easily extend into minutes and even hours for large tables
+that have millions of records.
+<P>
+How can Rushmore provide such improved performance? First, by
+reading an index, it quickly locates the first record reference
+required by the condition and then reads the index only until
+the condition changes. Second, it reads only the index, rather
+than the table; it does not have to use the record pointer to
+read the actual table data. In the zip code table, Rushmore reads
+the index tag <TT>STATE</TT>, which contains an entry for each
+record in the table. This entry contains the state name and a
+pointer to the table record. There is no reason to go to the table.
+Because Rushmore can directly read the state name stored in the
+index, it can simply count the number of times that the state
+<TT>PA</TT> occurs.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Rushmore must compare the index expression with a memory variable or constant. In other words, you can compare the index expression with a string, number, or date value, or store a value in a constant and use it. But Rushmore cannot optimize an expression that compares an index expression with another variable in the table. Suppose that you have a table that includes birth dates and hire dates. Rushmore cannot optimize an expression such as the following, which lists records for people 16-years old or older:<BR>
+<PRE>
+LIST FOR dHire<STRIKE>_</STRIKE>Date &gt; GOMONTH(dBirth<STRIKE>_</STRIKE>Date, 16*12)
+</PRE>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+To use Rushmore, you don't need to know the details of how it
+works internally any more than you need to know the details of
+how an internal-combustion engine works to drive a car. But obviously,
+you need to know how to define indexes that Rushmore can optimize.
+More important, you need to know what Rushmore likes and dislikes.
+<P>
+This chapter has already mentioned a few rules that you must obey
+to use Rushmore successfully. Another rule is that Rushmore can
+optimize only those expressions based on regular, primary, and
+candidate indexes. These indexes (as mentioned in <A HREF="ch03.htm" >Chapter 3</A> contain
+a reference for every record in the table, even if the index value
+is not unique. If you think about it, how else would Rushmore
+count the number of zip codes in a state if you define the state
+index as unique? You would never get a value other than 0 or 1.
+<P>
+Rushmore also requires that any search or query exactly match
+the index key. This statement has led many developers to believe
+that they needed a separate index tag for every field in their
+tables. Then the developers realized that they also needed more
+complex index expressions for reports or other activities, so
+they created additional indexes. Before long, the total number
+of indexes grew out of control, and the size of the <TT>.CDX</TT>
+file rivaled or exceeded that of the data itself. Performance
+degrades not just because of the size of the <TT>.CDX</TT>, but
+because Visual FoxPro 6 has more indexes to maintain every time
+you add, delete, or modify a record.
+<P>
+Often, you can delete many of these indexes without seriously
+affecting the application's performance. Returning to the customer
+file, suppose that you have the following set of indexes (using
+short field names in <TT>CUST.DBF</TT>):
+<BLOCKQUOTE>
+<PRE>
+INDEX ON UPPER(cLast) TAG LASTNAME
+INDEX ON UPPER(cFirst) TAG FIRSTNAME
+INDEX ON UPPER(cCompany) TAG COMPANY
+INDEX ON UPPER(cLast)+UPPER(cFirst) TAG STAFF
+INDEX ON UPPER(cCompany) + UPPER(cLast) +  ;
+         UPPER(cFirst) TAG EMPLOYEES
+</PRE>
+</BLOCKQUOTE>
+<P>
+Although these tags appear to cover every contingency, they affect
+performance when you add, delete, or modify records because VFP
+must change more information in more tags. An alternative method
+takes advantage of the fact that Rushmore can optimize concatenated
+indexes. If you use <TT>SET EXACT OFF</TT>, you do not need to
+supply every field as an index.
+<P>
+If you want to search on the company field, for example, you could
+use either the <TT>COMPANY</TT> or <TT>EMPLOYEES</TT> tag, as
+follows:
+<BLOCKQUOTE>
+<PRE>
+LOCATE FOR cCompany = 'RENARD CONSULTANTS'
+</PRE>
+</BLOCKQUOTE>
+<P>
+Alternatively, you could use the following:
+<BLOCKQUOTE>
+<PRE>
+SET EXACT OFF
+LOCATE FOR cCompany + cLast + cFirst = ;
+            'RENARD CONSULTANTS'
+</PRE>
+</BLOCKQUOTE>
+<P>
+In the first <TT>LOCATE</TT>, Rushmore looks at the index expression
+on the left and decides to use the <TT>COMPANY</TT> tag. In the
+second, <TT>LOCATE</TT> uses the <TT>EMPLOYEES</TT> tag. The second
+expression is only slightly slower than the first. The only consideration
+is that you must include the entire index expression on the left
+side.
+<P>
+A similar argument applies when you are searching for names and
+choosing between the tags <TT>STAFF</TT> and <TT>LASTNAME</TT>.
+The only individual field tag that you might still need is <TT>FIRSTNAME</TT>.
+Therefore, you can eliminate at least two of these five indexes,
+and maybe more, depending on what the application really needs
+to do.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Although Rushmore can optimize an expression that matches only a portion of the concatenated fields, when you have <TT>SET EXACT OFF</TT>, the shorter string must be on the right side of the expression. Also, there is no way to skip a field in a multiple-field index to search only for later components.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Notice that if you eliminate tags <TT>LASTNAME</TT> and <TT>COMPANY</TT>,
+Rushmore does not optimize a search like the following because
+the index expression no longer exactly matches an index tag:
+<BLOCKQUOTE>
+<PRE>
+LOCATE FOR cCompany = 'RENARD CONSULTANTS'
+</PRE>
+</BLOCKQUOTE>
+<P>
+Other things that Rushmore does not like and will not handle include
+index expressions that contain <TT>NOT</TT> or <TT>!</TT>. Surprisingly,
+you cannot include <TT>NOT</TT> or <TT>!</TT> in the <TT>FOR</TT>
+expression and have Rushmore optimize it.
+<P>
+Rushmore optimizes expressions that contain exactly equal relational
+operators (<TT>==</TT>), but not the contained-in operator <TT>($)</TT>,
+<TT>AT()</TT>, <TT>ATC()</TT>, or <TT>RAT()</TT>. It will not
+use indexes that include <TT>FOR</TT> conditions.
+<P>
+On the other hand, you can build compound <TT>FOR</TT> expressions
+that Rushmore can optimize (or at least partially optimize). A
+<I>compound expression</I> joins two or more simple expressions
+with an <TT>AND</TT> or an <TT>OR</TT>. In this case, each expression
+can reference a different index expression. When it is looking
+at compound expressions two at a time,  Rushmore optimizes the
+entire expression only if it can optimize both individual expressions.
+If it can only optimize one of the expressions, and you join the
+expressions with <TT>AND</TT>, Rushmore executes the part that
+it can optimize first. Then Rushmore takes this intermediate result
+set and performs the nonoptimizable portion on it, rather than
+on the entire database. This arrangement usually results in some
+improvement over a completely nonoptimizable expression.
+<P>
+Visual FoxPro 6 will partially optimize a compound expression
+that contains one optimizable expression and one nonoptimizable
+expression joined with an <TT>OR</TT> because it still must read
+the entire table to evaluate the nonoptimizable expression. Finally,
+if both individual expressions are nonoptimizable, Rushmore cannot
+optimize any part of the expression.
+<P>
+Table 5.4 displays possible combinations of expressions and their
+results.<BR>
+<P>
+<CENTER><B>Table 5.4&nbsp;&nbsp;Combining Optimizable Expressions</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>First Expression</B></CENTER></TD>
+<TD WIDTH=96><CENTER><B>Connection</B></CENTER></TD><TD WIDTH=144><CENTER><B>Second Expression</B></CENTER>
+</TD><TD WIDTH=124><CENTER><B>Result</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Optimizable</TD><TD WIDTH=96><CENTER><TT>AND</TT></CENTER>
+</TD><TD WIDTH=144>Optimizable</TD><TD WIDTH=124>Optimizable</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=144>Optimizable</TD><TD WIDTH=96><CENTER><TT>OR</TT></CENTER>
+</TD><TD WIDTH=144>Optimizable</TD><TD WIDTH=124>Optimizable</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=144>Optimizable</TD><TD WIDTH=96><CENTER><TT>AND</TT></CENTER>
+</TD><TD WIDTH=144>Nonoptimizable</TD><TD WIDTH=124>Partial</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=144>Optimizable</TD><TD WIDTH=96><CENTER><TT>OR</TT></CENTER>
+</TD><TD WIDTH=144>Nonoptimizable</TD><TD WIDTH=124>Nonoptimizable
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Nonoptimizable</TD><TD WIDTH=96><CENTER><TT>AND</TT></CENTER>
+</TD><TD WIDTH=144>Nonoptimizable</TD><TD WIDTH=124>Nonoptimizable
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Nonoptimizable</TD><TD WIDTH=96><CENTER><TT>OR</TT></CENTER>
+</TD><TD WIDTH=144>Nonoptimizable</TD><TD WIDTH=124>Nonoptimizable
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Potentially, Rushmore can optimize every VFP command that supports
+a <TT>FOR</TT> clause. You must work with a single table, however,
+and follow the rules described earlier in this section.  The following
+list shows the commands that Rushmore supports:
+<blockquote>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>AVERAGE</TT>
+</TD><TD WIDTH=116>
+<TT>DISPLAY</TT>
+</TD><TD WIDTH=174>
+<TT>REPORT FORM</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>BROWSE</TT>
+</TD><TD WIDTH=116>
+<TT>EDIT</TT>
+</TD><TD WIDTH=174>
+<TT>SCAN</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>CALCULATE</TT>
+</TD><TD WIDTH=116>
+<TT>EXPORT</TT>
+</TD><TD WIDTH=174>
+<TT>SET FILTER TO</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>CHANGE</TT>
+</TD><TD WIDTH=116>
+<TT>LABEL</TT>
+</TD><TD WIDTH=174>
+<TT>SORT</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>COPY TO</TT>
+</TD><TD WIDTH=116>
+<TT>LIST</TT>
+</TD><TD WIDTH=174>
+<TT>SQL SELECT</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>COPY TO ARRAY</TT>
+</TD><TD WIDTH=116>
+<TT>LOCATE</TT>
+</TD><TD WIDTH=174>
+<TT>SUM</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>COUNT</TT>
+</TD><TD WIDTH=116>
+<TT>RECALL</TT>
+</TD><TD WIDTH=174>
+<TT>TOTAL</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>DELETE</TT>
+</TD><TD WIDTH=116>
+<TT>REPLACE</TT>
+</TD><TD WIDTH=174>
+&nbsp;
+</TD></TR>
+</TABLE></blockquote>
+<P>
+Remember that Rushmore works with these commands only if you use
+them with a single table. To query or gather data from multiple
+tables, use SQL <TT>SELECT</TT>. Only the SQL <TT>SELECT</TT>
+command supports Rushmore optimization across multiple tables.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you have a simple SQL <TT>SELECT</TT> on a single table with no special functions, groups, or sort orders, Visual FoxPro 6 uses Rushmore to create a filter on the database that returns the result set extremely fast. VFP does use Rushmore on multiple-table queries, but only if you use SQL <TT>SELECT</TT>.
+<BR>
+With the introduction of Rushmore, traditional accessing of files with deleted records exhibited a performance degradation. A simple solution exists, however: Merely add a tag to the structured index, using the function <TT>DELETED()</TT>, but do not name it <TT>DELETED</TT>, which is a restricted keyword. Now Rushmore can use the index to determine whether to include a record, rather than having to check the deleted flag in the table.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="TurningRushmoreOff">
+Turning Rushmore Off</A></H3>
+<P>
+At the beginning of this section, you learned that <TT>SET OPTIMIZE
+OFF</TT> can turn Rushmore off. Why turn off a tool that usually
+results in better performance? You typically don't want to turn
+Rushmore off when you are using expressions that it can optimize.
+When you are using nonoptimizable expressions, however, leaving
+it on actually lowers performance. In such cases, Rushmore needs
+extra machine cycles just to know that it is not needed. Therefore,
+turn optimization off by using the <TT>SET OPTIMIZE</TT> statement
+or by adding the clause <TT>NOOPTIMIZE</TT> after the <TT>FOR</TT>
+expression, as follows:
+<BLOCKQUOTE>
+<PRE>
+LOCATE FOR cFirst = 'NATASHA' NOOPTIMIZE
+</PRE>
+</BLOCKQUOTE>
+<P>
+Another reason for turning off optimization involves the particular
+command you are using; for example, the <TT>REPLACE</TT> command
+can have a <TT>FOR</TT> clause. If you were replacing one of the
+fields used in the Rushmore optimized <TT>FOR</TT> clause, the
+actual command itself would be causing the Rushmore selected set
+of records to be incomplete.
+<BLOCKQUOTE>
+<PRE>
+REPLACE ALL State WITH 'NY' FOR City = 'New York' ;
+                    OR State = 'NY'
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="HelpingRushmoreAlong">
+Helping Rushmore Along</A></H3>
+<P>
+You can improve the performance of Rushmore by deselecting any
+default index or tag before executing a command that Rushmore
+can optimize. The following command leaves the index file open
+but turns off its active use:
+<BLOCKQUOTE>
+<PRE>
+SET ORDER TO 0
+</PRE>
+</BLOCKQUOTE>
+<P>
+When there is an index order set, Rushmore must sort the records
+it finds on the index expression. This extra step will slow down
+the result. Although this is true, Rushmore-optimized expressions
+will still be faster than nonoptimizable expressions even with
+an index order set.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+As a general rule, you add as many indexes as necessary to search for and display data. You should periodically review whether you require all of them, however.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+When an application's performance slows due to index overload,
+you need to identify indexes that you use only occasionally. You
+should delete those index tags and enable the program to re-create
+them as needed.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+To delete a tag, open the table and use the command <TT>DELETE TAG <I><FONT FACE="Courier New">tagname</I></TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+You might want to create temporary indexes on a local rather than
+a network drive. You might even gain some performance by creating
+a cursor with a SQL <TT>SELECT</TT> statement to gather and sort
+the data for a report. Listing 5.14 shows a method that might
+appear to be awkward at first, yet yields quite respectable performance
+when the selected records are widely scattered and need to be
+reused. The routine begins by creating a temporary index; then
+it uses a Rushmore-assisted <TT>SEEK</TT> to find the first record.
+The routine processes the desired records using a <TT>SCAN</TT>
+loop; generates a report with the same index; and, finally, deletes
+the temporary index.<P>
+
+<HR>
+<B>Listing 5.14&nbsp;&nbsp;</B><TT><B>05CODE14.PRG</B></TT><B>-Using
+Rushmore<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+  CLOSE DATABASES
+  CLEAR
+
+* Open the customer table (free table)
+  USE \VFP5BOOK\DATA\cust
+
+* Set NEAR ON to find first customer with more than
+* $200 of outstanding bills
+  cCurNear   = SYS(2001, 'NEAR')
+  cCurExact  = SYS(2001, 'EXACT')
+  cCurSafety = SYS(2001, 'SAFETY')
+  SET NEAR   ON
+  SET EXACT  OFF
+  SET SAFETY OFF
+
+* Create a temporary index on outstanding bills
+* This assumes that you have previously created a directory
+* with the name C:\TEMP
+  INDEX ON nBillDue TO C:\TEMP\BILLS.IDX
+
+* Find records and change default billing method to cash 'CA'
+  SEEK 200
+  SCAN WHILE nBillDue &gt;= 200
+    REPLACE cPayMeth WITH 'CA'
+  ENDSCAN
+
+* Create a report for sales representative of customer that
+* must pay cash
+  REPORT FORM \VFP5BOOK\PROGRAMS\BillMeth ;
+     FOR nBillDue =&gt; 200
+
+* Reset environment
+  SET NEAR   &amp;cCurNear
+  SET EXACT  &amp;cCurExact
+  SET SAFETY &amp;cCurSafety
+
+* Delete temporary index
+  USE
+  ERASE C:\temp\bills.idx
+RETURN
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+A <TT>SEEK</TT> combined with <TT>SCAN WHILE</TT> structure always
+executes faster than Rushmore. Also notice the use of <TT>SET
+NEAR ON</TT> to find the first record above a specific value,
+just in case no records have a value of exactly 200.
+<P>
+The best indexing method varies from one situation to the next.
+Your choice depends on the specific task that you want to accomplish,
+the current organization of the data, the specific commands that
+you use, and (probably) the phase of the moon.
+<P>
+The <TT>BROWSE</TT> command illustrates this point. Reopen <TT>ZIPCODE.DBF</TT>
+and turn off the index, as follows:
+<BLOCKQUOTE>
+<PRE>
+USE C:\VFP5BOOK\DATA\ZIPCODE
+SET ORDER TO
+</PRE>
+</BLOCKQUOTE>
+<P>
+The natural order of this data is city within state. Thus, all
+the zip codes for Alaska appear first, and all the zip codes for
+Wyoming appear at the end of the file. Now try the following simple
+<TT>BROWSE</TT>s:
+<BLOCKQUOTE>
+<PRE>
+BROWSE FOR cBState = 'AK'
+BROWSE FOR cBState = 'WY'
+</PRE>
+</BLOCKQUOTE>
+<P>
+The first <TT>BROWSE</TT> comes up almost immediately. The second
+<TT>BROWSE</TT> opens a window immediately but takes several seconds
+to display the first screen of data. <TT>BROWSE</TT> displays
+the first screen of data as soon as it has enough records to populate
+it. Thus, the second command pauses with a blank window, while
+<TT>BROWSE</TT> searches through the file until it finds Wyoming.
+<P>
+Suppose you know that the selected data either appears very near
+the beginning of the file or that it encompasses the majority
+of the data (such as <TT>BROWSE FOR !DELETED()</TT>). A simple
+<TT>BROWSE</TT> statement without an index might appear to be
+as quick as one with an index using Rushmore, because <TT>BROWSE</TT>
+does not need to find every record that matches the criteria-only
+enough to display a screen of records. That explanation might
+be stretching the point just a little, but you should try several
+alternatives before you assume that Rushmore and another index
+tag provide the best performance.
+<HR>
+<CENTER>
+
+<A HREF="ch04.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch06.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

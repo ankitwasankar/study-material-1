@@ -1,0 +1,1508 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 9</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>The Order Entry System: Adding
+Graphics and a Logo</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+
+<UL>
+<LI><A HREF="#TheAWTGraphicsClass" >The AWT Graphics Class</A>
+<UL>
+<LI><A HREF="#ThepaintandupdateMethods" >The paint and update Methods</A>
+<LI><A HREF="#TherepaintMethod" >The repaint Method</A>
+</UL>
+<LI><A HREF="#JavaGraphicsPrimitives" >Java Graphics Primitives</A>
+<UL>
+<LI><A HREF="#ThedrawStringMethodandFonts" >The drawString Method and Fonts</A>
+<LI><A HREF="#DefiningColors" >Defining Colors</A>
+<LI><A HREF="#SettingandUsingColors" >Setting and Using Colors</A>
+<LI><A HREF="#PrecisionStringAlignment" >Precision String Alignment</A>
+<LI><A HREF="#Drawing" >Drawing</A>
+<LI><A HREF="#Filling" >Filling</A>
+<LI><A HREF="#AdrawingExampleApplet" >AdrawingExample Applet</A>
+</UL>
+<LI><A HREF="#DisplayingandDealingwithImages" >Displaying and Dealing with Images</A>
+<UL>
+<LI><A HREF="#GettingImages" >Getting Images</A>
+<LI><A HREF="#DisplayingImages" >Displaying Images  </A>
+</UL>
+<LI><A HREF="#AFinalComponentCanvases" >A Final Component: Canvases</A>
+<LI><A HREF="#AddingtotheOrderEntrySystem" >Adding to the Order Entry System</A>
+<UL>
+<LI><A HREF="#AddingaLogototheOrderEntrySystem" >Adding a Logo to the Order Entry System</A>
+<LI><A HREF="#AddingGraphicalDividerstotheOrderE" >Adding Graphical Dividers to the Order Entry System</A>
+</UL>
+<LI><A HREF="#AudiointheAppletPackage" >Audio in the Applet Package</A>
+<UL>
+<LI><A HREF="#play" >play</A>
+</UL>
+<LI><A HREF="#TheOrderEntrySystemSoFar" >The Order Entry System So Far</A>
+</UL>
+<HR>
+<P>
+Currently, some of the most exciting aspects of Java are those
+dealing with graphics. This chapter covers these features. First,
+this chapter covers the AWT <TT>Graphics</TT>
+class, which allows you to implement many different graphical
+items. These features involve drawing, displaying images, and
+setting colors, among others. This chapter also discusses the
+<TT>Canvas</TT> class, which is a
+special type of component designed for use in dealing with graphics
+in AWT programs. The Order Entry System is also extended in this
+chapter as you include the concepts dealt with in this chapter
+in the applet.
+<H2><A NAME="TheAWTGraphicsClass"><FONT SIZE=5 COLOR=#FF0000>The
+AWT Graphics Class</FONT></A></H2>
+<P>
+The AWT graphics class is an abstract class that is the basis
+for all graphical constructions in Java. You cannot implement
+this class directly. To utilize it, you must copy another instance
+of the <TT>Graphics</TT> class or
+have a component generate it. The <TT>Graphics</TT>
+class enables you to <TT>drawLine</TT>s,
+implement boxes and 3-D boxes, use different fonts, and implement
+different colors. A number of functions in the <TT>Graphics</TT>
+class implement these capabilities.
+<H3><A NAME="ThepaintandupdateMethods">The <TT><FONT SIZE=4>paint</FONT></TT><FONT SIZE=4>
+and </FONT><TT><FONT SIZE=4>update</FONT></TT><FONT SIZE=4>
+Methods</FONT></A></H3>
+<P>
+You use the <TT>paint</TT> and <TT>update</TT>
+methods to implement the features in the <TT>Graphics</TT>
+class in your programs. You use the following code line to declare
+the <TT>paint</TT> method:
+<BLOCKQUOTE>
+<TT>public void paint(Graphics g)  {</TT>
+</BLOCKQUOTE>
+<P>
+Note that the <TT>paint</TT> method
+accepts one parameter, an instance of the <TT>Graphics</TT>
+class. Here's what happens in the <TT>paint</TT>
+method: Your <TT>paint</TT> method
+is sent an instance of the <TT>Graphics</TT>
+class, which defines the current status of the segment of the
+display that your class is responsible for. Next, your <TT>paint</TT>
+method modifies that state using the methods in the <TT>Graphics</TT>
+class and those implemented in other classes. Then the Java runtime
+modifies the display to eventually match those changes once the
+execution of your <TT>paint</TT> method
+is completed. Then the whole process begins again. Understanding
+this process is key to writing your own <TT>paint</TT>
+method. The <TT>paint</TT> method
+is written to describe in code how the display area should look
+at the program's current status.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+One of the most important concepts about applying the graphical features of the AWT to your programs is that every time the <TT>paint</TT> method is executed, it does not imply that any changes in the display are immediately displayed. As you will see in later chapters on multithreading, the display of changes is sometimes less important than other processes that are running in parallel to your applet.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>update</TT> and <TT>paint</TT>
+methods are initially implemented in the <TT>Component</TT>
+class of the AWT. The <TT>paint</TT>
+declaration in the code of the <TT>Component</TT>
+class is empty until you override it. The <TT>update</TT>
+method, by default, resets many of the settings in the <TT>Graphics</TT>
+instance you are using and then calls the <TT>paint</TT>
+method. The times you override it include occasions on which you
+want to change the way your displays are changed or in dealing
+with canvases and animation.
+<P>
+To include the different primitives of the <TT>Graphics</TT>
+class, be sure to import it into your program:
+<BLOCKQUOTE>
+<TT>import java.awt.Graphics;<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+You can implement the <TT>update</TT> and <TT>paint</TT> methods. However, you usually don't make any calls to them. There are instances in which you want to force a call to repaint a piece of display as soon as possible. This is discussed in the section covering the <TT>repaint</TT> method in this chapter, &quot;The <TT>repaint</TT> Method.&quot;
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>GExampleApplet</TT> example
+applet shown in Listing 9.1 demonstrates these ideas. The output
+from this applet is Figure 9.1.
+<P>
+<A HREF="f9-1.gif" ><B>Figure 9.1. </B> : <I>The GExample Applet when viewed through the Applet Viewer utility.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 9.1. The </B><TT><B>GExampleApplet</B></TT><B>
+code listing.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+<BR>
+public class GExampleApplet extends Applet {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics g)&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawRect(10,
+10, 100, 100);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+In Listing 9.1, the applet life cycle control methods (<TT>init</TT>,
+<TT>stop</TT>, and so on) are all
+left as defaults. The default <TT>paint</TT>
+method is overridden, and the new method includes code to draw
+a rectangle on the applet panel using the <TT>drawRect</TT>
+method included in the <TT>Graphics</TT>
+class. The new <TT>paint</TT> method
+gets called repeatedly, and the same rectangle gets drawn on the
+screen. Complete coverage of the graphics primitives is a major
+focus of this chapter.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+This chapter does not cover every method available in the <TT>Graphics</TT> class. If you want a description and listing of all the methods available, check the source code:<BR>
+<TT>SRC/JAVA/AWT/Graphics.java</TT>. 
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Note that Java's coordinate system begins with 0,0 at the top left. The bottom-right corner of a screen segment of width and height 100 would be point (100,100).</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TherepaintMethod">The <TT><FONT SIZE=4>repaint</FONT></TT><FONT SIZE=4>
+Method</FONT></A></H3>
+<P>
+Sometimes you want to demand that the Java runtime repaint a component
+display as soon as possible. This is done through a call to the
+<TT>repaint</TT> method in the <TT>Component</TT>
+class.<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Remember, since almost all the visible pieces of the AWT, including applets, panels, and frames, are descendants of the <TT>Component</TT> class, when I talk about painting components, I am not just talking about buttons and scrollbars, but containers too.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+There are a number of other types of calls to the <TT>repaint</TT>
+method. For example, you can specify exactly how long you want
+it to be before the component is painted again. You can also specify
+what portion of the component display you want to be repainted
+(very helpful in animations). For now, just know that a call to
+the <TT>repaint()</TT> method of a
+component makes sure that the display is updated. Simply insert
+a <TT>repaint()</TT> call, and the
+display update will be expedited by the Java interpreter executing
+your code.
+<H2><A NAME="JavaGraphicsPrimitives"><FONT SIZE=5 COLOR=#FF0000>Java
+Graphics Primitives</FONT></A></H2>
+<P>
+The following sections cover the multiple methods available in
+the <TT>Graphics</TT> class and related
+classes that are used to draw graphics.
+<H3><A NAME="ThedrawStringMethodandFonts">The <TT><FONT SIZE=4>drawString</FONT></TT><FONT SIZE=4>
+Method and Fonts</FONT></A></H3>
+<P>
+The process of drawing graphical strings is very simple using
+the AWT. It is also very versatile. You can specify the exact
+size, font characteristics, and placement of the strings that
+you draw onto your instance of <TT>Graphics</TT>
+class.
+<P>
+The first step in drawing a string on a component is to set the
+font specifics that you want. This is accomplished using the <TT>Font</TT>
+class, which is part of the AWT package. For example, include
+this code line to declare an instance of the <TT>Font</TT>
+class representing the Courier font with an italic style and a
+point size of 18:
+<BLOCKQUOTE>
+<TT>Font afont = new Font(&quot;Courier&quot;,
+Font.ITALIC, 18);</TT>
+</BLOCKQUOTE>
+<P>
+The first parameter sets the font that you want to use. Examples
+of some of the available fonts are Helvetica, Courier, and TimesRoman.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Not every font is available on every system. On some systems, for example, Helvetica is not available. When the font is not available, Java reverts to a default font, which is generally Courier. It is wise to take this factor into consideration when representing strings graphically since you can easily specify TimesRoman and end up with Courier on one machine and TimesRoman on another, both running the same Java code.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The second parameter of the <TT>Font</TT>
+constructor describes the font constants, which define italics,
+bold, and so on. These constants can be <TT>Font.ITALIC</TT>,
+<TT>Font.BOLD</TT>, or <TT>Font.PLAIN</TT>.
+You can also define a font to be both bold and italic by using
+the sum of the two constants. To set the font to be both bold
+and italic, send the second parameter in as <TT>Font.BOLD
++ Font.ITALIC</TT>. If you want the text to be plain, use
+the <TT>Font.PLAIN</TT> constant as
+your parameter.
+<P>
+The third parameter sets the point size of the font in pixels.
+<P>
+You must set the font you have constructed to be the current font
+for the instance of the <TT>Graphics</TT>
+class that controls the display you are going to add the string
+to. To do this, use the <TT>setFont</TT>
+method of the <TT>Graphics</TT> class.
+The following line sets the current font of an instance of the
+<TT>Graphics</TT> class called <TT>g</TT>
+equal to the font you just declared:
+<BLOCKQUOTE>
+<TT>g.setFont(afont);</TT>
+</BLOCKQUOTE>
+<P>
+To draw the string, you use the following line:
+<BLOCKQUOTE>
+<TT>g.drawString(&quot;Leopards Aquatics&quot;,
+10, 20);</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>drawString</TT> method accepts
+three parameters. The first parameter is a string representing
+the text you want to draw, and the second and third parameters
+describe the x and y pixel position of the string, respectively.
+The following short applet demonstrates the inclusion of these
+statements into a complete applet that draws the string onto the
+applet face. The code is shown in Listing 9.2, and the resulting
+display is shown as Figure 9.2.
+<P>
+<A HREF="f9-2.gif" ><B>Figure 9.2.</B> : <I>The output from the First draw string Example when viewed from the Appler Viewer utility.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 9.2. The </B><TT><B>FirstDrawStringExample</B></TT><B>
+applet code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+<BR>
+public class FirstDrawStringExample extends Applet {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Font afont = new Font(&quot;Helvetica&quot;,
+Font.BOLD, 18);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics g)&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.setFont(afont);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawString(&quot;Leopards
+Aquatics&quot;, 10, 20);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+In the <TT>FirstDrawStringExample</TT>,
+note that an instance of the <TT>Font</TT>
+class is first declared from the AWT package that handles font
+business such as scaling and italicizing. Then, in the <TT>paint</TT>
+method, the font is set to be the current font for the <TT>g</TT>
+variable, which describes the data concerning the display area
+you are dealing with. Finally, the <TT>drawString</TT>
+method actually draws the string at x equals 10 pixels and y equals
+10 pixels from the origin.
+<P>
+Table 9.1 lists some of the <TT>Font</TT>
+methods that are available.<BR>
+<P>
+<CENTER><B>Table 9.1. </B><TT><B>Font</B></TT><B>
+methods.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=197><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=196><TT>String getName</TT>()
+</TD><TD WIDTH=197>Returns the name of the font (Helvetica, and so on).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=196><TT>int getStyle()</TT>
+</TD><TD WIDTH=197>Returns the constant that is the style of the font.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=196><TT>boolean isPlain()</TT>
+</TD><TD WIDTH=197><TT>true</TT> or <TT>false</TT> depending on whether the font is <TT>Font.PLAIN</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=196><TT>boolean isBold()</TT>
+</TD><TD WIDTH=197><TT>true</TT> or <TT>false</TT> depending on whether the font is <TT>Font.BOLD</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=196><TT>boolean isItalic()</TT>
+</TD><TD WIDTH=197><TT>true</TT> or <TT>false</TT> depending on whether the font is <TT>Font.ITALIC</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=196><TT>getFont()</TT>
+</TD><TD WIDTH=197>Returns an instance of the currently selected font.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="DefiningColors">Defining <TT><FONT SIZE=4>Color</FONT></TT><FONT SIZE=4>s</FONT></A>
+</H3>
+<P>
+Just as the <TT>Font</TT> class implements
+methods and values to define the different fonts and settings,
+the <TT>Color</TT> class in the AWT
+package implements the ability to manage color in your programs.
+<P>
+There are two ways to specify a color in Java. The first way is
+to specify the amount of the red, green, and blue components in
+the color. These values range from 0 to 255 for each different
+component. You should probably recognize this as the RGB color
+scheme. Java uses a 24-bit color specification, which is called
+<I>True Color</I> on some platforms. To create an instance of
+the <TT>Color</TT> class while initially
+setting the color in this manner, you can utilize the <TT>Color</TT>
+constructor, which accepts three different integers. For example,
+if you want to define a color to be slightly darker than pure
+white, you can use the following line:
+<BLOCKQUOTE>
+<TT>Color AColor = new Color (240, 240, 240);</TT>
+</BLOCKQUOTE>
+<P>
+In this code line, you are setting the red, green, and blue. Red
+is first, green is second, and blue is third.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+There is actually a third <TT>Color</TT> constructor. It takes three float parameters that range from 0.0 to 1.0. It is basically the same as the preceding constructor, except the range per value is now 0.0 to 1.0 instead of 0 to 255. Neither method is more accurate because the method utilizing <TT>float</TT>s (from 0.0 to 1.0) simply converts those values to integers and calls this first method that takes 0 to 255.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The second way to set a color is to use one of the colors defined
+in the <TT>Color</TT> class itself.
+For example, if you want to create white, you can use the following
+line:
+<BLOCKQUOTE>
+<TT>Color WhiteColor = new Color(Color.white);</TT>
+</BLOCKQUOTE>
+<P>
+Table 9.2 shows a listing of the different color constants available
+in the <TT>Color</TT> class.
+<P>
+<CENTER><B>Table 9.2. The color constants available in the </B><TT><B>Color</B></TT><B>
+class.</B></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=30%>
+<TR VALIGN=TOP><TD><TT>Color.white</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.lightGray</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.darkGray</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.gray</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.red</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.pink</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.orange</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.yellow</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.green</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.magenta</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.cyan</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=123><TT>Color.blue</TT>
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Two more methods, which can prove to be very useful, are available
+in the <TT>Color</TT> class. One <TT>brighter</TT>
+method returns a brighter version of the calling color. For instance,
+if you want to brighten a <TT>Color</TT>
+called <TT>AColor</TT>, you can use
+the following line:
+<BLOCKQUOTE>
+<TT>AColor = AColor.brighten();</TT>
+</BLOCKQUOTE>
+<P>
+There is also a similar method called <TT>darken</TT>
+along with a number of less useful methods in the <TT>Color</TT>
+class. For more information on these methods, check the source
+code in the class library. However, it isn't likely you'll need
+more than is described here.
+<H3><A NAME="SettingandUsingColors">Setting and Using <TT><FONT SIZE=4>Color</FONT></TT><FONT SIZE=4>s</FONT></A>
+</H3>
+<P>
+Once you define a <TT>Color</TT>,
+there are a number of ways to use it.
+<P>
+To set the current color that you want to draw with in your instance
+of the <TT>Graphics</TT> class, you
+can use the <TT>setColor</TT> method
+in your <TT>paint</TT> function. This
+method accepts an instance of the <TT>Color</TT>
+class and sets the current drawing color to that color. You can
+imagine this to be like changing drawing-pen colors. Once you
+select <TT>setColor</TT>, everything
+you draw until you set the color again is drawn in that color.
+The default color is black. The following line sets the current
+drawing color to pink:
+<BLOCKQUOTE>
+<TT>g.setColor(new Color(Color.pink));</TT>
+</BLOCKQUOTE>
+<P>
+Besides setting the &quot;pen&quot; color, you can also set the
+foreground and background colors for a component. These two methods
+are <TT>setForeground</TT> and <TT>setBackground</TT>,
+respectively. Call this method for a component, and the color
+gets set to the value of the instance of the <TT>Color</TT>
+class, which is sent in as the parameter. Note that these two
+functions set the background and foreground for the entire component,
+including graphics that are already drawn. If you draw some graphics
+in black and then set the foreground color to green, the original
+black drawing turns green.
+<P>
+The <TT>MegaColorExample</TT> explores
+the color capabilities of the AWT and is shown in Listing 9.3.
+The output is shown in Figure 9.3.
+<P>
+<A HREF="f9-3.gif" ><B>Figure 9.3. </B>: <I>The output from the Draw String Example applet</I></A>.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 9.3. The </B><TT><B>DrawStringExample</B></TT><B>
+applet code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+<BR>
+public class DrawStringExample extends Applet {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Font afont = new Font(&quot;Helvetica&quot;,
+Font.BOLD, 18);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void init() {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setBackground(Color.black);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics g) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.setColor(Color.green);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.setFont(afont);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawString(&quot;This
+is krazee!&quot;, 10, 40);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+In this applet, an instance of the <TT>Font</TT>
+class is declared and constructed. Then the <TT>init</TT>
+method takes care of initially setting the background color to
+black. The code in the <TT>paint</TT>
+method sets the current drawing color to be green. Then it sets
+the current font to be the <TT>afont</TT>
+variable and then draws the string on the applet panel itself.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+You can utilize the <TT>drawBytes</TT> and <TT>drawChars</TT> methods in the <TT>Graphics</TT> class. They have limited uses, but for more information, check <TT>java\src\java\awt\Graphics.java</TT> included with your JDK.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="PrecisionStringAlignment">Precision String Alignment</A>
+</H3>
+<P>
+In the preceding example applet, you had to guess where to place
+the string on the panel. For example, centering the string on
+the applet panel involves some serious measurement. But the AWT
+provides a class that automates and simplifies this process. This
+class is named <TT>FontMetrics</TT>
+and is incredibly useful in simplifying the process of placing
+graphical strings. It is highly useful in centering strings or
+animating strings. Table 9.3 summarizes the methods available
+in the named <TT>FontMetrics</TT>
+class.<BR>
+<P>
+<CENTER><B>Table 9.3. </B><TT><B>FontMetrics</B></TT><B>
+methods available.<BR>
+</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=346><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=244><TT>int stringWidth(String)</TT>
+</TD><TD WIDTH=346>Computes and returns the width of a string in pixels.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=244><TT>int getAscent()</TT>
+</TD><TD WIDTH=346>Returns the number of pixels from the top of the uppercase characters to the original y.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=244><TT>int getDescent()</TT>
+</TD><TD WIDTH=346>The opposite of the <TT>getAscent</TT> function.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=244><TT>int getMaxAscent()</TT>
+</TD><TD WIDTH=346>The maximum ascent value of all the characters in the string.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=244><TT>int getMaxDescent()</TT>
+</TD><TD WIDTH=346>The maximum descent value of all the characters in the string.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=244><TT>int getHeight()</TT>
+</TD><TD WIDTH=346>This returns the total height (including ascent, descent, and so on) of the font.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+These methods are straightforward. To use them, you need to declare
+an instance of the <TT>FontMetrics</TT>
+class in your applet. The following code segment declares an instance
+of the <TT>FontMetrics</TT> class
+and then sets it to return information about a font called <TT>AFont</TT>:
+<BLOCKQUOTE>
+<TT>FontMetrics AFontMetrics = new FontMetrics(AFont);</TT>
+</BLOCKQUOTE>
+<P>
+The different methods listed are all yours for the calling. To
+find the total height of your font using the declared <TT>AFontMetrics</TT>
+class, use the following line:
+<BLOCKQUOTE>
+<TT>AFontMetrics.getHeight();<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Remember that the <TT>FontMetrics</TT> class is part of the AWT package, so make sure to import it into your program.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+When you place lines of graphical text one after another, increment
+by the <TT>getHeight()</TT> function
+of the <TT>Font</TT> you are using.
+To center a string, use <TT>this.size.height()</TT>
+and <TT>this.size.width()</TT> to
+find out how wide your component screen area is. Then compute
+where to place your string based on this information and the width
+of the string in pixels that you can get using the <TT>FontMetrics</TT>
+class.
+<H3><A NAME="Drawing">Drawing</A></H3>
+<P>
+So far, this chapter has covered how to draw strings, do neat
+things with them, and set colors. The following sections cover
+the graphics primitives you expect in any toolkit. The <TT>java.awt.Graphics</TT>
+class includes methods for drawing lines, arcs, polygons, rectangles,
+and so on. These methods are included in the <TT>paint</TT>
+method of your programs.
+<H4><TT>drawLine</TT></H4>
+<P>
+<TT>drawLine</TT> is the basic graphical
+primitive. It takes four parameters that are two (x, y) pairs.
+To draw a line from (0, 10) to (50, 50) on a <TT>Graphics
+g</TT>, you use the following line:
+<BLOCKQUOTE>
+<TT>g.drawLine(0, 10, 50, 50);</TT>
+</BLOCKQUOTE>
+<P>
+The first two parameters are <TT>x1</TT>
+and <TT>y1</TT>, respectively, and
+the final two parameters are <TT>x2</TT>
+and <TT>y2</TT>.
+<H4><TT>drawPolygon</TT></H4>
+<P>
+The implementation of this function is just an extension of the
+<TT>drawLine</TT> function. There
+are three parameters: the first two are integer arrays and the
+third is the number of points, <TT><I>n</I></TT>,
+in the polygon. The first array contains the <TT>x1</TT>
+through <TT>x<I>n</I></TT>, and the
+second contains <TT>y1</TT> through
+<TT>y<I>n</I></TT>. The declaration
+for the <TT>drawPolygon</TT> method
+in this graphics class takes this format:
+<BLOCKQUOTE>
+<TT>void drawPolygon(int x[], int y[], int
+numprs)  {</TT>
+</BLOCKQUOTE>
+<P>
+There is also a second way to draw polygons. It involves declaring
+an instance of the <TT>Polygon</TT>
+class and then adding your points to the variable one at a time.
+The following code segment declares an instance of the <TT>Polygon</TT>
+class, adds three points, and then sends the polygon to be drawn:
+<BLOCKQUOTE>
+<TT>Polygon PGon = new Polygon();<BR>
+PGon.add(1,2);<BR>
+PGon.add(4,4);<BR>
+PGon.add(30,30);<BR>
+DrawPolygon(PGon);</TT>
+</BLOCKQUOTE>
+<P>
+Both versions work and do the same job.
+<H4><TT>drawArc</TT></H4>
+<P>
+<TT>drawArc</TT> is used to draw arcs.
+The arc drawn is specified by a bounding rectangle. It takes six
+parameters: the starting x and starting y, the width and height
+of the bounding rectangle, and the starting and finishing degree
+positions of the arc. <TT>drawArc</TT>
+takes the format
+<BLOCKQUOTE>
+<TT>drawArc(int x, int y, int WidthofRect,
+int HeightofRect, int StartDeg, int EndDeg)  {</TT>
+</BLOCKQUOTE>
+<P>
+where <TT>x</TT> and <TT>y</TT>
+specify the center of the arc, <TT>WidthofRect</TT>
+and <TT>HeightofRect</TT> specify
+one corner of the bounding rectangle of the arc, and the remaining
+two parameters specify the beginning and ending degree positions
+of the arc. A summary of the drawing primitives is shown in Table
+9.4.<BR>
+<P>
+<CENTER><B>Table 9.4. The available drawing primitives.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=288><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=211><TT>drawRect(int x, int y,
+<BR>
+int width, int height);</TT>
+</TD><TD WIDTH=288>This draws a rectangle. It accepts four parameters: the initial <TT>x</TT> and initial <TT>y</TT>, and the <TT>width</TT> and <TT>height</TT> of the rectangle.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=211><TT>drawOval(int x, int y,
+<BR>
+int width, int height);</TT>
+</TD><TD WIDTH=288>This draws an oval whose center is (x, y), and the width and height specify the distance from the origin to the side of the bounding rectangle and the top of the bounding rectangle respectively.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=211><TT>drawRoundRect(int x, int x,<BR>
+int width, int height,<BR>
+in arcWidth, int arcHeight);</TT>
+</TD><TD WIDTH=288>This draws a rectangle with rounded corners. The parameters are the same as in the <TT>drawRect</TT> function except for the last two parameters. The <TT>arcWidth</TT> and <TT>arcHeight</TT> specify the bounding width and height for the curved corners.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=211><TT>draw3DRect(int x,int y,
+<BR>
+int width, int height,<BR>
+boolean ThreeD);</TT>
+</TD><TD WIDTH=288>This is the same as the <TT>drawRect</TT> method except it adds a Boolean field that specifies that the box should be raised off of the panel if it is <TT>true</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=211><TT>ClearRect(int x, int y,
+<BR>
+int width, int height)</TT>
+</TD><TD WIDTH=288>Draws an outlined, clear rectangle using the current background color.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="Filling">Filling</A></H3>
+<P>
+Filling is as simple as it gets: for all these methods described
+in the &quot;Drawing&quot; section, replace the word &quot;draw&quot;
+with the word &quot;fill&quot; and you're ready to go. For example,
+the following code draws a filled rectangle starting at 0,0 and
+of width 15 and height 30:
+<BLOCKQUOTE>
+<TT>g.fillRect(0, 0, 15, 30);</TT>
+</BLOCKQUOTE>
+<P>
+Again, to draw these same shapes filled with the current color
+of the graphics, simply replace the word &quot;draw&quot; with
+&quot;fill.&quot; This also works fine with 3-D rectangles.
+<H3><A NAME="AdrawingExampleApplet"><TT><FONT SIZE=4>AdrawingExample</FONT></TT><FONT SIZE=4>
+Applet</FONT></A></H3>
+<P>
+The <TT>AdrawingExample</TT> example
+in Listing 9.4 incorporates some of these methods into an applet
+that draws onto its main panel. The applet has a <TT>paint</TT>
+method, which draws three different figures using the primitives
+discussed. There is no action, no motion, so the values stay the
+same in the <TT>paint</TT> method.
+When the time comes for animation later in the book, the <TT>paint</TT>
+method is the place where the work gets done. But for now, the
+Java runtime calls <TT>paint</TT>
+over and over, and draws the same image on the screen. The output
+from the applet is shown in Figure 9.4.
+<P>
+<A HREF="f9-4.gif" ><B>Figure 9.4. :</B> <I>A drawing Example demonsrates the basic method to use the different drawing primitives in the AWT's Graphics classs.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 9.4. The ADrawingExample applet code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+<BR>
+public class ADrawingExample extends Applet {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics g) {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw a rectangle
+starting at 10, 15 with a height of 100<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// and a width
+of 120.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawRect(10,
+15, 100, 120);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw a 3D rectangle
+starting at 150,15 with a height of<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 140 and a width
+of 100.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The arc width
+is 15 and the arc height is 10 for the corners.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawRoundRect(150,
+15, 100, 140, 15, 10);<BR>
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw a filled
+arc which is 75% filled: going from 0<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// degrees to
+270 and a bounding rectangle of 130 in<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// width and 140
+in height.<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.fillArc(280,
+35, 130, 140, 10, 280);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Basically, the only tricky issue about using these methods is keeping your parameters straight. Two things can help you with this: have a reference such as this book handy to check your implementations, and print out the actual source code for the <TT>Graphics</TT> package and refer to it.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="DisplayingandDealingwithImages"><FONT SIZE=5 COLOR=#FF0000>Displaying
+and Dealing with Images</FONT></A></H2>
+<P>
+Java allows different images to be imported and displayed. There
+are a great multitude of types of image formats in the world today,
+and a number of them are supported by Java.
+<P>
+The basic class for image storage is the <TT>Image</TT>
+class. The <TT>Image</TT> class is
+platform dependent. It is first implemented as <TT>abstract</TT>
+and then fully coded in the classes that define the platform-specific
+code. However, this isn't of concern to you since one of the principles
+of object-oriented design is that you aren't interested in how
+things get done, just that they do. You are guaranteed a certain
+specification in the <TT>Image</TT>
+and other library classes.
+<P>
+To declare an instance of the <TT>Image</TT>
+class use the following line:
+<BLOCKQUOTE>
+<TT>Image AnImage;</TT>
+</BLOCKQUOTE>
+<P>
+You should notice that there is no constructor to set up an instance
+of the <TT>Image</TT> type. Instead,
+you go about placing pictures into the <TT>Image</TT>
+type through other methods while the construction is taken care
+of for you.
+<H3><A NAME="GettingImages">Getting Images</A></H3>
+<P>
+There are a couple of methods available to load images into your
+programs. The first method is specific to some components, and
+it involves using the <TT>getImage</TT>
+method and the <TT>getDocumentBase</TT>
+method to place the image into the instance of <TT>Image</TT>.
+The <TT>getImage</TT> function returns
+an instance of the <TT>Image</TT>
+class, which you then can set another instance equal to that value.
+The <TT>getDocumentBase</TT> returns
+the URL of the document that the applet is embedded in. You can
+use the <TT>getCodeBase</TT> function
+to return the position of your actual applet code if you want
+to place your images in the same location as your applet code.
+<P>
+The following line gets an image called <TT>Spalding.gif</TT>,
+which is found in the same directory as the applet class file:
+<BLOCKQUOTE>
+<TT>AnImage = getImage(getDocumentBase(),
+&quot;Spalding.gif&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+This is simple enough. The first parameter is a function that
+defines the basis for where the image was found. It returns an
+instance of the <TT>URL</TT> class
+that defines an <TT>http</TT> address.
+The second, of course, is the name of the image itself.
+<P>
+The second method involves the direct use of the <TT>Toolkit</TT>
+class. The AWT Toolkit is used to bind with a platform-specific
+implementation of the toolkit. It provides different functions
+when using <TT>Image</TT>s. This is
+a more specific manner to specify how you will get the image.
+To get an image using the toolkit, use the following declaration:
+<BLOCKQUOTE>
+<TT>AnImage = Toolkit.getDefaultToolkit.getImage(&quot;Spalding.gif&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+This statement accesses the default toolkit for a platform and
+then calls that toolkit's <TT>getImage</TT>
+function, which returns an instance of the <TT>Image</TT>
+class. This class is then placed in the <TT>AnImage</TT>
+variable. Note that the <TT>Toolkit</TT>
+is abstractly implemented in the AWT and then completely implemented
+in a local machine's platform-specific libraries.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+There are a number of other implementations of the <TT>getImage</TT> method in both of these areas. For more information, check the source code in the class libraries. These implementations, however, should suit you fine for most tasks.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+You must use the toolkit to get images into your programs if you are creating an application. The first method is useful only with applets because Sun has incorporated the toolkit features into the <TT>applet</TT> class for simplicity.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="DisplayingImages">Displaying Images</A></H3>
+<P>
+Displaying instances of the <TT>Image</TT>
+class after you have placed an image into them using one of the
+above methods is simple. You will utilize the <TT>drawImage</TT>
+function in the <TT>Graphic</TT> class
+to paint your image onto the display. The following code line
+tells a <TT>Graphics</TT> <TT>g</TT>
+to draw <TT>AnImage</TT> image you
+declared previously at coordinates (10,20):
+<BLOCKQUOTE>
+<TT>g.drawImage(AnImage,  10, 20, this);</TT>
+</BLOCKQUOTE>
+<P>
+The first parameter is the image itself. The second and third
+parameters are integers that specify the x and y coordinates.
+The last one specifies an instance of <TT>ImageObserver</TT>,
+which sets what object receives notification of happenings during
+the loading and display process of the image. You learn more details
+about the Java Image model in the upcoming section, &quot;The
+Java Model of Images.&quot; In this case, the <TT>this</TT>
+keyword refers to the object in which this code is contained.
+<P>
+The applet example <TT>ImageExample</TT>
+loads an image and then paints it onto the Applet panel, as shown
+in Listing 9.5. The output is shown in Figure 9.5.
+<P>
+<A HREF="f9-5.gif" ><B>Figure 9.5. </B>: <I>The output from the Image Example applet, which loads an image and displays it on the applet panel.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 9.5. The ImageExample applet code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+<BR>
+public class ImageExample extends Applet {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Image MyImage;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void init()&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Load the image
+called Spalding.gif into the MyImage variable.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MyImage = getImage(getDocumentBase(),
+&quot;Spalding.gif&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics g) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Paint the display
+with our image.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawImage(MyImage,
+10, 20, this);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Table 9.5 summarizes the different implementations of the <TT>drawImage</TT>
+method.<BR>
+<P>
+<CENTER><B>Table 9.5. drawImage methods available.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+<TT>drawImage(Image img, int x, int y, Image Observer iob)<BR>
+drawImage(Image img, int x, int y, int w, int h, ImageObserver iob)<BR>
+drawImage(Image img, int x, int y, Color bgcolor, ImageObserver iob)<BR>
+drawImage(Image img, int x, int y, Color bgcolor, int w, int h, ImageObserver<BR>
+&Acirc;iob)</TT>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Variables</I></TD><TD WIDTH=463>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=127><TT>x</TT>:</TD>
+<TD WIDTH=463>The x coordinate where the image will be placed.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=127><TT>y</TT>:</TD>
+<TD WIDTH=463>The y coordinate where the image will be placed.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=127><TT>bgcolor</TT>:
+</TD><TD WIDTH=463>The background color onto which the image will be drawn.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=127><TT>w:</TT></TD>
+<TD WIDTH=463>The allocated width for the image display.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=127><TT>h:</TT></TD>
+<TD WIDTH=463>The allocated height for the image display.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=127><TT>iob</TT>:</TD>
+<TD WIDTH=463>An instance of the <TT>ImageObserver</TT> class (explained in the next section).
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=2 WIDTH=590>If you do not provide the exact space that your image occupies originally, it is scaled to fit. So make sure that you provide the right dimensions. Otherwise, your images will likely be distorted by the scaling. The <TT>ImageObserver</TT> in this method is notified only if the graphic is incomplete.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>The Java Model of Images</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The Web presents a problem when dealing with images. There is a notable amount of time that your applet needs to wait for applets to download. You don't want people browsing your pages to leave because they have to wait too long to see an image. Java is designed with this facet of networking in mind. The model of how its images are loaded is reflected in how it deals with images.</BLOCKQUOTE>
+<BLOCKQUOTE>
+The model is based on interaction between three different pieces: the <TT>ImageProducer</TT>, the <TT>ImageObserver</TT>, and the <TT>ImageConsumer</TT> types. Image producers get images and then relate that image to the consumer. You don't need to worry about exactly where they are because this consumer and producer process happens out of your view for the most part. Image observers are objects that have a stake in what's going on. They can be interested in whether an image is loading or is incomplete.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+For example, the <TT>this</TT> keyword included as a parameter in earlier declarations specified the current object to be an image observer. You commonly see an observer set to be the current object by using the <TT>this</TT> keyword. Using this keyword says that you want the current object to be notified if things are incomplete.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+The process of handling these notifications is done through an <TT>ImageObserver</TT> interface included in applets and other containers. To find out exactly what has gone wrong, you access the returned flag to the interface and then compare that to the constants held in the <TT>ImageObserver</TT> class. This isn't really as important as it sounds, but if you are interested, check the library source code to implement it for yourself.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Some Killer Reserved Words</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Here are some &quot;killer&quot; reserved words (powerful words) and their meanings:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;finalize</TT>&nbsp;&nbsp;This says that you're finished with an instance of an object and you want the runtime to free the object's resources.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;super</TT>&nbsp;&nbsp;A parent of a class.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;super()</TT>&nbsp;&nbsp;The constructor of an immediate parent of a class.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;this</TT>&nbsp;&nbsp;Refers to the current class.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The <TT>MediaTracker</TT> is a utility class that allows you to manage and track the loading of media components including <TT>Image</TT>s. This class uses the concept of threading. Threading is covered in <A HREF="ch16.htm" >Chapter 16</A>, &quot;Multithreading with Java,&quot; and the class is described there.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="AFinalComponentCanvases"><FONT SIZE=5 COLOR=#FF0000>A
+Final Component: Canvases</FONT></A></H2>
+<P>
+All the graphical examples so far have been drawn onto the applet
+panel. This has worked great, but Figure 9.6 shows what can happen
+if components and graphics are combined in this way on the same
+panel.
+<P>
+<A HREF="f9-6.gif" ><B>Figure 9.6. </B>: <I>The dangers of mixing components and graphics on the same panel.</I></A>
+<BR>
+<P>
+Since you don't know where exactly each of your components will
+end up, it is impossible to be sure that the graphics and components
+don't conflict when your applet appears on different machines.
+What is the solution? Well, Java has a component that is designed
+to solve this problem: the <TT>Canvas</TT>
+class.
+<P>
+<TT>Canvas</TT>es are components that
+are designed to be drawn upon just like an artist's canvas. You
+can draw onto a canvas and insert it into another container or
+your applet display itself. The <TT>Canvas</TT>
+class has its own <TT>paint()</TT>
+method, which handles what is drawn on the canvas face just as
+with the <TT>Applet</TT> and <TT>Frame</TT>
+classes. For this reason, <TT>Canvas</TT>es
+must be declared as classes separate from the class that displays
+them.
+<P>
+Here are the steps to include a <TT>Canvas</TT>
+in your applet:
+<OL>
+<LI>Inside your applet file, declare another class that <TT>extend</TT>s
+the <TT>Canvas</TT> class.
+<LI>Declare a <TT>public void paint(Graphics
+g)</TT> method in the new class from Step 1.
+<LI>In the <TT>paint</TT> void from
+Step 2, do whatever drawing or image displaying you want to do
+onto the canvas.
+<LI>If you want to tell the <TT>Canvas</TT>
+when to refresh immediately, have your other methods in the class
+from Step 1 call the <TT>repaint</TT>
+method when you want to do so.
+<LI>Declare an instance of your new class in your applet and <TT>add</TT>
+it to your applet panel.
+</OL>
+<P>
+And then you're ready to go. The <TT>CanvasImageFiesta</TT>
+applet is shown in Listing 9.6. It puts these steps into practice.
+It also demonstrates the process of importing and displaying images
+in the canvas. The resulting output is shown in Figure 9.7.
+<P>
+<A HREF="f9-7.gif" ><B>Figure 9.7. </B>: <I>The output from the canvases both the use of canases and the importation and display of images.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 9.6. The CanvasImageFiesta applet code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+<BR>
+public class CanvasImageFiesta extends Applet&nbsp;&nbsp;{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void init ()&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Typical button
+delcaration here.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Button AButton
+= new Button(&quot;Ack!&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(AButton);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Image anImage
+= getImage(getDocumentBase(), &quot;Ian.gif&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Declare and
+setup the instance of the OurCanvas class<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OurCanvas OC =
+new OurCanvas(anImage);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(OC);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+}<BR>
+<BR>
+class OurCanvas extends Canvas {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Image AnImage;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;OurCanvas (Image InImage) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// We have
+to set the size, otherwise it is invisible.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; resize(250,200);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Put the
+image into the AnImage variable.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AnImage
+= InImage;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public
+void paint(Graphics g)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Draw the image on our canvas.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawImage(AnImage,5,5,this);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+So, what's going on? Well, first you do the normal applet stuff.
+The <TT>init</TT> method creates a
+button and also an instance of the class that you created that
+<TT>extends</TT> the <TT>Canvas</TT>
+class. You also load the image and then declare an instance of
+the <TT>OurCanvas</TT> class.
+<P>
+In the second class, <TT>OurCanvas</TT>,
+you override the default <TT>paint</TT>
+method for the <TT>Canvas</TT> class
+and create one that draws the image that you receive in the construction
+of the instance. Then the image is painted on the screen.
+<H2><A NAME="AddingtotheOrderEntrySystem"><FONT SIZE=5 COLOR=#FF0000>Adding
+to the Order Entry System</FONT></A></H2>
+<P>
+Of course, you want to incorporate the concepts of <TT>Canvas</TT>es
+into the Order Entry System, but to what end? First, you should
+complete the long-standing goal of adding a graphical logo to
+the system. Also, it may be nice to add some sort of graphical
+divider between the different sections of the applet panel. This
+is accomplished through the use of the <TT>Canvas</TT>
+class and the different methods available in the <TT>Graphics</TT>
+class.
+<H3><A NAME="AddingaLogototheOrderEntrySystem">Adding a Logo to
+the Order Entry System</A></H3>
+<P>
+To add a logo to the Order Entry System, follow the steps outlined
+previously in the section on <TT>Canvas</TT>es.
+First, declare a class that is an extension of the <TT>Canvas</TT>
+class, as follows:
+<BLOCKQUOTE>
+<TT>class LogoCanvas extends Canvas {</TT>
+</BLOCKQUOTE>
+<P>
+Notice that this is not a public class. In your applet file, the
+only class declaration that should be public is the applet class
+itself.
+<P>
+To do some setup in the new class, define a constructor for it.
+This constructor accepts the logo, which is loaded in the applet
+itself. It sets the accepted logo as the private <TT>LogoImage</TT>
+variable local to this class. Then the canvas is resized to fit
+the logo, as follows:
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;private Image
+LogoImage;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;LogoCanvas (Image LogoInCanvas) {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Get the
+image and place it in LogoImage. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LogoImage
+= LogoInCanvas;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Resize
+the canvas to fit the Logo exactly.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resize (425, 87);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<P>
+Next, you create a <TT>paint</TT>
+method in the class that handles the continual updating of the
+display, as in the following code. The code inside the <TT>paint</TT>
+method draws the image onto the current graphics.
+<BLOCKQUOTE>
+<TT>public void paint(Graphics g) {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Draw the logo on the canvas.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;g.drawImage(LogoImage,0,0,this);<BR>
+<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Now declare an instance of this class in the original applet and
+call the constructor. Listing 9.7 shows the <TT>LogoCanvas</TT>
+class that is constructed along with an applet to display it.
+Figure 9.8 shows the resulting output.
+<P>
+<A HREF="f9-8.gif" ><B>Figure 9.8.:</B> <I>The Logo TestApplet when viewed from the Applet Viewer utility. This applet demonstrates the use of a convas to incorporate graphics into containers.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 9.7. The LogoTestApplet applet code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+import java.net.*;<BR>
+<BR>
+public class LogoTestApplet extends Applet&nbsp;&nbsp;{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Declare our specialized canvas declared
+below.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private LogoCanvas Logo;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void init()&nbsp;&nbsp;{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setLayout(new
+FlowLayout());<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Declare the
+logo.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Image LogoInApplet
+= getImage(getDocumentBase(), &quot;OESLogo.gif&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Construct the
+new canvas. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Logo = new
+LogoCanvas(LogoInApplet);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the logo
+canvas to the applet face.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(Logo);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}<BR>
+<BR>
+class LogoCanvas extends Canvas {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Image LogoImage;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;LogoCanvas (Image LogoInCanvas) {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Get the
+image and place it in LogoImage. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LogoImage
+= LogoInCanvas;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Resize
+the canvas to fit the Logo exactly.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resize (425, 87);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics g)&nbsp;&nbsp;{
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw the logo
+on the canvas.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawImage(LogoImage,0,0,this);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<H3><A NAME="AddingGraphicalDividerstotheOrderE">Adding Graphical
+Dividers to the Order Entry System</A></H3>
+<P>
+One major improvement is to better divide the applet panel so
+the interface is easier to use and less jumbled. Horizontal bars
+can be used to improve the organization. To do this, create another
+class that extends the <TT>Canvas</TT>
+class and have it draw a horizontal bar the width of the applet
+and also display a string label in the middle of the bar Figure
+9.9 shows what a bar looks like.
+<P>
+<A HREF="f9-9.gif" ><B>Figure 9.9:</B> <I>A sample divider that this section will create.</I></A>
+<P>
+The first step in creating the divider is to create another class
+that displays the logo, as in the preceding section. Call the
+class <TT>HorizBar</TT>, as follows:
+<BLOCKQUOTE>
+<TT>class HorizBar extends Canvas {</TT>
+</BLOCKQUOTE>
+<P>
+Then make a constructor that accepts two parameters-the string
+to display and the width of the bar-as follows:
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;private String
+LineString;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private int Width;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;HorizBar(String InString, int InWidth)
+{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the size
+of the canvas.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resize(InWidth,
+25);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the local
+variables equal to parameters so that<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// we can use
+the values in the paint method.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Width = InWidth;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LineString = InString;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<P>
+Then create the <TT>paint</TT> method,
+which the runtime can use to place what you want on the screen.
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics
+g)&nbsp;&nbsp;{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the font
+and font metrics class.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Font f = new Font(&quot;TimesRoman&quot;,
+Font.BOLD, 16);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FontMetrics FM
+= getFontMetrics(f);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.setFont(f);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw a line
+from x = 0 to x = 15.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawLine(0,
+20, 15, 20);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw the string.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawString(LineString,
+20, 20);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw the rest
+of the line.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawLine(FM.stringWidth(LineString)
++ 25, 20, Width, 20);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<P>
+Then use it in an applet, and you're ready to go. Figure 9.10
+shows this code added to the preceding <TT>LogoTestApplet</TT>.
+<P>
+<A HREF="f9-10.gif" ><B>Figure 9.10:</B> <I>The LogoTestApplet with an instance of the divider class that was just added.</I></A>
+<H2><A NAME="AudiointheAppletPackage"><FONT SIZE=5 COLOR=#FF0000>Audio
+in the Applet Package</FONT></A></H2>
+<P>
+There aren't any kind of sound capabilities incorporated into
+the Order Entry System. At the present time, the audio handling
+and production capabilities of Java are very limited. However,
+it is possible to load and play audio bytes. The only format that
+is currently supported is the AU format, or &#181;-law.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+These capabilities are very limited. There are no methods to manage or cut up clips. They also do not sound very good in terms of quality. For best results, you may want to use other means such as the browser's own sound production capabilities.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Audio clips are stored using variables of the type <TT>AudioClip</TT>.
+One function, <TT>play</TT>, is key
+to playing <TT>AudioClips</TT>.
+<H3><A NAME="play"><TT><FONT SIZE=4>play</FONT></TT></A>
+</H3>
+<P>
+The <TT>play</TT> method has two forms:
+<TT>play(URL u)</TT> and <TT>play(URL
+u, String Filename)</TT>. Both accept an instance of the
+<TT>URL</TT> class that specifies
+the location of the audio clip. The second function accepts the
+URL plus the file name.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Another method, <TT>getAudioClip(URL u, String Filename)</TT>, returns an instance of the <TT>AudioClip</TT> class. You can use this to load an audio clip one time. Then you can enter <TT>MyAudioClip.play();</TT> and it is played.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+One final limitation of the audio in Java is that it cannot be
+used with the <TT>MediaTracker</TT>
+class discussed earlier in this chapter. Hopefully, in future
+releases of Java, the <TT>MediaTracker</TT>
+class will be extended to deal with audio. Expect further releases
+of Java to include more capabilities in terms of audio, graphics,
+and multimedia such as video.
+<H2><A NAME="TheOrderEntrySystemSoFar"><FONT SIZE=5 COLOR=#FF0000>The
+Order Entry System So Far</FONT></A></H2>
+<P>
+As of now, the Order Entry System is about 300 lines of code,
+and it would be a waste to make you suffer through reading a listing
+again. The changes made, however, were listed in this chapter.
+You have made some minor, though important, changes. First, you
+added two different canvas types: one holding a logo and a second,
+more generic, class that creates a labeled bar to better separate
+the panel. Figure 9.11 shows the Order Entry System user interface
+so far.
+<P>
+<A HREF="f9-11.gif" ><B>Figure 9.11: </B><I>The Order Entry System including modification from this chapter.</I></A>
+<P>
+The next chapter, &quot;The Order Entry System: Exception Handling
+and Browser Interaction,&quot; covers a couple of important concepts.
+One of these concepts is <TT>Exceptions</TT>,
+which are explored to see if they are useful in making the Order
+Entry System more robust. Also, the next chapter uses more of
+the applet features that allow interaction with the browser.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

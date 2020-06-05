@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.uk/java/write_to_textfile.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 06:59:41 GMT -->
+<HEAD>
+		<meta name="description" content="How to write to a text file using Java code">
+<TITLE>Java For Complete Beginners - writing to text files</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-2.css">
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">Java</SPAN> <SPAN class="Logo_Text">Course</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+			<ul>
+	
+<LI><a href="../index-2.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2010.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign.html">Web Design</a></LI>
+<LI><a href="../NET/vbNet.html">Visual Basic .NET</a></LI>
+<LI><a href="../php/php.html">Beginners PHP</a></LI>
+<LI><a href="../csharp/csharp.html">C# .NET</a></LI>
+<LI><a href="java.html">Java for Beginners</a></LI>
+
+			</ul>
+<P>&nbsp;</P>
+<P>
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-3498263538959058";
+/* Java_sidebar */
+google_ad_slot = "8180620610";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="../../pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</P>
+</NAV> <SECTION ID="Wrapper"> <ARTICLE>
+<HEADER> 
+<H1 ID="Article">Write to a Text File in Java</H1>
+</HEADER><SECTION>
+<p align="center">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-3498263538959058";
+/* java_banner_1 */
+google_ad_slot = "4586086164";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="../../pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</p>
+<P>Writing to a file is a little easier than reading a file. To write to a file, 
+  we'll use two more inbuilt classes: the <b>FileWriter</b> class and the <b>PrintWriter</b> 
+  class. </P>
+<p>Create a new class in <a href="read_a_textfile_in_java.html">your project</a> 
+  by clicking <b>File &gt; New File</b> from the NetBeans menu. Select <b>Java</b> 
+  in the Categories section of the dialogue box and <b>Class</b> from the File 
+  Types list. Click the Next button at the bottom. For the Class name type <b>WriteFile</b>, 
+  then click Finish. Add the following three import statements your new code:</p>
+<p class ="TextIndent2"><b>import java.io.FileWriter;<br>
+  import java.io.PrintWriter;<br>
+  import java.io.IOException;</b></p>
+<p>Your new class should look like this:</p>
+<p align="center"><img src="images/textfiles/WriteFile_Blank.gif" width="253" height="190" border="1" alt="Importing the FileWriter and PrintWriter"></p>
+<p>Again, the underlines are because we haven't used the imported classes yet.</p>
+<p>When you write to a file, you can either start from the beginning and overwrite 
+  everything. Or you can start at the end and append to the file. The FileWriter 
+  class allows you to specify which. We'll add a field that sets the append value 
+  for the FileWriter class. We'll also add a field to set the name of the file.</p>
+<p>So add the following two fields to your code, plus the constructor:</p>
+<p align="center"><img src="images/textfiles/WriteFile_Blank_constructor.gif" width="363" height="172" border="1" alt="The WriteFile constructor"></p>
+<p>The boolean field is called <b>append_to_file</b> and has been set to a value 
+  of <b>false</b>. This is the default value for the FileWriter class, and means 
+  you don't want to append, but erase everything in the file. </p>
+<p>The constructor sets a value for the <b>path</b> field (instance variable), 
+  which is the name and location of the file. This will get handed over when we 
+  create a new object from our WriteFile class.</p>
+<p>As was mentioned in the previous section, however, you can set up more than 
+  one constructor in your code. We can set up a second one and pass in an append 
+  value. That way, a user can either just use the first constructor and hand over 
+  a file name, or a file name and an append value. So add the following constructor 
+  below the first one:</p>
+<p class="TextIndent2"><b>public WriteFile( String file_path , boolean append_value 
+  ) {</b></p>
+<p><b><span class="TextIndent3">path = file_path;</span><br>
+  <span class="TextIndent3">append_to_file = append_value;</span></b></p>
+<p class="TextIndent2"><b>}</b></p>
+<p>This second constructor now has two values between the round brackets, a file 
+  path and an append value. If you want to append to the file you can use this 
+  constructor when creating a new object. If you just want to overwrite the text 
+  file then you can use the first constructor.</p>
+<p>Your code window should now look like this:</p>
+<p align="center"><img src="images/textfiles/WriteFile_Constructor2.gif" width="485" height="382" border="1" alt="Java code showing two constructors "></p>
+<p>To write to the file, add the following method below your two constructors:</p>
+<p><span class="TextIndent2"><b>public void writeToFile( String textLine ) throws 
+  IOException {</b></span><b><br>
+  <br>
+  <span class="TextIndent2">}</span></b></p>
+<p>This method doesn't need to return a value, so we've made it void. In between 
+  the round brackets of the method name we have a String variable called <b>textLine</b>. 
+  This is obviously the text we want to write to the file. Again, though, we need 
+  to add &quot;throws IOException&quot; as we need to do something to handle file-writing 
+  errors.</p>
+<p>The first thing we need in the method is a FileWriter object. The FileWriter 
+  takes care of opening the correct file, and of storing the text as bytes. Add 
+  the following line to your writeToFile method:</p>
+<p class="TextIndent2"><b>FileWriter write = new FileWriter( path , append_to_file);</b></p>
+<p>So we're creating a new FileWriter object with the name write. In between the 
+  round brackets of FileWriter we pass the name and location of the file, plus 
+  the append value. This will either be <b>true</b> (append to the file) or <b>false</b> 
+  (don't append). If a file of the name you pass over does not exist, the FileWriter 
+  creates one for you. </p>
+<p>The FileWriter write bytes, however. But we can hand the FileWriter plain text 
+  with the aid of the <b>PrintWriter</b> class. The PrintWriter has a few handy 
+  print methods for this. But it needs the name of a FileWriter when creating 
+  the object from the class. So add this line to your method:</p>
+<p class="TextIndent2"><b>PrintWriter print_line = new PrintWriter( write );</b></p>
+<p>Our PrintWriter object is called print_line. In between the round brackets 
+  of PrintWriter, we've added the name of our FileWriter object.</p>
+<p>To add the text to a file, type the name of the PrintWriter object followed 
+  by a dot:</p>
+<p class="TextIndent2"><b>print_line.</b></p>
+<p>As soon as you type the dot, NetBeans will display a list of available options:</p>
+<p align="center"><img src="images/textfiles/WriteFile_Print.gif" width="465" height="410" border="1" alt="Print options for the PrintWriter"></p>
+<p>There are an awful lot of print options on the list!</p>
+<p>The one we'll use is one of the <b>printf</b> methods. This allows you to pass 
+  a formatted string of text to your PrintWriter. A good reason for using printf 
+  is to handle new line characters. The new line character differs, depending 
+  on which operating system you use. Windows will add the characters \r\n for 
+  a new line. But Unix systems just use \n. Using the printf function will ensure 
+  the correct encoding, no matter what the platform.</p>
+<p>Add the following line to your code:</p>
+<p class="TextIndent2"><b>print_line.printf( &quot;%s&quot; + &quot;%n&quot; , 
+  textLine);</b></p>
+<p>We've handed the printf method two things: a format for the text, and the string 
+  we want to write to the file. The two are separated by a comma. Notice the first 
+  of the two:</p>
+<p class="TextIndent2"><b>&quot;%s&quot; + &quot;%n&quot;</b></p>
+<p>The %s between double quotes means a string of characters of any length. The 
+  %n means a newline. So we're telling the printf method to format a string of 
+  characters and add a newline at the end. The actual text that needs formatting 
+  goes after the comma. The printf method is quite useful, and we'll go through 
+  the options in more detail in a later section. For now, let's crack on.</p>
+<p>Only one more line to add to your method:</p>
+<p class="TextIndent2"><b>print_line.close();</b></p>
+<p>This line closes the text file and frees up any resources it was using.</p>
+<p>Your WriteFile class should now look like this:</p>
+<p align="center"><img src="images/textfiles/WriteFile_WholeClass.gif" width="495" height="561" border="1" alt="Java code for writing to a file"></p>
+<p>To test out your new class, go back to your FileData class (the one with the 
+  main method). Add the following line to create a new object from your WriteFile 
+  class:</p>
+<p class="TextIndent2"><b>WriteFile data = new WriteFile( file_name , true );</b></p>
+<p>So we've set up a WriteFile object called data. In between the round brackets 
+  of WriteFile, we've added two things: the name of the file, and an append value 
+  of true. This will ensure that the second of the constructors we set up gets 
+  called. If we wanted to just overwrite the file, then the code would be this:</p>
+<p class="TextIndent2"><b>WriteFile data = new WriteFile( file_name );</b></p>
+<p>Because we set the default append value as false, we only need the file name 
+  if we want to overwrite the entire contents.</p>
+<p>To call the writeToFile method of your WriteFile object, add this line:</p>
+<p class="TextIndent2"> <b>data.writeToFile( &quot;This is another line of text&quot; 
+  );</b></p>
+<p>Feel free to change the text between the round brackets of the method.</p>
+<p>To let the user know that something has happened, you can print something to 
+  the Output window:</p>
+<p class="TextIndent2"><b>System.out.println( &quot;Text File Written To&quot; 
+  );</b></p>
+<p>Your <b>FileData</b> code should now look like this (we've added some comments):</p>
+<p align="center"><img src="images/textfiles/WriteFile_Run.gif" width="521" height="517" border="1" alt="Calling your WriteFile class into action"></p>
+<p>If you like, add another <b>try &#133; catch</b> part for your text writing. 
+  Instead of the above, change it to this:</p>
+<p align="center"><img src="images/textfiles/WriteFile_Run2.gif" width="437" height="194" border="1" alt="Error checking the WriteFile class"></p>
+<p>Now run your code to test it out. You should see the contents of your text 
+  file in the Output window followed by the message that the text file has been 
+  written to:</p>
+<p align="center"><img src="images/textfiles/WriteFile_OutPut.gif" width="339" height="147" border="1" alt="Output 1"></p>
+<p>Run the programme again and you should see the new line appear. (You can comment 
+  out the code that writes to the text file.)</p>
+<p align="center"><img src="images/textfiles/WriteFile_OutPut2.gif" width="317" height="138" border="1" alt="Outptut 2"></p>
+<p>And that's it - you can now write to a text file and read its contents. In 
+  the next section, we'll move on and tackle programming with Java Forms.</p>
+<p align="right"><a href="read_a_textfile_in_java.html">&lt;-- Read a Text File</a> | <a href="java_forms.html">Java Forms --&gt;</a></p>
+</SECTION></ARTICLE> </SECTION> <FOOTER> 
+<P><A HREF="java.html">Back to the Home Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.uk/java/write_to_textfile.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 06:59:41 GMT -->
+</HTML>
+

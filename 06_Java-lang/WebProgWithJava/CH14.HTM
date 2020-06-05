@@ -1,0 +1,1557 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 14</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>Extending Java</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+
+<UL>
+<LI><A HREF="#TheRuntimeandProcessClasses" >The Runtime and Process Classes</A>
+<UL>
+<LI><A HREF="#ExecutingExternalProgramsUsingRuntim" >Executing External Programs Using Runtime</A>
+<LI><A HREF="#MonitoringExecutedApplicationsUsingP" >Monitoring Executed Applications Using Process</A>
+<LI><A HREF="#APracticalExampleDAOCmd" >A Practical Example: DAOCmd</A>
+</UL>
+<LI><A HREF="#ExtendingJavaUsingNativeMethods" >Extending Java Using Native Methods</A>
+<UL>
+<LI><A HREF="#BasicMechanicsofCreatingNativeMetho" >Basic Mechanics of Creating Native Methods</A>
+<LI><A HREF="#CallingJavafromNativeMethods" >Calling Java from Native Methods</A>
+<LI><A HREF="#WritingWellBehavedNativeCode" >Writing Well-Behaved Native Code</A>
+<LI><A HREF="#AnInterfacetoMicrosoftDataAccessOb" >An Interface to Microsoft Data Access Objects (DAO)</A>
+</UL>
+<LI><A HREF="#AppletsandSecurityRestrictions" >Applets and Security Restrictions</A>
+<UL>
+<LI><A HREF="#JavaRemoteMethodInvocation" >Java Remote Method Invocation</A>
+</UL>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+By any measure, Java provides a deep set of standard tools that
+can be used to create terrific applets. Various Java packages
+described in the preceding chapters provide excellent access to
+network, file input/output, window manipulation, and numerous
+desirable functions.
+<P>
+Naturally, Java doesn't provide a completely comprehensive set
+of tools; it's currently impossible to do so in a cross-platform
+manner, given the diversity of platforms and operating systems
+as well as the rapid pace of technological innovation and change.
+Sometimes it's necessary to compensate for a deficiency in Java
+by extending it.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Sun appears to have some interest in the development of a Java-based operating system. In a Java operating system, every aspect of the OS could be exposed as an integral <TT>java</TT> class.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Two basic means of extending the Java environment are provided
+with the Java development kit: the <TT>Runtime</TT>
+and <TT>Process</TT> classes, and
+native methods. The <TT>Runtime</TT>
+and <TT>Process</TT> classes can be
+used to call external non-Java programs. Native methods can be
+used to directly integrate methods implemented in C or C++ with
+standard Java methods. Each mechanism has certain advantages.
+For very simple tasks, it is easier to implement a separate executable
+than a class with native methods. However, it's more difficult
+to pass parameters to separate executables, and parameters are
+less integrated with the Java runtime execution environment than
+native methods. Subsequent sections of this chapter examine the
+use of separate executables and classes with native methods.
+<H2><A NAME="TheRuntimeandProcessClasses"><B><FONT SIZE=5 COLOR=#FF0000>The
+</FONT></B><TT><B><FONT SIZE=5 COLOR=#FF0000>Runtime</FONT></B></TT><B><FONT SIZE=5 COLOR=#FF0000>
+and </FONT></B><TT><B><FONT SIZE=5 COLOR=#FF0000>Process</FONT></B></TT><B><FONT SIZE=5 COLOR=#FF0000>
+Classes</FONT></B></A></H2>
+<P>
+One of the simplest means of integrating Java with non-Java systems
+involves the creation of one or more command-line driven executables
+that use the non-Java components directly. The <TT>Runtime</TT>
+and <TT>Process</TT> classes in the
+<TT>java.lang</TT> package provide
+methods that allow a Java application to execute and monitor non-Java
+processes.
+<P>
+The Java application communicates with the executable by creating
+a command array and calling <TT>Runtime.exec()</TT>.
+The executable can communicate a simple integer back using its
+return code. If more complex communication is required, the Java
+application can read from the process standard output and write
+to the process standard input.
+<P>
+Typical use of the <TT>Runtime</TT>
+and <TT>Process</TT> objects involves
+setting up the command or command/argument array to execute, executing
+the command, retrieving the input and output streams of the spawned
+process, and monitoring the process status.
+<P>
+The disadvantage to using command-line driven executables is that
+the executables are not very tightly integrated with the Java
+application. Parameter passing is complex, and the interface certainly
+doesn't resemble the clean clarity of a set of defined Java classes.
+However, for simple cases, it is probably simpler to define separate
+executables than classes with C-based native methods.
+<H3><A NAME="ExecutingExternalProgramsUsingRuntim"><B>Executing
+External Programs Using </B><TT><B><FONT SIZE=4>Runtime</FONT></B></TT></A>
+</H3>
+<P>
+The <TT>Runtime</TT> class exposes
+several versions of an <TT>exec()</TT>
+method that may be used to execute non-Java processes. The simplest
+version takes one argument-a string containing the system command
+to execute. Other versions include arrays of arguments to pass
+to the system command. The <TT>exec()</TT>
+method returns a Java <TT>Process</TT>
+object that can be used to monitor the spawned process.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Because the <TT>Runtime</TT> class can be used to execute non-Java applications, the <TT>Runtime.exec()</TT> method isn't available from Java applets. Applets can't be allowed to execute non-Java processes because the processes aren't forced to obey Java security restrictions.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>Runtime</TT> class can't be
+used to instantiate a <TT>Runtime</TT>
+object. Instead, the <TT>Runtime</TT>
+class includes a static method, <TT>getRuntime()</TT>,
+that returns a pre-existing <TT>Runtime</TT>
+object. You can call the <TT>exec()</TT>
+method from that object.
+<H3><A NAME="MonitoringExecutedApplicationsUsingP"><B>Monitoring
+Executed Applications Using </B><TT><B><FONT SIZE=4>Process</FONT></B></TT></A>
+</H3>
+<P>
+The <TT>Runtime.exec()</TT> method
+returns a <TT>Process</TT> object.
+<TT>Process</TT> objects can be used
+to control and monitor the execution of spawned processes. The
+<TT>getErrorStream()</TT>, <TT>getInputStream()</TT>,
+and <TT>getOutputStream()</TT> methods
+of the <TT>Process</TT> object can
+be used to get the <TT>stderr</TT>,
+<TT>stdout</TT>, and <TT>stdin</TT>
+streams of the spawned process. The user might wait for the natural
+termination of the process using the <TT>waitFor()</TT>
+method, or can force termination using the <TT>destroy()</TT>
+method. The exit code of the process after termination can be
+retrieved using the <TT>exitValue()</TT>
+method.
+<P>
+The following code demonstrates the use of the <TT>Runtime</TT>
+object to spawn a <TT>Process</TT>
+whose output and exit value are monitored by a Java application:
+<BLOCKQUOTE>
+<TT>Process proc = Runtime.getRuntime().exec(ANonJava.exe@);
+<BR>
+InputStream in = proc.getInputStream();<BR>
+byte buff[] = new byte[1024];<BR>
+int cbRead;<BR>
+<BR>
+try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;while ((cbRead = in.read(buff)) != -1)
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Use the output
+of the process...<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}&nbsp;catch (IOException e) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Insert code to handle exceptions that
+occur<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// when reading the process output<BR>
+}<BR>
+<BR>
+//&nbsp;No more output was available from the process, so...<BR>
+<BR>
+//&nbsp;Ensure that the process completes<BR>
+try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;proc.waitFor();<BR>
+} catch (InterruptedException) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Handle exception that could occur when
+waiting<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// for a spawned process to terminate
+<BR>
+}<BR>
+<BR>
+// Then examine the process exit code<BR>
+if (proc.exitValue() == 1) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Use the exit value...<BR>
+}<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+When you retrieve a handle to the output stream of a spawned process with the <TT>Process.getInputStream()</TT> method, it isn't possible to use the <TT>available()</TT> method on the returned <TT>InputStream</TT> object. A reasonable workaround is to use the <TT>read(byte[])</TT> method of the <TT>InputStream</TT>, which returns <TT>-1</TT> when the end of the stream is reached.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+If you're developing executables that pass information back to
+Java classes using standard output, you should probably adopt
+an easily parsable output format. This enables your <TT>java</TT>
+class to split up and coerce the data from your executable as
+necessary.
+<H3><A NAME="APracticalExampleDAOCmd"><B>A Practical Example:
+DAOCmd</B></A></H3>
+<P>
+The DAOCmd project, available on the source code CD-ROM, includes
+a <TT>java</TT> class that calls a
+non-Java executable that returns the results of a database query.
+The parameters are passed from the <TT>java</TT>
+class to the non-Java executable by means of the command line,
+and the results of the database query are written to standard
+output by the executable. The <TT>java</TT>
+class reads the results and, in the example, simply echoes the
+results to the standard output of the Java environment.
+<P>
+The <TT>TestDAO</TT> class does all
+of the work on the Java side; the <TT>main()</TT>
+method creates the command line for the executable, runs the executable,
+and reads and echoes the results. The implementation of the <TT>main()</TT>
+method follows:
+<BLOCKQUOTE>
+<TT>public static void main(String args[])
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Runtime rt = Runtime.getRuntime();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Process proc;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Create the command array to pass to
+the executable<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;String cmd[] = new String[args.length+1];
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;cmd[0] = &quot;DAOCmd&quot;;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Prepare the command array for the executable
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;for (int iArg = 0; iArg &lt; args.length;
+iArg++) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// All arguments
+are quoted to ensure that<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// arguments are
+passed correctly to the<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// spawned process
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cmd[iArg+1] =
+&quot;\&quot;&quot; + args[iArg] + &quot;\&quot;&quot;;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Attempt to loop and retrieve all of
+the output<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// from the spawned process<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;proc = rt.exec(cmd);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream
+in = new DataInputStream(proc.getInputStream());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String strLine;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;boolean tContinue
+= true;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte buf[] = new
+byte[256];<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int cbRead;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while ((cbRead
+= in.read(buf)) != -1) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Simply echo the output from the spawned process<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+to the Java application's stdout<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(new
+String(buf, 0, 0, cbRead));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Wait for the
+spawned process to terminate<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;proc.waitFor();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;} catch (Exception e) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(e);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+The first step is to create the command array for the executable.
+The first element of the command array is the constant DAOCmd,
+which is the name of the executable. The remaining arguments are
+from the command line that was used to run the <TT>java</TT>
+class. Each argument is quoted to ensure that it is interpreted
+by the executable as a string (if an argument to the <TT>java</TT>
+class was one or more words enclosed in quotes-the Java interpreter
+strips off the quotes but maintains the string with embedded white
+space as a single string within the argument array passed to <TT>main()</TT>).
+<P>
+Next, the executable is executed using the <TT>Runtime.exec()</TT>
+method. The standard output stream of the executable is retrieved
+from the <TT>Process</TT> object returned
+by <TT>exec()</TT>. The Java method
+loops to retrieve the output of the <TT>Process</TT>
+using the <TT>read()</TT> method.
+When no more data is available to read, the loop terminates, at
+which point the <TT>java</TT> class
+waits for the process to terminate using the <TT>waitFor()</TT>
+method. After the process has terminated, the <TT>java</TT>
+class can retrieve the process exit code using the <TT>Process.exitValue()</TT>
+method, and act accordingly.
+<H2><A NAME="ExtendingJavaUsingNativeMethods"><B><FONT SIZE=5 COLOR=#FF0000>Extending
+Java Using Native Methods</FONT></B></A></H2>
+<P>
+One of the best aspects of Java is its platform independence.
+Any applet that you write basically performs in exactly the same
+manner, regardless of the platform or operating system of the
+host computer. Thanks to Java's broad support for everything from
+GUI windowing in the <TT>java.awt</TT>
+classes to networking support in the <TT>java.net</TT>
+class, most tasks can be accomplished directly within Java.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Even though Java is platform independent, there are some platform-specific bugs. For example, in the Windows 95 AWT implementation, windows shown modally do not actually behave modally. The status of bugs in Sun's Java interpreter is available at <TT>http://www.javasoft.com</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Because Java is platform independent, however, it doesn't support
+all of the features of its host computer or operating system.
+The Win32 API supported by Microsoft Windows NT and Windows 95
+includes, among many other useful features, a set of functions
+for establishing network connections with the modem, using Remote
+Access Services (RAS). Programmatically establishing a remote
+connection to a network can be very useful to support, for example,
+automatic registration of a commercial Java-based application.
+<P>
+Another reason to use native methods is the multitude of libraries
+that provide C interfaces to various systems. Many APIs are currently
+supplied as a set of statically linked library files with associated
+C header files and possibly some dynamically linked libraries.
+Unfortunately, very few APIs are currently supplied with Java
+wrapper classes.
+<P>
+There are basically two means of accessing non-Java libraries;
+the first, the use of separate processes, has been discussed earlier
+in this chapter. The disadvantage of using a separate process
+is its loose integration with the Java environment. Parameter
+passing is very limited, and communication between Java and the
+separate process and runtime may be impossible, or simply too
+tedious. The second means of accessing non-Java libraries is through
+the use of <I>native methods</I>.
+<P>
+Native methods are methods defined within Java classes using the
+<TT>native</TT> keyword. Within the
+<TT>java</TT> class, they have no
+implementation specified-only the name of the method, access specification,
+parameters, and return value.
+<H3><A NAME="BasicMechanicsofCreatingNativeMetho"><B>Basic Mechanics
+of Creating Native Methods</B></A></H3>
+<P>
+When creating a native method, you must first define it in a <TT>java</TT>
+class using the <TT>native</TT> keyword.
+For example, to define a public native method returning an integer
+called <TT>fastStringScan(String str, String
+strToFind)</TT> in a class named <TT>StringUtils</TT>,
+you would use the following code:
+<BLOCKQUOTE>
+<TT>class StringUtils {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public native int fastStringScan(String
+str, String strToFind);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;...<BR>
+}<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Literally any Java method, with the exception of object constructors, can be implemented as a native method. If you need to call some function implemented as a native method during the creation of your object, you can create a private native method that performs the initialization and call the method when the constructor executes.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Obviously, the implementation of the native method must reside
+somewhere. It is typically part of a dynamically-linked library;
+on the Microsoft Windows 95 or Windows NT platform it is in a
+DLL.
+<P>
+Java provides tools to generate wrappers for native code implementations
+in C. The wrappers generated by Java provide a fairly easy-to-use
+interface between native method implementations and the Java runtime
+environment. The use of wrappers is not optional; the Java interpreter
+expects to find functions with specific names determined from
+the native method definition. Implement the following steps to
+create native code wrappers:
+<OL>
+<LI>Compile the <TT>java</TT> class
+that contains the native method declaration.
+<LI>This is done by running <TT>javac MyClass.java</TT>
+from the command prompt.
+<LI>Create a header file that declares the structure representing
+the <TT>java</TT> class.
+<LI>The Java JDK provides a utility, <TT>javah</TT>,
+that does this for you. Typing <TT>javah
+MyClass</TT> from the command line generates a <TT>MyClass.h</TT>
+file containing the structure of the class (as used by native
+methods) and native method function prototypes.
+<LI>Create a stub file that contains function wrappers that call
+the native functions you implement.
+<LI>Using <TT>javah -stubs MyClass</TT>
+generates a file called <TT>MyClass.c</TT>
+that contains function stubs. A section later in this chapter,
+&quot;The Stubs File,&quot; provides more information about the
+stubs file.
+<LI>Develop the implementation of the native methods.
+</OL>
+<P>
+The header file created in step 2 contains the structure definitions
+and function prototypes that you need to implement your native
+methods. You must implement each function listed in the header
+file.<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Be very careful if you add another member to your class! Make sure to recompile the <TT>java</TT> class with the native method declarations, and make sure that you rerun the <TT>javah</TT> utility and recompile your DLL. Failing to recompile or rerun can lead to some very frustrating-but not straightforward-problems! You may set a class member, but continue to see it as null because the offsets calculated by the compiler no longer match up with the <TT>java</TT> class declaration.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+It's definitely worthwhile to modify your <TT>makefile</TT> to include a dependency step that updates the native method header file.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4><B>The Stubs File</B></H4>
+<P>
+The following are the contents of the <TT>StringUtils.c</TT>
+stub file generated from the previously mentioned <TT>StringUtils</TT>
+class.
+<BLOCKQUOTE>
+<TT>/* DO NOT EDIT THIS FILE - it is machine
+generated */<BR>
+#include &lt;StubPreamble.h&gt;<BR>
+<BR>
+/* Stubs for class StringUtils */<BR>
+/* SYMBOL: &quot;StringUtils/fastStringScan(Ljava/lang/String;
+<BR>
+&Acirc;Ljava/lang/String;)I&quot;, Java_StringUtils_fastStringScan_stub
+*/<BR>
+__declspec(dllexport) stack_item *Java_StringUtils<BR>
+&Acirc;fastStringScan_stub(stack_item *_P_,struct execenv *_EE_)
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;extern long StringUtils_fastStringScan(void
+*,void *,void *);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;P_[0].i = StringUtils_fastStringScan(_P_[0].p,((_P_[1].p)),((_P_[2].p)));
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return _P_ + 1;<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+The Stubs file contains function stubs that Java expects when
+it attempts to call a function with a dynamic link library that
+implements a native method. The included <TT>StubPreamble.h</TT>
+file contains all of the type and structure definitions required
+by Java stub functions. Notice that all of the stub functions
+are exported using the <TT>_declspec(dllexport)</TT>
+directive. They are the entry points to the DLL that contains
+the native methods; the functions that you write do not need to
+be exported.
+<P>
+The stub functions basically repackage the arguments from a Java
+interpreter function call into single parameters with specific
+types. The internal prototype, in this case <TT>extern
+long StringUtils_fastStringScan(void *,void *,void *)</TT>,
+uses void pointers for all of the arguments. However, the function
+that you implement has specific parameter types. The function
+declarations for the functions that you implement are contained
+within the <TT>StringUtils.h</TT>
+header file. The <TT>fastStringScan()</TT>
+function is defined within that file as <TT>extern
+long StringUtils_fastStringScan(struct HStringUtils *,struct Hjava_lang_String
+*,struct Hjava_lang_String *)</TT>.
+<H4><B>The Header File</B></H4>
+<P>
+The following are the contents of the <TT>StringUtils.h</TT>
+header file generated by <TT>javah</TT>
+from the previously mentioned <TT>StringUtils</TT>
+class.
+<BLOCKQUOTE>
+<TT>/* DO NOT EDIT THIS FILE - it is machine
+generated */<BR>
+#include &lt;native.h&gt;<BR>
+/* Header for class StringUtils */<BR>
+<BR>
+#ifndef _Included_StringUtils<BR>
+#define _Included_StringUtils<BR>
+<BR>
+typedef struct ClassStringUtils {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;char PAD;&nbsp;&nbsp;&nbsp;&nbsp;/* ANSI
+C requires structures to have a least one member */<BR>
+} ClassStringUtils;<BR>
+HandleTo(StringUtils);<BR>
+<BR>
+#ifdef __cplusplus<BR>
+extern &quot;C&quot; {<BR>
+#endif<BR>
+struct Hjava_lang_String;<BR>
+extern long StringUtils_fastStringScan(struct HStringUtils *,
+<BR>
+&Acirc;struct Hjava_lang_String *,struct Hjava_lang_String *);
+<BR>
+#ifdef __cplusplus<BR>
+}<BR>
+#endif<BR>
+#endif</TT>
+</BLOCKQUOTE>
+<P>
+The header file contains all of the function prototypes that you
+need to implement, as well as all of the includes that you need
+to call useful Java functions. Peeking through the Java API files
+included automatically in the header file is a worthwhile exercise.
+Several include files are nested within the <TT>native.h</TT>
+header. Without additional documentation, it's very difficult
+to determine the purpose of many of the structures and functions
+in some of the included files; but the <TT>native.h</TT>
+header file can occasionally shed light on problems that you may
+encounter during compilation.
+<P>
+If you are implementing the native methods in C++, you must be
+sure to wrap the inclusion of the <TT>StringUtils.h</TT>
+header file in an <TT>extern &quot;C&quot;</TT>
+block, as the following example demonstrates:
+<BLOCKQUOTE>
+<TT>/**<BR>
+&nbsp;* StringUtilsImpl.cpp<BR>
+&nbsp;*<BR>
+&nbsp;* Contains implementation of native methods.<BR>
+&nbsp;*/<BR>
+<BR>
+extern &quot;C&quot; {<BR>
+#include &lt;StringUtils.h&gt;<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>StringUtils</TT> class is
+represented as a C structure in the header file. Accessing object
+instance variables involves using members of the <TT>ClassStringUtils</TT>
+structure; further descriptions are listed in the following sections.
+<H3><A NAME="CallingJavafromNativeMethods"><B>Calling Java from
+Native Methods</B></A></H3>
+<P>
+It is frequently necessary to call Java methods from within native
+methods. In order to do so, it is essential to understand method
+signatures, and to know how to dispatch Java method calls. The
+following sections describe method signatures and method call
+dispatching in detail.
+<P>
+It is also frequently important to be able to create Java objects
+from within native methods. This is particularly important, for
+example, when returning a Java object, such as a <TT>String</TT>,
+from a native method.
+<H4><B>Identifying Methods: Method Signatures</B></H4>
+<P>
+Within a class, each method is distinguished from other methods
+by the method's name and signature. The name is simply the name
+of the method. The signature is a string that describes the method
+parameters and the method return value. This allows Java to perform
+function overloading by enabling the interpreter to dynamically
+look up and dispatch functions that have the same name but have
+different arguments or return types.
+<P>
+Method signatures consist of a set of method parameter type descriptions
+enclosed within parentheses and followed by a return type description.
+Primitive types are designated differently from object types;
+object types are prefixed with an &quot;L&quot;, include the fully
+distinguished name of the <TT>object</TT>
+class delimited by &quot;/&quot; rather than &quot;.&quot;, and
+are terminated with a &quot;;&quot;.
+<P>
+Given a Java method <TT>repeatSubString()</TT>,
+defined as <TT>String repeatSubString</TT>(<TT>int
+begOffset</TT>, <TT>int endOffset</TT>,
+<TT>int repeatCount</TT>, <TT>String
+string</TT>), the method signature would be <TT>&quot;(IIILjava/lang/String;)Ljava/lang/String;&quot;</TT>.
+If an array is passed, the type of the array element should be
+prefixed by a <TT>&quot;[&quot;</TT>
+in the method signature. The method signature for <TT>int
+findString(String stringToFind, String[] strings)</TT>
+would be <TT>&quot;(Ljava/lang/String;[Ljava/lang/String;)I&quot;</TT>.
+<P>
+The signature prefixes or characters are defined within the <TT>signature.h</TT>
+header file. The most frequently used signature characters follow:
+<BLOCKQUOTE>
+<TT>[ - Array<BR>
+B - Byte<BR>
+C - Char<BR>
+L - Beginning of Class name<BR>
+; - End of Class name<BR>
+F - Float<BR>
+D - Double<BR>
+I - Integer<BR>
+J - Long<BR>
+S - Short<BR>
+V - Void<BR>
+Z - Boolean</TT>
+</BLOCKQUOTE>
+<H4><B>Calling Java Object Methods from Native Methods</B></H4>
+<P>
+You will frequently want to make a Java object perform some action
+from a native method. To do so, you call a method on the object.
+To call a method on an object from a native method, you use the
+<TT>execute_java_dynamic_method()</TT>
+function.
+<P>
+The full definition of the function from <TT>interpreter.h</TT>
+follows:
+<BLOCKQUOTE>
+<TT>long execute_java_dynamic_method(ExecEnv
+*,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HObject
+*obj,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char
+*method_name,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char
+*signature,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...);</TT>
+</BLOCKQUOTE>
+<P>
+The first argument is the execution environment, or <TT>ExecEnv</TT>.
+You should generally use the <TT>EE()</TT>
+function, which returns the current execution environment. The
+execution environment has little or no documentation provided
+with the JDK 1.0 release; you can glean some of its uses by examining
+the <TT>execenv</TT> structure in
+<TT>interpreter.h</TT> and associated
+macros. The second argument is an object instance that provides
+the method you want to call. The third argument is the method
+name, sans signature. It is the raw name of the method without
+access specifiers, parameters, return types, etc. For a method
+defined as <TT>public int foo(String str)</TT>,
+the method name would simply be <TT>foo</TT>.
+The fourth argument is the signature of the method, as described
+in the previous section.
+<P>
+The remaining arguments are the object or primitive datatype parameters
+required by the method. The arguments must correspond to the types
+defined in the method signature.
+<P>
+Notice that the <TT>execute_java_dynamic_method()</TT>
+returns a long. Your code should cast the long appropriately,
+given the return type defined in the method signature.
+<P>
+The <TT>execute_java_dynamic_method()</TT>
+function enables you to call methods on an object instance, but
+it doesn't enable you to call static methods defined for a class.
+Calling static methods requires the use of the <TT>execute_java_static_method()</TT>
+function, defined as follows in <TT>interpreter.h</TT>:
+<BLOCKQUOTE>
+<TT>long execute_java_static_method(ExecEnv
+*,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ClassClass
+*cb,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char
+*method_name,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char
+*signature,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...);</TT>
+</BLOCKQUOTE>
+<P>
+The arguments of <TT>execute_java_static_method()</TT>
+are almost identical to the arguments for <TT>execute_java_dynamic_method()</TT>.
+The only difference is the second argument, which is a pointer
+to a <TT>Class</TT> object rather
+than a Java object instance. The Java interpreter creates a <TT>Class</TT>
+object for every loaded class. The <TT>ClassClass</TT>
+structure is defined in the <TT>oobj.h</TT>
+header file.
+<P>
+You can use the <TT>FindClass()</TT>
+function to get a <TT>Class</TT> object
+with a class name; it's defined in <TT>interpreter.h</TT>
+as:
+<BLOCKQUOTE>
+<TT>ClassClass *FindClass(struct execenv
+*ee, char *name, bool_t resolve);</TT>
+</BLOCKQUOTE>
+<P>
+To find the <TT>java.lang.System</TT>
+class object, you use the following function call:
+<BLOCKQUOTE>
+<TT>ClassClass *System = FindClass(EE(),
+&quot;java/lang/System&quot;, FALSE)</TT>
+</BLOCKQUOTE>
+<H4><B>Accessing Java Object Instance Variables from Native Methods</B>
+</H4>
+<P>
+One of the most common reasons to access object instance variables
+from native methods is to set instance variables for the object
+that contains the native method that you implement. Using the
+following definition for a <TT>NonJavaFile</TT>
+class:
+<BLOCKQUOTE>
+<TT>public class NonJavaFile {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public native void getFileAttributes(String
+strFile);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public String strAttr1;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public int iAttr2;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public boolean bAttr3;<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+The native method implementation for <TT>getFileAttributes()</TT>
+would no doubt require the ability to set the various Attribute
+variables of the <TT>NonJavaFile</TT>
+instance. The native method shell, generated using <TT>javah</TT>
+as described previously, includes a parameter that is not visible
+in the Java <TT>getFileAttributes()</TT>
+method declaration. The additional parameter is the pointer to
+the handle of the object instance that was used to call the native
+method. Use the <TT>unhand()</TT>
+function to acquire the C structure that contains the Java object
+instance variables.
+<P>
+Using the <TT>NonJavaFile</TT> example,
+the implementation of <TT>getFileAttributes()</TT>
+might look like:
+<BLOCKQUOTE>
+<TT>void NonJavaFile_getFileAttributes(struct
+HNonJavaFile *me,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;struct
+Hjava_lang_String *strFile)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ClassNonJavaFile *NonJavaFile = (ClassNonJavaFile*)unhand(me);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Use the strFile argument to perform
+some action(s)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;...<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Modify some of the Java object instance
+variables (or, in other<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// words, members of the ClassNonJavaFile
+structure)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;char achAttr[] = &quot;Some File Attribute&quot;;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;NonJavaFile-&gt;strAttr1 = makeJavaString(achAttr,
+sizeof(achAttr));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;NonJavaFile-&gt;iAttr2 = 100;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;NonJavaFile-&gt;bAttr3 = TRUE;<BR>
+}</TT>
+</BLOCKQUOTE>
+<H4><B>Creating Java Objects in Native Methods</B></H4>
+<P>
+The Java API function <TT>execute_java_constructor()</TT>
+is the key to creating Java objects from native methods. Its arguments
+include the name of the class to create, the desired constructor
+signature, and the arguments (which must, of course, correspond
+to the constructor signature) to the constructor. If the constructor
+executes successfully, it returns a pointer to a new Java object.
+If failure occurs, the function returns NULL, and an exception
+is raised.
+<P>
+The full prototype for the <TT>execute_java_constructor()</TT>
+function, as defined in <TT>interpreter.h</TT>,
+follows:
+<BLOCKQUOTE>
+<TT>execute_java_constructor(ExecEnv *,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char
+*classname,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ClassClass
+*cb,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char
+*signature, ...);</TT>
+</BLOCKQUOTE>
+<P>
+If you already have a <TT>Class</TT>
+object for the class instance that you want to create, you can
+pass it in as the <TT>cb</TT> argument
+and pass NULL for the <TT>classname</TT>.
+This is somewhat faster than the alternative, which is to pass
+the <TT>classname</TT> and omit the
+<TT>Class</TT> object (pass NULL for
+<TT>cb</TT>), because the Java interpreter
+must find the <TT>Class</TT> object
+based on the class name.
+<P>
+The Java <TT>String</TT> class is
+a special case; the process of creating <TT>String</TT>s
+is simplified by the <TT>makeJavaString()</TT>
+function prototyped in the <TT>javaString.h</TT>
+header file. The full function prototype follows:
+<BLOCKQUOTE>
+<TT>Hjava_lang_String *makeJavaString(char
+*, int);</TT>
+</BLOCKQUOTE>
+<P>
+The function returns a new <TT>String</TT>
+object given a C character pointer and the length of the string.
+<H3><A NAME="WritingWellBehavedNativeCode"><B>Writing Well-Behaved
+Native Code</B></A></H3>
+<P>
+All of the classes provided with the Java Development Kit fully
+use Java's standard security, error handling, and synchronization
+mechanisms. Native methods aren't forced to conform to any of
+the aforementioned standards. Deliberate effort is required on
+the behalf of native method implementer to use them.
+<P>
+The following sections describe the standard mechanisms, as well
+as means of conforming to their requirements.
+<H4><B>Error Handling in Native Methods</B></H4>
+<P>
+Java's error handling mechanism is centered around the use of
+exceptions. Literally any method called on any Java object may
+throw one or more types of exceptions. Exceptions are used to
+indicate that an anomalous situation occurred during the execution
+of method code. The members of the E<TT>xception</TT>
+object describe the type of exception that occurred.
+<P>
+Java enforces the explicit capturing or throwing of exceptions.
+If your Java code calls a method that indicates in its definition
+that it throws one or more exceptions, your calling code must
+either catch the exceptions, or explicitly indicate that it throws
+the exceptions. Use of exceptions within Java code is further
+described in <A HREF="ch10.htm" >Chapter 10</A>, &quot;The Order
+Entry System: Exception Handling and Browser Interaction.&quot;
+<P>
+Native methods should, when appropriate, throw Java exceptions.
+They should also declare the Java exceptions that can be thrown
+by Java class methods executed by the Java code, giving the Java
+compiler information that it needs to enforce Java's rules for
+exception capturing.
+<H5><B><FONT SIZE=2>Handling Exceptions Thrown by Java Code</FONT></B>
+</H5>
+<BLOCKQUOTE>
+Within Java code, the handling of exceptions is automatic. Frames
+with exception handlers can be established to catch exceptions.
+Native methods must use the following Java API function to detect
+exceptions thrown by Java methods:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>exceptionOccurred(ee)</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+The <TT>exceptionOccurred()</TT> function
+returns true if a Java exception has been raised. To handle the
+exception, you can retrieve additional information about it using
+the <TT>exc</TT> member of the exception
+union within the <TT>execenv</TT>
+structure. The <TT>exc</TT> member
+contains a pointer to the Java exception object.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Typical native code that calls a Java method, then checks for
+and handles Java exceptions, might look like the following:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>// Call some Java method<BR>
+long lResult = execute_java_dynamic_method(EE(), theObj, &quot;someMethod&quot;,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&quot;()V&quot;);<BR>
+if (exceptionOccurred(EE())<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Check if the exception that occurred
+is a dao.DaoException<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// in this example (NOTE: the dao.DaoException
+is mentioned in<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// the DAOLayer example)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;JHandle *exception = EE()-&gt;exc;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ClassClass *DaoExceptionClass = FindClass(EE(),
+&quot;dao/DaoException&quot;, TRUE);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if (is_instance_of(exception, DaoExceptionClass,
+EE()))<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The exception
+is a dao.DaoException, so I can include<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// code to handle
+the exception<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXCEPTION HANDLING
+CODE GOES HERE...<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// After I have
+handled the exception, I clear it so that<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// it isn't propagated
+back to the Java interpreter<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exceptionClear(EE());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+This is the rough functional equivalent of the following Java
+code:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;theObj.someMethod();<BR>
+} catch (dao.DaoException e) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;EXCEPTION HANDLING CODE GOES HERE...<BR>
+}</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+The native code is much more involved than the Java code. That's
+one of the disadvantages of using native methods. Java code doesn't
+have to worry about explicitly testing the type of the exception
+that is generated-the Java interpreter matches the exception with
+the corresponding <TT>catch</TT> clause,
+if an appropriate <TT>catch</TT> clause
+exists. After the code in the <TT>catch</TT>
+clause executes, the Java interpreter handles clearing the exception
+and resetting the Java execution environment.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+The native code clears the Java exception explicitly using <TT>exceptionClear()</TT>.
+The <TT>exceptionClear()</TT> function
+is implemented as a macro in <TT>interpreter.h</TT>;
+its only parameter is a pointer to an <TT>execenv</TT>
+structure. The <TT>exceptionClear()</TT>
+macro is used to clear the current exception. It should be used
+if you catch and handle an exception in your native method code.
+Use it with caution; you will want to propagate (throw) some exceptions
+back to the code that called your native method.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+If an exception occurs, the type of the exception is tested using
+the <TT>is_instance_of()</TT> function,
+which returns <TT>true</TT> if an
+object is an instance of a specific class. The definition of <TT>is_instance_of</TT>,
+from <TT>interpreter.h</TT>, follows:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>bool_t is_instance_of(JHandle * h, ClassClass
+*dcb, ExecEnv *ee);</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+The first argument is the Java object you want to test, the second
+is the class object that you want to check the object against,
+and the third is a pointer to an <TT>execenv</TT>
+structure. The <TT>is_instance_of</TT>
+function returns <TT>true</TT> if
+the object is an instance of the class or a subclass of the class.
+</BLOCKQUOTE>
+<H5><B><FONT SIZE=2>Throwing Exceptions</FONT></B></H5>
+<BLOCKQUOTE>
+Throwing exceptions from native methods is very straightforward.
+The only Java API function that is required is <TT>SignalError()</TT>.
+The prototype for <TT>SignalError()</TT>
+follows:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>void SignalError(struct execenv *, char
+*, char *);</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+The first argument is a pointer to an <TT>execenv</TT>
+structure. You can use the <TT>EE()</TT>
+function to pass the active <TT>execenv</TT>
+structure to <TT>SignalError()</TT>.
+The second argument is a null-terminated C string indicating the
+fully distinguished name of the exception that you're throwing.
+As usual, the periods separating the packages in which the class
+is defined should be replaced with the forward slash (&nbsp;/&nbsp;).
+The third argument is a null-terminated string that describes
+details of the exception; you can pass null if you don't want
+to specify additional information.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+You can learn more about Java exceptions in <A HREF="ch10.htm" >Chapter 10</A>.
+The DAOLayer native methods example, described later in this chapter,
+also demonstrates throwing exceptions from native methods.
+</BLOCKQUOTE>
+<H4><B>Security in Native Methods</B></H4>
+<P>
+As previously indicated, Java native methods aren't subject to
+the same security restrictions as pure Java methods. That's not
+to say that they are completely exempt; for example, if you attempted
+to open a file using the <TT>java.io</TT>
+classes from a native method, the open call would fail with a
+<TT>SecurityException</TT> if the
+Java application doesn't have sufficient security privileges.
+<P>
+However, a native method could circumvent that security by using
+non-Java input-output mechanisms. If the native method uses standard
+C library functions for file input and output, it would be allowed
+to do so irrespective of the security restrictions of the current
+Java execution environment.
+<P>
+Consequently, to write truly well-behaved native methods, it is
+necessary to explicitly check the active security restrictions.
+As a matter of fact, this is precisely the behavior of implementations
+in the Java standard library. The following excerpt, from <TT>File.java</TT>
+in the <TT>java.io</TT> package, illustrates
+a security check:
+<BLOCKQUOTE>
+<TT>/**<BR>
+&nbsp;* Deletes the specified file. Returns true<BR>
+&nbsp;* if the file could be deleted.<BR>
+&nbsp;*/<BR>
+public boolean delete() {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;SecurityManager security = System.getSecurityManager();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if (security != null) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;security.checkDelete(path);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return delete0();<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Obviously, the security check is performed here within a Java
+wrapper method that calls a native method, <TT>delete0()</TT>,
+that actually performs the file deletion. If you need to perform
+a simple, single-step security check, using the wrapper method
+may suffice.
+<P>
+If you have a native method that performs several different types
+of actions that might each be subject to different security restrictions,
+it may be more convenient for you to include the security checks
+within the body of the native method. The following code illustrates
+one means of performing those types of security checks:
+<BLOCKQUOTE>
+<TT>ClassClass *System = FindClass(EE(),
+&quot;java/lang/System&quot;, TRUE);<BR>
+Hobject *phSecMgr = (Hobject*)execute_java_static_method(EE(),
+System,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&quot;getSecurityManager&quot;, &quot;()Ljava/lang/SecurityManager;&quot;);
+<BR>
+<BR>
+if (NULL != phSecMgr)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Perform security check - for this example,
+check the ability<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// to delete a file in the local file
+system<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;execute_java_dynamic_method(EE(), phSecMgr,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;checkDelete&quot;,
+&quot;(Ljava/lang/String;)V&quot;, phFile);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if (exceptionOccurred())<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Perform
+some action&#133;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The default <TT>SecurityManager</TT> that comes with the Java development kit throws a <TT>SecurityException</TT> on every check that is performed.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4><B>Using Java's Synchronization/Wait-Notification Mechanisms</B>
+</H4>
+<P>
+The architecture of Java was defined with the goal of directly
+supporting multithreading. Consequently, thread creation, notification,
+and synchronization mechanisms are provided within Java. Because
+every class is a sub-class of <TT>java.lang.Object</TT>,
+every class supports the <TT>wait()</TT>
+and <TT>notify()</TT> synchronization
+functions. Entire methods can be protected automatically by Java
+if they are defined with the <TT>synchronized</TT>
+keyword. The <TT>java.lang.Thread</TT>
+classes contain a synchronized static <TT>nextThreadNum()</TT>
+method; the <TT>synchronized</TT>
+keyword assures that the function may be called by only one Java
+object at a time.
+<H5><B><FONT SIZE=2>Native Method Wait/Notify</FONT></B></H5>
+<BLOCKQUOTE>
+To wait on a Java object you must call the object's <TT>wait()</TT>
+method. Doing so is straightforward, as the following code snippet
+illustrates:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>execute_java_dynamic_method(EE(), theObject,
+&quot;wait&quot;, &quot;()V&quot;);</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+To notify a Java object you must call the object's <TT>notify()</TT>
+or <TT>notifyAll()</TT> method. The
+following code illustrates a call to the <TT>notify()</TT>
+method:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>execute_java_dynamic_method(EE(), theObject,
+&quot;notify&quot;, &quot;()V&quot;);</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Using <TT>wait()</TT> and <TT>notify()</TT>
+with Java objects is very useful when, for example, your native
+method consumes objects from a queue filled by a separate Java
+thread.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+You should note that <TT>wait</TT>s
+may be interrupted, in which case an <TT>InterruptedException</TT>
+is thrown by the <TT>wait</TT> method.
+Consequently you may want to check for a Java exception after
+executing the <TT>wait</TT>, as shown
+in the following snippet:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>// Wait for the object to be notify()ed
+<BR>
+execute_java_dynamic_method(EE(), theObject, &quot;wait&quot;,
+&quot;()V&quot;);<BR>
+<BR>
+// Check for the occurrence of an InterruptedException<BR>
+if (exceptionOccurred(EE()))<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Handle the exception - check for Interrupted,
+or other...<BR>
+}</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+If you don't check for the <TT>InterruptedException</TT>,
+you may erroneously execute code that assumes that a waited object
+was notified. This isn't an issue within pure Java code because
+exceptions are enforced by the Java interpreter.
+</BLOCKQUOTE>
+<H3><A NAME="AnInterfacetoMicrosoftDataAccessOb"><B>An Interface
+to Microsoft Data Access Objects (DAO)</B></A></H3>
+<P>
+One of the most useful and easy-to-use commercial APIs is the
+Microsoft DAO object model for Windows 95 and Windows NT. The
+DAO objects provide a simple, powerful abstraction that wraps
+ODBC-compliant database systems. DAO objects are directly exposed
+as a set of COM and OLE automation classes; the Microsoft Visual
+C++ development environment includes the DAO C++ API, which provides
+a simple mechanism to use the DAO OLE classes. The DAO classes
+are used to access databases and tables in the previously mentioned
+DAOCmd project.<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Microsoft recently released an open beta of their Visual J++ Java development environment, available at <TT><A TARGET="resource window" HREF="http://www.microsoft.com/VisualJ">http://www.microsoft.com/VisualJ</A></TT>. The Visual J++ environment, which runs on Windows 95 and Windows NT, incorporates support for the COM object model and allows the developer to instantiate and use OLE objects directly within Java, as well as create COM/OLE objects using Java. Because of the built-in COM support, Visual J++ applications can call DAO objects directly.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Microsoft Visual C++ also provides some DAO wrapper classes within
+the Microsoft Foundation Classes. The DAO wrappers handle some
+of the details of the creation and destruction of DAO objects
+for you. Because of their ease of use, they are a compelling choice
+as a set of classes to integrate with Java. The DAOLayer project,
+included with source code on the CD-ROM provided with this book,
+demonstrates fairly simple integration of Java classes with Microsoft
+MFC DAO C++ classes.
+<P>
+DAOLayer is designed to illustrate the integration of Java with
+Microsoft MFC DAO C++ classes using native methods. The DAOLayer
+project consists of several C/C++ header files and source files,
+as well as two Java classes that provide class definitions. You
+can get information about the DAO objects from the on-line help
+provided with the Microsoft Visual C++ compiler package.
+<H4><B>Design Issues: Mapping C++ Objects to Java Objects</B>
+</H4>
+<P>
+The Microsoft MFC DAO classes are already divided into discrete
+functional units. Consequently, defining a mapping from C++ to
+equivalent Java classes is straightforward. Wrapping a C API is
+slightly more complex due to the fact that there aren't necessarily
+any inherent objects within a C API. Your options when mapping
+a C API are basically to either create objects with methods that
+provide an interface to several logically related C functions,
+or to simply create a class that exposes static methods that wrap
+the C functions.
+<P>
+The DAOLayer project wraps the MFC <TT>CDaoDatabase</TT>
+class and the <TT>CDaoRecordset</TT>
+class. The Java classes <TT>dao.Database</TT>
+and <TT>dao.Recordset</TT> wrap the
+<TT>CDaoDatabase</TT> class and the
+<TT>CDaoRecordset</TT> class respectively.
+Only a few of the C++ member functions are exposed within the
+Java wrapper classes; <TT>dao.Database</TT>
+provides open and close methods, and <TT>dao.Recordset</TT>
+provides open, close, navigation, and field value retrieval functions.
+An implementation that was more full would provide additional
+functionality, such as write access, to field values in a <TT>Recordset</TT>.
+<H4><B>Defining the </B><TT><B>Database</B></TT><B>
+Java Wrapper Object</B></H4>
+<P>
+The <TT>dao.Database</TT> class is
+a wrapper for the MFC <TT>CDaoDatabase</TT>
+class. It provides the ability to open databases that may be used
+to retrieve recordsets using the <TT>Recordset</TT>
+object.
+<P>
+The <TT>dao.Database</TT> object is,
+in some respects, the most important class in the DAOLayer <TT>dao</TT>
+package. It contains Java code to load the library containing
+the native methods that implement the <TT>dao.Database</TT>
+functionality. The excerpt that loads the DAOLayer dynamic link
+library follows:
+<BLOCKQUOTE>
+<TT>static {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.loadLibrary(&quot;DAOLayer&quot;);
+<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>dao.Database</TT> object also
+contains two very important static native methods, <TT>initDAO()</TT>
+and <TT>termDAO()</TT>. The MFC DAO
+library must be initialized using explicit calls to <TT>AfxDaoInit()</TT>
+and <TT>AfxDaoTerm()</TT> functions
+when it is used within a dynamic link library; the native methods
+<TT>initDAO()</TT> and <TT>termDAO()</TT>
+wrap those functions respectively. It's the responsibility of
+the Java code that uses the <TT>dao.*</TT>
+package to call <TT>dao.Database.initDAO()</TT>
+before using any classes in the package, and call <TT>dao.Database.termDAO()</TT>
+when finished.
+<P>
+The following section describing the <TT>Recordset</TT>
+object includes more details about wrapping C++ classes with Java
+objects.
+<H4><B>Defining the </B><TT><B>Recordset</B></TT><B>
+Java Wrapper Object</B></H4>
+<P>
+The DAO <TT>Recordset</TT> object
+provides the ability to access a set of records from a DAO database.
+The MFC DAO <TT>CDaoRecordset</TT>
+class has numerous member functions that can be used to retrieve
+a set of records using an SQL statement, navigate through the
+records, and retrieve and update field values in records. For
+the sake of simplicity, the implementation of the <TT>Recordset</TT>
+provides only a few of the functions from the C++ class. It should
+be fairly simple for you to extend the class to add more functionality.
+<P>
+The definition of the <TT>dao.Recordset</TT>
+object follows:
+<BLOCKQUOTE>
+<TT>package dao;<BR>
+<BR>
+public class Recordset {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public native void open(String strSQL)
+throws DaoException;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public native void close() throws DaoException;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public native boolean isEOF() throws DaoException;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public native void moveFirst() throws
+DaoException;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public native void moveNext() throws DaoException;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public native String getFieldValue(String
+strField) throws DaoException;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;protected dao.Database db;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;protected int pRec; // Pointer to CDaoRecordset
+instance<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;protected native void allocRecObject();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;protected native void deleteRecObject();
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public Recordset(dao.Database db) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.db = db;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocRecObject();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;protected void finalize() throws Throwable
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super.finalize();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;deleteRecObject();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Each of the public methods defined in the <TT>dao.Recordset</TT>
+class corresponds to a member function in the C++ class. Literally
+the only difference is that the names of the methods are prefixed
+with a lowercase letter, in accordance to standard Java method
+capitalization conventions, as opposed to uppercase, as per the
+C++ class member definitions. The effects of the functions correspond
+to the equivalently named C++ member functions. Most of the native
+methods are simple dispatching functions that call C++ functions.
+<P>
+At this point you may be wondering how the native methods call
+C++ functions. The private instance variable <TT>pRec</TT>
+is used to store a pointer to a <TT>CDaoRecordset</TT>
+object. The native method casts the <TT>pRec</TT>
+from an integer (which is a C long) back to a <TT>CDaoRecordset</TT>
+pointer, then calls the desired <TT>CDaoRecordset</TT>
+member function. The implementation of the <TT>moveNext()</TT>
+native method follows:
+<BLOCKQUOTE>
+<TT>void dao_Recordset_moveNext(struct Hdao_Recordset*
+me)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getRecPtr(me)-&gt;MoveNext();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;catch (CDaoException* pe) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throwTranslatedDaoException(pe);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pe-&gt;Delete();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Notice that the name of the native method, <TT>dao_Recordset_moveNext()</TT>, includes the name of the package as a prefix. If the <TT>Recordset</TT> class were defined in a <TT>web.db.dao</TT> package, the <TT>Recordset_moveNext()</TT> method would have the prefix <TT>web_db_dao_</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>getRecPtr()</TT> function
+is a useful utility function that returns a pointer to a <TT>CDaoRecordset</TT>
+object, given a handle to a Java <TT>Recordset</TT>
+object. It is implemented as follows:
+<BLOCKQUOTE>
+<TT>CDaoRecordset* getRecPtr(struct Hdao_Recordset*
+daoRec)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return ((CDaoRecordset*)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((struct Classdao_Recordset*)unhand(daoRec)-&gt;pRec));
+<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+The complementary <TT>set</TT> function,
+<TT>setRecPtr()</TT>, includes the
+assertion that a Java <TT>int</TT>
+member variable, which is defined in the Java C structure as a
+<TT>long</TT>, is the same length
+in bytes as a <TT>CDaoRecordset</TT>
+pointer. The function is implemented as
+<BLOCKQUOTE>
+<TT>void setRecPtr(struct Hdao_Recordset*
+daoRec, CDaoRecordset* pRec)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ASSERT(sizeof(long) == sizeof(CDaoRecordset*));
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;((struct Classdao_Recordset*)unhand(daoRec))-&gt;pRec
+= (long)pRec;<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>get</TT> and <TT>set</TT>
+functions are used as simple convenience functions that obviate
+the need to maintain complicated sequences of casts and calls
+to the <TT>unhand()</TT> function.
+<P>
+As previously indicated, the <TT>java</TT>
+class includes a member that is used to store a pointer to a <TT>CDaoRecordset</TT>
+instance. One of the issues in mapping Java classes to C++ classes
+is the lifetime of the objects. You'll notice a call to a protected
+<TT>allocRecObject()</TT> function
+in the constructor of <TT>dao.Recordset</TT>.
+That function is used to create a <TT>CDaoRecordset</TT>
+instance and connect it to <TT>pRec</TT>.
+The class finalizer includes a call to the matching <TT>delete</TT>
+function, <TT>deleteRecObject()</TT>,
+that deletes the C++ object when the lifetime of the Java object
+ends.
+<H5><B><FONT SIZE=2>Passing C++ Exceptions to Java</FONT></B>
+</H5>
+<BLOCKQUOTE>
+In the implementation of the <TT>Recordset.moveNext()</TT>
+method, you may notice that the call to the C++ <TT>CDaoRecordset::MoveNext()</TT>
+member function is contained within a C++ <TT>try/catch</TT>
+block. The <TT>MoveNext()</TT> function
+may raise a C++ exception of type <TT>CDaoException</TT>.
+To maintain the semantics of the class, from the Java perspective,
+with regards to the exception behavior, the C++ exception is converted
+to a Java exception by the <TT>throwTranslatedDaoException()</TT>
+function. The <TT>throwTranslatedDaoException()</TT>
+function is implemented as follows:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>void throwTranslatedDaoException(CDaoException*
+pe)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;CString strErr;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;CDaoErrorInfo *pErr = pe-&gt;m_pErrorInfo;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;strErr.GetBuffer(512);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;strErr.Format(&quot;%s (%ld) - %s&quot;,
+pErr-&gt;m_strSource, pErr-&gt;m_lErrorCode,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pErr-&gt;m_strDescription);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;SignalError(EE(), &quot;dao/DaoException&quot;,
+(char*)(LPCSTR)strErr);<BR>
+}</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+The function takes a pointer to a <TT>CDaoException</TT>
+object. When an exception occurs, a pointer to the exception is
+acquired in the <TT>catch</TT> block
+that brackets the call to <TT>CDaoRecordset::MoveNext()</TT>.
+Using the convenient MFC <TT>CString</TT>
+class, the function creates a readable string that represents
+the <TT>CDaoException</TT> that occurred.
+After the string is created, an exception is raised using the
+<TT>SignalError()</TT> Java API function.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+For the <TT>throwTranslatedDaoException()</TT>
+function, a <TT>dao.DaoException</TT>
+is thrown. The Java <TT>dao.DaoException</TT>
+class, defined in <TT>DaoException.java</TT>,
+is a straightforward subclass of the <TT>java.lang.Exception</TT>
+class.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+After the Java exception is thrown, the C++ exception is deleted.
+For the <TT>CDaoException</TT> class,
+the <TT>CDaoException::Delete()</TT>
+member function must be called. Other C++ exceptions may be deleted
+by the standard C++ <TT>delete</TT>
+operator. The Java interpreter doesn't detect the occurrence of
+the Java exception until the native method returns, at which point
+the Java exception object is available to the Java code that called
+the native method.
+</BLOCKQUOTE>
+<H2><A NAME="AppletsandSecurityRestrictions"><B><FONT SIZE=5 COLOR=#FF0000>Applets
+and Security Restrictions</FONT></B></A></H2>
+<P>
+Most Web browsers severely restrict the security for executing
+applets. Consequently, most applets can't be extended using either
+the separate process method with <TT>Runtime.exec()</TT>,
+or native methods implemented in C or C++.
+<P>
+This is obviously a fairly severe restriction. It's possible to
+use some type of client-server applet to access functionality
+unavailable through Java, or to perform remote procedure calls
+using RMI (described in the following section). To implement a
+client-server applet without using RMI, you need to create an
+applet that uses, for example, sockets to communicate with a Java
+server application that uses the external process or calls native
+methods. This avoids the applet security restrictions because
+the server does the work, not the applet. However, those mechanisms
+are only useful when integrating with systems that don't need
+to run on the host machine.
+<P>
+For example, if you want to develop an applet that uses GUI functionality
+unavailable through the <TT>java.awt</TT>
+package, you may want to use native methods. In that situation,
+a call to a Java object on a server won't suffice.
+<P>
+To remedy this situation, there has been some talk of signed applets
+or applets with associated certificates. Applets would only be
+allowed to run if they had an associated certificate trusted by
+the browser loading the applet. If certificates are implemented,
+then a future browser may allow applets with native methods to
+run, assuming that the user of the browser trusts the presenter
+of the certificate for the applet.
+<H3><A NAME="JavaRemoteMethodInvocation"><B>Java Remote Method
+Invocation</B></A></H3>
+<P>
+Java Remote Method Invocation (RMI) provides a simple mechanism
+for converting standard Java classes into client/server classes.
+Java RMI is essentially an integrated remote procedure call mechanism
+that allows method calls to a local object to be forwarded transparently
+to a server object. To use RMI, you define an implementation class
+and an interface class; the interface class uses some RMI magic
+to package parameters and transfer them to a remote object, an
+instance of the implementation class.
+<P>
+RMI could be used to provide a simple workaround to applet native
+method security restrictions. Instead of implementing some arbitrary
+and complex client/server applet, you could create two versions
+of the class that uses native methods. The interface class would
+simply provide function stubs that, due to the fact that they're
+implemented in Java, would be callable by a Java applet. The implementation
+class, running on the remote object server, would use native method
+implementations.
+<P>
+Java RMI is currently in Beta. If you want to find out more about
+RMI, and download a Beta version, check out Sun's Java Web site
+at <TT><A TARGET="resource window" HREF="http://www.javasoft.com">http://www.javasoft.com</A></TT>.
+<H2><A NAME="Summary"><B><FONT SIZE=5 COLOR=#FF0000>Summary</FONT></B></A>
+</H2>
+<P>
+Java has a great set of standard packages that provide much of
+the functionality required by Java applets or applications. However,
+there are occasionally tasks that require the use of non-Java
+objects. For example, an interface to a non-Java database may
+require some intermediary between a Java application and the non-Java
+database engine or API.
+<P>
+Within Java, there are two basic options. The simplest option
+may be to create a command-line driven executable that returns
+information to Java using its standard output. The previously
+mentioned DAOCmd project illustrates this means of integration.
+The problem with that type of integration is that it's weakly
+integrated with the Java runtime environment; dynamically passing
+parameters or exception information between Java and the running
+non-Java process is difficult or impossible.
+<P>
+The second option is to create a class with native methods. Native
+methods provide a very powerful means of extending the Java environment
+with non-Java code. This chapter's examples and the DAOLayer project
+illustrate that it is possible to tie well-behaved native methods
+seamlessly into the Java environment.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

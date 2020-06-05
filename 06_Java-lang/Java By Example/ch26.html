@@ -1,0 +1,1354 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 26 -- Configurable Applets</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;26</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Configurable Applets</FONT></H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#TypesofUsers">
+
+Types of Users</A>
+
+<LI><A HREF="#ParametersandApplets">
+
+Parameters and Applets</A>
+
+<UL>
+
+<LI><A HREF="#ExampleSettingandRetrievingaParametersValue">
+
+Example: Setting and Retrieving a Parameter's Value</A>
+
+<LI><A HREF="#ExampleUsingaParameterinanApplet">
+
+Example: Using a Parameter in an Applet</A>
+
+</UL>
+
+<LI><A HREF="#MultipleParameters">
+
+Multiple Parameters</A>
+
+<UL>
+
+<LI><A HREF="#ExampleUsingMultipleParametersinanApplet">
+
+Example: Using Multiple Parameters in an Applet</A>
+
+</UL>
+
+<LI><A HREF="#DefaultParameterValues">
+
+Default Parameter Values</A>
+
+<UL>
+
+<LI><A HREF="#ExampleUsingDefaultParametersinanApplet">
+
+Example: Using Default Parameters in an Applet</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+All of the applets you've written so far have one thing in common.
+
+Outside of the starting size of the applet, none of your applets
+
+are configurable. That is, the user can't configure the applet
+
+to fit his needs. In many cases, it doesn't make sense to give
+
+the user configurable options. But, just as often, someone who
+
+wants to use your applet in his own home page will want to make
+
+minor changes without having to change and recompile the source
+
+code. In fact, the user probably won't even have access to the
+
+source code. In this chapter, you get a look at configurable applets,
+
+which enable the applet's user to modify how an applet looks and
+
+acts, all without having to change a line of Java code.
+
+<H2><A NAME="TypesofUsers"><FONT SIZE=5 COLOR=#Ff0000>
+
+Types of Users</FONT></A></H2>
+
+<P>
+
+Before you read further, it might be a good idea to define exactly
+
+what a user is. When it comes to applets, you could say that there
+
+are two kinds of users. The first kind is a net surfer who logs
+
+onto your home page and sees all the cool applets you've spent
+
+the last six months creating. Because this user is not installing
+
+your applets on his own Web pages-he's just a casual observer-he
+
+doesn't need access to the applet's parameters. In fact, if you
+
+want your Web pages to look right for different users, it just
+
+doesn't make sense to enable the surfer to configure an applet.
+
+<P>
+
+The other kind of user is the guy who found your applet on a server
+
+somewhere and wants to incorporate the applet into his own Web
+
+pages. Assuming that you've released your applet into the world
+
+for others to use, you want this type of user to find your applet
+
+to be as flexible as possible. However, you probably don't want
+
+to give this user your source code and expect him to make changes
+
+that require recompiling. Hey, he could end up trashing the applet
+
+completely, right?
+
+<P>
+
+So, to make it easy for this user to modify the applet's appearance
+
+and functionality, you must build in support for parameters. To
+
+use these parameters, the user only needs to add a few lines to
+
+the HTML document that loads and runs the applet. For example,
+
+you may have written an applet that displays an awesome title
+
+on your home page. Now, you want to release the applet so that
+
+other netfolks can use it in their Web pages. However, these folks
+
+are going to want to display their own titles. So, you make the
+
+title string a parameter.
+
+<P>
+
+In the sections that follow, you'll not only learn how to support
+
+applet parameters, but you'll also learn how to make those parameters
+
+idiot-proof.
+
+<H2><A NAME="ParametersandApplets"><FONT SIZE=5 COLOR=#Ff0000>
+
+Parameters and Applets</FONT></A></H2>
+
+<P>
+
+When you want to use an applet that supports parameters, you must
+
+add the parameters and their values to the HTML document that
+
+loads and runs the applet. You do this using the <TT>&lt;PARAM&gt;</TT>
+
+tag, which has two parts. The <TT>NAME</TT> part of the tag specifies
+
+the parameter's name, and the <TT>VALUE</TT> part specifies the
+
+parameter's value. For example, suppose you want to provide a
+
+title parameter for that title applet you read about in the previous
+
+section. The parameter tag might look like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;PARAM NAME=title VALUE=&quot;Big Al's Home Page&quot;&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Here, the name of the parameter is <TT>title</TT>. The applet
+
+will use this name to identify the parameter. The value of the
+
+<TT>title</TT> parameter in the above line is the text string
+
+<TT>Big Al's Home Page</TT>. The applet will retrieve this text
+
+string in order to display the title the user wants. A complete
+
+HTML document for the title applet might look something like Listing
+
+26.1.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 26.1&nbsp;&nbsp;LST26_1.TXT: Using a Parameter in an
+
+HTML Document.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;title&gt;Applet Test Page&lt;/title&gt;
+
+&lt;h1&gt;Applet Test Page&lt;/h1&gt;
+
+&lt;applet
+
+    code=&quot;TitleApplet.class&quot;
+
+    width=250
+
+    height=150
+
+    name=&quot;TitleApplet&quot;&gt;
+
+    &lt;PARAM NAME=title VALUE=&quot;Big Al's Home Page&quot;&gt;
+
+&lt;/applet&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+As you can see, the <TT>&lt;PARAM&gt;</TT> tag is enclosed between
+
+the <TT>&lt;applet&gt;</TT> and <TT>&lt;/applet&gt;</TT> tags.
+
+that is, the parameters are part of the applet's HTML code.
+
+<P>
+
+How does your applet retrieve the parameter at run time? An excellent
+
+question, and one for which I fortunately have the answer. To
+
+retrieve a parameter, you call the applet's <TT>getParameter()</TT>
+
+method, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+String param = getParameter(name);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>getParameter()</TT> method takes a single argument, which
+
+is a string containing the name of the parameter for which you
+
+want the value. The method always returns a string to your applet.
+
+This string is, of course, the part of the <TT>PARAM</TT> tag
+
+that follows the <TT>VALUE=</TT>.
+
+<H3><A NAME="ExampleSettingandRetrievingaParametersValue">
+
+Example: Setting and Retrieving a Parameter's Value</A></H3>
+
+<P>
+
+Suppose that you've written an applet that displays a fancy greeting
+
+to the viewer. (How fancy the greeting is displayed depends upon
+
+the code you've written for the applet. Because how the applet
+
+actually displays this greeting is not important at this point,
+
+just pretend it does something really cool.) The parameter is
+
+defined in the HTML document like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;PARAM NAME=greeting VALUE=&quot;All Web Surfers Welcome!&quot;&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+When the applet runs, it has to find out what greeting to display.
+
+So, in the applet's <TT>init()</TT> method is the following line:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+String str = getParameter(&quot;greeting&quot;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Now that the applet has the text stored in the <TT>str</TT> variable,
+
+it can manipulate and display it any way it needs to.
+
+<H3><A NAME="ExampleUsingaParameterinanApplet">
+
+Example: Using a Parameter in an Applet</A></H3>
+
+<P>
+
+Now that you know how to create HTML documents that set parameters,
+
+as well as how to obtain those parameters from within your applet,
+
+you'd probably like a real parameterized applet with which you
+
+can experiment. Listing 26.2 is an applet called ConfigApplet,
+
+which takes a single parameter. This parameter is the text string
+
+to display. Listing 26.3 is the HTML document that loads and runs
+
+the applet. Notice the <TT>&lt;PARAM&gt;</TT> tag. When you run
+
+the applet with Appletviewer, you see the window shown in Figure
+
+26.1.
+
+<P>
+
+<IMG SRC="f26-1.gif"><B> Figure 26.1 : </B><I>This applet's display string is given as a parameter.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 26.2&nbsp;&nbsp;ConfigApplet.java: An Applet with a
+
+Single Parameter.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class ConfigApplet extends Applet
+
+{
+
+    String str;
+
+
+
+    public void init()
+
+    {
+
+        str = getParameter(&quot;text&quot;);
+
+
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.BOLD, 24);
+
+        setFont(font);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(str, 50, 50);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>ConfigApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's data field.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Retrieve the value of the text parameter.<BR>
+
+        Create and set the font for the applet.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Display the given string.
+
+</BLOCKQUOTE>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 26.3&nbsp;&nbsp;CONFIGAPPLET.htmlL: HTML Document for
+
+ConfigApplet.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;title&gt;Applet Test Page&lt;/title&gt;
+
+&lt;h1&gt;Applet Test Page&lt;/h1&gt;
+
+&lt;applet
+
+    code=&quot;ConfigApplet.class&quot;
+
+    width=250
+
+    height=150
+
+    name=&quot;ConfigApplet&quot;&gt;
+
+    &lt;PARAM NAME=text VALUE=&quot;Display Text&quot;&gt;
+
+&lt;/applet&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+Once you get ConfigApplet compiled, try running the applet several
+
+times, each time changing the parameter in the HTML document to
+
+a new text string. This will give you a good example of how parameters
+
+work from the HTML document writer's point of view. Changing the
+
+value of the parameter in the HTML document is all you need to
+
+do to display a different text string. You don't have to change
+
+the applet's source code at all.
+
+<H2><A NAME="MultipleParameters"><FONT SIZE=5 COLOR=#Ff0000>
+
+Multiple Parameters</FONT></A></H2>
+
+<P>
+
+When you're writing an application that others may use in their
+
+Web pages, it's important that you make the applet as flexible
+
+as possible. One way to do this is to use parameters for any applet
+
+value that the user might like to customize. Adding multiple parameters
+
+is just a matter of adding additional <TT>&lt;PARAM&gt;</TT> tags
+
+to the HTML document and then retrieving the values of the parameters
+
+in the applet. In the next example, you take a look at ConfigApplet2,
+
+which gives the user much more control over how the applet displays
+
+the text string.
+
+<H3><A NAME="ExampleUsingMultipleParametersinanApplet">
+
+Example: Using Multiple Parameters in an Applet</A></H3>
+
+<P>
+
+Suppose that you want to rewrite ConfigApplet so that the user
+
+can customize not just the text string the applet will display,
+
+but also the position of the text and the size of the font used
+
+to print the text. To do this, you need to create four parameters,
+
+one each for the text to display, the X position of the text,
+
+the Y position of the text, and the point size of the font. Listing
+
+26.4 is an HTML document that loads and runs the ConfigApplet2
+
+applet, which is a new version of ConfigApplet. Notice that the
+
+HTML document now specifies four parameters for the applet. You
+
+can specify as many parameters as you need for an applet.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 26.4&nbsp;&nbsp;CONFIGAPPLET2.htmlL: HTML Document for
+
+ConfigApplet2.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;title&gt;Applet Test Page&lt;/title&gt;
+
+&lt;h1&gt;Applet Test Page&lt;/h1&gt;
+
+&lt;applet
+
+    code=&quot;ConfigApplet2.class&quot;
+
+    width=350
+
+    height=200
+
+    name=&quot;ConfigApplet2&quot;&gt;
+
+    &lt;PARAM NAME=text VALUE=&quot;Display Text&quot;&gt;
+
+    &lt;PARAM NAME=typesize VALUE=72&gt;
+
+    &lt;PARAM NAME=xpos VALUE=20&gt;
+
+0    &lt;PARAM NAME=ypos VALUE=100&gt;
+
+&lt;/applet&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+In the above HTML document, the user is specifying that he wants
+
+to display the text string <TT>Display Text</TT> in 72-point type
+
+and at position 20,100. The applet, of course, must call <TT>getParameter()</TT>
+
+to read these values into the applet. Moreover, the applet must
+
+call <TT>getParameter()</TT> once for each parameter. After retrieving
+
+the parameters, the applet must initialize itself such that it
+
+displays the text as requested. Listing 26.5 is the Java source
+
+code for ConfigApplet2, which accomplishes all these tasks. Figure
+
+26.2 shows the applet running under Appletviewer, using the parameters
+
+given in the HTML document in Listing 25.4.
+
+<P>
+
+<IMG SRC="f26-2.gif"><B> Figure 26.2 : </B><I>This applet accepts four parameters that determine how the text is displayed.
+
+
+
+</I></A><P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+Because the <TT>getParameter()</TT> method always returns a string, you may have to convert some parameters before you can use them in your applet. For example, the ConfigApplet2 applet must convert its <TT>typesize</TT>, <TT>xpos</TT>, and <TT>ypos</TT> 
+parameters from strings to integers.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 26.5&nbsp;&nbsp;ConfigApplet2.java: The ConfigApplet2
+
+Applet.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class ConfigApplet2 extends Applet
+
+{
+
+    String str;
+
+    Point position;
+
+
+
+    public void init()
+
+    {
+
+        String s;
+
+
+
+        str = getParameter(&quot;text&quot;);
+
+
+
+        s = getParameter(&quot;typesize&quot;);
+
+        int typeSize = Integer.parseInt(s);
+
+
+
+        s = getParameter(&quot;xpos&quot;);
+
+        int xpos = Integer.parseInt(s);
+
+
+
+        s = getParameter(&quot;ypos&quot;);
+
+        int ypos = Integer.parseInt(s);
+
+
+
+        position = new Point(xpos, ypos);
+
+
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.BOLD, typeSize);
+
+        setFont(font);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(str, position.x, position.y);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>ConfigApplet2</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's data fields.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Declare a local variable.<BR>
+
+        Retrieve the value of the text parameter.<BR>
+
+        Retrieve and convert the typesize parameter.<BR>
+
+        Retrieve and convert the xpos parameter.<BR>
+
+        Retrieve and convert the ypos parameter.<BR>
+
+        Store the position in a Point object.<BR>
+
+        Create and set the font for the applet, using typesize.
+
+<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Display the given string.
+
+</BLOCKQUOTE>
+
+<P>
+
+Suppose you were to change the parameters in the HTML file to
+
+those shown in Listing 26.6. You'd then completely change the
+
+way the text string is displayed in the applet, as shown in Figure
+
+26.3. As you can see, parameters can have a profound effect on
+
+the way an applet looks and acts.
+
+<P>
+
+<IMG SRC="f26-3.gif"><B> Figure 26.3 : </B><I>Here's ConfigApplet2 running with different parameters.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 26.6&nbsp;&nbsp;LST26_6.TXT: New Parameters for ConfigApplet2.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;PARAM NAME=text VALUE=&quot;New Text String&quot;&gt;
+
+&lt;PARAM NAME=typesize VALUE=18&gt;
+
+&lt;PARAM NAME=xpos VALUE=60&gt;
+
+&lt;PARAM NAME=ypos VALUE=150&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H2><A NAME="DefaultParameterValues"><FONT SIZE=5 COLOR=#Ff0000>
+
+Default Parameter Values</FONT></A></H2>
+
+<P>
+
+You might have noticed by now that there's a big problem with
+
+the ConfigApplet and ConfigApplet2 applets. Neither applet checks
+
+to ensure that the parameters it tries to retrieve exist. For
+
+example, what happens when the user forgets to include the <TT>text</TT>
+
+parameter?
+
+<P>
+
+Relying on other people to provide your applet with the data it
+
+needs is a dangerous practice. Your applet should always check
+
+the validity of values returned from the <TT>getParameter()</TT>
+
+method. At the very least, you should be sure that the returned
+
+value is not <TT>null</TT>, which is the value <TT>getParameter()</TT>
+
+returns when a particular parameter doesn't exist (that is, the
+
+user forget to define it in the HTML document or deliberately
+
+left it out assuming that the applet will automatically use a
+
+default value for the missing one).
+
+<P>
+
+To ensure that your applet is in a runnable state after retrieving
+
+parameters, you must always check the parameter's values and supply
+
+default values for those parameters that are missing or invalid.
+
+For example, to make sure that your applet has a text string to
+
+display, you might use lines like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+str = getParameter(&quot;text&quot;);
+
+if (str == null)
+
+    str = &quot;Default Text&quot;;<BR>
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+If you decide to release your applets so other people can use them in their Web pages, be sure that you include a separate documentation file that describes the applet's parameters and shows how to use them.</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H3><A NAME="ExampleUsingDefaultParametersinanApplet">
+
+Example: Using Default Parameters in an Applet</A></H3>
+
+<P>
+
+You can now extend the ConfigApplet2 so that it provides default
+
+values for each parameter. When you've done this, the applet can
+
+run without generating errors no matter what parameters the user
+
+chooses to include or ignore. Listing 26.7 is the new version,
+
+called ConfigApplet3.
+
+<P>
+
+Notice that although the program now checks for missing parameters,
+
+it doesn't limit the values to any ranges or otherwise check their
+
+validity. Because the <TT>text</TT> parameter will always be a
+
+string, there's really nothing you need to check for (except <TT>null</TT>).
+
+However, you may want to limit the font size or make sure that
+
+the display location is inside the applet's window. Listing 26.8
+
+is the HTML document used to load and run the applet as it's displayed
+
+in Figure 26.4.
+
+<P>
+
+<IMG SRC="f26-4.gif"><B> Figure 26.4 : </B><I>This is ConfigApplet3 running under Appletviewer.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 26.7&nbsp;&nbsp;ConfigApplet3.java: This Applet Provides
+
+Default Values for All Parameters.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class ConfigApplet3 extends Applet
+
+{
+
+    String str;
+
+    Point position;
+
+
+
+    public void init()
+
+    {
+
+        HandleTextParam();
+
+        HandleTypeSizeParam();
+
+        HandlePositionParam();
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(str, position.x, position.y);
+
+    }
+
+
+
+    protected void HandleTextParam()
+
+    {
+
+        str = getParameter(&quot;text&quot;);
+
+        if (str == null)
+
+            str = &quot;Default Text&quot;;
+
+    }
+
+
+
+    protected void HandleTypeSizeParam()
+
+    {
+
+        String s = getParameter(&quot;typesize&quot;);
+
+        if (s == null)
+
+            s = &quot;24&quot;;
+
+        int typeSize = Integer.parseInt(s);
+
+
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.BOLD, typeSize);
+
+        setFont(font);
+
+    }
+
+
+
+    protected void HandlePositionParam()
+
+    {
+
+        String s = getParameter(&quot;xpos&quot;);
+
+        if (s == null)
+
+            s = &quot;20&quot;;
+
+        int xpos = Integer.parseInt(s);
+
+
+
+        s = getParameter(&quot;ypos&quot;);
+
+        if (s == null)
+
+            s = &quot;50&quot;;
+
+        int ypos = Integer.parseInt(s);
+
+
+
+        position = new Point(xpos, ypos);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>ConfigApplet3</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's data fields.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Call the methods that retrieve and validate the parameters.
+
+<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Display the given string.<BR>
+
+    Define the <TT>HandleTextParam()</TT> method.<BR>
+
+        Retrieve the text parameter.<BR>
+
+        If the parameter is null, set str to the default text.
+
+<BR>
+
+    Define the <TT>HandleTypeSizeParam()</TT> method.<BR>
+
+        Retrieve the typesize parameter.<BR>
+
+        If the parameter is null, set the parameter string to
+
+&quot;24.&quot;<BR>
+
+        Convert the parameter string to an integer.<BR>
+
+        Create and set the font.<BR>
+
+    Define the <TT>HandlePositionParam()</TT> method.<BR>
+
+        Retrieve the xpos parameter.<BR>
+
+        if xpos is null, set the parameter string to &quot;20.&quot;
+
+<BR>
+
+        Convert the parameter string to an integer.<BR>
+
+        Retrieve the ypos parameter.<BR>
+
+        if ypos is null, set the parameter string to &quot;50.&quot;
+
+<BR>
+
+        Convert the parameter string to an integer.<BR>
+
+        Create the Point object with the position values.
+
+</BLOCKQUOTE>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 26.8&nbsp;&nbsp;CONFIGAPPLET3.htmlL: The HTML Document
+
+for ConfigApplet3.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;title&gt;Applet Test Page&lt;/title&gt;
+
+&lt;h1&gt;Applet Test Page&lt;/h1&gt;
+
+&lt;applet
+
+    code=&quot;ConfigApplet3.class&quot;
+
+    width=640
+
+    height=200
+
+    name=&quot;ConfigApplet3&quot;&gt;
+
+    &lt;PARAM NAME=text VALUE=&quot;Hi there!&quot;&gt;
+
+    &lt;PARAM NAME=typesize VALUE=144&gt;
+
+    &lt;PARAM NAME=xpos VALUE=40&gt;
+
+    &lt;PARAM NAME=ypos VALUE=140&gt;
+
+&lt;/applet&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+By supporting parameters, your applets are more flexible, which
+
+makes it easier for other people to incorporate them into their
+
+Web-page designs. Even if you don't plan to release your applets,
+
+using parameters can make your applets more powerful and your
+
+own Web pages easier to fine tune. Using the <TT>&lt;PARAM&gt;</TT>
+
+tag is more sensible than having to reprogram and recompile an
+
+applet every time you want it to do something slightly different.
+
+Keep in mind, though, that all parameters must have default values
+
+built into the applet's source code. Otherwise, you could end
+
+up with an error-ridden applet, something that won't do much for
+
+your reputation as a Java guru.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>What kind of applet user is likely to appreciate parameterized
+
+applets?
+
+<LI>What are the two parts of the <TT>&lt;PARAM&gt;</TT> tag?
+
+<LI>How can your applet retrieve the value of a parameter?
+
+<LI>Where do you specify the values for an applet's parameters?
+
+<LI>Do you need to recompile an applet in order to take advantage
+
+of new parameters?
+
+<LI>How many parameters can you have in a single applet?
+
+<LI>Why do you need to convert the values of some parameters?
+
+<LI>Why is it important to supply default values for all parameters?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Write an applet that displays a rectangle on the screen. The
+
+rectangle's size should be specified using parameters.
+
+<LI>Write an applet that uses a parameter to display a red, green,
+
+or blue background.
+
+<LI>Modify ConfigApplet2 so that it not only checks for null parameters,
+
+but also checks for the parameters' validity. The type size should
+
+always be in the range of 10 to 72 points and the text should
+
+always be positioned so that it's never printed completely out
+
+of view. (You can find the solution to this exercise, called ConfigApplet4,
+
+in the CHAP26 folder of this book's CD-ROM.)
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch25.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch27.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

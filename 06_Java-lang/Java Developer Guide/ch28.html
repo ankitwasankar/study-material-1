@@ -1,0 +1,408 @@
+<HTML>
+
+<HEAD>
+   <TITLE>Chapter 28 -- Content Handlers</TITLE>
+   <META>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT COLOR=#Ff0000>Chapter 28</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#Ff0000>Content Handlers</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+<UL>
+<LI><A HREF="#UsingContentHandlers" >Using Content Handlers</A>
+<LI><A HREF="#MultipurposeInternetMailExtensionsM" >Multipurpose Internet Mail Extensions (MIME)</A>
+<LI><A HREF="#DevelopingaContentHandler" >Developing a Content Handler</A>
+<LI><A HREF="#ASimpleContentHandler" >A Simple Content Handler</A>
+<UL>
+<LI><A HREF="#TheGridContentHandlerClass" >The GridContentHandler Class</A>
+<LI><A HREF="#TheGetGridAppProgram" >The GetGridApp Program</A>
+</UL>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+In this chapter you'll learn how to write content handlers to
+support the retrieval of objects by Web browsers. You'll also
+learn about the multipurpose Internet mail extensions (MIMEs)
+and how they are used to identify the type of objects that are
+provided by Web servers. You'll then develop a simple content
+handler and integrate it with a Web client program. This chapter
+builds on the material presented in <A HREF="ch17.html" >Chapter 17</A>,
+&quot;Network Programming with the <TT><FONT FACE="Courier">java.net</FONT></TT>
+Package.&quot;
+<H2><A NAME="UsingContentHandlers"><FONT SIZE=5 COLOR=#Ff0000>Using
+Content Handlers</FONT></A></H2>
+<P>
+If you have been extensively involved with using your Web browser,
+you probably have encountered a number of external viewers or
+plug-ins that are used to supplement the capabilities provided
+by your browser. These external viewers are used to display and
+process files that are not normally supported by browsers.
+<P>
+Java supports additional internal or external viewers through
+the content handler mechanism. Content handlers are used to retrieve
+objects via an <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+object.
+<P>
+Content handlers are implemented as subclasses of the <TT><FONT FACE="Courier">ContentHandler</FONT></TT>
+class. A content handler is only required to implement a single
+method-the <TT><FONT FACE="Courier">getContent()</FONT></TT> method
+that overrides the method provided by the <TT><FONT FACE="Courier">ContentHandler</FONT></TT>
+class. This method takes an <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+object as a parameter, and returns an object of a specific MIME
+type. You'll learn about MIME types in the following section of
+this chapter.
+<P>
+The purpose of a content handler is to extract an object of a
+given MIME type from an <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+object's input stream. Content handlers are not directly instantiated
+or accessed. The <TT><FONT FACE="Courier">getContent()</FONT></TT>
+methods of the <TT><FONT FACE="Courier">URL</FONT></TT> and <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+classes cause content handlers to be created and invoked to perform
+their processing.
+<P>
+A content handler is associated with a specific MIME type through
+the use of the <TT><FONT FACE="Courier">ContentHandlerFactory</FONT></TT>
+interface. A class that implements the <TT><FONT FACE="Courier">ContentHandlerFactory</FONT></TT>
+interface must implement the <TT><FONT FACE="Courier">createContentHandler()</FONT></TT>
+method. This method returns a <TT><FONT FACE="Courier">ContentHandler</FONT></TT>
+object to be used for a specific MIME type. A <TT><FONT FACE="Courier">ContentHandlerFactory</FONT></TT>
+object is installed using the static <TT><FONT FACE="Courier">setContentHandlerFactory()</FONT></TT>
+method of the <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+class.
+<H2><A NAME="MultipurposeInternetMailExtensionsM"><FONT SIZE=5 COLOR=#Ff0000>Multipurpose
+Internet Mail Extensions (MIME)</FONT></A></H2>
+<P>
+Content handlers are associated with specific MIME types. Many
+Internet programs, including e-mail clients, Web browsers, and
+Web servers, use the multipurpose Internet mail extensions to
+associate an object type with a file. These object types include
+text, multimedia files, and application-specific files. MIME types
+consist of a type and a subtype. Examples are text/html, text/plain,
+image/gif, and image/jpeg, where text and image are the types
+and html, plain, gif, and jpeg are the subtypes. The <TT><FONT FACE="Courier">URL</FONT></TT>
+classes provided by Java support the processing of each of these
+types; however, the number of MIME type/subtype combinations is
+large and growing. Content handlers are used to support MIME type
+processing.
+<P>
+Web servers map MIME types to the files they serve using the files'
+extensions. For example, files with the <TT><FONT FACE="Courier">.html</FONT></TT>
+and <TT><FONT FACE="Courier">.htmll</FONT></TT> extensions are
+mapped to the text/html MIME type/subtype. Files with the <TT><FONT FACE="Courier">.gif</FONT></TT>
+and <TT><FONT FACE="Courier">.jpg</FONT></TT> extensions are mapped
+to image/gif and image/jpeg. The MIME type of a file is sent to
+Web browsers by Web servers when the server sends the designated
+files to the browsers in response to browser requests.
+<H2><A NAME="DevelopingaContentHandler"><FONT SIZE=5 COLOR=#Ff0000>Developing
+a Content Handler</FONT></A></H2>
+<P>
+The first step to implementing a content handler is to define
+the class of the object to be extracted by the content handler.
+The content handler is then defined as a subclass of the <TT><FONT FACE="Courier">ContentHandler</FONT></TT>
+class. The <TT><FONT FACE="Courier">getContent()</FONT></TT> method
+of the content handler performs the extraction of objects of a
+specific MIME type from the input stream associated with an <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+object.
+<P>
+A content handler is associated with a specific MIME type through
+the use of a <TT><FONT FACE="Courier">ContentHandlerFactory</FONT></TT>
+object. The <TT><FONT FACE="Courier">createContentHandler()</FONT></TT>
+method of the <TT><FONT FACE="Courier">ContentHandlerFactory</FONT></TT>
+interface is used to return a content handler for a specific MIME
+type.
+<P>
+Finally, the <TT><FONT FACE="Courier">setContentHandlerFactory()</FONT></TT>
+method of the <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+class is used to set a <TT><FONT FACE="Courier">ContentHandlerFactory</FONT></TT>
+as the default <TT><FONT FACE="Courier">ContentHandlerFactory</FONT></TT>
+to be used with all MIME types.
+<H2><A NAME="ASimpleContentHandler"><FONT SIZE=5 COLOR=#Ff0000>A
+Simple Content Handler</FONT></A></H2>
+<P>
+This section presents an example of implementing a simple content
+handler. A bogus MIME type, text/cg, is created to implement objects
+of the character grid type. A <I>character grid type</I> is a
+two-dimensional grid made up of a single character. An example
+follows:<P>
+<CENTER>
+<P>
+<TABLE>
+<TR><TD WIDTH=10><CENTER>O</CENTER></TD><TD WIDTH=10></TD><TD WIDTH=10>
+</TD><TD WIDTH=10></TD><TD WIDTH=10><CENTER>O</CENTER></TD></TR>
+<TR><TD WIDTH=10></TD><TD WIDTH=10><CENTER>O</CENTER></TD><TD WIDTH=10>
+</TD><TD WIDTH=10><CENTER>O</CENTER></TD><TD WIDTH=10></TD></TR>
+<TR><TD WIDTH=10></TD><TD WIDTH=10></TD><TD WIDTH=10><CENTER>O</CENTER>
+</TD><TD WIDTH=10></TD><TD WIDTH=10></TD></TR>
+<TR><TD WIDTH=10></TD><TD WIDTH=10><CENTER>O</CENTER></TD><TD WIDTH=10>
+</TD><TD WIDTH=10><CENTER>O</CENTER></TD><TD WIDTH=10></TD></TR>
+<TR><TD WIDTH=10><CENTER>O</CENTER></TD><TD WIDTH=10></TD><TD WIDTH=10>
+</TD><TD WIDTH=10></TD><TD WIDTH=10><CENTER>O</CENTER></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+This example is a character grid object that is five character
+positions wide and five character positions high. It uses the
+<TT><FONT FACE="Courier">O</FONT></TT> character to draw the grid.
+The grid is specified by a boolean array that identifies whether
+the drawing character is to be displayed.
+<P>
+This particular character grid is represented using the following
+text string:
+<P>
+55O1000101010001000101010001
+<P>
+The first character (<TT><FONT FACE="Courier">5</FONT></TT>) represents
+the grid's height. The second character (also <TT><FONT FACE="Courier">5</FONT></TT>)
+represents the grid's width. The third character is the grid's
+drawing character. The remaining characters specify whether the
+draw character should be displayed at a particular grid position.
+A <TT><FONT FACE="Courier">1</FONT></TT> signifies that the draw
+character should be displayed, and a <TT><FONT FACE="Courier">0</FONT></TT>
+signifies that it should not be displayed. The array is arranged
+in row order beginning with the top of the grid.
+<P>
+The definition of the <TT><FONT FACE="Courier">CharGrid</FONT></TT>
+class is shown in Listing 28.1.
+<P>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 28.1. The source code for the </B><TT><B><FONT FACE="Courier">CharGrid</FONT></B></TT><B>
+class.</B><P>
+<TT><FONT FACE="Courier">public class CharGrid {<BR>
+&nbsp;public int height;<BR>
+&nbsp;public int width;<BR>
+&nbsp;public char ch;<BR>
+&nbsp;public boolean values[][];<BR>
+&nbsp;public CharGrid(int h,int w,char c,boolean vals[][]) {<BR>
+&nbsp;&nbsp;height = h;<BR>
+&nbsp;&nbsp;width = w;<BR>
+&nbsp;&nbsp;ch = c;<BR>
+&nbsp;&nbsp;values = vals;<BR>
+&nbsp;}<BR>
+}</FONT></TT>
+</BLOCKQUOTE>
+<HR>
+<H3><A NAME="TheGridContentHandlerClass">The <TT><FONT SIZE=4 FACE="Courier">GridContentHandler</FONT></TT><FONT SIZE=4>
+Class</FONT></A></H3>
+<P>
+The <TT><FONT FACE="Courier">GridContentHandler</FONT></TT> class
+is used to extract <TT><FONT FACE="Courier">CharGrid</FONT></TT>
+objects from an <TT><FONT FACE="Courier">URLConnection</FONT></TT>.
+Its source code is shown in Listing 28.2.
+<P>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 28.2. The source code for the </B><TT><B><FONT FACE="Courier">GridContentHandler</FONT></B></TT><B>
+class.</B><P>
+<TT><FONT FACE="Courier">import java.net.*;<BR>
+import java.io.*;<BR>
+<BR>
+public class GridContentHandler extends ContentHandler {<BR>
+&nbsp;&nbsp;public Object getContent(URLConnection urlc) throws
+IOException {<BR>
+&nbsp;&nbsp;&nbsp;DataInputStream in = new DataInputStream(urlc.getInputStream());
+<BR>
+&nbsp;&nbsp;&nbsp;int height = (int) in.readByte() - 48;<BR>
+&nbsp;&nbsp;&nbsp;int width = (int) in.readByte() - 48;<BR>
+&nbsp;&nbsp;&nbsp;char ch = (char) in.readByte();<BR>
+&nbsp;&nbsp;&nbsp;boolean values[][] = new boolean[height][width];
+<BR>
+&nbsp;&nbsp;&nbsp;for(int i=0;i&lt;height;++i) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;for(int j=0;j&lt;width;++j) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte b = in.readByte();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(b == 48) values[i][j] = false;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else values[i][j] = true;<BR>
+&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;in.close();<BR>
+&nbsp;&nbsp;return new CharGrid(height,width,ch,values);<BR>
+&nbsp;}<BR>
+}</FONT></TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The <TT><FONT FACE="Courier">GridContentHandler</FONT></TT> class
+extends the <TT><FONT FACE="Courier">ContentHandler</FONT></TT>
+class and provides a single method. The <TT><FONT FACE="Courier">getContent()</FONT></TT>
+method takes an <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+object as a parameter and returns an object of the <TT><FONT FACE="Courier">Object</FONT></TT>
+class. It also throws the <TT><FONT FACE="Courier">IOException</FONT></TT>
+exception.
+<P>
+The <TT><FONT FACE="Courier">getContent()</FONT></TT> method creates
+an object of class <TT><FONT FACE="Courier">DataInputStream</FONT></TT>
+and assigns it to the <TT><FONT FACE="Courier">in</FONT></TT>
+variable. It uses the <TT><FONT FACE="Courier">getInputStream()</FONT></TT>
+method of the <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+class to access the input stream associated with an URL connection.
+<P>
+The height, width, and draw character of the <TT><FONT FACE="Courier">CharGrid</FONT></TT>
+object are read one byte at a time from the input stream. The
+<TT><FONT FACE="Courier">values[][]</FONT></TT> array is then
+read and converted to a boolean representation. The <TT><FONT FACE="Courier">CharGrid</FONT></TT>
+object is then created from the extracted values and returned.
+<H3><A NAME="TheGetGridAppProgram">The <TT><FONT SIZE=4 FACE="Courier">GetGridApp</FONT></TT><FONT SIZE=4>
+Program</FONT></A></H3>
+<P>
+The <TT><FONT FACE="Courier">GetGridApp</FONT></TT> program illustrates
+the use of content handlers. It retrieves an object of the <TT><FONT FACE="Courier">CharGrid</FONT></TT>
+type from my Web sever. I use the ncSA HTTPD server on a Linux
+system. I've set up the server's MIME type file to recognize files
+with the <TT><FONT FACE="Courier">.cg</FONT></TT> extension as
+text/cg.
+<P>
+The source code of the <TT><FONT FACE="Courier">GetGridApp</FONT></TT>
+program is shown in Listing 28.3.
+<P>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 28.3. The source code for the </B><TT><B><FONT FACE="Courier">GetGridApp</FONT></B></TT><B>
+program.</B><P>
+<TT><FONT FACE="Courier">import java.net.*;<BR>
+import java.io.*;<BR>
+<BR>
+public class GetGridApp {<BR>
+&nbsp;public static void main(String args[]){<BR>
+&nbsp;&nbsp;try{<BR>
+&nbsp;&nbsp;&nbsp;GridFactory gridFactory = new GridFactory();
+<BR>
+&nbsp;&nbsp;&nbsp;URLConnection.setContentHandlerFactory(gridFactory);
+<BR>
+&nbsp;&nbsp;&nbsp;if(args.length!=1) error(&quot;Usage: java GetGridApp
+URL&quot;);<BR>
+&nbsp;&nbsp;&nbsp;System.out.println(&quot;Fetching URL: &quot;+args[0]);
+<BR>
+&nbsp;&nbsp;&nbsp;URL url = new URL(args[0]);<BR>
+&nbsp;&nbsp;&nbsp;CharGrid cg = (CharGrid) url.getContent();<BR>
+&nbsp;&nbsp;&nbsp;System.out.println(&quot;height: &quot;+cg.height);
+<BR>
+&nbsp;&nbsp;&nbsp;System.out.println(&quot;width: &quot;+cg.width);
+<BR>
+&nbsp;&nbsp;&nbsp;System.out.println(&quot;char: &quot;+cg.ch);
+<BR>
+&nbsp;&nbsp;&nbsp;for(int i=0;i&lt;cg.height;++i) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;for(int j=0;j&lt;cg.width;++j) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(cg.values[i][j]) System.out.print(cg.ch);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else System.out.print(&quot; &quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println();<BR>
+&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;}catch (MalformedURLException ex){<BR>
+&nbsp;&nbsp;&nbsp;error(&quot;Bad URL&quot;);<BR>
+&nbsp;&nbsp;}catch (IOException ex){<BR>
+&nbsp;&nbsp;&nbsp;error(&quot;IOException occurred.&quot;);<BR>
+&nbsp;&nbsp;}<BR>
+&nbsp;}<BR>
+&nbsp;public static void error(String s){<BR>
+&nbsp;&nbsp;System.out.println(s);<BR>
+&nbsp;&nbsp;System.exit(1);<BR>
+&nbsp;}<BR>
+}<BR>
+class GridFactory implements ContentHandlerFactory {<BR>
+&nbsp;public GridFactory() {<BR>
+&nbsp;}<BR>
+&nbsp;public ContentHandler createContentHandler(String mimeType)
+{<BR>
+&nbsp;&nbsp;if(mimeType.equals(&quot;text/cg&quot;)) {<BR>
+&nbsp;&nbsp;&nbsp;System.out.println(&quot;Requested mime type:
+&quot;+mimeType);<BR>
+&nbsp;&nbsp;&nbsp;return new GridContentHandler();<BR>
+&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;return null;<BR>
+&nbsp;}<BR>
+}</FONT></TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+When you invoke the <TT><FONT FACE="Courier">GetGridApp</FONT></TT>
+program, provide it with the URL <TT><A HREF="http://www.jaworski.com/java/chargrid.cg">http://www.jaworski.com/java/chargrid.cg</A></TT>
+as a parameter.
+<P>
+The <TT><FONT FACE="Courier">GetGridApp</FONT></TT> program's
+output is as follows:
+<BLOCKQUOTE>
+<TT>C:\java\jdg\ch28&gt;java GetGridApp <A HREF="http://www.jaworski.com/java/chargrid.cg">http://www.jaworski.com/java/chargrid.cg</A>
+<BR>
+Fetching URL: <A HREF="http://www.jaworski.com/java/chargrid.cg">http://www.jaworski.com/java/chargrid.cg</A><BR>
+Requested mime type: text/cg<BR>
+height: 5<BR>
+width: 5<BR>
+char: j<BR>
+jjjjj<BR>
+&nbsp;&nbsp;j<BR>
+&nbsp;&nbsp;j<BR>
+j j<BR>
+&nbsp;jj<BR>
+<BR>
+C:\java\jdg\ch28&gt;</FONT></TT>
+</BLOCKQUOTE>
+<P>
+This connects to my Web server, retrieves the <TT><FONT FACE="Courier">chargrid.cg</FONT></TT>
+file, extracts the <TT><FONT FACE="Courier">CharGrid</FONT></TT>
+object contained in the file, and displays it on the console window.
+The character grid object displays a grid of <TT><FONT FACE="Courier">j</FONT></TT>
+characters.
+<P>
+The <TT><FONT FACE="Courier">main()</FONT></TT> method creates
+an object of the <TT><FONT FACE="Courier">GridFactory</FONT></TT>
+class, which implements the <TT><FONT FACE="Courier">ContentHandlerFactory</FONT></TT>
+interface. It then sets the object as the default content handler.
+An <TT><FONT FACE="Courier">URL</FONT></TT> object is created
+using the URL string passed as the program's parameter. The <TT><FONT FACE="Courier">getContent()</FONT></TT>
+method of the <TT><FONT FACE="Courier">URL</FONT></TT> class is
+then used to extract the <TT><FONT FACE="Courier">CharGrid</FONT></TT>
+object from the URL. The <TT><FONT FACE="Courier">getContent()</FONT></TT>
+method results in the <TT><FONT FACE="Courier">GridFactory</FONT></TT>
+object assigned to the <TT><FONT FACE="Courier">gridFactory</FONT></TT>
+variable being invoked to retrieve an appropriate content handler.
+An object of class <TT><FONT FACE="Courier">GridContentHandler</FONT></TT>
+is returned and its <TT><FONT FACE="Courier">getContent()</FONT></TT>
+method is invoked to extract the <TT><FONT FACE="Courier">CharGrid</FONT></TT>
+object. This is performed behind the scene as the result of invoking
+the <TT><FONT FACE="Courier">URL</FONT></TT> class's <TT><FONT FACE="Courier">getContent()</FONT></TT>
+method. The <TT><FONT FACE="Courier">CharGrid</FONT></TT> object
+is then displayed.
+<P>
+The <TT><FONT FACE="Courier">GetGridApp</FONT></TT> program defines
+the <TT><FONT FACE="Courier">GridFactory</FONT></TT> class as
+a <TT><FONT FACE="Courier">ContentHandlerFactory</FONT></TT>.
+It implements the <TT><FONT FACE="Courier">createContentHandler()</FONT></TT>
+method and checks to see if the MIME type passed to it is text/cg.
+If it is not, the <TT><FONT FACE="Courier">null</FONT></TT> value
+is returned to signal that the Java-supplied content handler should
+be used. If the MIME type is text/cg, the requested MIME type
+is displayed, and a <TT><FONT FACE="Courier">GridContentHandler</FONT></TT>
+object is returned.
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>Summary</FONT></A>
+</H2>
+<P>
+In this chapter you have learned how to write content handlers
+to support the retrieval of objects by Web browsers. You have
+learned about the multipurpose Internet mail extensions and how
+they are used to identify the type of objects that are provided
+by Web servers. You have developed the <TT><FONT FACE="Courier">GridContentHandler</FONT></TT>
+class and integrated it with the <TT><FONT FACE="Courier">GetGridApp</FONT></TT>
+program. <A HREF="ch29.html" >Chapter 29</A>, &quot;Protocol Handlers,&quot;
+shows you how to integrate custom protocol handlers into your
+Web-based applications.
+<P>
+<HR WIDTH="100%"></P>
+
+<CENTER><P><A HREF="ch27.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A><A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A><A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A><A HREF="ch29.html"><IMG 
+SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A></P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+</BODY>
+</HTML>

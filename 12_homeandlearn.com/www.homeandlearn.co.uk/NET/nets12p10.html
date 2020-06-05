@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.uk/NET/nets12p10.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 07:21:34 GMT -->
+<HEAD>
+		<TITLE>Visual Basic .NET programming for Beginners - How to Add a New Record</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-2.css">
+		<meta name="description" content="">
+		<meta itemprop="name" content="Home and Learn">
+		<meta itemprop="description" content="Free Visual Basic .NET Course">
+		<meta itemprop="image" content="../logo5.jpg">
+		<link rel="publisher" href="https://plus.google.com/104045712242599534737" />
+<link rel="author" href="https://plus.google.com/104045712242599534737" />
+		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="links.js"></SCRIPT>
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">Visual Basic .NET</SPAN> <SPAN class="Logo_Text">Course</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+<ul>
+<LI><a href="../index-2.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2010.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign.html">Web Design</a></LI>
+<LI><a href="../javascript/javascript.html">Javascript</a></LI>
+<LI><a href="vbNet.html">Visual Basic .NET</a> <B>&lt; &lt;</B></LI>
+<LI><a href="../php/php.html">Beginners PHP</a></LI>
+<LI><a href="../csharp/csharp.html">C# .NET</a></LI>
+<LI><a href="../java/java.html">Java for Beginners</a></LI>
+</ul>
+		
+</NAV> <SECTION ID="Wrapper"> <ARTICLE> <HEADER> 
+<H1 ID="Article">How to Add a New Record</H1>
+</HEADER> <SECTION> 
+<p align="center"> 
+  <script language="JavaScript">
+				writeImageVB()
+			</script>
+</p>
+<p>Part of an ongoing tutorial. This lessons is part of an ongoing tutorial. The 
+  first part is here: </p>
+<p align="center"><a href="nets12p4.html">Coding your own VB .NET database projects</a></p>
+<p>&nbsp;</p>
+<P>In the <a href="nets12p9.html">previous part</a>, you learned how to Update 
+  records in the database. In the part, we'll see how to add a new record to the 
+  database using VB .NET code.</P>
+<p>&nbsp;</p>
+<h3>Add a New Record</h3>
+<p>Adding a new record is slightly more complex. First, you have to add a new 
+  Row to the DataSet, then commit the new Row to the Database. </p>
+<p>But the <b>Add New Record</b> button on our form is quite simple. The only 
+  thing it does is to switch off other buttons, and clear the textboxes, ready 
+  for a new entry. Here's the code for your <b>Add New Record</b> button:<br>
+</p>
+<p class="indent_small_blue">btnCommit.Enabled = True btnAddNew.Enabled = False<br>
+  btnUpdate.Enabled = False<br>
+  btnDelete.Enabled = False</p>
+<p class="indent_small_blue">txtFirstName.Clear()<br>
+  txtSurname.Clear()</p>
+<p>So three buttons are switched off when the <b>Add New Record</b> button is 
+  clicked, and one is switched on. The button that gets switched on is the Commit 
+  Changes button. The Enabled property of <b>btnCommit</b> gets set to <b>True</b>. 
+  But, for this to work, you need to set it to <b>False</b> when the form loads. 
+  So return to your Form. Click <b>btnCommit</b> to select it. Then locate the 
+  <b>Enabled</b> Property in the Properties box. Set it to <b>False</b>. When 
+  the Form starts up, the button will be switched off.</p>
+<p>The Clear/Cancel button can be used to switch it back on again. So add this 
+  code to your btnClear:</p>
+<p class="indent_small_blue">btnCommit.Enabled = False<br>
+  btnAddNew.Enabled = True<br>
+  btnUpdate.Enabled = True<br>
+  btnDelete.Enabled = True</p>
+<p class="indent_small_blue">inc = 0<br>
+  NavigateRecords()</p>
+<p>We're switching the <b>Commit Changes</b> button off, and the other three back 
+  on. The other two lines just make sure that we display the first record again, 
+  after the Cancel button is clicked. Otherwise the textboxes will all be blank.</p>
+<p>To add a new record to the database, we'll use the <b>Commit Change</b>s button. 
+  So double click your <b>btnCommit</b> to access its code. Add the following:</p>
+<p class="indent_small_blue">If inc &lt;&gt; -1 Then</p>
+<p class="indent_big_blue">Dim cb As New OleDb.OleDbCommandBuilder(da)<br>
+  Dim dsNewRow As DataRow</p>
+<p class="indent_big_blue">dsNewRow = ds.Tables(&quot;AddressBook&quot;).NewRow()</p>
+<p class="indent_big_blue">dsNewRow.Item(&quot;FirstName&quot;) = txtFirstName.Text<br>
+  dsNewRow.Item(&quot;Surname&quot;) = txtSurname.Text</p>
+<p class="indent_big_blue">ds.Tables(&quot;AddressBook&quot;).Rows.Add(dsNewRow)/p> 
+<p class="indent_big_blue">da.Update(ds, &quot;AddressBook&quot;)</p>
+<p class="indent_big_blue">MsgBox(&quot;New Record added to the Database&quot;)</p>
+<p class="indent_big_blue">btnCommit.Enabled = False<br>
+  btnAddNew.Enabled = True<br>
+  btnUpdate.Enabled = True><br>
+  btnDelete.Enabled = True</p>
+<p class="indent_small_blue">End If</p>
+<p>The code is somewhat longer than usual, but we'll go through it.</p>
+<p>The first line is an If Statement. We're just checking that there is a valid 
+  record to add. If there's not, the <b>inc</b> variable will be on minus 1. Inside 
+  of the If Statement, we first set up a <b>Command Builder</b>, <a href="nets12p9.html">as 
+  before</a>. The next line is this:</p>
+<p align="center"><b>Dim dsNewRow As DataRow</b></p>
+<p>If you want to add a new row to your DataSet, you need a <b>DataRow</b> object. 
+  This line just sets up a variable called <b>dsNewRow</b>. The type of variable 
+  is a DataRow.</p>
+<p>To create the new DataRow object, this line comes next:</p>
+<p align="center"><b>dsNewRow = ds.Tables(&quot;AddressBook&quot;).NewRow()</b></p>
+<p>We're just saying, &quot;Create a New Row object in the AddressBook DataSet, 
+  and store this in the variable called dsNewRow.&quot; As you can see, <b>NewRow()</b> 
+  is a method of <b>ds.Tables</b>. Use this method to add rows to your DataSet.</p>
+<p>The actual values we want to store in the rows are coming from the textboxes. 
+  So we have these two lines:</p>
+<p class="indent_small_blue">dsNewRow.Item(&quot;FirstName&quot;) = txtFirstName.Text<br>
+  dsNewRow.Item(&quot;Surname&quot;) = txtSurname.Text</p>
+<p>The <b>dsNewRow</b> object we created has a Property called <b>Item</b>. This 
+  is like the Item property you used earlier. It represents a column in your DataSet. 
+  We could have said this instead:</p>
+<p class="indent_small_blue">dsNewRow.Item(1) = txtFirstName.Text<BR>
+  dsNewRow.Item(2) = txtSurname.Text</P>
+<p>The <b>Item</b> property is now using the index number of the DataSet columns, 
+  rather than the names. The results is the same, though: to store new values 
+  in these properties. We're storing the text from the textboxes to our new Row.</p>
+<p>We now only need to call the Method that actually adds the Row to the DataSet:</p>
+<p align="center"><b>ds.Tables(&quot;AddressBook&quot;).Rows.Add(dsNewRow)</b></p>
+<p>To add the Row, you use the <b>Add</b> method of the Rows property of the DataSet. 
+  In between the round brackets, you need the name of your DataRow (the variable 
+  <b>dsNewRow</b>, in our case).<br>
+</p>
+<p>You should know what the rest of the code does. Here's the next line:</p>
+<p align="center"><b>da.Update(ds, &quot;AddressBook&quot;)</b></p>
+<p>Again, we're just using the <b>Update</b> method of the Data Adapter, just 
+  like last time. The rest of the code just displays a message box, and resets 
+  the button.</p>
+<p>But to add a new Row to a DataSet, here's a recap on what to do:</p>
+<ul>
+  <li> Create a <b>DataRow</b> variable </li>
+  <li> Cretae an Object from this variable by using the <b>NewRow()</b> method 
+    of the DataSet <b>Tables</b> property </li>
+  <li> Assign values to the <b>Items</b> in the new Row </li>
+  <li> Use the <b>Add</b> method of the DataSet to add the new row </li>
+</ul>
+<p>A little more complicated, but it does work! Try your programme out. Click 
+  your <b>Add New Record</b> button. The textboxes should go blank, and three 
+  of the buttons will be switched off. Enter a new First Name and Surname, and 
+  then click the <b>Commit Changes</b> button. You should see the message box 
+  telling you that a new record has been added to the database. To see the new 
+  record, close down your programme, and run it again. The new record will be 
+  there.</p>
+<p>&nbsp;</p>
+<p>In the next part, you'll learn how to delete a record from the database.</p>
+<p align="center"><a href='../bookshop/net.html'><img src='vbBanBorder.gif' alt='Buy our VB NET Book Here' border='0'/></a></p>
+</SECTION></ARTICLE> </SECTION> <FOOTER> 
+<P class="course_links"><a href="nets12p11.html">Learn How to Delete a Record from the Database --&gt;</a></P>
+		<P><A HREF="vbNet.html">Back to the VB NET Contents Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.uk/NET/nets12p10.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 07:21:34 GMT -->
+</HTML>
+

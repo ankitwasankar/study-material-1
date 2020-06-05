@@ -1,0 +1,1873 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 15 -- Bringing It All Together: The StockQuote Server
+</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;15</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Bringing It All Together: The StockQuote
+Server</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#TopDownDesign">
+Top-Down Design</A>
+<UL>
+<LI><A HREF="#HighLevelDesignReview">
+High-Level Design Review</A>
+<LI><A HREF="#LowLevelDesignReview">
+Low Level Design Review</A>
+</UL>
+<LI><A HREF="#Implementation">
+Implementation</A>
+<UL>
+<LI><A HREF="#EverythingYouNeedtoKnowaboutHTML">
+Everything You Need to Know about HTML</A>
+<LI><A HREF="#TalkingtotheNet">
+Talking to the Net</A>
+<LI><A HREF="#TheQuoteEngine">
+The Quote Engine</A>
+<LI><A HREF="#ParsingHTML">
+Parsing HTML</A>
+<LI><A HREF="#CollectingHTMLElements">
+Collecting HTML Elements</A>
+<LI><A HREF="#TheStockQuoteObjectAtLast">
+The StockQuote Object, At Last</A>
+<LI><A HREF="#OnReferencing">
+On Referencing</A>
+<LI><A HREF="#TheStockMonvbpProject">
+The StockMon.vbp Project</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+Back in <A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm" >Chapter 8</A> I used the example of a stock quoting server
+to demonstrate the advantages of component design and the issues
+involved in choosing between ActiveX EXE servers, DLL servers,
+and other approaches. I then promised to show you how to create
+one. 
+<P>
+The last six chapters have been spent discussing many of the issues
+relating to implementing ActiveX components-the issues we will
+now demonstrate in this chapter.
+<H2><A NAME="TopDownDesign"><FONT SIZE=5 COLOR=#FF0000>
+Top-Down Design</FONT></A></H2>
+<P>
+There are a number of design methodologies programmers use, and
+I wouldn't even begin to suggest which is the best. But my personal
+favorite is to design from the top down and code from the bottom
+up. This means that you start by figuring out at the highest level
+what your program will do, then determining what kind of modules,
+components, and functions are needed to implement that level.
+Then you step down again and figure out what kind of code is needed
+to implement those modules and so on. When it's time to actually
+write code, you work in the reverse direction, coding the lowest
+level modules and components first, then working your way back
+up.
+<H3><A NAME="HighLevelDesignReview">
+High-Level Design Review</A></H3>
+<P>
+Our goal is to come up with an ActiveX EXE server that can retrieve
+stock quotations. The reasons behind choosing an EXE server were
+discussed in depth in <A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm" >Chapter 8</A> The key reasons were:
+<UL>
+<LI>An EXE server allows us to retrieve the quote in a separate
+thread so the requesting application is not blocked during the
+retrieval process.
+<LI>An EXE server that exposes multiple objects allows multiple
+clients to share the same communications link.
+</UL>
+<P>
+In principle, we want any client application to be able to request
+a stock quotation and receive a notification when the response
+is received. It should be possible for an application to request
+multiple quotations at once. The server must support multiple
+clients.
+<P>
+These requirements influence additional design choices. For example,
+there are two notification mechanisms available: OLE events and
+OLE callbacks. Which one should we support? To answer this you
+must first decide whether a single StockQuote object can handle
+multiple requests or only one at a time. If it can handle multiple
+requests, the OLE event mechanism may be reasonable. However,
+in this case it seemed preferable to have the client use multiple
+StockQuote objects to handle multiple requests. This suggests
+that the OLE callback mechanism is a better choice.
+<P>
+Should the server be multithreading? In this case multithreading
+is clearly not appropriate. We want the server to be able to queue
+requests from the different clients and handle them in turn. This
+means that the objects must be able to communicate with each other,
+most likely through shared data structures in the global module.
+The apartment model of multithreading used by Visual Basic 5.0
+prevents this type of sharing. Not only that, but since we are
+bound by a single communications link, multithreading would have
+no benefit; we only need a single thread. In fact, it would probably
+reduce performance due to the threading overhead.
+<P>
+So the higher-level design is beginning to take shape. You have
+a StockQuote object that is creatable by any application. It will
+have a method that is called to start a quote retrieval operation.
+This method will take a reference to a Callback object to use
+for the notification. It might also take the ticker symbol of
+the stock to retrieve. The server will have a module in which
+it will keep track of queued requests. As data arrives it will
+use the Callback object to notify the client application that
+the information has been retrieved.
+<P>
+We can envision the following design for the StockQuote object:
+<UL>
+<LI>GetQuote (symbol, callback): A method to start the retrieval
+process.
+<LI>State: A read-only property that lets you check the retrieval
+status.
+<LI>Symbol: A read-only property that contains the stock symbol.
+It is set by the GetQuote method.
+<LI>LastPrice: A read-only property containing the last price
+or net asset value of the security.
+<LI>PriorClose: A read-only property containing the prior close
+price of the security.
+<LI>Change: A read-only property containing today's change in
+price.
+<LI>QuoteTime: A read-only property containing the time of the
+quote.
+<LI>High: A read-only property containing today's high price.
+<LI>Low: A read-only property containing today's low price.
+</UL>
+<P>
+We also need to define a Callback method, the method the Callback
+object must have to receive the notification:
+<UL>
+<LI>QuoteUpdate(Stockquote): A Callback method that passes a reference
+to the Stockquote object itself as a parameter
+<LI>CancelNotification: A method that allows a client to cancel
+a notification-say, if it wants to close
+</UL>
+<P>
+Should the price properties shown above be in the form of strings
+(as they are when retrieved) or should they be converted to currency
+values? In this object they are left as strings, because stocks
+are traditionally displayed as an integer followed by the fractional
+price in eighths, such as 1/2 or 5/8, so this makes display easier.
+However, it would be helpful to have some utility functions to
+convert to the currency type to make it easier to do numeric comparisons.
+The StockQuote object seems a good place to place these functions:
+<UL>
+<LI>QuoteToCurrency(quote as string): A function that takes a
+stock price in fractional string format and returns the numeric
+value as a currency data type
+<LI>CurrencyToQuote(quote as currency): A function that takes
+a stock price as currency and in fractional string format and
+returns the numeric value as a currency data type
+</UL>
+<H3><A NAME="LowLevelDesignReview">
+Low Level Design Review</A></H3>
+<P>
+You may have noticed that one small detail has been left out of
+the discussion so far. You may have been wondering exactly where
+do we obtain the stock quotes? For information of this type we
+naturally turn to the source of all known wisdom, the Internet.
+OK, maybe the Internet is not the source of all wisdom, but there
+are places where you can easily obtain delayed quotes, if you
+know how to submit a request and read an HTML page.
+<P>
+There are many ways to access the Internet from Visual Basic.
+For this application I chose one that I could be confident every
+reader would have access to, the Internet Transfer Control included
+with Visual Basic 5.0 Professional and Enterprise. This control
+allows your VB program to access the Internet if you have an Internet
+connection and Winsock set up for TCP/IP. Now if you don't have
+these, I'm afraid you'll have to obtain them in order to use this
+component. (Discussing how to obtain Internet access and configure
+your system properly is way beyond the scope of this book. However,
+during my last to a local bookstore, there seemed to be several
+thousand other books available to help you through the process.)
+<P>
+We'll talk about the implementation shortly. Knowing that we'll
+be using an Internet control is the final piece of the puzzle
+for defining the architecture of the server.
+<P>
+Figure 15.1 illustrates the overall architecture of the StockQuote
+server. When the client requests a quote, the StockQuote object
+calls functions in the common QuoteEngine module. The module adds
+a reference to the object into a collection that represents a
+queue of objects that have requested quotations. When the first
+request arrives, the quote engine invokes a method on a utility
+form, which in turn sends an HTML request through the Internet
+control. When the transfer is complete (or an error occurs), an
+event is triggered in the control. The control then lets the QuoteEngine
+know that a quote has arrived and passes the HTML information
+to the StockQuote object. The object parses the HTML code to extract
+the quote information, notifies the client, and presto! Success!
+<P>
+<A HREF="f15-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f15-1.gif"><B>Figure 15.1 :</B> <I>Architecture of the StockQuote server</I>.</A>
+<P>
+Sounds simple enough. And if you are an experienced Internet programmer
+who has done this sort of thing before, it is simple. So you might
+just want to skip the rest of this chapter. However, I know that
+for many of you this may seem almost like black magic. So let's
+back up and take this step by step so you can see exactly how
+it all works.
+<H2><A NAME="Implementation"><FONT SIZE=5 COLOR=#FF0000>
+Implementation</FONT></A></H2>
+<P>
+We've done the top-down design. Now it's time to do the coding,
+from the bottom up.
+<H3><A NAME="EverythingYouNeedtoKnowaboutHTML">
+Everything You Need to Know about HTML</A></H3>
+<P>
+Well, perhaps not everything you need to know, but certainly all
+you need to know for this particular application.
+<P>
+The StockQuote object is currently configured to access quotes
+off of either Charles Schwab (www.schwab.com) or Yahoo (www.yahoo.com).
+There are a myriad of other quote services available through the
+Internet that you can add to the server if you wish. While my
+choice of these two services is not intended to recommend them
+over any others. I do tend to use Yahoo first when searching the
+Internet, and I have a personal account with Schwab, so I am glad
+to be able to mention them in this context. From my perspective,
+the fact that it took me less than a day to obtain their permissions
+to base this demonstration on their sites says something about
+their organizations.
+<P>
+I want to give you a strong caveat here. Nothing prevents Schwab
+or Yahoo from changing the format of their Web pages at any time.
+Doing so will probably cause this component to fail and cause
+some of the description in this section to be incorrect. If this
+happens, you will be able to find updated information on our Web
+site at www.desaware.com.
+<P>
+To understand how this Internet retrieval is accomplished, you'll
+need to know a little bit about HTML and how the World Wide Web
+works.
+<P>
+When you tell a browser (or Internet custom control) that you
+want a specific Web page, several things happen. First, the control
+uses a Domain Name Service (DNS) to find the unique 64-bit address
+of the computer that contains the page. This is the Internet Protocol
+(IP) address. Domains are set in a hierarchy. Thus www.desaware.com
+is, first, part of the <I>com</I> domain, the domain that contains
+all commercial sites. Next, it is part of a domain named desaware.
+<P>
+Once the control has this IP address, it opens a communications
+link called a <I>socket</I> to the site. The site must be running
+a server program that &quot;listens&quot; for incoming requests.
+This program is called a Web server. 
+<P>
+The control sends a string containing a request to the site. The
+site then responds by returning the requested data. In the http
+protocol used for the World Wide Web, the returned data can be
+text or binary. For our purposes we will only be concerned with
+text.
+<P>
+When you request a page from a Web site, you receive back a text
+string in a format called HyperText Markup Language (HTML). This
+string is broken up into two types of elements:
+<UL>
+<LI>Tags-Surrounded by angle brackets &lt; &gt;, a tag contains
+formatting information that provides some sort of instruction
+to the browser.
+<LI>Data-Text to display on the page.
+</UL>
+<P>
+Any time your browser retrieves a very complex page that contains
+images and links and animations, your browser actually makes multiple
+requests. The initial page contains tags that instruct the browser
+where to find the other objects that belong on the page. If a
+tag specifies that an image must be loaded, the browser must perform
+a second request to retrieve the image based on the location specified
+in the tag. Listing 15.1 shows what a portion of a typical Schwab
+stock quote page looks like in HTML.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 15.1:&nbsp;Sample Quotation HTML Page<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+&lt;HTML&gt;
+&lt;BODY BGCOLOR=&quot;#FFFFFF&quot;&gt;
+&lt;CENTER&gt;
+&lt;FORM METHOD=&quot;POST&quot; ACTION=&quot;/fq/schwab/quote&quot;&gt;
+&lt;TABLE BORDER=2 CELLPADDING=2 WIDTH=&quot;100%&quot;&gt;&lt;TR&gt;&lt;TD VALIGN=top&gt;Select 
+quote or chart:&lt;BR&gt;
+&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;request&quot; VALUE=&quot;Delayed quote&quot; 
+CHECKED&gt;Delayed quote&lt;BR&gt;
+&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;request&quot; VALUE=&quot;Intraday chart&quot; &gt;Intraday 
+chart&lt;BR&gt;
+&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;request&quot; VALUE=&quot;Daily chart&quot; &gt;Daily chart&lt;BR&gt;
+&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;request&quot; VALUE=&quot;Weekly chart&quot; &gt;Weekly 
+chart&lt;/TD&gt;
+&lt;TD VALIGN=top&gt;Enter the security symbol*, or &lt;A 
+HREF=&quot;/fq/schwab/ticker&quot;&gt;search for symbol&lt;/A&gt;:&lt;BR&gt;
+&lt;INPUT NAME=&quot;symbols&quot; SIZE=25 VALUE=&quot;MSFT&quot;&gt;&lt;BR&gt;
+&lt;FONT SIZE=-1&gt;*&lt;B&gt;Multiple symbols&lt;/B&gt; may be entered for &lt;B&gt;quotes 
+only&lt;/B&gt;.
+Separate symbols with spaces.&lt;/FONT&gt;&lt;BR&gt;&lt;BR&gt;
+&lt;INPUT TYPE=&quot;image&quot; VALUE=&quot;Submit&quot; BORDER=0 
+SRC=&quot;/graphics/schwab/submit.gif&quot;&gt;
+&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;
+&lt;/FORM&gt;
+&lt;A NAME=&quot;QuoteSummaryTableAnchor&quot;&gt;&lt;B&gt;Quote Summary&lt;/B&gt;&lt;/A&gt;&lt;BR&gt;
+For more quote details, click on symbol.&lt;BR&gt;
+Quote times are Eastern Standard Time.&lt;BR&gt;
+&lt;TABLE BORDER=2 CELLPADDING=2 WIDTH=&quot;100%&quot;&gt;
+&lt;TR&gt;&lt;TH ALIGN=left&gt;Symbol&lt;/TH&gt;&lt;TH&gt;Security&lt;BR&gt;Type&lt;/TH&gt;
+&lt;TH&gt;Last&lt;BR&gt;Trade&lt;/TH&gt;&lt;TH&gt;Net&lt;BR&gt;Change&lt;/TH&gt;&lt;TH&gt;High&lt;/TH&gt;
+&lt;TH&gt;Low&lt;/TH&gt;&lt;TH&gt;Trade&lt;BR&gt;Time&lt;/TH&gt;
+&lt;TH&gt;Intraday&lt;BR&gt;Chart&lt;/TH&gt;&lt;/TR&gt;
+&lt;TR ALIGN=center&gt;&lt;TH ALIGN=left&gt;&lt;A HREF=&quot;#MSFT&quot;&gt;MSFT&lt;/A&gt;&lt;/TH&gt;
+&lt;TD&gt;Stock&lt;/TD&gt;
+&lt;TD&gt;97 &lt;SUP&gt;3&lt;/SUP&gt;/&lt;SUB&gt;8&lt;/SUB&gt;&lt;/TD&gt;&lt;TD&gt;&lt;FONT COLOR=&quot;#008800&quot;&gt;+2 
+&lt;SUP&gt;3&lt;/SUP&gt;/&lt;SUB&gt;8&lt;/SUB&gt;&lt;/FONT&gt;&lt;/TD&gt;&lt;TD&gt;98 
+&lt;SUP&gt;1&lt;/SUP&gt;/&lt;SUB&gt;2&lt;/SUB&gt;&lt;/TD&gt;&lt;TD&gt;94 
+&lt;SUP&gt;5&lt;/SUP&gt;/&lt;SUB&gt;8&lt;/SUB&gt;&lt;/TD&gt;&lt;TD&gt;16:17&lt;/TD&gt;
+&lt;TD VALIGN=center&gt;&lt;FORM METHOD=&quot;POST&quot; ACTION=&quot;/fq/schwab/quote&quot;&gt;
+&lt;INPUT TYPE=&quot;hidden&quot; NAME=&quot;request&quot; VALUE=&quot;Intraday chart&quot;&gt;
+&lt;INPUT TYPE=&quot;hidden&quot; NAME=&quot;symbols&quot; VALUE=&quot;NASDAQ:MSFT&quot;&gt;
+&lt;INPUT TYPE=&quot;image&quot; VALUE=&quot;Submit&quot; BORDER=0 
+src=&quot;/graphics/schwab/submit.gif&quot;&gt;&lt;/TD&gt;&lt;/TR&gt;&lt;/FORM&gt;
+&lt;/TABLE&gt;&lt;P&gt;
+&lt;A NAME=&quot;MSFT&quot;&gt;&lt;/A&gt;&lt;TABLE BORDER=2 CELLPADDING=2&gt;
+&lt;TR&gt;&lt;TH&gt;MICROSOFT CORP&lt;/TH&gt;
+&lt;TH&gt;&lt;TABLE BORDER=0 CELLPADDING=2&gt;&lt;TR&gt;&lt;TH 
+ALIGN=right&gt;Symbol:&lt;/TH&gt;&lt;TD&gt;MSFT&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;Security Type:&lt;/TH&gt;&lt;TD&gt;Stock&lt;/TD&gt;
+&lt;/TR&gt;&lt;/TABLE&gt;&lt;/TH&gt;&lt;/TR&gt;
+&lt;TD&gt;&lt;TABLE BORDER=0 CELLPADDING=2&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;Last&lt;BR&gt;Trade:&lt;/TH&gt;&lt;TD&gt;97 
+&lt;SUP&gt;3&lt;/SUP&gt;/&lt;SUB&gt;8&lt;/SUB&gt;&lt;/TD&gt;
+&lt;TH ALIGN=right&gt;Net&lt;BR&gt;Change:&lt;/TH&gt;&lt;TD&gt;&lt;!-- Not Yet+2 
+&lt;SUP&gt;3&lt;/SUP&gt;/&lt;SUB&gt;8&lt;/SUB&gt;--&gt;&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;Bid:&lt;/TH&gt;&lt;TD&gt;97 &lt;SUP&gt;3&lt;/SUP&gt;/&lt;SUB&gt;8&lt;/SUB&gt;&lt;/TD&gt;
+&lt;TH ALIGN=right&gt;Ask:&lt;/TH&gt;&lt;TD&gt;97 &lt;SUP&gt;1&lt;/SUP&gt;/&lt;SUB&gt;2&lt;/SUB&gt;&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;Day High:&lt;/TH&gt;&lt;TD&gt;98 &lt;SUP&gt;1&lt;/SUP&gt;/&lt;SUB&gt;2&lt;/SUB&gt;&lt;/TD&gt;
+&lt;TH ALIGN=right&gt;Day Low:&lt;/TH&gt;&lt;TD&gt;94 &lt;SUP&gt;5&lt;/SUP&gt;/&lt;SUB&gt;8&lt;/SUB&gt;&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;Volume:&lt;/TH&gt;&lt;TD&gt;16,157,600&lt;/TD&gt;
+&lt;TH ALIGN=right&gt;Last Trade&lt;BR&gt;Tick:&lt;/TH&gt;&lt;TD&gt;&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;Last Trade&lt;BR&gt;Date:&lt;/TH&gt;&lt;TD&gt;01/22/97&lt;/TD&gt;
+&lt;TH ALIGN=right&gt;Last Trade&lt;BR&gt;Time:&lt;/TH&gt;&lt;TD&gt;16:17&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;52 Week&lt;BR&gt;High:&lt;/TH&gt;&lt;TD&gt;95.06&lt;/TD&gt;
+&lt;TH ALIGN=right&gt;52 Week&lt;BR&gt;Low:&lt;/TH&gt;&lt;TD&gt;44.50&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;EPS:&lt;/TH&gt;&lt;TD&gt;1.71&lt;/TD&gt;
+&lt;TH ALIGN=right&gt;EPS Date:&lt;/TH&gt;&lt;TD&gt;&lt;FONT SIZE=-1&gt;Coming 
+Soon&lt;/FONT&gt;&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;P/E Ratio:&lt;/TH&gt;&lt;TD&gt;45.0&lt;/TD&gt;
+&lt;TH ALIGN=right&gt;Current&lt;BR&gt;Yield:&lt;/TH&gt;&lt;TD&gt;&lt;FONT SIZE=-1&gt;Coming 
+Soon&lt;/FONT&gt;&lt;/TD&gt;&lt;/TR&gt;
+&lt;/TABLE&gt;&lt;/TD&gt;&lt;TD VALIGN=top&gt;&lt;TABLE BORDER=0 CELLPADDING=2&gt;
+&lt;TR VALIGN=top&gt;
+&lt;TH COLSPAN=2&gt;Additional&lt;BR&gt;Information&lt;BR&gt;&lt;BR&gt;&lt;BR&gt;&lt;/TH&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;Dividend:&lt;/TH&gt;&lt;TD&gt;0&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;Option Open&lt;BR&gt;Interest:&lt;/TH&gt;&lt;BR&gt;&lt;TD&gt;N/A&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TH ALIGN=right&gt;Dividend&lt;BR&gt;Pay Date:&lt;/TH&gt;&lt;TD&gt;&lt;FONT SIZE=-1&gt;Coming 
+Soon&lt;/FONT&gt;&lt;/TD&gt;&lt;/TR&gt;
+&lt;/TABLE&gt;&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;
+&lt;CENTER&gt;&lt;A HREF=&quot;#QuoteSummaryTableAnchor&quot;&gt;
+&lt;IMG SRC=&quot;/graphics/schwab/schwab.return.gif&quot; ALT=&quot;[Quote Summary]&quot; 
+BORDER=0&gt;&lt;/A&gt;
+&lt;/CENTER&gt;&lt;P&gt;
+&lt;CENTER&gt;&lt;FONT SIZE=-1&gt;Security quotes are at least 15 minutes 
+delayed&lt;/FONT&gt;&lt;/CENTER&gt;&lt;BR&gt;&lt;UL&gt;&lt;LI&gt;Customer support, quote definitions,
+ and a price
+chart legend are available in &lt;NOBR&gt;&lt;A HREF=&quot;schwab.help.html&quot;&gt;Quotes 
+and Charts Help&lt;/A&gt;.&lt;/NOBR&gt;&lt;/LI&gt;&lt;/UL&gt;
+&lt;P&gt;
+&lt;TABLE BORDER=0&gt;&lt;TR&gt;&lt;TD&gt;
+&lt;A HREF=&quot;http://www.quote.com/&quot; TARGET=_top&gt;&lt;IMG 
+SRC=&quot;/graphics/spryquotecom.gif&quot;
+        BORDER=0 ALT=&quot;Provided by Quote.com&quot; WIDTH=165 HEIGHT=70&gt;&lt;/A&gt;
+&lt;/TD&gt;&lt;TD&gt;
+        Market data is provided by Quote.com, Inc. By using this 
+service, you
+        agree to the terms of the
+
+&lt;A _
+HREF=&quot;<A HREF="javascript:if(confirm('http://www.schwab.com/SchwabNOW/SNLibrary/SNLib041/SN041Agreement.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.schwab.com/SchwabNOW/SNLibrary/SNLib041/SN041Agreement.html'" tppabs="http://www.schwab.com/SchwabNOW/SNLibrary/SNLib041/SN041Agreement.html">http://www.schwab.com/SchwabNOW/SNLibrary/SNLib041/SN041Agreement.html</A>&quot;&gt;User Agreement&lt;/A&gt;.
+&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;
+
+
+&lt;/center&gt;
+&lt;/BODY&gt;
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+&lt;/HTML&gt;If you look closely, you will see that most of the
+information we need for the StockQuote object can be found in
+this listing. You can also see examples of some of the tags. For
+example, here is a tag that retrieves an image. 
+<BLOCKQUOTE>
+<PRE>
+&lt;A HREF=&quot;http://www.quote.com/&quot; TARGET=_top&gt;&lt;IMG SRC=&quot;/graphics/spryquotecom.gif&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The image is not part of the page itself; a browser has to make
+a separate request to the specified location on the site in order
+to retrieve it. We'll look at this listing again later when it
+comes time to extract the information from the page.
+<P>
+The question to ask now is this: how do you request a quote for
+a particular stock? To do this, we have to take a look at part
+of a different page where you place the request:
+<BLOCKQUOTE>
+<PRE>
+&lt;FORM METHOD=&quot;POST&quot; ACTION=&quot;/fq/schwab/quote&quot;&gt;
+&lt;TABLE BORDER=2 CELLPADDING=2 WIDTH=&quot;100%&quot;&gt;&lt;TR&gt;&lt;TD VALIGN=top&gt;Select 
+quote or chart:&lt;BR&gt;
+&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;request&quot; VALUE=&quot;Delayed quote&quot; 
+CHECKED&gt;Delayed quote&lt;BR&gt;
+&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;request&quot; VALUE=&quot;Intraday chart&quot; &gt;Intraday 
+chart&lt;BR&gt;
+&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;request&quot; VALUE=&quot;Daily chart&quot; &gt;Daily chart&lt;BR&gt;
+&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;request&quot; VALUE=&quot;Weekly chart&quot; &gt;Weekly 
+chart&lt;/TD&gt;
+&lt;TD VALIGN=top&gt;Enter the security symbol*, or &lt;A 
+HREF=&quot;/fq/schwab/ticker&quot;&gt;search for symbol&lt;/A&gt;:&lt;BR&gt;
+&lt;INPUT NAME=&quot;symbols&quot; SIZE=25 VALUE=&quot;MSFT&quot;&gt;&lt;BR&gt;
+&lt;FONT SIZE=-1&gt;*&lt;B&gt;Multiple symbols&lt;/B&gt; may be entered for &lt;B&gt;quotes 
+only&lt;/B&gt;.
+Separate symbols with spaces.&lt;/FONT&gt;&lt;BR&gt;&lt;BR&gt;
+&lt;INPUT TYPE=&quot;image&quot; VALUE=&quot;Submit&quot; BORDER=0 
+SRC=&quot;/graphics/schwab/submit.gif&quot;&gt;
+&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;
+&lt;/FORM&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The three tags that do the work are the <I>form method</I> tag
+and two <I>input type</I> tags. The line
+<BLOCKQUOTE>
+<PRE>
+&lt;INPUT NAME=&quot;symbols&quot; SIZE=25 VALUE=&quot;MSFT&quot;&gt;&lt;BR&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+places a text box named &quot;symbols&quot; on the Web page. The
+current value (from a previous search) is MSFT in this particular
+case. The tag
+<BLOCKQUOTE>
+<PRE>
+&lt;INPUT TYPE=&quot;image&quot; VALUE=&quot;Submit&quot; BORDER=0 SRC=&quot;/graphics/schwab/submit.gif&quot;&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+places a button named &quot;submit&quot; on the page. The button
+appearance is defined by a separate graphic /graphics/schwab/submit.gif.
+The tag
+<BLOCKQUOTE>
+<PRE>
+&lt;FORM METHOD=&quot;POST&quot; ACTION=&quot;/fq/schwab/quote&quot;&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+tells the browser how to submit the information when the submit
+button is clicked. The page address you will be requesting is
+<A HREF="javascript:if(confirm('http://schwab.quote.com/fq/schwab/quote  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://schwab.quote.com/fq/schwab/quote'" tppabs="http://schwab.quote.com/fq/schwab/quote">http://schwab.quote.com/fq/schwab/quote</A>, where schwab.quote.com
+is the site where this page can be found. 
+<P>
+The server receives the rest of the information in a command line
+it processes to generate the response page that contains the stock
+quote. The command line created by a Web form consists of a question
+mark followed by all of the various form fields (such as the text
+box) with their values separated by ampersands. The commands take
+the generic format:
+<BLOCKQUOTE>
+<PRE>
+<A HREF="javascript:if(confirm('http://webaddress.domain/Action?firstfield=firstvalue  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://webaddress.domain/Action?firstfield=firstvalue'" tppabs="http://webaddress.domain/Action?firstfield=firstvalue">http://webaddress.domain/Action?firstfield=firstvalue</A>&amp;secondfield=secondvalue&amp; 
+</PRE>
+</BLOCKQUOTE>
+<P>
+In this case, the request to retrieve Microsoft's stock price
+was
+<BLOCKQUOTE>
+<PRE>
+<A HREF="javascript:if(confirm('http://schwab.quote.com/fq/schwab/quote?symbols=MSFT  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://schwab.quote.com/fq/schwab/quote?symbols=MSFT'" tppabs="http://schwab.quote.com/fq/schwab/quote?symbols=MSFT">http://schwab.quote.com/fq/schwab/quote?symbols=MSFT
+</A></PRE>
+</BLOCKQUOTE>
+<P>
+The radio button field can be ignored in this case because the
+default value (Delayed quote) is acceptable.
+<P>
+You see, you don't need to know what all of the different HTML
+tags mean to retrieve information from the Internet. I don't know
+what all of these tags mean. We will be looking at HTML in Part
+3 as well, where we look at how Web pages host ActiveX controls
+and documents. But for now, we're ready to look at some code.
+<H3><A NAME="TalkingtotheNet">
+Talking to the Net</A></H3>
+<P>
+The Internet control is actually quite easy to use. You start
+by setting the protocol property to 4 - icHTTP. This control is
+placed on a form named frmHolder, which will be an invisible form
+belonging to the EXE server.
+<P>
+The form has a public property called StartQuote, which is used
+to start the quote retrieval process. This simple routine follows:
+<BLOCKQUOTE>
+<PRE>
+Public Sub StartQuote(symbol As String)
+   Dim q$
+   Select Case QuoteSource
+      Case sqschwab
+         q$ = &quot;<A HREF="javascript:if(confirm('http://schwab.quote.com/fq/schwab/quote  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://schwab.quote.com/fq/schwab/quote'" tppabs="http://schwab.quote.com/fq/schwab/quote">http://schwab.quote.com/fq/schwab/quote</A>&quot; &amp; &quot;?symbols=&quot; &amp; _
+         Trim$(symbol)
+         Inet1.Execute q$, &quot;GET&quot;
+      Case sqyahoo
+         q$ = &quot;<A HREF="javascript:if(confirm('http://quote.yahoo.com/quotes?SYMBOLS=  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://quote.yahoo.com/quotes?SYMBOLS='" tppabs="http://quote.yahoo.com/quotes?SYMBOLS=">http://quote.yahoo.com/quotes?SYMBOLS=</A>&quot; &amp; Trim$(symbol)_
+         &amp; &quot;&amp;detailed=t&quot;
+         Inet1.Execute q$, &quot;GET&quot;
+   End Select
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+As you can see, all we do is build the request string that the
+server expects to see to request a stock quote. We then use the
+Execute method of the control to send the request to the server.
+<P>
+The control does all of the work of resolving the domain and retrieving
+the page. You can monitor its progress by looking at the control's
+StateChanged event, as shown in Listing 15.2.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 15.2:&nbsp;The Inet1_StateChanged and Form Terminate
+Events<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+Private Sub Inet1_StateChanged(ByVal State As Integer)
+   Dim res$
+   Dim ChunkVar As Variant
+   Dim bDone As Boolean
+   Dim st$
+   Select Case State
+      Case icNone
+      Case icResolvingHost   'The control is looking up the IP address _
+      of the specified host computer.
+         st$ = &quot;Resolving host&quot;
+      Case icHostResolved        'The control successfully found the _
+      IP&nbsp;address of the specified host computer.
+         st$ = &quot;Host resolved&quot;
+      Case icConnecting          'The control is connecting to the host _
+      computer.
+         st$ = &quot;Connecting&quot;
+      Case icConnected           'The control successfully connected to _
+      the host computer.
+         st$ = &quot;Connected&quot;
+      Case icRequesting          'The control is sending a request to _
+      the host computer.
+         st$ = &quot;Requesting&quot;
+      Case icRequestSent         'The control successfully sent the _
+      request.
+         st$ = &quot;Request sent&quot;
+      Case icReceivingResponse   'The control is receiving a response _
+      from the host computer.
+         st$ = &quot;Receiving&quot;
+      Case icResponseReceived    'The control successfully received a _
+      response from the host computer.
+         st$ = &quot;Response received&quot;
+         DoEvents
+      Case icDisconnecting       'The control is disconnecting from the _
+      host computer.
+         st$ = &quot;Disconnecting&quot;
+      Case icDisconnected        'The control successfully disconnected _
+      from the host computer.
+         st$ = &quot;Disconnected&quot;
+      Case icError               'An error occurred in communicating _
+      with the host computer.
+         st$ = &quot;Error&quot;
+         EndQuote &quot;&quot;
+      Case icResponseCompleted   'The request has completed and all _
+      data has been retrieved
+         st$ = &quot;Response complete&quot;
+         Do
+            ChunkVar = Inet1.GetChunk(1024, icString)
+            If Len(ChunkVar) &gt; 0 Then
+               DoEvents
+               res = res &amp; ChunkVar
+            Else
+               bDone = True
+            End If
+         Loop While Not bDone
+         EndQuote res
+   End Select
+   Debug.Print st$
+End Sub
+
+Private Sub Form_Terminate()
+   DoEvents ' Required due to MSInet bug
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+As you can see, the control provides detailed information on what
+it is doing at any given time. The sample uses the debug.print
+statement to let you monitor and see what is happening.
+<P>
+For the purposes of this component, only two states are of interest.
+The icError state indicates that an error occurred. The most common
+error you will run into will be a timeout, due to connection or
+server problems (on the network). The icResponseCompleted state
+informs the program that the data has been retrieved. The control's
+GetChunk method returns a string of a specified length. We loop
+through until the entire page has been placed into a string.
+<P>
+The final operation in either state is to call the EndQuote function,
+which is part of the QuoteEngine module. This tells the engine
+that a response has been received.
+<P>
+You may be wondering why a DoEvents statement must be placed after
+each GetChunk call, after the ResponseReceived state, and in the
+Termination event for the form, especially since, as those of
+you who have followed my work over the years know, I despise the
+DoEvents statement. In most cases it is a indication of a flawed
+design.
+<P>
+In this case, the DoEvents statements are an indication of a bug
+in the Microsoft Internet control. They solve a known synchronization
+problem with the control. This bug is documented in the Visual
+Basic 5.0 Readme file.
+<P>
+I confess that I sympathize with Microsoft's plight. As a software
+developer who knows full well that any non-trivial program contains
+bugs (and any program with more than ten lines is, by definition,
+not trivial), I realize that if they tried to fix every known
+bug in VB5, it would never ship. But as a developer, I don't have
+to like it.
+<H3><A NAME="TheQuoteEngine">
+The Quote Engine</A></H3>
+<P>
+The code that manages the various StockQuote objects and communicates
+with the network by way of the frmHolder form is kept in a standard
+module called the Quote Engine. With all of the focus on object-oriented
+programming, you would think that a standard module is the last
+thing you would want to use in a component. Usually this would
+be correct. But you see, from the perspective of this component
+the QuoteEngine module itself represents an object, even though
+it is obviously not a COM object. Because the variables in a standard
+module are potentially global to the entire application, it presents
+the ideal way to share information or arbitrate between the objects
+in the application. The quote engine is an excellent demonstration
+of where you would want to use a standard module.
+<P>
+Listing 15.3 shows the QuoteEngine module. It uses several techniques
+you have seen earlier. For example: The Sub Main routine determines
+whether the component was started as a stand-alone program. If
+it was, a second form, frmQuote.frm, is shown. This form contains
+a text box that lets you request individual quotes and provides
+an easy way to test the component without using a second application.
+It is not unreasonable to use this technique to test ActiveX EXE
+servers in general; you can always remove the form before shipping
+the component or just disable it so it will never be shown. If
+the server was started as a component, we set the App.TaskVisible
+property to False so that it won't show up in the task list.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 15.3:&nbsp;The QuoteEngine Module (modQuote.bas)<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' dwQuote QuoteEngine
+' Desaware ActiveX Gallimaufry
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+
+Option Explicit
+
+' Enum that indicates which service to use
+Public Enum QuoteSourceType
+   sqschwab = 0   ' Charles Schwab &amp; Co.
+   sqyahoo = 1    ' Yahoo
+End Enum
+
+Public QuoteSource As QuoteSourceType  ' Service in use
+
+' This is a collection of quotes that need to be filled
+' Each one is filled in turn
+' All objects work with this list
+Private QuotesPending As New Collection
+
+' Set to True when a quote is in progress
+Private QuotationInProgress As Boolean
+
+' Initialization routine
+Sub Main()
+
+   ' For now, hardcode the quote source
+   QuoteSource = sqyahoo
+
+   ' On standalone operation, bring up quotation form
+   If App.StartMode = vbSModeStandalone Then
+      frmQuote.Show
+   Else
+      ' Don't show the task in the task bar
+      App.TaskVisible = False
+   End If
+End Sub
+
+
+' Called by StockQuote object to start a quotation
+' if one is not yet in progress
+Public Sub StartQuote(Optional obj As StockQuote)
+   Dim sq As StockQuote
+   ' Add it to the list
+   If Not obj Is Nothing Then
+      QuotesPending.Add obj
+   End If
+   If (Not QuotationInProgress) And QuotesPending.Count &gt; 0 Then
+      QuotationInProgress = True
+      Set sq = QuotesPending.item(1)
+      frmHolder.StartQuote sq.symbol ' Start a quotation now
+   End If
+End Sub
+
+' Called when quotation is done
+' htmlstring is String containing the downloaded html
+' html is &quot;&quot; if EndQuote is due to an error
+Public Sub EndQuote(htmlstring As String)
+   Dim htmlcol As New dwHTMLcollection
+   Dim sq As StockQuote
+   
+   ' Quotation is done
+   QuotationInProgress = False
+   
+   ' Remove the first item in the collection
+   ' (it's the one that's been in progress
+   Set sq = QuotesPending(1)
+   QuotesPending.Remove 1
+   
+   ' Don't keep objects hanging around unneeded
+   If QuotesPending.Count = 0 Then
+      Set QuotesPending = Nothing
+      Unload frmHolder
+   End If
+   
+   If Len(htmlstring) = 0 Then
+      sq.ReportQuote Nothing, sqError
+   Else
+      htmlcol.LoadFromString htmlstring
+      sq.ReportQuote htmlcol, sqIdle
+   End If
+   ' Start the next quotation
+   StartQuote
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The module has two private variables. Private in this case means
+they can only be accessed by function in this module. Even though
+the standard module is shared by all of the other modules in the
+application, there is no reason why we shouldn't use object-oriented
+techniques to hide any variables and functions that are only used
+within the module. (And there is every reason why we should.)
+The QuotesPending collection contains references to all StockQuote
+objects that have requests pending. The QuotationInProgress Boolean
+keeps track of whether a request is currently in progress.
+<P>
+Why use a standard collection to hold the pending StockQuote objects?
+Why not create a custom collection or an array? Because doing
+so would be a waste of time, effort, and code. The primary reason
+for creating a custom collection is to create more robust code
+and to minimize the chances of clients of the collection adding
+an invalid object or performing an illegal manipulation on the
+collection. But in this case the only client for the collection
+is the module itself. In this case it is far easier to make sure
+that the module code is correct than it would be to create and
+test a custom collection. 
+<P>
+The extra object involved in a custom collection is a waste of
+code and resources as well. As for using an array, the slight
+performance improvement in using an array is negligible compared
+to the relatively long time each quote request takes.
+<P>
+The module has a public variable called QuoteSource to allow you
+to choose the quotation service to use. This was actually a preliminary
+implementation of this functionality added for testing purposes.
+It will probably be moved to the StockQuote object for the final
+shipping version of this component.
+<P>
+The QuoteEngine module has only two public functions. The StartQuote
+function is called by the StockQuote objects to tell the module
+that it wants to make a request. The StockQuote object passes
+a reference to itself (Me) as a parameter. The object reference
+is then added to the QuotesPending collection. If a request is
+currently in progress, the function returns. Otherwise it checks
+to see if any requests are pending. If it finds one, it starts
+a request.
+<P>
+The function actually serves a dual purpose, because if you pass
+Nothing to it as a parameter, the function starts any pending
+requests if possible. This allows it to be used by the EndQuote
+function to start the next request. The EndQuote function is called
+only by the frmHolder form when a request is complete.
+<P>
+The first thing it does is remove from the QuotesPending collection
+the StockQuote object that placed the request, holding a reference
+to it so it won't be deleted. If no more quotes are pending, it
+unloads the form. This is necessary to make sure that the server
+terminates correctly. (Remember, an EXE server cannot be terminated
+unless all of its forms are unloaded.)
+<P>
+The EndQuote function then calls the ReportQuote method of the
+StockQuote object that placed the request. This method takes two
+parameters, a dwHTMLcollection object, which will be described
+in the next section, and a flag indicating whether the request
+ended in success or in error. The dwHTMLcollection object is initialized
+using the retrieved Web page via the LoadFromString method.
+<P>
+Finally, the EndQuote function starts the next request. You can
+see this is really quite an elegant solution to obtaining stock
+quotes. The EXE server runs in its own thread; thus, it is in
+the background for clients using the server. The actual data retrieval
+across the Internet runs in the background as far as the server
+is concerned, leaving the server open at all times to provide
+additional StockQuote objects and fill requests!
+<H3><A NAME="ParsingHTML">
+Parsing HTML</A></H3>
+<P>
+You've seen that HTML pages consist of a string of tag data and
+content data. How do we extract the information we need from the
+page? The process of extracting tokens of information from a string
+is called <I>parsing</I>, and that is what we need to do in this
+case.
+<P>
+If this was likely to be the only time you ever wanted to parse
+an HTML page, then you would probably just use the Instr$ function
+to search for strings and extract the data. But in my case, I
+knew I would probably want to do this again, so I wanted to come
+up with a more generic solution. Besides, I wanted some nice HTML
+parsing components to include in Desaware's new ActiveX Gallimaufry
+product. They turned out to be very useful for the StockQuoting
+component and are thus included here.
+<P>
+The first issue that needed to be resolved was how to store the
+page. One possibility would be to keep it as a string, perhaps
+as an HTML Page object, and have methods that let you extract
+information from the page. The other approach would be to parse
+the page into multiple objects, with each object representing
+a single tag or content string. This latter approach is more flexible
+because once you break a page into its individual elements it
+becomes easy to add or rearrange those elements. This is ideal
+when it comes to creating server scripts. It also makes the searching
+process relatively fast. The disadvantage is that allocating a
+new object for each element on the page is relatively inefficient.
+<P>
+The implementation shown here uses the latter approach. The page
+is parsed into its individual elements, each of which is stored
+in an object called a dwHTMLelement. This object is shown in Listing
+15.4.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 15.4:&nbsp;   The dwHTMLelement Class<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' HTML element
+ Desaware ActiveX Gallimaufry
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+
+Option Explicit
+
+Private intTag As String
+Private intContents As String
+Private separator As String
+
+' Tag. Empty string for text
+Public Function Tag() As String
+   Tag = intTag
+End Function
+
+' Contents of tag element or text (if no tag)
+Public Function Contents() As String
+   Contents = intContents
+End Function
+
+' Loads the next tag or string element,
+' Returns the balance of the string
+Public Function LoadFromString(inputstring As String) As String
+   Dim Bracket1Pos As Long
+   Dim Bracket2pos As Long
+   Dim holdstring As String
+   Dim spacepos As Long
+   Dim returnstring As String
+   Bracket1Pos = InStr(inputstring, &quot;&lt;&quot;)
+   Bracket2pos = InStr(inputstring, &quot;&gt;&quot;)
+   If Bracket1Pos &gt; 1 Then
+      ' Everything up to the first bracket is content for
+      ' this object
+      holdstring = Left$(inputstring, Bracket1Pos - 1)
+      returnstring = Mid$(inputstring, Bracket1Pos)
+   Else
+      If Bracket1Pos = 0 Then
+         ' No tag present. The entire input string is content
+         ' for this object.
+         holdstring = inputstring
+      Else
+         ' It's the start of a tag
+         If Bracket2pos = 0 Then  ' No right bracket!
+            ' This should never happen on a valid page
+            ' Just treat it as a string
+            returnstring = inputstring
+         Else
+            ' Retrieve the entire tag for this object
+            holdstring = LTrim$(Mid$(inputstring, 2, Bracket2pos - 2))
+            If Bracket2pos &lt; Len(inputstring) Then
+               returnstring = Mid$(inputstring, Bracket2pos + 1)
+            End If
+         End If
+      End If
+   End If
+   If holdstring &lt;&gt; &quot;&quot; Then ' Separate out the tag
+      If Bracket1Pos &lt;&gt; 1 Then ' No tag - store the contents only
+         intContents = holdstring
+      Else
+         ' It's a tag. Find the first delimiter character
+         spacepos = StringSpan(holdstring, separator$)
+         If spacepos &lt;= 1 Then
+            ' No delimiters indicates a tag with no parameters
+            intTag = holdstring
+         Else
+            ' Place the tag in the intTag member,
+            ' and the parameters in the intContents member
+            intTag = Left$(holdstring, spacepos - 1)
+            If spacepos &lt; Len(holdstring) Then
+               intContents = Mid$(holdstring, spacepos + 1)
+            End If
+         End If
+      End If
+   End If
+   ' Trim on left
+   spacepos = StringSpan2(returnstring, separator)
+   If spacepos = 1 Then
+      LoadFromString = returnstring
+   Else
+      If spacepos &gt; 0 Then
+         LoadFromString = Mid$(returnstring, spacepos)
+      End If
+   End If
+End Function
+
+Private Sub Class_Initialize()
+   ' Initialize the separator string
+   separator = &quot; &quot; &amp; vbCrLf &amp; vbTab
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Each object has two important items of data. The tag data contains
+the type of the tag if the object represents a tag. The contents
+data contains the text data either from non-tag elements or from
+any parameters to the tag for tag elements. Both of these items
+are exposed through functions.
+<P>
+The object is loaded via the LoadFromString function, which takes
+HTML code as a parameter. This method loads the object from the
+first element in the string. It then returns the input string
+with the first element stripped off. You will soon see how this
+can be used to quickly parse an entire page. The object uses two
+string utilities that are defined in a separate utility module
+shown in Listing 15.5.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 15.5:&nbsp;String Functions in Module strFuncs.bas
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' String functions
+' Desaware ActiveX Gallimaufry
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+
+Option Explicit
+
+' Search string sourcestring for first occurrence of any character in _
+searchchars
+Public Function StringSpan(sourcestring As String, searchchars As _
+String) As Long
+   Dim x&amp;
+   Dim strlen&amp;
+   Dim foundpos&amp;
+   For x = 1 To Len(sourcestring)
+      If InStr(searchchars, Mid$(sourcestring, x, 1)) &gt; 0 Then
+         StringSpan = x
+         Exit Function
+      End If
+   Next
+
+End Function
+
+' Search sourcestring for first character not found in searchchars
+' Return 0 if entire string is in searchchars
+Public Function StringSpan2(sourcestring As String, searchchars As _
+String) As Long
+   Dim x&amp;
+   Dim strlen&amp;
+   Dim foundpos&amp;
+   For x = 1 To Len(sourcestring)
+      If InStr(searchchars, Mid$(sourcestring, x, 1)) = 0 Then
+         StringSpan2 = x
+         Exit Function
+      End If
+   Next
+End Function
+
+' Converts occurrences of HTML literal characters to real characters
+Public Function ConvertHtmlLiterals(strInput As String) As String
+   Dim amppos&amp;
+   Dim semipos&amp;
+   Dim lit$
+   Dim res$
+   Dim charval As Integer
+   amppos = InStr(strInput, &quot;&amp;&quot;)
+   If amppos = 0 Then
+      ' No literals, just copy
+      ConvertHtmlLiterals = strInput
+      Exit Function
+   End If
+   semipos = InStr(strInput, &quot;;&quot;)
+   If semipos = 0 Or semipos &lt;= amppos + 1 Then
+      ' No HTML literal string, just copy
+      ConvertHtmlLiterals = strInput
+      Exit Function
+   End If
+   ' Get the string
+   lit$ = Mid$(strInput, amppos + 1, semipos - amppos - 1)
+   If Left$(lit$, 1) = &quot;#&quot; Then
+      ' It's a numeric literal
+      charval = Val(Mid$(lit$, 2))
+   Else
+      Select Case LCase$(lit$)
+         Case &quot;lt&quot;
+            charval = 60
+         Case &quot;gt&quot;
+            charval = 62
+         Case &quot;amp&quot;
+            charval = 38
+         Case &quot;quot&quot;
+            charval = 34
+         Case &quot;emdash&quot;
+            charval = 151
+         Case &quot;copy&quot;
+            charval = 169
+         Case &quot;reg&quot;
+            charval = 174
+         Case Else
+            charval = 0
+      End Select
+   End If
+   ' Yank out the unknown symbol
+   If amppos &gt; 1 Then
+      res = Left$(strInput, amppos - 1)
+   End If
+   If charval &lt;&gt; 0 Then
+      res = res &amp; Chr$(charval)
+   End If
+   If semipos &lt; Len(strInput) Then
+      res = res &amp; Mid$(strInput, semipos + 1)
+   End If
+   
+   ' Why recursion? There may be more than one literal.
+   ConvertHtmlLiterals = ConvertHtmlLiterals(res)
+End Function
+
+
+' Strip from the first line feed
+Public Function StripLinefeeds(line$) As String
+   Dim x%
+   x% = InStr(line$, Chr$(10))
+   If x = 0 Then StripLinefeeds = line Else StripLinefeeds = _
+                       Left$(line$, x - 1)
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+End FunctionThe StringSpan function searches for the first occurrence
+of any character in a string that matches a character in a search
+string. The StringSpan2 function performs the opposite task, finding
+the first character in a string that does not exist in a search
+string. These are used to find separators between elements.
+<P>
+The strFuncs module also contains a function ConvertHtmlLiterals.
+You see, if HTML uses certain symbols to control the linking and
+formatting of a page, it obviously has to have a way to differentiate
+between those symbols as control characters and where they occur
+in text. For example: What if you wanted to include the line &lt;center&gt;
+in the text of a page? The browser would interpret this as a center
+tag. HTML thus defines a way to represent special characters.
+It uses an ampersand followed by an ASCII code or text code, followed
+by a semicolon. Thus, to include &lt;center&gt; in the text itself
+you would use: 
+<BLOCKQUOTE>
+<PRE>
+&amp;lt;center&amp;gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The ConvertHtmlLiterals function scans a string and converts any
+HTML special codes into the actual characters so it can be easily
+used in your program. The StripLinefeeds function returns the
+first part of a string up to the first linefeed character that
+it finds. This is used later when extracting information from
+the page.
+<H3><A NAME="CollectingHTMLElements">
+Collecting HTML Elements</A></H3>
+<P>
+Once you retrieve a stock quote HTML page, two tasks need to be
+performed. First, you need to parse it into a collection of dwHTMLelement
+objects. Next, you need to scan through that page to retrieve
+the quote information.
+<P>
+Because this collection of elements is likely to be used not only
+by the StockQuote object, but by other components as well, it
+seemed a good candidate for a custom collection. Using a custom
+collection provides two additional advantages beyond the obvious
+safety issues. It allows us to use a more efficient array-based
+approach to store the object references, and it provides an ideal
+location for some search utilities that are specific to dwHTMLelement
+objects.
+<P>
+Listing 15.6 shows the collection-oriented methods and properties
+for this class. The array-based technique shown here is virtually
+identical to that shown in <A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch12.htm" >Chapter 12</A>. The most interesting function
+here is the LoadFromString function, which parses an entire HTML
+page and loads the collection with newly created dwHTMLelement
+objects from the results.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 15.6:&nbsp;Collection Methods and Properties for the
+dwHTMLcollection Class<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' HTML element collection
+' Desaware ActiveX Gallimaufry
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+
+Option Explicit
+
+'local variable to hold collection
+Private mCol() As dwHTMLelement
+Private mColUsed As Long   ' Number of elements used
+Private mColSize As Long   ' Number of elements total
+Private Const GRANULARITY = 5
+
+Public Function Append(objNewMember As dwHTMLelement)
+   If mColSize = mColUsed Then
+      ' Need to increase the array size
+      mColSize = mColSize + GRANULARITY
+      ReDim Preserve mCol(mColSize)
+   End If
+   mColUsed = mColUsed + 1
+   Set mCol(mColUsed) = objNewMember
+End Function
+
+
+' Retrieve the number of objects in the collection
+Public Property Get Count() As Long
+   Count = mColUsed
+End Property
+
+
+Public Property Get item(vntIndex As Long) As dwHTMLelement
+   If vntIndex &lt; 1 Or vntIndex &gt; mColUsed Then
+      RaiseError 9   ' Subscript error
+   End If
+   Set item = mCol(vntIndex)
+End Property
+
+' Remove the specified item
+Public Sub Remove(vntIndex As Variant)
+   Dim ctr&amp;
+   If vntIndex &lt; 1 Or vntIndex &gt; mColUsed Then
+      RaiseError 9   ' Subscript error
+   End If
+   ' Shift contents of array
+   For ctr = vntIndex To mColUsed - 1
+      Set mCol(ctr) = mCol(ctr + 1)
+   Next ctr
+   Set mCol(mColUsed) = Nothing
+   mColUsed = mColUsed - 1
+   
+   If mColSize - mColUsed &gt; GRANULARITY * 2 Then
+      mColSize = mColSize - GRANULARITY
+      ReDim Preserve mCol(mColSize)
+   End If
+End Sub
+
+
+Private Sub Class_Initialize()
+   ' Dimension space for first element
+   ReDim mCol(GRANULARITY)
+   mColSize = GRANULARITY
+End Sub
+
+
+Private Sub Class_Terminate()
+   ' mCol array objects will terminate when it goes out of scope here.
+End Sub
+
+' Parse an entire page into a collection of dwHTMLelements
+Public Function LoadFromString(ByVal inputstring As String)
+   Dim CurrentElement As dwHTMLelement
+   Do
+      Set CurrentElement = New dwHTMLelement
+      inputstring = CurrentElement.LoadFromString(inputstring)
+      Append CurrentElement
+   Loop While Len(inputstring) &gt; 0
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Listing 15.7 shows the searching extensions added to the collection
+to help find specific content on the page.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 15.7:&nbsp;Search Functions for the dwHTMLcollection
+Object<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Find an element that has the specified tag, content pair
+' Empty content string matches all
+' Case sensitive defaults to True
+' Returns 0 if nothing found
+Public Function Find(FirstElement As Long, ByVal Tag As String, Optional ByVal_
+Contents As String, Optional CaseSensitive = True) As Long
+   Dim LastElement&amp;
+   Dim CurElement&amp;
+   Dim thtml As dwHTMLelement
+   Dim bFoundTag As Boolean
+   Dim bFoundContents As Boolean
+   LastElement = Count()
+   ' Don't bother if already past the limit
+   If FirstElement &gt; Count Then Exit Function
+   ' Compare upper case if case insensitive
+   If Not CaseSensitive Then
+      Tag = UCase$(Tag)
+      Contents = UCase$(Contents)
+   End If
+   For CurElement = FirstElement To LastElement
+      Set thtml = mCol(CurElement)
+      ' First check tag
+      If Tag &lt;&gt; &quot;&quot; Then
+         If Not CaseSensitive Then
+            If Tag = UCase$(thtml.Tag) Then
+               bFoundTag = True
+            End If
+         Else
+            If Tag = thtml.Tag Then
+               bFoundTag = True
+            End If
+         End If
+      Else
+         bFoundTag = True
+      End If
+      ' Now check contents
+      If Contents &lt;&gt; &quot;&quot; Then
+         If Not CaseSensitive Then
+            If Contents = StripLinefeeds(UCase$(thtml.Contents)) Then
+               bFoundContents = True
+            End If
+         Else
+            If Contents = StripLinefeeds(thtml.Contents) Then
+               bFoundContents = True
+            End If
+         End If
+      Else
+         bFoundContents = True
+      End If
+      ' Match both is a hit
+      If bFoundTag And bFoundContents Then
+         Find = CurElement
+         Exit Function
+      End If
+   Next
+   
+End Function
+
+' Searches for a sequence of tags starting with element FirstElement.
+' CaseSensitive determines if the search is case sensitive
+' Then follows a list of tags to find. Tags must appear in the _
+specified order
+Public Function FindTagSequence(FirstElement As Long, CaseSensitive As _
+Boolean, ParamArray TagSequence() As Variant) As Long
+   Dim CurrentBase As Long
+   Dim LastElement As Long
+   Dim CurrentParam As Long
+   Dim FirstParam As Long
+   Dim LastParam As Long
+   Dim bCompareFailed As Boolean
+   ' Expected and current position of tag
+   Dim ExpectedPosition As Long
+   Dim CurrentPosition As Long
+   
+   LastElement = Count()
+   CurrentBase = FirstElement
+   LastParam = UBound(TagSequence)
+   FirstParam = LBound(TagSequence)
+   Do
+      bCompareFailed = False
+      ' Try first match
+      CurrentBase = Find(CurrentBase, TagSequence(FirstParam), , _
+      CaseSensitive)
+      ' If no match, exit now
+      If CurrentBase = 0 Then Exit Function
+      ' Now try the other parameters
+      ExpectedPosition = CurrentBase + 1
+      For CurrentParam = FirstParam + 1 To LastParam
+         CurrentPosition = Find(ExpectedPosition, _
+         TagSequence(CurrentParam), , CaseSensitive)
+         ' If it's not the correct position, exit right away
+         If ExpectedPosition &lt;&gt; CurrentPosition Then
+            bCompareFailed = True
+            Exit For
+         End If
+         ' Increment the expected value
+         ExpectedPosition = ExpectedPosition + 1
+      Next CurrentParam
+      If Not bCompareFailed Then
+         ' Compare succeeded on all tags!
+         FindTagSequence = CurrentBase
+         Exit Function
+      End If
+      CurrentBase = CurrentBase + 1
+   Loop While CurrentBase &lt;= LastElement
+   
+End Function
+
+' Find next element that has no tag
+' Stops search at closetag if present
+Public Function FindNextNonTag(Optional FirstLoc As Long = 1, Optional _
+CloseTag As String) As Long
+   Dim LastElement&amp;
+   Dim CurElement&amp;
+   Dim thtml As dwHTMLelement
+   LastElement = Count()
+   For CurElement = FirstLoc To LastElement
+      Set thtml = mCol(CurElement)
+      If thtml.Tag = &quot;&quot; Then
+         FindNextNonTag = CurElement
+         Exit Function
+      Else
+         If thtml.Tag = CloseTag Then Exit For
+      End If
+   Next
+End Function
+
+' FindNextContent starts at FirstLoc,
+' Looks for string &quot;FirstContent&quot; in a content field using _
+CaseSensitive
+' Then looks for the next non-tag field and returns it
+' Updates the FirstLoc parameter to the location of the content tag _
+returned
+' Returns empty string on failure
+' This function is useful for finding content pairs
+Public Function FindNextContent(FirstLoc As Long, FirstContent As _
+String, Optional CaseSensitive As Boolean = True) As String
+   Dim HtmlFoundIdx&amp;
+   HtmlFoundIdx = FirstLoc
+   HtmlFoundIdx = Find(HtmlFoundIdx, &quot;&quot;, FirstContent, CaseSensitive)
+   If HtmlFoundIdx &gt; 0 Then HtmlFoundIdx = FindNextNonTag(HtmlFoundIdx _
+   + 1)
+   If HtmlFoundIdx &gt; 0 Then
+      FindNextContent = mCol(HtmlFoundIdx).Contents
+      FirstLoc = HtmlFoundIdx
+   End If
+
+End Function
+
+' AppendThroughTag  starts at FirstLoc,
+' Looks for string &quot;FirstContent&quot; in a content field
+' Then appends all non-tag fields through the specified closing tag
+' Updates the FirstLoc parameter to the location of the content tag _
+returned
+' Returns empty string on failure
+' This function is useful for combining content fields that are _
+separated by formatting tags.
+Public Function AppendThroughTag(FirstLoc As Long, FirstContent As _
+String, ByVal CloseTag As String) As String
+   Dim HtmlFoundIdx&amp;
+   Dim BuildString$
+   HtmlFoundIdx = FirstLoc
+   CloseTag = UCase$(CloseTag)
+   If FirstContent &lt;&gt; &quot;&quot; Then HtmlFoundIdx = Find(HtmlFoundIdx, &quot;&quot;, _
+   FirstContent)
+   If HtmlFoundIdx &gt; 0 Then HtmlFoundIdx = FindNextNonTag(HtmlFoundIdx _
+   + 1, CloseTag)
+   If HtmlFoundIdx &gt; 0 Then
+      Do While HtmlFoundIdx &lt;= Me.Count
+         If UCase$(mCol(HtmlFoundIdx).Tag) = CloseTag Then Exit Do
+         If mCol(HtmlFoundIdx).Tag = &quot;&quot; Then
+            BuildString = BuildString &amp; _
+            StripLinefeeds(mCol(HtmlFoundIdx).Contents)
+         End If
+         HtmlFoundIdx = HtmlFoundIdx + 1
+      Loop
+      FirstLoc = HtmlFoundIdx
+   End If
+   AppendThroughTag = BuildString
+End Function
+
+
+' Raises an internal error
+Private Sub RaiseError(ByVal errnum&amp;)
+   Dim ErrNumToUse&amp;
+   If errnum &gt;= 1000 Then
+      ' Custom error
+      Err.Raise vbObjectError + errnum, &quot;dwHTMLcollection&quot;, _
+      GetErrorString(errnum), App.HelpFile, errnum + HelpBaseOffset
+   Else
+      ' Raise VB error
+      Err.Raise errnum, &quot;dwHTMLcollection&quot;, GetErrorString(errnum)
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+In this listing, the following functions are implemented.
+<P>
+The Find function searches for a specific element by both tag
+and content. It allows you to specify whether the search should
+be case-sensitive or not. If the tag is the empty string, the
+function only searches for the requested contents. If the contents
+is empty or missing, the function only searches for the specified
+tag. If both are specified, both must match. The function starts
+searching from a location that you specify and returns the location
+of the first match, or zero if no match is found.
+<P>
+The FindTagSequence function searches for a specified sequence
+of tag elements. We're going to need to find a way to uniquely
+identify the parts of the HTML page we are interested in. Since
+page formats are fairly consistent, a series of tags can be an
+excellent way to narrow down the search area. This function demonstrates
+a good use for parameter arrays, since they allow a single function
+to work with as many or as few tags as you wish.
+<P>
+The FindNextNonTag function is useful once you have found the
+series of tags that mark your desired location on the page. This
+function skips past any remaining tags in the sequence to return
+the location of the next non-tag element on the page. It also
+lets you specify a closing tag that will stop the search. This
+is useful for cases where the item you are searching for is blank.
+<P>
+The FindNextContent function is very useful for handling HTML
+text that looks like this:
+<BLOCKQUOTE>
+<PRE>
+&lt;td width=130&gt;Today's open&lt;/td&gt;&lt;td&gt;155 1/8&lt;/td&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The description for the field is a content element that is separated
+by one or more tags from the content element that you really want.
+The FindNextContent function can take the string &quot;Today's
+open&quot; as a parameter, find the element in the HTML string,
+skip past any tag elements to the next content element, and return
+the contents of that element, all in one operation. This is the
+function we will use most often to extract quote information from
+the page.
+<P>
+The AppendThroughTag function is useful for handling HTML code
+that looks like this:
+<BLOCKQUOTE>
+<PRE>
+&lt;TH ALIGN=right&gt;Day Low:&lt;/TH&gt;&lt;TD&gt;94 &lt;SUP&gt;5&lt;/SUP&gt;/&lt;SUB&gt;8&lt;/SUB&gt;&lt;/TD&gt;&lt;/TR&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+It searches for a specified content tag, then appends all of the
+content tags that follow up until a closing tag. In this case
+you could specify the first tag as Day Low: and the closing tag
+as /TD and retrieve the string &quot;94 5/8&quot;.
+<P>
+The class also includes a centralized error handling function
+as shown. The INetErrors module (not shown here) contains the
+error constants for the component and the GetErrorString function.
+<H3><A NAME="TheStockQuoteObjectAtLast">
+The StockQuote Object, At Last</A></H3>
+<P>
+Listing 15.8 shows the actual StockQuote object. Most of the listing
+will be fairly clear, given your level of knowledge at this time.
+There are a number of private variables containing the quote information.
+There is the m_Notify variable, which holds the Callback object.
+The component uses a public enumeration to make it easy for users
+to interpret the value of the State function. Read-only properties
+are used to retrieve the quote values.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 15.8:&nbsp;Listing of the StockQuote Object (dwQuote.cls)
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' HTML tag
+' Desaware ActiveX Library
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+
+Option Explicit
+
+' The symbol is set by the GetQuote function
+Private m_Symbol As String
+
+' These will be loaded from the web page
+Private m_CompanyName As String
+Private m_LastPrice As String
+Private m_PriorClose As String
+Private m_Change As String
+Private m_High As String
+Private m_Low As String
+' Time of last quote
+Private m_QuoteTime As String
+
+' Object to notify when quote arrives
+' Object must have function:
+' Sub QuoteUpdate (QuoteInfo As StockQuote)
+' We use notification instead of events because
+' an app will typically use many of these objects.
+Private m_Notify As Object
+
+' 0 for idle
+' 1 for busy
+' 2 for error on latest quote
+Private m_State As Integer
+
+Public Enum QuoteState
+   sqIdle = 0
+   sqBusy = 1
+   sqError = 2
+End Enum
+
+
+
+' Retrieve the state of this object
+' 0 - idle
+' 1 - Busy
+' 2 - Error on last operation
+Public Property Get State() As QuoteState
+   State = m_State
+End Property
+
+' Symbol
+Public Property Get symbol() As String
+   symbol = m_Symbol
+End Property
+
+' Properties to retrieve stock info
+Public Property Get CompanyName() As String
+   CompanyName = m_CompanyName
+End Property
+
+Public Property Get LastPrice() As String
+   LastPrice = m_LastPrice
+End Property
+
+Public Property Get PriorClose() As String
+   PriorClose = m_PriorClose
+End Property
+
+Public Property Get Change() As String
+   Change = m_Change
+End Property
+
+Public Property Get QuoteTime() As String
+   QuoteTime = m_QuoteTime
+End Property
+
+Public Property Get High() As String
+   High = m_High
+End Property
+
+Public Property Get Low() As String
+   Low = m_Low
+End Property
+
+' Prevents notification. Used when you
+' want to close your application - it
+' forces the Quote object to release the callback
+' object that it is holding
+Public Sub CancelNotification()
+   Set m_Notify = Nothing
+End Sub
+
+' Start the process of retrieving a quote
+Public Sub GetQuote(symbol As String, Optional callback As Object)
+   If m_State = 1 Then
+      ' Don't try to get a quote when one is in progress
+      TriggerError 4000
+      Exit Sub
+   End If
+   If Not IsMissing(callback) Then
+      Set m_Notify = callback
+   End If
+   ' Set the symbol
+   m_Symbol = symbol
+   ' Mark it as busy
+   m_State = 1
+   ' Start the quotation
+   StartQuote Me
+End Sub
+
+
+' Raise an error
+Private Sub TriggerError(errnum As Long)
+   Err.Raise vbObjectError + errnum, &quot;StockQuote&quot;, _
+GetErrorString(errnum), App.HelpFile, errnum + HelpBaseOffset
+End Sub
+
+' Report the quote back to the notification object
+' if one exists
+' Remember, this is called on error - callee should
+' always check state for an error code
+' html is collection of dwHTMLelements
+Friend Sub ReportQuote(html As dwHTMLcollection, endState As _
+QuoteState)
+   Dim CallbackObject As Object
+   
+   ' Parse the html page
+   If Not html Is Nothing Then
+      ParseHtml html
+   End If
+   
+   ' Set the current state
+   m_State = endState
+   
+   Set CallbackObject = m_Notify
+   ' Always clear the notification - we don't want to
+   ' hold the object
+   Set m_Notify = Nothing
+   If Not CallbackObject Is Nothing Then
+      On Error GoTo NoCallbackName
+      CallbackObject.QuoteUpdate Me
+   End If
+NoCallbackName:
+   ' If a callback text error occurs, just exit
+End Sub
+
+
+Friend Sub ParseHtml(html As dwHTMLcollection)
+   Select Case QuoteSource
+      Case sqschwab
+         ParseSchwabQuote html
+      Case sqyahoo
+         ParseYahooQuote html
+   End Select
+End Sub
+
+
+Private Sub ParseYahooQuote(html As dwHTMLcollection)
+   Dim HtmlFoundIdx As Long
+   Dim IsFund As Boolean
+   Dim QuoteType$
+   HtmlFoundIdx = html.FindTagSequence(1, False, &quot;Table&quot;)
+   If HtmlFoundIdx = 0 Then Exit Sub
+   HtmlFoundIdx = html.FindTagSequence(HtmlFoundIdx, False, &quot;td&quot;, _
+   &quot;strong&quot;)
+   If HtmlFoundIdx = 0 Then Exit Sub
+   m_CompanyName = ConvertHtmlLiterals(html.item(HtmlFoundIdx + _
+   2).Contents)
+   m_QuoteTime = ConvertHtmlLiterals(html.AppendThroughTag(HtmlFoundIdx, _
+   &quot;Last Trade&quot;, &quot;strong&quot;))
+   If m_QuoteTime = &quot;&quot; Then
+      m_QuoteTime = _
+      ConvertHtmlLiterals(html.AppendThroughTag(HtmlFoundIdx, &quot;Net Asset _
+      Value&quot;, &quot;strong&quot;))
+      If m_QuoteTime &lt;&gt; &quot;&quot; Then IsFund = True
+   End If
+   
+   m_LastPrice = html.AppendThroughTag(HtmlFoundIdx, &quot;&quot;, &quot;/STRONG&quot;)
+   m_Change = html.AppendThroughTag(HtmlFoundIdx, &quot;Change&quot;, &quot;/TD&quot;)
+   m_PriorClose = html.AppendThroughTag(HtmlFoundIdx, &quot;Prev Close&quot;, _
+   &quot;/TD&quot;)
+   ' If QuoteType &lt;&gt; &quot;Stock&quot; Then IsFund = True
+End Sub
+
+
+Private Sub ParseSchwabQuote(html As dwHTMLcollection)
+   Dim HtmlFoundIdx As Long
+   Dim IsFund As Boolean
+   Dim QuoteType$
+   HtmlFoundIdx = html.FindTagSequence(1, False, &quot;/Table&quot;, &quot;P&quot;)
+   If HtmlFoundIdx = 0 Then Exit Sub
+   HtmlFoundIdx = html.FindTagSequence(HtmlFoundIdx, False, &quot;TR&quot;, &quot;TH&quot;)
+   m_CompanyName = ConvertHtmlLiterals(html.item(HtmlFoundIdx + _
+   2).Contents)
+   QuoteType = html.FindNextContent(HtmlFoundIdx, &quot;Security Type:&quot;)
+   If QuoteType &lt;&gt; &quot;Stock&quot; Then IsFund = True
+   m_LastPrice = html.AppendThroughTag(HtmlFoundIdx, &quot;Trade:&quot;, &quot;/TD&quot;)
+   m_Change = html.AppendThroughTag(HtmlFoundIdx, &quot;Change:&quot;, &quot;/TD&quot;)
+   If Not IsFund Then
+      m_High = html.AppendThroughTag(HtmlFoundIdx, &quot;Day High:&quot;, &quot;/TD&quot;)
+      m_Low = html.AppendThroughTag(HtmlFoundIdx, &quot;Day Low:&quot;, &quot;/TD&quot;)
+      m_PriorClose = &quot;&quot;
+   Else
+      m_High = &quot;&quot;
+      m_PriorClose = &quot;&quot;
+      m_Low = &quot;&quot;
+   End If
+   '' Retrieve the date
+   m_QuoteTime = html.FindNextContent(HtmlFoundIdx, &quot;Date:&quot;)
+   m_QuoteTime = m_QuoteTime &amp; &quot; &quot; &amp; html.FindNextContent(HtmlFoundIdx, _
+   &quot;Time:&quot;)
+End Sub
+
+
+Public Function QuoteToCurrency(ByVal quote As String) As Currency
+    Dim spacepos%   ' Location of space
+    Dim fractionpos% ' Location of fraction
+    Dim TempResult As Currency
+    If quote = &quot;&quot; Then Exit Function
+    quote = Trim$(quote)    ' Dump leading &amp; trailing spaces
+    spacepos = InStr(quote, &quot; &quot;)
+    If spacepos = 0 Then
+        QuoteToCurrency = CCur(quote)
+        Exit Function
+    End If
+    ' Get the integer value first
+    TempResult = CCur(Left$(quote, spacepos - 1))
+    
+    ' We know it's not a trailing space because of
+    ' the initial trim operation.
+    quote = Mid$(quote, spacepos + 1)
+    
+    ' Is there a fractional?
+    fractionpos = InStr(quote, &quot;/&quot;)
+    If fractionpos &lt;= 1 Or fractionpos = Len(quote) Then
+        ' We don't know how to parse this
+        QuoteToCurrency = TempResult
+        Exit Function
+    End If
+    On Error GoTo MathError:
+    TempResult = TempResult + CCur(Left$(quote, fractionpos - 1)) / _
+    CCur(Mid$(quote, fractionpos + 1))
+    QuoteToCurrency = TempResult
+    Exit Function
+    
+MathError:
+    ' For now, just return the current result.
+    QuoteToCurrency = TempResult
+End Function
+
+Public Function CurrencyToQuote(ByVal quote As Currency) As String
+    Dim IntVal As Integer
+    Dim FracVal As Integer
+    Dim Denominator As Integer
+    IntVal = Fix(quote) ' Get integer part
+    
+    ' Get the fractional part
+    ' How many 64's  (lowest fraction we're likely to see)
+    FracVal = CInt(Abs(quote - IntVal) * 64)
+
+    ' Now we keep dividing while even
+    Denominator = 64
+    Do
+        If (FracVal And 1) Then
+            ' It's odd
+            Exit Do
+        End If
+        FracVal = FracVal \ 2
+        Denominator = Denominator \ 2
+    Loop While Denominator &gt; 0
+
+    CurrencyToQuote = IntVal &amp; &quot; &quot; &amp; FracVal &amp; &quot;/&quot; &amp; Denominator
+
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Perhaps the most interesting functions here are the ParseHtml
+and the functions it calls. These functions first look for the
+tags that appear before the company name. The company name has
+to be processed by the ConvertHtmlLiterals function because some
+companies have special characters in their names (AT&amp;T, for
+example). The function then calls FindNextContent to extract the
+various quote information. 
+<P>
+As you can see in this implementation, not every service provides
+all of the information the StockQuote object can use. You can
+search for other services or call multiple services to obtain
+as much information as you need.
+<P>
+What would happen if Schwab or Yahoo changed the format of their
+pages? Unless the format change is major, chances are these are
+the only functions that would need to be changed. What would happen
+if Schwab or Yahoo stopped providing stock quote information,
+and we had to change the server to another site? We would have
+to add a new parsing function and change the request line in the
+frmHolder form. That's all.
+<P>
+Clearly the server could easily be modified to handle multiple
+stock quoting services and even to support alternate services
+if one is down. Part of the work has already been started; the
+rest is left as an exercise for the reader.
+<H3><A NAME="OnReferencing">
+On Referencing</A></H3>
+<P>
+One subtle aspect of the operation of this server relates to the
+object referencing. For example: What happens if a client closes
+down during a request?
+<P>
+Surprisingly enough, this is not a problem. First of all, when
+a request is in progress, the object holds on to a reference to
+the Callback object, which prevents the client from closing down
+in the first place. However, the client  can (and should) use
+the CancelNotification method to cancel a request and shut down.
+Also, the client does not have to use a callback. It can pass
+Nothing to the GetQuote function and poll the State property to
+determine when the request is complete.
+<P>
+So what happens if the client does close down? This eliminates
+a reference to the StockQuote object. However, if the object has
+a quote pending, it will not be deleted because it is still referenced
+by the QuoteEngine's collection. Only after the quote is complete
+will the object be terminated.
+<P>
+The same care is used to unload the frmHolder form open when no
+more quotes are pending. If the form was always loaded, the server
+would never terminate.
+<H3><A NAME="TheStockMonvbpProject">
+The StockMon.vbp Project</A></H3>
+<P>
+The StockMon.vbp project is a very simple project that demonstrates
+the original task I had in mind: a program that would monitor
+a selection of stock and periodically notify me if any changes
+occur. The project is extremely straightforward and can be found
+in the <A HREF="ch15.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch15.htm" >Chapter 15</A> samples directory on your CD-ROM.
+<P>
+This concludes the long-promised and often-delayed StockQuote
+component. As you have seen, it takes advantage of many of the
+features of ActiveX that were described throughout this part of
+the book.
+<P>
+But like any ActiveX code component, the StockQuote server operates
+primarily behind the scenes. It's time to look at a component
+type that is possibly even more exciting, and certainly more challenging:
+ActiveX controls.
+<HR>
+<CENTER></CENTER>
+
+<CENTER><P><A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch14.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="part3.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/part3.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

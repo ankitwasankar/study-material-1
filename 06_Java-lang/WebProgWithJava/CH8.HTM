@@ -1,0 +1,2812 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 8</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>The Order Entry System: Entry Fields,
+Labels, and Validation</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+
+<UL>
+<LI><A HREF="#MoreAboutContainers" >More About Containers</A>
+<UL>
+<LI><A HREF="#Panels" >Panels</A>
+<LI><A HREF="#Frames" >Frames</A>
+</UL>
+<LI><A HREF="#Dialogs" >Dialogs</A>
+<UL>
+<LI><A HREF="#DialogExampleApplet" >Dialog Example Applet</A>
+<LI><A HREF="#FileDialogs" >File Dialogs</A>
+</UL>
+<LI><A HREF="#AddingtotheOrderEntrySystem" >Adding to the Order Entry System</A>
+<UL>
+<LI><A HREF="#MakingtheOrderEntrySystemaStandAl" >Making the Order Entry System a Stand-Alone Window</A>
+<LI><A HREF="#AddingPopUpDialogstotheOrderEntry" >Adding Pop-Up Dialogs to the Order Entry System</A>
+</UL>
+<LI><A HREF="#LayoutManagersintheAWT" >Layout Managers in the AWT</A>
+<UL>
+<LI><A HREF="#FlowLayout" >FlowLayout</A>
+<LI><A HREF="#BorderLayout" >BorderLayout</A>
+<LI><A HREF="#CardLayout" >CardLayout</A>
+</UL>
+<LI><A HREF="#FixingtheLayoutoftheOrderEntrySys" >Fixing the Layout of the Order Entry System</A>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+This chapter is going to cover much information. First, it further
+explores the concepts of containers in the Java AWT. It covers
+how to implement the different container types and how they interact
+with each other. Remember, containers are components which function
+to contain other components. The different containers available
+allow you to create stand-alone window applets, and also clean
+up the appearance of the Order Entry System. The chapter also
+describes pop-up dialog boxes and the means to incorporate them
+into your applets.
+<P>
+Second, the chapter covers the five different AWT layout managers.
+These allow you, the programmer, to place your components in containers
+in an orderly fashion while you still maintain platform independence.
+The five layout managers are: <TT>FlowLayout</TT>,
+<TT>BorderLayout</TT>, <TT>CardLayout</TT>,
+<TT>GridLayout</TT>, and <TT>GridBagLayout</TT>.
+The <TT>GridBagLayout</TT> is the
+layout manager that is used to reorganize the Order Entry System
+applet panel later in this chapter.
+<H2><A NAME="MoreAboutContainers"><FONT SIZE=5 COLOR=#FF0000>More
+About Containers</FONT></A></H2>
+<P>
+The first concept to understand is the idea that containers are
+components. Containers are components and they also hold components.
+Containers can hold other containers. When you embed containers
+inside of containers, you are subdividing the applet (or application)
+display area. By doing this, you can apply different layouts to
+each separate subdivision of the display face.
+<P>
+It is beneficial to have different groups of components laid out
+in different ways. This way, you don't have to settle on a layout
+that is mediocre for all of your components. Instead, you can
+choose the layout that is best and apply that to each subdivision
+(container) of the applet face. This process is how you create
+appealing interfaces and still maintain platform independence.
+This concept is covered again when you add to the Order Entry
+System later on in this chapter.
+<P>
+The simplest containers are panels. In terms of simplicity, they
+are to containers what labels are to interface components. But
+in terms of power, the <TT>Panel</TT>
+class is infinitely more powerful and useful than the <TT>Label</TT>
+class.
+<H3><A NAME="Panels">Panels</A></H3>
+<P>
+Panels are AWT components that hold other components. By themselves,
+panels are basically nothing. One usually expects a container
+as known in the real world to have some visible form; however,
+panels are invisible. They have no visible boundaries or characteristics
+to visually separate them from other components or containers.
+If you try to display an empty instance of the <TT>Panel</TT>
+class you get what you expect when you display something that
+is made completely of nothing: nothing. In a nutshell, panels
+are classes whose sole purpose is to group other components together.
+<P>
+To declare a panel, use the following code:
+<BLOCKQUOTE>
+<TT>Panel APanel = new Panel();</TT>
+</BLOCKQUOTE>
+<P>
+To insert components, including other containers, into a panel,
+use the same method that you use when inserting components onto
+applet faces, the <TT>add</TT> method.
+To insert a component named <TT>SomeComponent</TT>
+into your new panel declared above, use the following code:
+<BLOCKQUOTE>
+<TT>APanel.add(SomeComponent);</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>add</TT> method takes an instance
+of the <TT>Component</TT> class as
+a parameter. Each container, including <TT>Applet</TT>,
+has an <TT>add</TT> method. This is
+inherited from the <TT>java.awt.Container</TT>
+class found in the AWT package. To insert a component into another
+container, you should do what you did above, call the container's
+<TT>add</TT> method and include the
+component as a parameter. To simply insert something onto the
+main panel, such as you do with the <TT>Applet</TT>
+class, simply <TT>add(SomeComponent)</TT>
+without specifying it as a method of another container.
+<P>
+The <TT>add</TT> method has so far
+appeared in two seemingly unrelated sections of the book (inserting
+components into an applet and also into a container). This should
+raise some questions in your head. If you look back at the inheritance
+hierarchy of the <TT>java.awt.Applet</TT>
+class in <A HREF="ch5.htm" >Chapter 5</A>, &quot;Writing a Java
+Applet: The Order Entry System,&quot; you see that the <TT>Applet</TT>
+class is actually a subclass of the <TT>Panel</TT>
+class. This is why the chapter refers to the applet face as the
+&quot;applet panel.&quot; This is because applets themselves are
+actually specialized <TT>Panel</TT>s
+that have included more methods so they are able to be executed
+in an HTML document by a Web browser. Here is the inheritance
+path of the <TT>java.awt.Applet</TT>
+class in Figure 8.1. Pay attention to the fact that applets are
+themselves subclasses of the <TT>Panel</TT>
+class.
+<P>
+<A HREF="f8-1.gif" ><B>Figure 8.1:</B> <I>The inheritance path of the java.awt.Applet class</I></A>
+<P>
+Later, the chapter covers the concept of layout managers in the
+AWT. These layout managers can be applied to set the layout inside
+of <TT>Panel</TT>s and other containers.
+<H3><A NAME="Frames">Frames</A></H3>
+<P>
+Frames are another subclass of <TT>java.awt.Container</TT>.
+They share the same two major operators: <TT>add</TT>
+and a method to be named later (sounds like baseball), and also
+do quite a bit more. Frames are the means by which you can incorporate
+stand-alone windows into your Java applets or create windowing
+Java applications.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+<TT>java.awt.Frame</TT> and <TT>java.awt.Dialog</TT> (covered in the next section) are both actually subclasses of the <TT>Window</TT> class. The <TT>Window</TT> class is the means to implement a stand-alone window in Java. However, it is non-functional for our purposes. While the <TT>Panel</TT> class can be readily embedded inside of other containers, the <TT>java.awt.Window</TT> class generally is not. For this reason, the children of the <TT>Window</TT> class are separated to ease explanation and understanding because of the functional difference.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+To create a new instance of a <TT>Frame</TT>,
+there are two constructors you will find useful. They are of the
+format as follows:
+<BLOCKQUOTE>
+<TT>Frame AFrame = new Frame();<BR>
+Frame BFrame = new Frame(&quot;This one has a title, man.&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+Both constructors declare instances of the <TT>Frame</TT>
+class and then allocate space for them. The difference is that
+the <TT>BFrame</TT> frame is declared
+to have a title from the start. You can also set the title of
+the <TT>AFrame</TT> frame. If you
+want to set the title of the <TT>AFrame</TT>
+frame to be the <TT>String</TT> &quot;So
+do I.&quot;, use the <TT>setTitle()</TT>
+method:
+<BLOCKQUOTE>
+<TT>AFrame.setTitle(&quot;So do I.&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>setTitle</TT> method takes
+an instance of the <TT>String</TT>
+class to be its parameter which it then sets to be the title of
+the window.
+<P>
+In the AWT, the sizing of windows is not done by measurement or
+proportion of the screen. Instead, it is accomplished through
+counting the number of pixels in a direction. To set the size
+of a frame in pixels, use the <TT>resize</TT>
+method of instances of the <TT>Frame</TT>
+class. To set <TT>AFrame</TT> to be
+100 pixels wide by 150 pixels high, you can use the following
+declaration:
+<BLOCKQUOTE>
+<TT>AFrame.resize(100, 150);</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>resize</TT> method accepts
+two integers: the width first, and then the height in the second
+parameter position.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+You must call the <TT>resize</TT> method on your frames. Otherwise, the default is a height of zero and a width of zero which means you get absolutely nothing when you display them unless the <TT>resize</TT> method is called with non-zero values.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Listing 8.1 is a small application, <TT>FrameCrazee</TT>,
+that displays a frame from inside an application.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 8.1. The </B><TT><B>FrameCrazee</B></TT><B>
+application code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>1.&nbsp;&nbsp;import java.awt.*;<BR>
+2.&nbsp;&nbsp;import java.applet.Applet;<BR>
+3.<BR>
+4.&nbsp;&nbsp;public class FrameCrazee extends Object {<BR>
+5.<BR>
+6.&nbsp;&nbsp;public static void main(String[] arg) {<BR>
+7.<BR>
+8.&nbsp;&nbsp;Frame AFrame = new Frame();<BR>
+9.&nbsp;&nbsp;Frame BFrame = new Frame(&quot;This one has a title,
+man.&quot;);<BR>
+10.<BR>
+11. // Set the title of the AFrame.<BR>
+12. AFrame.setTitle(&quot;So do I.&quot;);<BR>
+13.<BR>
+14. // Resize the BFrame to width of 300 pixels,<BR>
+15. // And a height of 250 pixels.<BR>
+16. BFrame.resize(300, 250);<BR>
+17.<BR>
+18.&nbsp;&nbsp;// Display the BFrame.<BR>
+19.&nbsp;&nbsp;BFrame.show();<BR>
+20.<BR>
+21. }<BR>
+22.<BR>
+23. }</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Figure 8.2 is the output resulting from this application when
+run using the <TT>java</TT> command-line
+interpreter.
+<P>
+<A HREF="f8-2.gif" ><B>Figure 8.2:</B> <I>Output from the FrameCrazee application in Listing 8.1.</I></A>
+<BR>
+<BR>
+
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Notice that this is a Java application and not an applet. If you try to do this with an applet and expect it to work, you will be a little surprised. Instead, you have to do a little dancing to get frames incorporated with applets. This is covered a few pages further on.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Lines 1 through 6 do the typical stuff you expect in a applet.
+But remember, this is an application, so we can simply execute
+it using the Java interpreter included in the JDK.
+<P>
+Lines 8 and 9 declare and initialize two instances of the <TT>Frame</TT>
+class using the constructors described previously. Line 12 sets
+the title for the <TT>AFrame</TT>
+frame and line 16 resizes the <TT>BFrame</TT>
+frame to be 300 pixels wide by 250 pixels high. And finally, line
+19 displays the <TT>BFrame</TT> using
+the <TT>show</TT> method of the frame
+class. But where is the <TT>AFrame</TT>
+declared and initialized in line 8? All you can see is the <TT>BFrame</TT>
+frame displayed in the output in Figure 8.2. The <TT>show()</TT>
+method of the frame isn't invoked to set it visible.
+<P>
+But importantly, why is this an application and not an applet
+like all of the others? Isn't this a book focusing on the creation
+of Java programs for the Web? Well, the problem is that instances
+of the <TT>Frame</TT> class are not
+allowed to be owned by a derivative of the <TT>Applet</TT>
+class. Instead, you have to override the <TT>Frame</TT>
+class and then use that class when defining frames in your applets.
+Otherwise, you discover that frames owned by applets usually appear,
+but functionality disappears. Using frames in applets is covered
+after the next section on the <TT>show()</TT>
+method.
+<H4>Showing and Hiding Frames</H4>
+<P>
+The <TT>show()</TT> method of the
+<TT>Frame</TT> class is the means
+by which you set a frame to show itself to the world and be active.
+To set a frame named <TT>CFrame</TT>
+to display itself, use the following code:
+<BLOCKQUOTE>
+<TT>CFrame.show();</TT>
+</BLOCKQUOTE>
+<P>
+If defined correctly, the <TT>CFrame</TT>
+is displayed. The opposite of the <TT>show()</TT>
+method is the <TT>hide()</TT>method.
+It is called in the same manner as the <TT>show()</TT>
+method except it causes the frame to become invisible again.
+<H4>Frames and Applets</H4>
+<P>
+As noted before, frames cannot belong to applets directly. Instead,
+you have to sidestep this a bit. The process to do so is not difficult.
+It involves the following process.
+<P>
+In your applet, after you close your last &quot;<TT>}</TT>&quot;,
+declare another class called something like <TT>FrameJr</TT>.
+Set this class to <TT>extend</TT>
+the frame class. Inside of the class body, you declare that you
+want to construct the <TT>FrameJr</TT>
+class. Constructors are covered in <A HREF="ch7.htm" >Chapter 7</A>,
+&quot;The Order Entry System: Entry Fields, Labels, and Validation.&quot;
+Constructors function to set the properties and do some initial
+setup when called. To set the <TT>FrameJr</TT>
+class, use the following declaration:
+<BLOCKQUOTE>
+<TT>class FrameJr extends Frame {<BR>
+<BR>
+ FrameJr (String InTitle) {<BR>
+&nbsp;&nbsp;super(InTitle);<BR>
+&nbsp;&nbsp;.<BR>
+&nbsp;&nbsp;.<BR>
+ }<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+When an instance of your class <TT>FrameJr</TT>
+is declared in your applet using the following statement,
+<BLOCKQUOTE>
+<TT>Frame AFrameJr = new FrameJr(Title);</TT>
+</BLOCKQUOTE>
+<P>
+the constructor of your <TT>super</TT>
+class (which is your class's parent, the one it extended) is called
+and your <TT>Frame</TT> is created
+just like normal. You can also include any other setup tasks you
+wish to deal with inside of the constructor for your class. For
+example, you might want to add an &quot;!&quot; to the end of
+your title before constructing it. To do this, change your <TT>InTitle</TT>
+string before you call the super of your class.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Notice that there is no constructor with which you can build an instance of <TT>FrameJr</TT> with no title. If you wish for this to work, you must declare another constructor inside of the class declaration which accepts no parameter and then calls <TT>super()</TT> with no parameter.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+This method of reconstruction of your classes is not limited to frames. It works for any class. For example, you might want to create a version of the <TT>String</TT> class whose constructor accepts a string and removes all of the capital letters. You can write a class to extend the <TT>String</TT> class and then in the constructor remove all of the capitals before you call the <TT>super()</TT>, which is the string's original constructor.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4>Allowing User Resizing of Frames</H4>
+<P>
+Another important method you can use with the <TT>Frame</TT>
+class is the <TT>setResizeable(boolean)</TT>
+method. This method either turns on or turns off the capability
+for the user to change the size of the frame being displayed.
+If you send a value of <TT>false</TT>
+to the method, the user is no longer permitted to change the size
+of the frame. A <TT>true</TT> value
+allows resizing of the window. The default setting when a frame
+is initialized is <TT>true</TT>, indicating
+that the user can resize the window.
+<H4>Setting the Frame's Icon</H4>
+<P>
+One of the most interesting features of frames in the AWT is the
+capability to set the icon of the frame. This is accomplished
+using the <TT>setIconImage(AnImage)</TT>
+method, which accepts a parameter which is of the Java type <TT>Image</TT>.
+This type is covered in the next chapter, which covers Java-based
+graphics. At that time, the Order Entry System logo is set to
+be the icon.
+<H4>Frame Menu Bars</H4>
+<P>
+Menu bars attached to frames are the typical pull-down menus customarily
+attached to windows on almost every window-based system, including
+those which are text-based along with the typical graphical-based
+systems. If you've used Microsoft Windows, X Window, or MacOS,
+you should be familiar with the typical format of including pull-down
+menus across the top of a window border. Frame menus are implemented
+using the <TT>MenuBar</TT> class.
+There is one major constructor for the <TT>MenuBar</TT>
+class:
+<BLOCKQUOTE>
+<TT>MenuBar AMenuBar = new MenuBar();</TT>
+</BLOCKQUOTE>
+<P>
+You must then set your Frame to have its menu bar as the <TT>AMenuBar</TT>.
+This is done using the <TT>SetMenuBar()</TT>
+method of the <TT>Frame</TT> class.
+To set the <TT>AMenuBar</TT> as the
+menu bar of the <TT>AFrame</TT>, use
+the following code line:
+<BLOCKQUOTE>
+<TT>AFrame.setMenuBar(AMenuBar);</TT>
+</BLOCKQUOTE>
+<P>
+Each individual item along the menu bar is constructed from the
+<TT>Menu</TT> class. There are two
+major constructors for the <TT>Menu</TT>
+class:
+<BLOCKQUOTE>
+<TT>Menu AMenu = new Menu(&quot;One&quot;);
+<BR>
+Menu BMenu = new Menu(&quot;Two&quot;, true);</TT>
+</BLOCKQUOTE>
+<P>
+Both constructors accept the first parameter as a string which
+sets what the text label for each menu is across the top of the
+frame. The second constructor adds another parameter of the Boolean
+type. If the parameter is <TT>true</TT>
+then the menu is removable. If it is <TT>false</TT>
+then it is not. The default is <TT>false</TT>.
+<P>
+The following line adds the <TT>AMenu</TT>
+class from above to your menu bar:
+<BLOCKQUOTE>
+<TT>AMenuBar.add(AMenu);</TT>
+</BLOCKQUOTE>
+<P>
+This code adds an option labeled &quot;One&quot; to your menu
+bar. You can also add menu items to your instance of the <TT>Menu</TT>
+class as well as adding other menus. It is also possible to add
+checkboxes to your menus. To do so, declare a checkbox as in <A HREF="ch6.htm" >Chapter 6</A>,
+&quot;The Order Entry System: Adding Features and Handling Events.&quot;
+Then, insert it into the menu where you wish it to belong. Also
+in the same fashion as in <A HREF="ch6.htm" >Chapter 6</A>, handle
+the events that the checkbox generates either in the <TT>action</TT>
+or <TT>handleEvent</TT> method of
+your program.
+<P>
+To add menu items to your menus, you can declare instances of
+the <TT>MenuItem</TT> class. The <TT>MenuItem</TT>
+constructor accepts a string parameter which is the text label
+of the item when it appears on the menu:
+<BLOCKQUOTE>
+<TT>MenuItem AMenuItem = new MenuItem(&quot;Hey!&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+You can also add text only to your menus as choices. The format
+for doing this is:
+<BLOCKQUOTE>
+<TT>Menu.add(&quot;A choice!&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+If you are going to do this, be prepared to use the <TT>action</TT>
+method to facilitate handling the event. If you're set on using
+<TT>handleEvent</TT>, then use just
+the <TT>MenuItem</TT> class.
+<H4>Menus in a Nutshell</H4>
+<P>
+Menus aren't always easy to grasp because of the multiple classes.
+To summarize, the whole menu bar starts with an instance of the
+<TT>MenuBar</TT> class. This instance
+is then set to be the menu bar for a frame using the <TT>setMenuBar</TT>
+method of the frame.
+<P>
+Then, menus are added to the menu bar. (Menus are the list that
+falls down when you click on a label contained in the menu bar.)
+Menus can be added to other menus or to instances of the class
+<TT>MenuItem</TT>. Menu items function
+as text labels. Their purpose as separate variables is to give
+you a target if you decide to use the <TT>handleEvent</TT>
+method.
+<P>
+To create a menu bar, follow these steps:
+<OL>
+<LI>Create an instance of the <TT>MenuBar</TT>
+class.
+<LI>Set your frame's <TT>MenuBar</TT>
+to be the instance declared above.
+<LI>Create multiple <TT>Menu</TT>s
+to be in your menu bar.
+<LI>Add and create each <TT>MenuItem</TT>
+and sub-menu you wish to include.
+<LI>Add all of the pieces in Step 4 to their corresponding <TT>Menu</TT>
+in Step 3.
+<LI>Add your menus to the instance of <TT>MenuBar</TT>.
+</OL>
+<P>
+To visually help you grasp the organization of menu bars, Figure
+8.3 is a typical menu hierarchy of insertion.
+<P>
+<A HREF="f8-3.gif" ><B>Figure 8.3 :</B> <I>A typical menu hierarchy of insertion</I></A>
+<BR>
+<BR>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Remember, items <TT>add</TT>ed to panels, menus, and so forth are always placed in the order in which they are <TT>add</TT>ed. In Java, this is generally left to right or top to bottom.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4>Events and Menus</H4>
+<P>
+Handling events generated by menus is most easily done in the
+<TT>action</TT> method of your AWT
+programs. When an instance of the <TT>MenuItem</TT>
+class fires a call to the <TT>action</TT>
+method, the first parameter is the <TT>Event</TT>
+itself. The second parameter is the string of the menu item generating
+the event. This can be used for advanced tasks, if need be, such
+as receiving menu items generated without declaring a <TT>MenuItem</TT>
+first. Once you have experience, you can use items like the <TT>instanceof</TT>
+operator to simplify your handling of events. But for the time
+being, going for the simple way is a good idea.
+<P>
+The following <TT>if</TT> statement
+block works in either event handling method:
+<BLOCKQUOTE>
+<TT> if (evt.target&nbsp;&nbsp;== SomeMenuItem)&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;// Do whatcha like . .<BR>
+ } else . . .</TT>
+</BLOCKQUOTE>
+<P>
+If you are using a checkbox or other component in the menu, you
+can use the same format with a different target.
+<H4>Setting the Frame Cursor</H4>
+<P>
+This is, in my opinion, one of the coolest things about the <TT>Frame</TT>
+class. You have the capability of changing the appearance of the
+cursor of the frame. There are a number of different cursors available.
+Table 8.1 is a list of the cursor constants that you can use to
+set the cursor. To find this information, look at <TT>java\src\awt\Frame.java</TT>.
+<P>
+<CENTER><B>Table 8.1. The multiple cursor constants available
+to set the cursor of frames.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=40%>
+<TR VALIGN=TOP><TD WIDTH=177><I>Cursor Constants</I></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>DEFAULT_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>CROSSHAIR_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>TEXT_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>WAIT_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>SW_RESIZE_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>SE_RESIZE_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>NW_RESIZE_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>NE_RESIZE_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>N_RESIZE_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>E_RESIZE_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>W_RESIZE_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>S_RESIZE_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>HAND_CURSOR</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=177><TT>MOVE_CURSOR</TT>
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+To set the cursor of a frame, use the <TT>setCursor</TT>
+method. To set the cursor of the frame <TT>AFrame</TT>
+to the crosshair cursor, use the following code segment:
+<BLOCKQUOTE>
+<TT>AFrame.setCursor(CROSSHAIR_CURSOR);</TT>
+</BLOCKQUOTE>
+<P>
+There is also a <TT>getCursor</TT>
+method which returns an integer which is one of the above constants.
+You can use this function to check which cursor is being used.
+The available <TT>Frame</TT> class
+methods are summarized in Table 8.2.<BR>
+<P>
+<CENTER><B>Table 8.2. Frame methods.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=337><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>String getTitle()</TT>
+</TD><TD WIDTH=337>Returns a <TT>String</TT> which is the title of the window.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>setTitle(String)</TT>
+</TD><TD WIDTH=337>Accepts a <TT>String</TT> parameter that is then set to be the title of the window.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>Image getIconImage()</TT>
+</TD><TD WIDTH=337>Returns an instance of <TT>Image</TT> (see next chapter) that is the icon used on the window.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>setIconImage(Image)</TT>
+</TD><TD WIDTH=337>Accepts an instance of <TT>Image</TT> that is then set as the icon for the window.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>MenuBar getMenuBar()</TT>
+</TD><TD WIDTH=337>Returns the menu bar for the window.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>setMenuBar(MenuBar)</TT>
+</TD><TD WIDTH=337>Sets the menu bar for the window.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>remove(MenuComponent)</TT>
+</TD><TD WIDTH=337>Removes the specified menu bar from the window frame.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>dispose()</TT>
+</TD><TD WIDTH=337>Gets rid of the frame and frees all of the resources it is using.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>boolean isResizeable()</TT>
+</TD><TD WIDTH=337><TT>true</TT> or <TT>false</TT> depending on whether the dialog is set to be resizeable.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>setResizeable(boolean)</TT>
+</TD><TD WIDTH=337>Sets the ability for the user to resize the dialog window.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>setCursor(integer)</TT>
+</TD><TD WIDTH=337>Accepts an integer which is one of the cursor constants listed previously.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=253><TT>integer getCursorType();</TT>
+</TD><TD WIDTH=337>Returns an integer which is one of the cursor constants listed previously.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Using Applets as Applications</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Web browsers incorporate a Java interpreter to interpret the Java bytecodes to be able to execute applications. The executable called &quot;java&quot; included in the JDK does this also. To execute a Java application, use the command line <TT>&quot;Java <I>YourClassHere</I>&quot;</TT>. To convert your applets to run as stand-alone applications, there are two major methods.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Method one is the simplest of the two. The process involves creating a <TT>public void main(String arg[])</TT> in your applet. Then, create a new instance of the <TT>Frame</TT> class, initialize it and call the applet <TT>init()</TT> and <TT>start()</TT> methods, and then <TT>add</TT> your applet to the frame. Then, show the <TT>Frame</TT> containing the applet. The following code demonstrates this technique inside an applet called <TT>AApplet</TT>.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>public void main(String arg[]) {<BR>
+<BR>
+ // Create the new instance of the Frame class.<BR>
+ Frame AFrame = new (&quot;Morrissey Fan-Club&quot;);<BR>
+<BR>
+ // Initialize the frame and the applet.<BR>
+ AFrame.resize(300, 300);<BR>
+ AApplet.init();<BR>
+ AApplet.start();<BR>
+<BR>
+ // Add the applet to the frame.<BR>
+ AFrame.add(AApplet);<BR>
+<BR>
+ // Show the frame.<BR>
+ AFrame.show(AApplet);<BR>
+}<BR>
+.<BR>
+.<BR>
+</TT>Method two is tough, but you should use it if you want to keep up the efficiency level. First, change the class from extending the <TT>applet</TT> class to extending the <TT>Frame</TT> class. Then, modify your applet to run with the knowledge that the <TT>main(String arg[])</TT> function is the only one called by the Java runtime. The <TT>init()</TT>, <TT>run()</TT>, etc. methods are no longer called because those are specific to the applet class. You, however, can set your <TT>main</TT> method to call the <TT>init()</TT> method.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Unless you have a complete understanding, you should probably stick to method one.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="Dialogs"><FONT SIZE=5 COLOR=#FF0000>Dialogs</FONT></A>
+</H2>
+<P>
+Dialogs are another subclass of the <TT>java.awt.Window</TT>
+type. They are used for simple alerts, information providing to
+the user, or simple data entry. You see these every time your
+windows system can't find a file or the system wants to know what
+file you want. In fact, the AWT provides a predefined file dialog
+for your use. Of course, in writing applets it isn't of much use
+since applets can't load or save local files. But remember, applications
+do have unlimited local access to the file system.
+<P>
+There are two key states dialogs can be in. In one state, a dialog
+can demand that it receives attention enough to finish its tasks
+before any other window is allowed to be active. An applet in
+this state is typically called &quot;Modal.&quot; There are multiple
+other ways to refer to a window that doesn't demand attention
+in this manner ranging from non-modal to modeless to unmodal.
+This book refers to them as non-modal.
+<P>
+Dialogs are declared in the <TT>java.awt.Dialog</TT>
+class. As stated before, dialogs are a subclass of the <TT>java.awt.Window</TT>
+class. As such, dialogs are &quot;siblings&quot; with the frame
+class. The two classes share the features of having a title, and
+of either being resizeable or not. They share these characteristics
+and you can use the same methods to set their characteristics
+(<TT>setTitle(String)</TT>, <TT>isResizeable()</TT>,
+and so on).
+<P>
+The <TT>Dialog</TT> class is dependent
+on the <TT>Frame</TT> class. When
+you declare a dialog, you must attach it to an instance of the
+<TT>Frame</TT> class. There are two
+major constructors for the <TT>java.awt.Dialog</TT>
+class. The following two lines construct and create two different
+instances of the <TT>Dialog</TT> class,
+<TT>ADialog</TT> and <TT>BDialog</TT>:
+<BLOCKQUOTE>
+<TT>Dialog ADialog = new Dialog(AFrame, ABoolean);
+<BR>
+Dialog BDialog = new Dialog(AFrame, TitleString, ABoolean);</TT>
+</BLOCKQUOTE>
+<P>
+Both of these declarations construct new instances of the <TT>Dialog</TT>
+class. The first parameter in each is the frame to which the dialog
+box belongs. The second constructor takes a string parameter which
+the system sets to be the dialog box title. And the final parameter
+in each is a Boolean value or variable which sets the modality
+of the dialog box. A true value indicates that the dialog box
+is modal (demands attention and resolution of its desires before
+any other window is permitted attention) and a false value indicates
+otherwise.
+<P>
+Dialogs share much with frames in terms of methods. As mentioned
+before, both the <TT>Frame</TT> class
+and the <TT>Dialog</TT> class use
+the <TT>getResizeable()</TT> and <TT>setResizeable(<I>boolean</I>)</TT>
+methods. They also share the <TT>resize(<I>integer,
+integer</I></TT>) method which sets the window size.
+<P>
+Table 8.3 summarizes the methods available in the <TT>Dialog</TT>
+class.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Remember, for every class which is a descendant of the <TT>Window</TT> class (including <TT>Frame</TT>, <TT>Dialog</TT>, and <TT>FileDialog</TT>), you must specify the window size using the <TT>resize(integer width, integer height)</TT> method. Otherwise, you get a window of zero width and zero height, which results in a non-existent and invisible window.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+<CENTER><B>Table 8.3. Dialog methods.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=356><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>boolean isModal</TT>
+</TD><TD WIDTH=356><TT>true</TT> or <TT>false</TT> depending on whether the dialog is modal.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>String getTitle()</TT>
+</TD><TD WIDTH=356>Returns a string that is the title of the dialog.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>setTitle(String)</TT>
+</TD><TD WIDTH=356>Sets the dialog title to the <TT>String</TT> parameter.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>boolean isResizeable()</TT>
+</TD><TD WIDTH=356><TT>true</TT> or <TT>false</TT> depending on whether the dialog is set to be resizeable.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=234><TT>setResizeable(boolean)</TT>
+</TD><TD WIDTH=356>Sets the ability for the user to resize the dialog window.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="DialogExampleApplet">Dialog Example Applet</A></H3>
+<P>
+The applet in Listing 8.2 attaches two dialogs to an instance
+of the <TT>Frame</TT> class.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 8.2. The </B><TT><B>DialogCrazee</B></TT><B>
+applet code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT> import java.awt.*;<BR>
+ import java.applet.Applet;<BR>
+<BR>
+ public class DialogCrazee extends Applet {<BR>
+<BR>
+ // Define and initialize your main frame window.<BR>
+ Frame AFrame = new FrameJr(&quot;Dialog Crazee&quot;);<BR>
+<BR>
+ // Define an untitled modal dialog.<BR>
+ Dialog ADialog = new Dialog(AFrame, true);<BR>
+<BR>
+ // Define a titled, non-modal dialog.<BR>
+ Dialog BDialog = new Dialog(AFrame, &quot;I've gotta title!&quot;,
+false);<BR>
+<BR>
+ public void init () {<BR>
+<BR>
+&nbsp;&nbsp;// Resize the AFrame to width of 100 pixels,<BR>
+&nbsp;&nbsp;// And a height of 150 pixels.<BR>
+&nbsp;&nbsp;AFrame.resize(100, 150);<BR>
+<BR>
+&nbsp;&nbsp;// Resize each of the dialogs so you can see them.
+<BR>
+&nbsp;&nbsp;ADialog.resize(100,100);<BR>
+&nbsp;&nbsp;BDialog.resize(200,200);<BR>
+<BR>
+&nbsp;&nbsp;// Add a label to each of the dialogs.<BR>
+&nbsp;&nbsp;ADialog.add(new Label(&quot;I am ADialog.&quot;));
+<BR>
+&nbsp;&nbsp;BDialog.add(new Label(&quot;I am BDialog.&quot;));
+<BR>
+<BR>
+&nbsp;&nbsp;// Display the AFrame.<BR>
+&nbsp;&nbsp;AFrame.show();<BR>
+ }<BR>
+<BR>
+}<BR>
+<BR>
+class FrameJr extends Frame {<BR>
+<BR>
+ FrameJr (String InTitle) {<BR>
+&nbsp;&nbsp;super(InTitle);<BR>
+ }<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+What occurs in this applet is relatively simple. The initial coding
+declares the different variables. Then, they are set up in the
+<TT>init()</TT> method. And finally,
+the <TT>AFrame</TT> is told to appear.
+<P>
+But if  you execute this applet, you are in for a surprise. Where
+are the dialogs you have worked to create? Well, they haven't
+been told to show themselves.
+<P>
+Since dialogs are usually set to appear when some event happens,
+such as the user wishing to load a file, that prompts the program
+to display it. This fits in great with the idea of handling events
+in the AWT. You connect the appearance of each one of the dialogs
+with an action that takes place in the frame.
+<P>
+To generate these actions in the original <TT>AFrame</TT>,
+you create two buttons in the original frame labeled &quot;A&quot;
+and &quot;B&quot;, then set the <TT>handleEvent</TT>
+method to display the respective dialog when the user presses
+the buttons.
+<P>
+The first step is to add a couple of new buttons to the <TT>AFrame</TT>
+frame. To do this, use the constructor in <A HREF="ch6.htm" >Chapter 6</A>:
+<BLOCKQUOTE>
+<TT>new AButton = new Button(&quot;A&quot;);
+<BR>
+new BButton = new Button(&quot;B&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+Then, insert these buttons into the <TT>AFrame</TT>
+using the <TT>add</TT> method. The
+<TT>handleEvent</TT> method in the
+previous example also needs to be created. Insert two <TT>if</TT>
+blocks to check and see if one of the buttons is the originator
+of the event.
+<P>
+The improved <TT>DialogCrazee</TT>
+applet follows as Listing 8.3. The output from the <TT>DialogCrazee</TT>
+applet appears in Figure 8.4.
+<P>
+<A HREF="f8-4.gif" ><B>Figure 8.4 :</B> <I>The output from the DialogCrazee applet.</I></A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 8.3. The improved </B><TT><B>DialogCrazee</B></TT><B>
+applet code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.Applet;<BR>
+<BR>
+public class DialogCrazee extends Applet {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Define and initialize our main frame
+window.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; Frame AFrame = new FrameJr(&quot;Dialog
+Crazee&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Define an untitled modal dialog.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; Dialog ADialog = new Dialog(AFrame, true);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Define a titled, non-modal dialog.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; Dialog BDialog = new Dialog(AFrame, &quot;I've
+gotta title!&quot;, false);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Define the two new buttons to go into
+the frame.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; Button AButton = new Button(&quot;A&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; Button BButton = new Button(&quot;B&quot;);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; public void init () {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Resize the AFrame to width of 100 pixels,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+And a height of 150 pixels.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AFrame.resize(100,
+150);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Resize each of the dialogs so you can see them.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ADialog.resize(100,100);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BDialog.resize(200,200);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add a label to each of the dialogs.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ADialog.add(new
+Label(&quot;I am ADialog.&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BDialog.add(new
+Label(&quot;I am BDialog.&quot;));<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add the two buttons to the frame.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(AButton);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(BButton);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Display the AFrame.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AFrame.show();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; }<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; public boolean handleEvent(Event InEvent)&nbsp;&nbsp;{
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if
+(InEvent.target == AButton)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ADialog.show();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+else<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if
+(InEvent.target == BButton)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BDialog.show();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return
+super.handleEvent(InEvent);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; }<BR>
+<BR>
+}<BR>
+<BR>
+class FrameJr extends Frame {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; FrameJr (String InTitle) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super(InTitle);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; }<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=589><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=589>
+<BLOCKQUOTE>
+Ideally, you want the dialogs which belong to a frame to be declared inside of that frame. Then, when you handle an event, you call a public method of the <TT>FrameJr</TT> (or whatever you call it) class which then shows the dialog. However, this seems simpler. It is not difficult to place your dialogs inside your frame constructor so plan on doing that. Even though the code is a little choppier, it is sound coding practice.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+If you run this applet and then try to close the frame window, you notice that nothing happens. To make the close button functional, you need to add a <TT>handleEvent()</TT> method to the declaration of an instance of the <TT>Frame</TT> class since it doesn't include functionality for this feature as a default. If you are creating an application which is an extension of the <TT>Frame</TT> class, place the <TT>handleEvent()</TT> method in the class declaration itself. If you are using the method described here to place frames into applets, place the <TT>handleEvent()</TT> method inside of that class declaration.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+To accomplish this inside of your secondary class (for example, one such as the <TT>FrameJr</TT> class), include the following <TT>if</TT> block inside of a <TT>handleEvent()</TT> method for your frames:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+if (InEvent.id == Event.WINDOW_DESTROY)<BR>
+&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;dispose();<BR>
+&nbsp;}<BR>
+&nbsp;<BR>
+.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="FileDialogs">File Dialogs</A></H3>
+<P>
+A special dialog subclass is dedicated to saving, loading, and
+dealing with files. Each implementation of the AWT for each different
+windowing system mimics that system's standard native file dialog.
+If you implement the <TT>FileDialog</TT>
+class in X Window for example, you get the typical X Window file
+dialog.
+<P>
+There are two major constructors for the <TT>FileDialog</TT>
+class:
+<BLOCKQUOTE>
+<TT>FileDialog AFileDialog = new (AFrame,
+AString);<BR>
+FileDialog BFileDialog = new (AFrame, AString, AInteger);</TT>
+</BLOCKQUOTE>
+<P>
+For both of the constructors, the first two parameters are the
+same. Just as with the general dialog class, you must specify
+a frame to which the dialog belongs. You also need to specify
+the title for the dialog. The second constructor takes a parameter
+which is one of either <TT>FileDialog.LOAD</TT>
+or <TT>FileDialog.SAVE</TT>. This
+constant determines whether the dialog is a load file dialog or
+a save file dialog.
+<P>
+If the first constructor is called, an open file dialog is created.
+So, in summary, to open a file, use the first constructor. To
+save a file or load a file, use the second constructor with the
+different constants available. There is <B>no</B> constant called
+<TT>FileDialog.OPEN</TT>; you must
+use the first constructor.
+<P>
+The <TT>FileDialog()</TT> class uses
+many of the same methods common to descendants of the AWT Window
+class, and some others. Here is a summary of the file dialog methods
+in Table 8.4.<BR>
+<P>
+<CENTER><B>Table 8.4. Some available file dialog methods.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH\80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=295><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>int getmode()</TT>
+</TD><TD WIDTH=295>Returns an integer constant that is one of the different constants signifying load, open, and so forth.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>String getDirectory()</TT>
+</TD><TD WIDTH=295>Returns a string that is the directory of the file dialog's focus.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>void setDirectory</TT>
+</TD><TD WIDTH=295>Sets the current directory focus to the <TT>String</TT> directory.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>void setFile(StringTheFile)</TT>
+</TD><TD WIDTH=295>Sets the current file for the dialog.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>String getFile()</TT>
+</TD><TD WIDTH=295>Returns a string that is the file name of the current file in focus.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>FilenameFilter getFilenameFilter()</TT>
+</TD><TD WIDTH=295>Returns the current filter of the file listing.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>SetFilenameFilter</TT>
+</TD><TD WIDTH=295>Sets the current file name filter.</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Window-to-Window Data Exchange, or Connecting the Object-Oriented Way</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=590>
+<BLOCKQUOTE>
+In some cases, you run into problems in terms of connecting the two different classes together. For example, you want to send some data that you get in one window to another window. Or your dialog box asks for information and you wish to allow your frame to use it.</BLOCKQUOTE>
+<BLOCKQUOTE>
+A similar dilemma arises when dealing with other classes. You have to &quot;hardwire&quot; the connection between the two classes. This is contrary to one of the primary goals of object-oriented programming which is the re-usability of code. Making one frame class so that it can only send data back to an instance of the <TT>Applet</TT> class means that you need to rewrite and recompile the sender each time you want to use it with a different class. And also, you have to have a different copy of each version of your class around for every other class it connects with.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+The solution to this problem is the idea of interfaces. Interfaces are classes which have not had any method implemented. In other words, instances of interfaces are, except for local constants, a big empty. However, they allow the user to create linkages between classes without having to worry about the different implementations. To use an interface in your applet, you must declare an instance of it. For example, if you want an interface which allows you to relate a value of an integer to another class that uses the interface, declare the following interface:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>interface MyInterface {<BR>
+&nbsp;abstract public int AnInteger;<BR>
+}</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+You can also declare methods inside of your interfaces by using the same <TT>abstract public</TT> format. Though the <TT>abstract</TT> isn't needed for methods since it is the only state that methods in an interface are allowed to be. In essence, you are declaring variables and methods with concern for what they do, but saving the &quot;how&quot; for another class to take care of. To create a class which takes care of the implementation of your interface, you use the following class declaration:
+
+<P>
+<TT>class AFrame extends Frame implements MyInterface {</TT>
+<P>
+<TT> .</TT>
+<P>
+<TT> .</TT>
+<P>
+<TT> .</TT>
+<P>
+<TT>}</TT>
+<BR>
+<BR>
+The method described first in this section &quot;hardwires&quot; the connection between the two classes. You can also do the following when you want to use information contained in the class which implements the interface:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>((MyInterface) getParent()).AnInteger</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+You can also do the same with methods by being able to call the methods which were declared in the interface and then implemented in the other class:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>((MyInterface) getParent()).AVoid();</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+What is happening in each of these statements is that the result of the function <TT>getParent()</TT> (which returns the immediate parent of an object) is cast to be an instance of the interface type. Then, the method or variable of the interface, which is implemented by the other class, is accessed.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Well, can't you avoid all of this trouble and hardwire it in? Yes, but there are two reasons you don't want to. For one, Java compilers aren't very fast at the moment. A five hundred line program can take a minute to compile. If you have to rewrite one line of one five hundred line class to get it to connect with another class and then compile it for five different connections, it is going to take time.</BLOCKQUOTE>
+<BLOCKQUOTE>
+Finally, the reason this is included in this section is that it is very useful in terms of the AWT and its windowing capabilities. You want to write your dialogs to be able to be reused with different frames you create.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="AddingtotheOrderEntrySystem"><FONT SIZE=5 COLOR=#FF0000>Adding
+to the Order Entry System</FONT></A></H2>
+<P>
+It is time to apply some of the new concepts covered in this chapter
+to the Order Entry System. The first topic to cover is the code
+changes necessary to make the Order Entry System function as a
+stand-alone window. This includes inserting a button in the applet
+panel which the user can press to call up the order window. Also,
+some pop-up dialogs are incorporated into the applet. You want
+a dialog to appear specifically when the user leaves the name
+field empty. It is also simple to incorporate other dialogs to
+appear in response to other events.
+<H3><A NAME="MakingtheOrderEntrySystemaStandAl">Making the Order
+Entry System a Stand-Alone Window</A></H3>
+<P>
+Using the concepts covered earlier in this chapter, this section
+covers the method to convert the Order Entry System to a stand-alone
+window. You add a button to the applet panel which the user can
+press to bring up the window. Then, the user can fill in the form
+on the window.
+<P>
+To have a frame belong to an applet, you first have to declare
+another class inside of the applet file which extends the <TT>Frame</TT>
+class. This is because frames cannot belong directly to applets.
+Instead, sidestep this by declaring your own class which overrides
+the <TT>Frame</TT> class. The name
+for the new class type is called the <TT>OrderEntryFrameType</TT>.
+The declaration for this class type is as follows:
+<BLOCKQUOTE>
+<TT>class OrderEntryFrameType extends Frame
+{<BR>
+<BR>
+&nbsp;FrameJr (String InTitle) {<BR>
+&nbsp;&nbsp;super(InTitle);<BR>
+&nbsp;&nbsp;}<BR>
+&nbsp;.<BR>
+&nbsp;.<BR>
+&nbsp;.<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+But instead of adding the components and setting up variables
+as in the original Order Entry System in the applet's <TT>init()</TT>
+method, you need to create a method in the OrderEntryFrame which
+accomplishes all of the component insertion and setup done in
+the applet's <TT>init()</TT> method.
+To do this, you copy the corresponding code in the <TT>init()</TT>
+method to a method you create in the <TT>OrderEntryFrameType</TT>.
+Call this method <TT>setup()</TT>.
+So, the format for the <TT>OrderEntryFrameType</TT>
+class declaration is as follows:
+<BLOCKQUOTE>
+<TT>class OrderEntryFrameType extends Frame
+{<BR>
+<BR>
+&nbsp;FrameJr (String InTitle) {<BR>
+&nbsp;&nbsp;super(InTitle);<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;public void setup() {<BR>
+&nbsp;&nbsp;// The init() code body goes here. . .<BR>
+&nbsp;.<BR>
+&nbsp;.<BR>
+}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+The components that were once added to the applet panel in the
+applet's <TT>init()</TT> method are
+now added to the frame itself. Also all of the variables that
+are used in the Order Entry System are placed into the frame itself.
+The full code cost listing of this is included in the complete
+listing of the applet coming up.
+<P>
+Since these variables are moved into another class, shut them
+off from being accessed by parent classes. Follow this practice
+of data encapsulation. All accesses to the data contained in the
+<TT>OrderEntryFrameType</TT> are done
+through methods and functions declared in the class itself.
+<P>
+Almost all of the methods of the original applet are moved to
+the frame class itself. The function of the system is encapsulated.
+This makes it easy to actually run the system as an application
+if need be.
+<P>
+The newly changed Order Entry System follows as Listing 8.4. Here
+are the major improvements as of this iteration:
+<OL>
+<LI>The majority of the function is now transferred to a separate
+frame. This frame is declared in a separate class in the applet
+file. All of the functions and variables which had been in the
+applet are moved to the frame itself. Notice that the applet code
+is translated to an instance of the <TT>Frame</TT>
+class which belongs to the applet class. The <TT>action</TT>
+and <TT>handleEvent</TT> methods are
+also transferred. The new frame instance is completely independent
+of the applet. (In fact, <I>two</I> instances of the <TT>OrderEntryFrameType</TT>
+can just as easily be declared and both of them implemented.)
+<LI>Also, a button is added to the applet face. The user's activation
+of this button results in the initialization and display of the
+frame and also deactivates the button so that another order entry
+frame cannot be activated.
+</OL>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 8.4. Another iteration of the Order Entry System.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+<BR>
+public class OrderEntrySystem extends Applet {<BR>
+<BR>
+&nbsp;// Declare an instance of your frame class defined later
+in the // file.<BR>
+</TT>&nbsp;<TT>OrderEntryFrameType
+OESFrame;<BR>
+<BR>
+</TT>&nbsp;<TT>// Declare and initialize
+the button which will be on the applet<BR>
+&nbsp;// face and the user can click to activate the order frame.
+<BR>
+</TT>&nbsp;<TT>Button Order = new
+Button(&quot;Click to Order&quot;);<BR>
+<BR>
+</TT>&nbsp;<TT>public void init()
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(Order);<BR>
+</TT>&nbsp;<TT>&nbsp;}<BR>
+<BR>
+</TT>&nbsp;<TT>public boolean handleEvent(Event
+InEvent) {<BR>
+&nbsp;&nbsp;if (InEvent.target == Order) {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Disable the order button.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;Order.disable();
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+Construct the OESFrame.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;OESFrame = new OrderEntryFrameType(&quot;Order
+Entry System&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;OESFrame.resize(340,400);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The setup method which initializes
+the frame face and<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+the components in it.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;OESFrame.setup();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Display the order frame.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;OESFrame.show();
+<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;// Let the parent handle the event.<BR>
+</TT>&nbsp;<TT>&nbsp;return super.handleEvent(InEvent);
+<BR>
+&nbsp;}<BR>
+}<BR>
+<BR>
+/* This class declares the new extension of the frame class which
+<BR>
+&nbsp;&nbsp;&nbsp;will allow you to utilize a frame in the applet.&nbsp;&nbsp;*/
+<BR>
+<BR>
+class OrderEntryFrameType extends Frame {<BR>
+<BR>
+&nbsp;// This is the constructor for your new class.<BR>
+</TT>&nbsp;<TT>OrderEntryFrameType
+(String InTitle) {<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;// Call the Frame
+constructor.<BR>
+&nbsp;&nbsp;super(InTitle);<BR>
+<BR>
+&nbsp;&nbsp;// Set the layout of the frame (this has to be done
+to make things work).<BR>
+</TT>&nbsp;<TT>&nbsp;// This concept
+will be covered later on in this chapter.<BR>
+&nbsp;&nbsp;setLayout(new FlowLayout());<BR>
+</TT>&nbsp;<TT>}<BR>
+<BR>
+</TT>&nbsp;<TT>// This method does
+the construction of the frame panel.<BR>
+&nbsp;public void setup() {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Add and create three buttons.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SubmitButton
+= new Button(&quot;Submit&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(SubmitButton);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;ClearButton
+= new Button(&quot;Clear&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(ClearButton);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+QuitButton = new Button(&quot;Quit&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(QuitButton);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Add and create the repeat customer
+checkbox.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+Checkbox RepeatCustCheckBox = new Checkbox(&quot;Repeat Customer?&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(RepeatCustCheckBox);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Add a label to the ContactMethodGroup.
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(new
+Label(&quot;How would you like to be contacted? &quot;));<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+Declare the CheckboxGroup, and allocate space.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;CheckboxGroup ContactMethodGroup;<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;ContactMethodGroup
+= new CheckboxGroup();<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+Create some checkboxes to put in the group.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Checkbox EmailBox = new Checkbox(&quot;Email&quot;,ContactMethodGroup,true);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;Checkbox
+PhoneBox = new<BR>
+&nbsp;&nbsp;&nbsp;Checkbox(&quot;Phone&quot;,ContactMethodGroup,false);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;Checkbox
+MailBox = new<BR>
+&nbsp;&nbsp;&nbsp;Checkbox(&quot;US Mail&quot;,ContactMethodGroup,false);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Add the checkboxes into the applet
+panel.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(EmailBox);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(PhoneBox);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(MailBox);
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+Label the item list.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(new Label(&quot;Products&quot;));
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Create the list, 4 items visible, no
+multiple<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+selections.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ProductList = new List(4, false);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Add items to the List.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Oscar&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Lionhead&quot;);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Jack
+Dempsey&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Angelfish&quot;);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Add the List to the Applet panel.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(ProductList);
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+Add a label to the choice of sizes.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(new Label(&quot;Size:&quot;));<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Create the Choice box.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;SizeChoice
+= new Choice();<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+Add items to the List.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Jumbo&quot;);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Large&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Medium&quot;);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Small&quot;);
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+Add the Choice to the Applet panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(SizeChoice);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Add a label to the slider.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(new
+Label(&quot;Amount:&quot;));<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;//
+Create a vertical slider, initial value of 0,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// minimum value of 0, maximum value of
+144.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OrderAmountSlider
+= new Scrollbar(Scrollbar.HORIZONTAL, 0, 0, 0, 144);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Insert the slider to the Applet panel.
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(OrderAmountSlider);
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Insert the label which says how many are set to be ordered<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+of the item.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(AmountLabel);
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add the subtotal label and a label saying that it is <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+the subtotal.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(new
+Label(&quot;Subtotal: &quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(SubTotalLabel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add the total label and a label saying that it is the total.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(new
+Label(&quot;Total: &quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(TotalLabel);
+<BR>
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;// Insert
+a label to signify that this is the personal information <BR>
+// (address, etc.) section and also insert text fields to prompt
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;// for
+that information.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; add(new Label(&quot;Your information:
+&quot;));<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+add(new Label(&quot;Name:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(NameEntryField);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(new
+Label(&quot;Street:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(StreetEntryField);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(new
+Label(&quot;City:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(CityEntryField);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(new
+Label(&quot;Zip:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(ZipEntryField);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Add a label to the comment text area.
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;add(new
+Label(&quot;Comments:&quot;));<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;// Add
+the comment box.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add(CommentTextArea);<BR>
+<BR>
+&nbsp;&nbsp;// Method which resets all of the internal values.
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;resetValues();
+<BR>
+<BR>
+<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;// The subtotal and total variables.<BR>
+</TT>&nbsp;<TT>private double SubTotalOne
+= 0.0;<BR>
+&nbsp;private double Total = 0.0;<BR>
+<BR>
+&nbsp;// The price multipliers for each different product size.
+<BR>
+</TT>&nbsp;<TT>private double multiplierSmall
+= 0.5;<BR>
+&nbsp;private double multiplierMedium = 1.0;<BR>
+</TT>&nbsp;<TT>private double multiplierLarge
+= 1.5;<BR>
+&nbsp;private double multiplierJumbo = 2.25;<BR>
+<BR>
+&nbsp;// The local constant base prices.<BR>
+</TT>&nbsp;<TT>static double ProdOneBaseValue
+= 1.0;<BR>
+&nbsp;static double ProdTwoBaseValue = 1.33;<BR>
+</TT>&nbsp;<TT>static double ProdThreeBaseValue
+= 1.75;<BR>
+&nbsp;static double ProdFourBaseValue = 8.75;<BR>
+<BR>
+&nbsp;// Declare all of the variables you'll use.<BR>
+</TT>&nbsp;<TT>private Button SubmitButton;
+<BR>
+&nbsp;private Button ClearButton;<BR>
+</TT>&nbsp;<TT>private Button QuitButton;
+<BR>
+&nbsp;private Checkbox RepeatCustCheckBox;<BR>
+<BR>
+&nbsp;private Checkbox MailBox;<BR>
+</TT>&nbsp;<TT>private Checkbox EmailBox;
+<BR>
+&nbsp;private Checkbox PhoneBox;<BR>
+<BR>
+&nbsp;private List ProductList;<BR>
+</TT>&nbsp;<TT>private Choice SizeChoice;
+<BR>
+&nbsp;private Scrollbar OrderAmountSlider;<BR>
+<BR>
+&nbsp;// The labels which will be variable and change when<BR>
+</TT>&nbsp;<TT>// the other selections
+are changed.<BR>
+&nbsp;private Label SubTotalLabel = new Label(&quot;$0.0 &quot;);
+<BR>
+</TT>&nbsp;<TT>private Label TotalLabel
+= new Label(&quot;$0.0 &quot;);<BR>
+&nbsp;private Label AmountLabel = new Label(&quot;$0.0 &quot;);
+<BR>
+</TT>&nbsp;<TT>private Label PricePerItemLabel
+= new Label(&quot;$0.0 &quot;);<BR>
+<BR>
+</TT>&nbsp;<TT>// The entry field
+for the user to enter a name.<BR>
+&nbsp;private TextField NameEntryField = new TextField(25);<BR>
+</TT>&nbsp;<TT>private TextField ZipEntryField
+= new TextField(5);<BR>
+&nbsp;private TextField StreetEntryField = new TextField(25);
+<BR>
+</TT>&nbsp;<TT>private TextField CityEntryField
+= new TextField(25);<BR>
+&nbsp;// The comment entry area.<BR>
+</TT>&nbsp;<TT>private TextArea CommentTextArea
+= new TextArea(4, 25);<BR>
+<BR>
+</TT>&nbsp;<TT>private void updateValues()
+{<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int
+WhichChoice = SizeChoice.getSelectedIndex();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int AmountSelected
+= OrderAmountSlider.getValue();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int
+WhichProduct = ProductList.getSelectedIndex();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double CurrentBasePrice
+= 0.0;<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double
+CurrentModifier = 0.0;<BR>
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;switch (WhichProduct)
+{<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+0:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdOneBaseValue;<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+1:<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdTwoBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+2:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdThreeBaseValue;<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+3:<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdFourBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;switch (WhichChoice)
+{<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+3:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierSmall;<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+2:<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierMedium;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+1:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierLarge;<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+0:<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierJumbo;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountLabel.setText(Integer.toString(AmountSelected)+
+&quot; &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double PricePerItem
+= (CurrentBasePrice*CurrentModifier);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PricePerItemLabel.setText(Double.toString(PricePerItem)+
+&quot; &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double SubTotal
+= (CurrentBasePrice*CurrentModifier*AmountSelected);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SubTotalLabel.setText(Double.toString(SubTotal)+
+&quot; &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TotalLabel.setText(SubTotalLabel.getText());
+<BR>
+</TT>&nbsp;<TT>}<BR>
+<BR>
+</TT>&nbsp;<TT>// This method will
+be called when the user presses the &quot;Clear&quot; button and
+<BR>
+&nbsp;// also when the applet is initialized in the init() method.
+<BR>
+</TT>&nbsp;<TT>public void resetValues()
+{<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;// Reset all
+of these labels to zero.<BR>
+&nbsp;&nbsp;SubTotalLabel.setText(&quot;$0.0 &quot;);<BR>
+</TT>&nbsp;<TT>&nbsp;TotalLabel.setText(&quot;$0.0
+&quot;);<BR>
+&nbsp;&nbsp;AmountLabel.setText(&quot;0 &quot;);<BR>
+</TT>&nbsp;<TT>&nbsp;PricePerItemLabel.setText(&quot;$0.0
+&quot;);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;// Clear all
+of the lists and choices.<BR>
+&nbsp;&nbsp;ProductList.select(0);<BR>
+</TT>&nbsp;<TT>&nbsp;SizeChoice.select(0);
+<BR>
+&nbsp;&nbsp;OrderAmountSlider.setValue(0);<BR>
+<BR>
+&nbsp;&nbsp;// Clear all of the text fields.<BR>
+</TT>&nbsp;<TT>&nbsp;NameEntryField.setText(&quot;&quot;);
+<BR>
+&nbsp;&nbsp;StreetEntryField.setText(&quot;&quot;);<BR>
+</TT>&nbsp;<TT>&nbsp;CityEntryField.setText(&quot;&quot;);
+<BR>
+&nbsp;&nbsp;ZipEntryField.setText(&quot;&quot;);<BR>
+</TT>&nbsp;<TT>}<BR>
+<BR>
+</TT>&nbsp;<TT>public boolean handleEvent(Event
+InEvent) {<BR>
+&nbsp;&nbsp;if (InEvent.id == Event.SCROLL_LINE_UP ||<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InEvent.id
+== Event.SCROLL_LINE_DOWN)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; updateValues();<BR>
+</TT>&nbsp;<TT>&nbsp;} else<BR>
+&nbsp;&nbsp;if (InEvent.target == ProductList) {<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;updateValues();
+<BR>
+&nbsp;&nbsp;} else<BR>
+</TT>&nbsp;<TT>&nbsp;if (InEvent.target
+== ClearButton) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resetValues();
+<BR>
+</TT>&nbsp;<TT>&nbsp;} else<BR>
+&nbsp;&nbsp;if (InEvent.target == QuitButton)&nbsp;&nbsp;{<BR>
+</TT>&nbsp;<TT>&nbsp;// Quit the applet.
+<BR>
+&nbsp;&nbsp;&nbsp;System.exit(0);<BR>
+</TT>&nbsp;<TT>&nbsp;} else<BR>
+&nbsp;&nbsp;if (InEvent.target == SubmitButton) {<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;// Submit
+the order.<BR>
+&nbsp;&nbsp;}<BR>
+</TT>&nbsp;<TT>&nbsp;return super.handleEvent(InEvent);
+<BR>
+&nbsp;}<BR>
+<BR>
+&nbsp;public boolean action (Event InEvent, Object SomeObject)
+{<BR>
+</TT>&nbsp;<TT>&nbsp;if (InEvent.target
+== SizeChoice) {<BR>
+&nbsp;&nbsp;&nbsp;updateValues();<BR>
+</TT>&nbsp;<TT>&nbsp;return true;
+<BR>
+&nbsp;&nbsp;}<BR>
+</TT>&nbsp;<TT>&nbsp;else<BR>
+&nbsp;&nbsp;if (InEvent.target == NameEntryField) {<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;// Is the
+field empty?&nbsp;&nbsp;If so, we will later add a pop-up dialog
+<BR>
+&nbsp;&nbsp;&nbsp;// box to alert the users that they have not
+entered their name.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;return
+true;<BR>
+&nbsp;&nbsp;&nbsp;} else<BR>
+</TT>&nbsp;<TT>&nbsp;return false;
+<BR>
+&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The Order Entry System is still growing. Next, the ability to
+display a dialog box in response to a user action is added. Notice
+that the framework for this ability is built in the <TT>action</TT>
+method of the <TT>OrderEntryFrameType</TT>
+class that has been created.
+<P>
+Figure 8.5 is the Order Entry System when viewed from the <TT>Appletviewer</TT>
+utility.
+<P>
+<A HREF="f8-5.gif" ><B>Figure 8.5 :</B> <I>The Order Entry System from the Appletviewer utility.</I></A>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>The <FONT SIZE=2>disable()</FONT> and <FONT SIZE=2>enable()</FONT> Methods</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=590>
+<BLOCKQUOTE>
+These two methods allow you, the programmer, to deactivate and activate your components. It is used in the latest version of the Order Entry System to disable the button which calls the Order Entry System window. You can use these methods to enable and disable your components when you wish.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="AddingPopUpDialogstotheOrderEntry">Adding Pop-Up
+Dialogs to the Order Entry System</A></H3>
+<P>
+Adding a pop-up dialog to the Order Entry System is simpler than
+converting to a stand-alone window. The framework for displaying
+the dialog window is already completed. Now, create a new class
+which extends the <TT>Dialog</TT>
+class as you create a new class to create the <TT>OrderEntryFrameType</TT>.
+Then, declare an instance of your new dialog box type and implement
+it in the frame type.
+<P>
+When the name text field creates an event, it is handled by the
+<TT>action</TT> method. The <TT>action</TT>
+method is set to recognize this event, except it is not set to
+do anything when it gets the event. You are going to change this.
+<P>
+The first step is to declare an extension of the <TT>Dialog</TT>
+class.
+<BLOCKQUOTE>
+<TT>class WarningDialog extends Dialog {
+<BR>
+<BR>
+</TT>&nbsp;<TT>private Button OkButton
+= new Button(&quot;OK&quot;);<BR>
+&nbsp;private Label ALabel;<BR>
+<BR>
+&nbsp;WarningDialog(Frame HostFrame, String Message)&nbsp;&nbsp;{
+<BR>
+</TT>&nbsp;<TT>&nbsp;super(HostFrame,
+&quot;Warning!&quot;, false);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;ALabel = new
+Label(Message);<BR>
+&nbsp;&nbsp;resize(180,100);<BR>
+<BR>
+&nbsp;&nbsp;setLayout(new FlowLayout());<BR>
+</TT>&nbsp;<TT>&nbsp;add(ALabel);
+<BR>
+&nbsp;&nbsp;add(OkButton);<BR>
+</TT>&nbsp;<TT>}<BR>
+<BR>
+</TT>&nbsp;<TT>public boolean action
+(Event InEvent, Object Param)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;if (InEvent.target == OkButton)&nbsp;&nbsp;{<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;hide();
+<BR>
+&nbsp;&nbsp;}<BR>
+</TT>&nbsp;<TT>&nbsp;return true;
+<BR>
+&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Add this class declaration to the Order Entry System class declaration
+file. Then, declare an instance of it inside of the <TT>OrderEntryFrameType</TT>:
+<BLOCKQUOTE>
+<TT>WarningDialog WDialog = new WarningDialog(this,
+&quot;You have not entered a name. &quot;);</TT>
+</BLOCKQUOTE>
+<P>
+To display the warning dialog, call the <TT>show()</TT>
+method, which is inherited from the dialog class when the dialog
+class is extended:
+<BLOCKQUOTE>
+<TT>WDialog.show();</TT>
+</BLOCKQUOTE>
+<P>
+Figure 8.6 shows what happens when the user of the Order Entry
+System leaves the name field blank.
+<P>
+<A HREF="f8-6.gif" ><B>Figure 8.6 :</B> <I>The Order Entry System with the WarningDialog class included.</I></A>
+<P>
+The new extension of the <TT>Dialog</TT>
+works great, but look at what happens when the dialog box window
+is resized in Figure 8.7.
+<P>
+<A HREF="f8-7.gif" ><B>Figure 8.7 :</B> <I>The WarningDialog box resized.</I></A>
+<P>
+The layout of the components in the dialog box is at fault. For
+now, the default layout (which is the <TT>FlowLayout</TT>
+manager) has been used. But it is obvious that this isn't going
+to work. The next section covers the different AWT layout managers
+and applies one to the Order Entry System.
+<P>
+
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+
+<TR VALIGN=TOP><TD><BLOCKQUOTE>The <TT>this</TT> keyword is very useful in Java. It refers to the current class. For example, you want to attach a dialog to a frame and declare that dialog in the frame. You say,
+<P>
+<TT>Dialog D = new Dialog(this, &quot;Sample&quot;, true);</TT></BLOCKQUOTE>
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="LayoutManagersintheAWT"><FONT SIZE=5 COLOR=#FF0000>Layout
+Managers in the AWT</FONT></A></H2>
+<P>
+AWT layout managers are the means by which you, the programmer,
+can give a set of general rules to determine how your components
+in a container are arranged. Remember, applets are standard with
+an initial panel incorporated so you can set the layout of your
+applet face.
+<P>
+In other windowing systems such as Microsoft Windows, the programmer
+specifies actual coordinates for different components of the window
+to be arranged. However, this is impossible in Java since the
+goal is platform independence. The window you create under Solaris
+should work on a Macintosh, a DEC Alpha, and an NeXT. This goal
+of independence makes some tasks more difficult. As for the layout
+of components in general, it is one of the tougher concepts in
+Java. It is much easier to set the exact coordinates like other
+systems. While container layout is difficult, it has been designed
+to be powerful and relatively convenient to implement.
+<P>
+In any case, the following sections outline the five Java AWT
+layout managers.
+<H3><A NAME="FlowLayout"><TT><FONT SIZE=4>FlowLayout</FONT></TT></A>
+</H3>
+<P>
+The <TT>FlowLayout</TT> manager is
+the default layout manager for applets. If you look back, you
+notice that the applets constructed earlier follow a general layout
+pattern. Components are inserted left to right until the end of
+a row is reached. Then, the same process begins on the next line
+until that row is filled also. If an attempt is made to place
+too many components in a panel, the ones that didn't fit are left
+out.
+<P>
+To set the layout manager you wish to use, the <TT>setLayout()</TT>
+method is available. The following code line sets the layout in
+a panel <TT>APanel</TT> to the <TT>FlowLayout</TT>
+manager:
+<P>
+<TT>APanel.setLayout(new FlowLayout());</TT>
+<P>
+There are multiple options you can use with the <TT>FlowLayout</TT>
+manager. First, the manager allows you to specify the alignment
+of the layout. There are three constants available in the <TT>FlowLayout</TT>
+class: <TT>FlowLayout.LEFT</TT>, <TT>FlowLayout.CENTER</TT>
+(the default), and <TT>FlowLayout.RIGHT</TT>.
+<P>
+You can also set the vertical and horizontal &quot;padding&quot;
+between different components. This is done in one version of the
+<TT>FlowLayout</TT> constructors.
+The default value for this padding is 5 pixels vertical and 5
+pixels horizontal.
+<P>
+Table 8.5 summarizes the <TT>FlowLayout</TT>
+constructors.<BR>
+<P>
+<CENTER><B>Table 8.5. The constructors for the FlowLayout class.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Constructor</I></TD><TD WIDTH=295><I>Effect</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>FlowLayout()</TT>
+</TD><TD WIDTH=295>Default constructor.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>FlowLayout(align)</TT>
+</TD><TD WIDTH=295><TT>align</TT> is one of <TT>FlowLayout.LEFT</TT>, <TT>FlowLayout.CENTER</TT>, or <TT>FlowLayout.RIGHT</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>FlowLayout(align, HPad, VPad)</TT>
+</TD><TD WIDTH=295><TT>HPad</TT> and <TT>VPad</TT> are integers specifying the horizontal and vertical padding between components in terms of pixels.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The following r code declares a panel, sets the internal panel
+layout, and adds a component to that panel:
+<BLOCKQUOTE>
+<TT>Panel P = new Panel();<BR>
+P.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 15);<BR>
+P.add(new Label(&quot;Text.&quot;);</TT>
+</BLOCKQUOTE>
+<H3><A NAME="BorderLayout"><TT><FONT SIZE=4>BorderLayout</FONT></TT></A>
+</H3>
+<P>
+The <TT>BorderLayout</TT> manager
+divides a container into five different segments. These are &quot;North,&quot;
+&quot;South,&quot; &quot;Center,&quot; &quot;West,&quot; and &quot;East.&quot;
+Of course, the &quot;North&quot; segment of a container is the
+top, the &quot;West&quot; is the left and so on. There are two
+major constructors for the <TT>BorderLayout</TT>
+manager:
+<BLOCKQUOTE>
+<TT>BorderLayout BLayout = new BorderLayout();
+<BR>
+BorderLayout BLayout2 = new BorderLayout(10, 15);</TT>
+</BLOCKQUOTE>
+<P>
+The second constructor sets the horizontal and vertical padding
+just like in the <TT>FlowLayout</TT>
+manager. To add components to a container using this manager,
+you must specify the region which the component occupies like
+this:
+<BLOCKQUOTE>
+<TT>add(&quot;West&quot;, AComponent);</TT>
+</BLOCKQUOTE>
+<P>
+This inserts the <TT>AComponent</TT>
+into the western (left) region of the container.
+<P>
+The following applet declares an instance of the <TT>BorderLayout</TT>
+class and then adds one button to each of the five areas. The
+code is in Listing 8.5.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 8.5. The BorderExample applet code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+<BR>
+public class BorderExample extends Applet {<BR>
+ public void init()&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;BorderLayout BLayout = new BorderLayout(5, 5);<BR>
+&nbsp;&nbsp;setLayout(BLayout);<BR>
+<BR>
+&nbsp;&nbsp;add(&quot;West&quot;, new Button(&quot;west&quot;));
+<BR>
+&nbsp;&nbsp;add(&quot;East&quot;, new Button(&quot;east&quot;));
+<BR>
+&nbsp;&nbsp;add(&quot;North&quot;, new Button(&quot;north&quot;));
+<BR>
+&nbsp;&nbsp;add(&quot;South&quot;, new Button(&quot;south&quot;));
+<BR>
+&nbsp;&nbsp;add(&quot;Center&quot;, new Button(&quot;center&quot;));
+<BR>
+ }<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The output from this applet is Figure 8.8.
+<P>
+<A HREF="f8-8.gif" ><B>Figure 8.8 :</B> <I>The BorderExample applet when viewed from the Appletviewer utility.</I></A>
+<P>
+Notice that the different buttons expand to fill the area they
+are given under this layout manager.
+<H3><A NAME="CardLayout"><TT><FONT SIZE=4>CardLayout</FONT></TT></A>
+</H3>
+<P>
+The <TT>CardLayout</TT> manager is
+unique among the different layout managers in the AWT. Instead
+of placing all of the components next to each other, it allows
+components to be positioned behind each other. Basically, the
+idea is that you can define a couple of component groups and then
+when certain actions occur, you can switch between those groups
+on the same display area.
+<P>
+To put the <TT>CardLayout</TT> manager
+into use, first define an instance of the <TT>CardLayout</TT>
+manager in your applet. Then, <TT>setLayout</TT>
+of your applet to the instance you just declared. For each separate
+card you want to have, create a <TT>Panel</TT>
+and place in it what you want. Finally, add each of the new panels
+using the <TT>add</TT> method.
+<P>
+Table 8.6 shows the methods available for use in the <TT>CardLayout</TT>
+manager.<BR>
+<P>
+<CENTER><B>Table 8.6. The available CardLayout manager methods.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Methods</I></TD><TD WIDTH=327><I>Effect</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=263><TT>first(AContainer)</TT>
+</TD><TD WIDTH=327>Display the first card inserted. The parameter is the name of the parent container which implements the <TT>CardLayout</TT> manager.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=263><TT>last(AContainer)</TT>
+</TD><TD WIDTH=327>Same as <TT>first</TT> except showing the last item in the layout.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=263><TT>next(AContainer)</TT>
+</TD><TD WIDTH=327>Display the next card inserted. The parameter is the name of the parent container which implements the <TT>CardLayout</TT> manager.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=263><TT>show(Acontainer, AString)</TT>
+</TD><TD WIDTH=327>Display the card.</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Overall, this manager isn't as functional as it can be. Ideally,
+the tabbed card layouts found in systems such as Windows 95 can
+be implemented. However, this isn't possible with the current
+AWT. Hopefully, the carding features of the AWT will be a feature
+which is extended in future development of Java.
+<H3><TT><FONT SIZE=4>GridLayout</FONT></TT></H3>
+<P>
+The <TT>GridLayout</TT> manager divides
+a container into uniformly sized rows and columns. Imagine drawing
+a grid over a container and then each component filling a grid
+square as you <TT>add()</TT> them
+to the container. The placement continues from left to right and
+top down. There are two major constructors for the <TT>GridLayout</TT>
+manager class:
+<BLOCKQUOTE>
+<TT>GridLayout GL1 = new GridLayout(IntRows,
+IntColumns);<BR>
+GridLayout GL2 = new GridLayout(IntRows, IntColumns, HPad, VPad);</TT>
+</BLOCKQUOTE>
+<P>
+In the first constructor, the two parameters specify the number
+of grid rows and columns to divide the container into. The second
+constructor also accepts the number of pixels of horizontal and
+vertical padding between the grid squares. This manager isn't
+great for larger layouts, but useful when applied to smaller containers
+involved in subdividing a large display.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The &quot;grid&quot; discussed in this section is not represented on the container as any lines or borders. Rather, it is a means to mentally picture the dividing of the container into uniform squares.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>GridBagLayout</TT> manager
+extends the basic idea behind the grid layout manager. The main
+difference lies in that the components can be different sizes
+in terms of occupying multiple grid spaces. Where components can
+only occupy one grid space in the container, there are also a
+number of parameters to align the components inside of the grid.
+You are also capable of setting component padding and the anchoring
+of the components inside of the grid square. This is all great
+and powerful, but unlike many of the other features of Java, not
+very intuitive.
+<P>
+To implement the grid bag layout, you need to declare an instance
+of the <TT>GridBagLayout</TT> class.
+Then, set the layout of the container to this variable where <TT>GBL</TT>
+is the local instance of the <TT>GridBagLayout</TT>
+class:
+<BLOCKQUOTE>
+<TT>GridBagLayout GBL = new GridBagLayout();
+<BR>
+setLayout(GBL);</TT>
+</BLOCKQUOTE>
+<P>
+The multiple parameters, such as anchoring, alignment, grid position,
+and so forth are declared in a class called <TT>GridBagConstraints</TT>.
+To complete any of these settings for a component, you first declare
+an instance of the <TT>GridBagConstraints</TT>
+class. Then, you change the constants representing these parameters
+in the instance of the constraints class. For example, if you
+want to set the anchoring of the component inside the grid space,
+you say:
+<BLOCKQUOTE>
+<TT>Constraints.anchor = GridBagConstraints.NORTH;</TT>
+</BLOCKQUOTE>
+<P>
+where <TT>Constraints</TT> is an instance
+of the <TT>GridBagConstraints</TT>
+class. To associate these constraints with the component when
+you add it to your container, you use the following code:
+<BLOCKQUOTE>
+<TT>GBL.setConstraints(AComponent, Constraints);
+<BR>
+add(AComponent);</TT>
+</BLOCKQUOTE>
+<P>
+And you continue this process for each component you want to add
+using this layout manager.
+<H4>Setting the Layout Constraints</H4>
+<P>
+As stated previously, for each component you wish to insert, you
+must set the current constraints under which that component is
+inserted. This has been demonstrated before when the <TT>setConstraints</TT>
+method is used to set the constraints for a component which is
+then inserted.
+<P>
+There are a large number of settings for you to set in the instance
+of the <TT>GridBagConstraints</TT>
+class. The primary fields of the constraints class are the <TT>gridx</TT>
+and the <TT>gridy</TT> fields. These
+specify the x and y coordinates of the grid space in which you
+wish for your component to appear. Note that the grid squares
+begin at 0,0 (the upper-left corner of your grid).
+<P>
+There are two ways to insert components into the grid. One way
+is to specify the actual coordinates in which you want your component
+to appear. The second way, and the way intended by Java's designers,
+is to specify both of these constants to be the value of <TT>GridBagConstraints.RELATIVE</TT>.
+The idea is that you begin placing components into the grid and
+they are placed left to right, in adjacent squares. Finally, when
+you want to move down to the next line, you specify the <TT>gridx</TT>.
+<P>
+Use the second method. Placing components in this manner means
+that you also need to say when you want to go to the next row
+to place the next component. To do this, set another of the constraints
+to a different constant. These settings are the <TT>gridwidth</TT>
+and <TT>gridheight</TT> settings in
+your instance of the <TT>GridBagConstraints</TT>
+class.
+<P>
+<TT>gridwidth</TT> and <TT>gridheight</TT>
+set the amount of grid cells that a component occupies when it
+gets placed. For example, a <TT>gridheight</TT>
+of 2 means that the component occupies two grid cells in terms
+of height. And if you want the component to occupy three cells
+in width, set the <TT>gridwidth</TT>
+to 3. Your instance of the constraints in the Order Entry System
+is called <TT>Constraints</TT>. To
+set the component to occupy three grid cells in width, use the
+following line:
+<BLOCKQUOTE>
+<TT>Constraints.gridwidth = 3;</TT>
+</BLOCKQUOTE>
+<P>
+The default for these values is 1. Leave them alone until you
+are ready to begin placing components on a new row. To do this,
+set the <TT>gridwidth</TT> to equal
+<TT>GridBagConstraints.REMAINDER</TT>.
+This signals the layout manager that this component is the last
+on this row.
+<P>
+That takes care of the general placing of the components in the
+grid. There are also a number of other constraints which allow
+you to place the components inside of the grid space they are
+occupying.
+<P>
+The first of these is the <TT>anchor</TT>
+value of the <TT>GridBagConstraints</TT>.
+This tells the layout manager where the component is positioned
+inside of the grid box it is occupying. The acceptable values
+are <TT>GridBagConstraints.SOUTH</TT>,
+<TT>GridBagConstraints.NORTHEAST</TT>,
+<TT>GridBagConstraints.WEST</TT>,
+and so forth. All of the eight directions are covered.
+<P>
+The <TT>fill</TT> parameter tells
+the layout manager how components such as buttons fill the grid
+box that they are in. There are four possible settings. These
+are demonstrated in Table 8.7.<BR>
+<P>
+<CENTER><B>Table 8.7. The four GridBagConstraints settings.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Setting</I></TD><TD WIDTH=295><I>Effect</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>GridBagConstraints.NONE</TT>
+</TD><TD WIDTH=295>No expansion.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>GridBagConstraints.HORIZONTAL</TT>
+</TD><TD WIDTH=295>Expand to fill horizontally.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>GridBagConstraints.VERTICAL</TT>
+</TD><TD WIDTH=295>Expand to fill vertically.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>GridBagConstraints.BOTH</TT>
+</TD><TD WIDTH=295>Expand to fill both vertically and horizontally.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>weightx</TT> and <TT>weighty</TT>
+settings determine the sizes of the different components relative
+to each other. This is used to have your components spread out
+to fill the container. Otherwise your components all cluster in
+the center of the container. The weights are all relative to each
+other. A component with a <TT>weightx</TT>
+of 3 has a size three times that of a component having a <TT>weightx</TT>
+of 1.
+<P>
+If you want to add some pixels around a component to separate
+it from the other components surrounding it, use the <TT>ipadx</TT>
+and <TT>ipady</TT> settings in the
+constraints variable. Whatever number you set each of these values
+to is the number of pixels that the layout manger places as an
+empty area around your component.
+<H4>Recipe for Implementing the <TT>GridBagLayout</TT>
+Manager</H4>
+<P>
+The following steps outline the steps in implementing the <TT>GridBagLayout</TT>
+manager for a container:
+<OL>
+<LI>Declare an instance of the <TT>GridBagLayout</TT>
+manager and an instance of <TT>GridBagConstraints</TT>
+in your program.
+<LI>Set the layout of your container to be the instance of the
+<TT>GridBagLayout</TT> manager you
+defined in Step 1.
+<LI>For each component you wish to add, either declare a new instance
+of the constraints or modify an old one.
+<LI>For the constraints made available in Step 3, set the values
+in that instance. For example, set <TT>gridwidth</TT>
+equal to <TT>GridBagConstraints.REMAINDER</TT>
+if you want to say that you are finished filling this row. Also
+set other constraints such as the <TT>weightx</TT>
+or <TT>fill</TT>.
+<LI><TT>setConstraints</TT> for the
+layout manager using the component name as the first parameter
+and the second parameter as the constraints.
+<LI><TT>add</TT> the component to
+the container, sending the first parameter as the constraints
+from Step 4 and the second as the name of the component.
+<LI>Repeat Steps 3 through 6 until you are finished.
+</OL>
+<H2><A NAME="FixingtheLayoutoftheOrderEntrySys"><FONT SIZE=5 COLOR=#FF0000>Fixing
+the Layout of the Order Entry System</FONT></A></H2>
+<P>
+Now you take what there is so far in the Order Entry System and
+organize its appearance. The plan is to &quot;divide and conquer&quot;
+the regions of the entry interface that you have already begun
+constructing. The entire window face is designed with this goal
+in mind. The primary layout (the layout manager which is used
+on the window panel itself) is going to be the <TT>GridBagLayout</TT>
+manager. As shown, it is by far the most powerful in terms of
+getting components where you want them. There are a number of
+sub-panels in use. Each subdivides the main frame window, whose
+layout is managed by the <TT>PrimaryLayout</TT>
+which is an instance of the <TT>GridBagLayout</TT>
+class. Each individual sub-panel is named by function, such as
+<TT>InfoPanel</TT> which  is the sub-panel
+that gets the user information. Each sub-panel which uses the
+<TT>GridBagLayout</TT> manager also
+has an instance of the <TT>GridBagConstraints</TT>
+class to help manage it. A complete inspection of the code isn't
+really necessary. The most important concept to understand is
+the process of subdividing the containers to get the layout that
+you want. While it is tedious (as you can tell from the length
+of the code), it is the solution to provide both pretty layouts
+<I>and</I> platform independence. Figure 8.9 is what you end up
+with after it is all over.
+<P>
+<A HREF="f8-9.gif" ><B>Figure 8.9 :</B> <I>What the Order Entry System looks like after it is completed with this section.</I></A>
+<P>
+Listing 8.6 is the revised <TT>setup()</TT>
+and constructor implementation. It now implements the different
+AWT layout managers to control the placement of the components
+in the container.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 8.6. The OrderEntryFrameType class code.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>class OrderEntryFrameType extends Frame
+{<BR>
+<BR>
+</TT>&nbsp;<TT>OrderEntryFrameType
+(String InTitle) {<BR>
+&nbsp;&nbsp;super(InTitle);<BR>
+<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;WarningDialog WDialog = new WarningDialog<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+(this, &quot;You have not entered a name. &quot;);<BR>
+public void setup() {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the initial grid bag
+layout for the frame.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+GridBagLayout PrimaryLayout = new GridBagLayout();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; setLayout(PrimaryLayout);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Set the constraints for the Product
+Panel, which will contain product<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// choices, sizes, etc.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; GridBagConstraints ProductPanelConstraints
+= new GridBagConstraints();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // The Product Panel will take up the
+rest of the space on this line.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+ProductPanelConstraints.gridwidth = GridBagConstraints.REMAINDER;
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Declare and initialize the Product Panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; Panel ProductPanel = new Panel();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Set the layout for the Product Panel
+and set the constraints for<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// the components inside of the Product Panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; GridBagLayout ProductPanelLayout = new
+GridBagLayout();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+GridBagConstraints InProductPanelConstraints = <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new GridBagConstraints();
+<BR>
+ProductPanel.setLayout(ProductPanelLayout);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Here we will set the list panel, which will hold the<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // list choice method and insertion.
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+Panel ListPanel = new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; ListPanel.setLayout(new BorderLayout());
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; Label ProductLabel = new Label(&quot;Products&quot;);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+ListPanel.add(&quot;North&quot;, ProductLabel);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Create the list, 4 items visible, no multiple<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // selections.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+ProductList = new List(4, false);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add items to the List.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Oscar&quot;);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Lionhead&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Jack
+Dempsey&quot;);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Angelfish&quot;);
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add the List to the list panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ListPanel.add(&quot;Center&quot;,ProductList);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add the embedded panel to the Product Panel.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints.anchor
+= GridBagConstraints.NORTH;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanelLayout.setConstraints(
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ListPanel,
+InProductPanelConstraints);<BR>
+ProductPanel.add(ListPanel);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Another panel which will be embedded in the Product Panel.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel
+SizePanel = new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizePanel.setLayout(new
+BorderLayout());<BR>
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add a label to the choice of sizes.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizePanel.add(&quot;North&quot;,
+new Label(&quot;Size:&quot;));<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Create the Choice box.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice
+= new Choice();<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add items to the List.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Jumbo&quot;);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Large&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Medium&quot;);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Small&quot;);
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add the Choice to the Applet panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizePanel.add(&quot;Center&quot;,SizeChoice);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add the embedded panel to the Product Panel.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanelLayout.setConstraints(SizePanel,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints);
+<BR>
+ProductPanel.add(SizePanel);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Another panel which will be embedded in the Product Panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel
+AmountPanel = new Panel();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountPanel.setLayout(new
+BorderLayout());<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add a label to the slider.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountPanel.add(&quot;North&quot;,
+new Label(&quot;Amount:&quot;));<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Another embedded panel which will contain the slider and<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+the output label.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel
+SliderPanel = new Panel();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SliderPanel.setLayout(new
+FlowLayout());<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Insert the label which says how many are set <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+to be ordered of the item.<BR>
+SliderPanel.add(AmountLabel);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Create a vertical slider, initial value of 0,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+minimum value of 0, maximum value of 144.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OrderAmountSlider
+= new<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scrollbar(Scrollbar.HORIZONTAL,
+0, 0, 0, 144);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Insert the slider to the Applet panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SliderPanel.add(OrderAmountSlider);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountPanel.add(&quot;Center&quot;,
+SliderPanel);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Add the embedded panel to the Product
+Panel.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+ProductPanelLayout.setConstraints(AmountPanel, <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints);
+<BR>
+ProductPanel.add(AmountPanel);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+The last panel which will be embedded in the Product Panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel
+TotalPanel = new Panel();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TotalPanel.setLayout(new
+BorderLayout());<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Add the subtotal label and a label saying <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+that it is the subtotal.<BR>
+TotalPanel.add(&quot;North&quot;, new Label(&quot;Total: &quot;));
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TotalPanel.add(&quot;South&quot;,TotalLabel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanelLayout.setConstraints(TotalPanel,
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints);
+<BR>
+ProductPanel.add(TotalPanel);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; ProductPanelLayout.setConstraints(TotalPanel,
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints);
+<BR>
+// Add the embedded panel to the Product Panel.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+ProductPanel.add(TotalPanel);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Set the constraints for the Product Panel's insertion.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; PrimaryLayout.setConstraints(ProductPanel,
+ProductPanelConstraints);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Add the Product Panel to the frame.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; add(ProductPanel);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // The second panel to be embedded in
+the frame is the Info panel.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// This panel gets the information about the user.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; GridBagLayout InfoPanelLayout = new GridBagLayout();
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+Panel InfoPanel = new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; GridBagConstraints InfoPanelConstraints
+= new GridBagConstraints();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+InfoPanelConstraints.gridwidth = GridBagConstraints.REMAINDER;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; ProductPanelLayout.setConstraints(InfoPanel,
+InfoPanelConstraints);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+InfoPanel.setLayout(InfoPanelLayout);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+InInfoConstraints = new GridBagConstraints();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints.anchor
+= GridBagConstraints.WEST;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Label
+InfoLabel = new Label(&quot;Your information: &quot;);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(InfoLabel,
+InInfoConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanel.add(InfoLabel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // The name entry field area.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel
+NameFieldPanel = new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NameFieldPanel.setLayout(new
+BorderLayout());<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NameFieldPanel.add(&quot;West&quot;,new
+Label(&quot;Name:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NameFieldPanel.add(&quot;East&quot;,NameEntryField);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints.anchor
+= GridBagConstraints.EAST;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(NameFieldPanel,
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints);
+<BR>
+InfoPanel.add(NameFieldPanel);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // The Street entry area implementation.
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel
+StreetFieldPanel = new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StreetFieldPanel.setLayout(new
+BorderLayout());<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StreetFieldPanel.add(&quot;West&quot;,new
+Label(&quot;Street:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StreetFieldPanel.add(&quot;East&quot;,StreetEntryField);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(StreetFieldPanel,
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanel.add(StreetFieldPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel
+CityFieldPanel = new Panel();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CityFieldPanel.setLayout(new
+BorderLayout());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CityFieldPanel.add(&quot;West&quot;,new
+Label(&quot;City:&quot;));<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EntryFieldPanel.add(&quot;East&quot;,CityEntryField);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(CityFieldPanel,
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints);
+<BR>
+InfoPanel.add(CityFieldPanel);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // The zip entry field implementation.
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel
+ZipFieldPanel = new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZipFieldPanel.setLayout(new
+BorderLayout());<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZipFieldPanel.add(&quot;West&quot;,new
+Label(&quot;Zip:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZipFieldPanel.add(&quot;East&quot;,ZipEntryField);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(ZipFieldPanel,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+InInfoConstraints);<BR>
+InfoPanel.add(ZipFieldPanel);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// The comment label.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints.anchor
+= GridBagConstraints.WEST;<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Label
+CommentLabel = new Label(&quot;Comments: &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(CommentLabel,
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+InInfoConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanel.add(CommentLabel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Add the comment box.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints.anchor
+= GridBagConstraints.CENTER;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(CommentTextArea,
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+InInfoConstraints);<BR>
+InfoPanel.add(CommentTextArea);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; PrimaryLayout.setConstraints(InfoPanel,
+InfoPanelConstraints);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Add the info panel to the frame layout.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; add(InfoPanel);<BR>
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Add and create the repeat customer checkbox.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel
+ContactPanel = new Panel();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanel.setLayout(new
+BorderLayout());<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Add a label to the ContactMethodGroup.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; ContactPanel.add(&quot;North&quot;,new
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Label(&quot;How
+would you like to be contacted? &quot;));<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Declare the CheckboxGroup, and allocate space.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; CheckboxGroup ContactMethodGroup;<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+ContactMethodGroup = new CheckboxGroup();<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Create some checkboxes to put in the group.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; Checkbox EmailBox = new Checkbox(&quot;Email&quot;,ContactMethodGroup,true);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+Checkbox PhoneBox = new<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Checkbox(&quot;Phone&quot;,ContactMethodGroup,false);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+Checkbox MailBox = new<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Checkbox(&quot;US
+Mail&quot;,ContactMethodGroup,false);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Add the checkboxes into the applet
+panel.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+ContactPanel.add(&quot;West&quot;,EmailBox);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; ContactPanel.add(&quot;Center&quot;,PhoneBox);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+ContactPanel.add(&quot;East&quot;,MailBox);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Sets the constraints for the Contact panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+ContactPanelConstraints = new GridBagConstraints();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanelConstraints.gridwidth
+= 2;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints.RELATIVE;
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanelConstraints.weightx
+= 2.0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(ContactPanel,
+ContactPanelConstraints);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(ContactPanel);
+<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Insert the different checkboxes into the panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; GridBagConstraints CustCheckBoxConstraints
+=&nbsp;&nbsp;new GridBagConstraints();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+CustCheckBoxConstraints.weightx =1.0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; CustCheckBoxConstraints.gridwidth = GridBagConstraints.REMAINDER;
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+Checkbox RepeatCustCheckBox = new Checkbox(&quot;Repeat Customer?&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; PrimaryLayout.setConstraints(RepeatCustCheckBox,
+CustCheckBoxConstraints);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+add(RepeatCustCheckBox);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+GridBagConstraints ButtonConstraints = new GridBagConstraints();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; ButtonConstraints.gridx = GridBagConstraints.RELATIVE;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Spreads the buttons out across the
+window.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+ButtonConstraints.weightx = 1.0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; ButtonConstraints.weighty = 1.0;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Declare, set, and add the &quot;Submit&quot;
+button.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+SubmitButton = new Button(&quot;Submit&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; PrimaryLayout.setConstraints(SubmitButton,
+ButtonConstraints);<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+add(SubmitButton);<BR>
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// Declare, set, and add the &quot;Clear&quot; button.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; ClearButton = new Button(&quot;Clear&quot;);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+PrimaryLayout.setConstraints(ClearButton, ButtonConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; add(ClearButton);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Set the constraints and insert the
+Quit button.&nbsp;&nbsp;This button<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+// due to the REMAINDER setting will be the last on the line.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; GridBagConstraints LastButtonConstraints
+= new GridBagConstraints();<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+LastButtonConstraints.gridwidth = GridBagConstraints.REMAINDER;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; QuitButton = new Button(&quot;Quit&quot;);
+<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+PrimaryLayout.setConstraints(QuitButton, LastButtonConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; add(QuitButton);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp; // Method which resets all of the internal
+values.<BR>
+</TT>&nbsp;<TT>&nbsp;&nbsp;&nbsp;
+resetValues();<BR>
+&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<HR>
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#FF0000>Summary</FONT></A>
+</H2>
+<P>
+In this chapter, you covered a good amount of ground. First, you
+saw the specifics of a number of the different containers available
+in the AWT, such as the <TT>Frame</TT>
+class and the <TT>Panel</TT> class.
+You also saw how the <TT>Applet</TT>
+class is a descendant of the <TT>Panel</TT>
+class. You learned how to manipulate windows from inside your
+programs and also how to set the menu bar in those windows. Next,
+you saw how to create dialog boxes using the AWT, and you included
+these boxes in the Order Entry System. Finally, you learned how
+to use the different layout managers in the AWT, and you included
+those in the Order Entry System.
+<P>
+Perhaps the most recognized fact about Java is that it can bring
+the Web alive. Many lay people believe that Java is &quot;just
+the motion on the Web.&quot; This fact says something about Java
+and its appeal: graphics and animation. The next chapter covers
+the basic graphical functions of Java and takes the first steps
+toward creating animation, covered in depth later in this book.
+<P>
+In the next chapter, the graphical functions and capabilities
+of Java are added to the Order Entry System, and an imported logo
+is placed upon the head of the frame. These capabilities are used
+to incorporate some graphics into the Order Entry System interface.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

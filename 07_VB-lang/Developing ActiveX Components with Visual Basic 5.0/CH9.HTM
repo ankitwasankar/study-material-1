@@ -1,0 +1,1334 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 9 -- Creating and Testing Components</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;9</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Creating and Testing Components</FONT>
+</H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#AQuickLookattheUserInterface">
+A Quick Look at the User Interface</A>
+<UL>
+<LI><A HREF="#ItsNotaFormItsaDesigner">
+It's Not a Form, It's a Designer</A>
+</UL>
+<LI><A HREF="#CreatingandTestingActiveXComponents">
+Creating and Testing ActiveX Components</A>
+<UL>
+<LI><A HREF="#TheIdealTestEnvironment">
+The Ideal Test Environment</A>
+<LI><A HREF="#AComponentisBorn">
+A Component is Born</A>
+<LI><A HREF="#TheComponentCompiled">
+The Component Compiled</A>
+<LI><A HREF="#TipsandTechniques">
+Tips and Techniques</A>
+</UL>
+<LI><A HREF="#ReferencingandReferenceOrder">
+Referencing and Reference Order</A>
+<LI><A HREF="#ErrorHandling">
+Error Handling</A>
+<UL>
+<LI><A HREF="#OLEErrorHandlingandquotBasicquotErrorHandling">
+OLE Error Handling and &quot;Basic&quot; Error Handling?</A>
+<LI><A HREF="#EXEServerComponents">
+EXE Server Components</A>
+<LI><A HREF="#RecommendationsandTradeoffs">
+Recommendations and Trade-offs</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+Sometimes I think Microsoft has a top-secret acronym lab. This
+is the laboratory where they come up with terms such as OLE, ActiveX,
+COM, and ISAPI. Given Microsoft's position in the industry, it's
+not surprising that these acronyms rapidly become incorporated
+into the vocabulary of most Windows programmers. Not that we necessarily
+understand exactly what they mean. . . . It's just that sometimes
+you have to make the right noises in order to be taken seriously
+(not to mention receive raises, promotions, and contracts).
+<P>
+The problem with these acronyms is that they can be incredibly
+intimidating to beginners and even to many intermediate level
+programmers. I remember when I first started learning about computers
+and was trying to understand the difference between an 8-bit bus
+and a 16-bit bus. I could understand that 16 bits must be twice
+as large as 8 bits. I just couldn't figure out the relationship
+between a computer and a form of mass transit!
+<P>
+In hindsight, I can laugh at how ignorant I was at that time.
+I felt so far behind I thought I would never catch up. But with
+the pace of change we are all facing, it is a rare programmer
+who does not sometimes feel overwhelmed, ignorant, and as if he
+or she is falling rapidly behind. The mysterious acronyms that
+come out of Microsoft's Acronym Labs (MAL-see, I can do it, too)
+don't help.
+<P>
+What does all this have to do with creating and testing components?
+Well, part of it relates to the confusion that resulted when Microsoft
+renamed OLE as ActiveX, but we've already defused that issue.
+But a large part is triggered by my reaction to my discovery that
+Visual Basic 5.0 had designers. This is a fact that is critical
+to understand when working with VB5. It's not that earlier versions
+of Visual Basic didn't have designers. It's just that they weren't
+called that. Purists will note that the term <I>designer</I> is
+not so much an acronym as a description or technical term. Technically
+they are correct-it comes from the Microsoft Institute of Terminology
+Extensions (MITE), which, of course, is right next door to MAL.
+<P>
+You've probably already noticed that a large part of what I am
+trying to accomplish here involves demystifying the terminology,
+focusing instead on what is really happening instead of what it
+is called. In this chapter, I'm afraid I have my work cut out
+for me&#133;
+<H2><A NAME="AQuickLookattheUserInterface"><FONT SIZE=5 COLOR=#FF0000>
+A Quick Look at the User Interface</FONT></A></H2>
+<P>
+There have been any number of times when I had finally grown accustomed
+to a particular development environment only to install the new
+version and find that, not only was everything in the wrong place,
+but the new version was harder to use and less intuitive. True,
+part of this might be attributed to my conservative nature, but
+as I see it, if someone is going to force me to learn a new user
+interface, menu organization, and set of commands, the least they
+could do is make the new user interface so incredibly good that
+I cannot avoid seeing the benefits of switching over. Of course,
+this rarely happens, so I grudgingly force myself to learn the
+new interface and hope it will remain consistent for at least
+a short while so I can get some work done.
+<P>
+I suspect that somewhere in the development of Visual Basic 5.0,
+Microsoft let their user interface people in on the project. Make
+no mistake, Microsoft's user interface designers are among the
+best in the world. I am personally in awe of their ability to
+make complex applications remarkably intuitive, though I confess,
+there are some things about the Windows 95 interface&#133;. But
+I digress.
+<P>
+So I faced the new Visual Basic 5.0 interface with some skepticism
+and trepidation. My misgivings were entirely misplaced. After
+just a few hours on the VB5 beta, I dreaded going back to Visual
+Basic 4.0. I won't list all the improvements. Microsoft documents
+them quite well. But here are a few of my favorites:
+<UL>
+<LI>I love the editor's List Members and Quick Info options. List
+Members displays a list of all methods and properties for an object
+in a pop-up list box, after you enter the name of an object variable
+followed by a period. QuickInfo lists the syntax for a method,
+including the parameters and their types. These take getting used
+to, but they've saved me an enormous amount of time and helped
+catch errors as well. (I didn't really want that parameter to
+be a variant, did I?)
+<LI>The ability to load multiple projects into a single instance
+of Visual Basic makes debugging DLL code components remarkably
+easy.
+<LI>I like the MDI development environment. I realize this is
+one of the hardest things for many VB programmers to grow accustomed
+to, but I do suggest that you give it a try.
+<LI>The instant watch capability during debugging is wonderful:
+just point to a variable in your code during break mode and the
+value of that variable instantly pops up.
+</UL>
+<H3><A NAME="ItsNotaFormItsaDesigner">
+It's Not a Form, It's a Designer</A></H3>
+<P>
+Reviewing for a moment, remember that a Visual Basic 4.0 project
+is made up of four types of elements: forms, MDI forms, modules,
+and class modules. I'd like to ask you to view these elements
+differently.
+<P>
+First, let's take a look at forms and MDI forms. A form has properties
+that define its appearance and behavior. It also has code that
+defines its methods, events, and additional properties, depending
+on the needs of the application. In a sense, a form is defined
+by a set of properties plus a code module. Visual Basic allows
+you to set the properties of the form through a sophisticated
+design-time user interface. You can draw controls on the form,
+add menus, and so on. A separate code window is used to edit the
+code module for the form.
+<P>
+Class modules and standard modules have little in the way of predefined
+properties. Let me clarify this with an example: A class module
+can be used to define an object that has properties, but the module
+itself only has two properties: Name and Instancing. A class module
+is edited directly in a code window. Figure 9.1 illustrates the
+difference between the approach used to define user interface
+objects, such as forms, and that used to define code modules.
+<P>
+<A HREF="f9-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f9-1.gif"><B>Figure 9.1 :</B> <I>Working with forms and modules</I>.</A>
+<P>
+If a code window is used to edit code (whether it is code associated
+with a class module, standard module, or form), what do you call
+the window that is used to design a form? As of Visual Basic 5.0,
+you call it a designer.
+<P>
+A form designer allows you to edit the properties of a form using
+the VB properties window, to add controls by dropping them from
+the VB toolbox, and to edit menus using the VB menu editor. An
+MDI form designer is very similar to that of a standard form,
+but it has different properties and places restrictions on the
+types of components that can be placed on the form.
+<P>
+Visual Basic 5.0 adds two new types of built-in designers, an
+ActiveX control designer and a user document designer. It also
+makes it possible to add third-party designers called ActiveX
+designers. ActiveX designers cannot be created using VB5, and
+it is too soon to say whether they will become popular or widely
+available.
+<P>
+Why is it so important to understand the difference between a
+designer window and a regular code window? Because, starting with
+Visual Basic 5.0, the behavior of a project within the Visual
+Basic environment can change depending on whether a designer is
+open (visible, maximized, or minimized) or closed.
+<H2><A NAME="CreatingandTestingActiveXComponents"><FONT SIZE=5 COLOR=#FF0000>
+Creating and Testing ActiveX Components</FONT></A></H2>
+<P>
+Sometimes people ask me how I know about the things I write about,
+especially in situations like this where I'm one of the first
+to write about a subject and thus cannot draw on information from
+previous authors. Do I have secret access to Visual Basic's source
+code? Sadly, I do not. I learn about things by reading the documentation
+(what there is of it) and by experimenting. I then combine the
+results of the experiments with my general understanding of Windows
+and ActiveX technology to come up with theories to explain what
+is going on. Usually I get it right. In this chapter, I invite
+you to follow along with the exact process of experimentation
+I went through while figuring out how Visual Basic really deals
+with different types of components.
+<P>
+The Visual Basic documentation provides step-by-step procedures
+for testing both in-process and out-of-process components. They
+are quite accurate, and if you follow them you will be able to
+test your ActiveX components with all of the power of Visual Basic's
+development environment.
+<P>
+Of course, you'll probably also need to keep their step-by-step
+procedures close at hand because there's quite a bit to do. It
+may be tough to remember all of the steps, most of which must
+be followed in the correct order. Unless, of course, you take
+a few minutes to understand what Visual Basic is doing and why,
+in which case the process of testing components becomes quite
+self-evident.
+<P>
+Shall we begin?
+<H3><A NAME="TheIdealTestEnvironment">
+The Ideal Test Environment</A></H3>
+<P>
+One of the great advantages of Visual Basic over other languages
+such as C++ is that it is an interpreted environment. Interpreters
+are great for testing and debugging. They go beyond letting you
+set breakpoints and view variable data in your code (which debuggers
+for compiled programs also support). Interpreters allow you to
+interactively execute commands or functions in the Immediate window,
+and in many cases modify your code while in Break mode. You can
+then continue program execution from any place you wish, using
+the updated code. With Visual Basic 5.0's support for native code
+compilation, you get the best of both worlds: an interpreted environment
+for testing and debugging and a native code-compiled environment
+for your final executable.
+<P>
+So when it comes to testing a component-based application, it
+would clearly be ideal to not only be able to run the main program
+within the VB environment, but to run each of the components within
+the VB environment as well.
+<P>
+But let's take this a step farther. To provide a truly excellent
+test environment, what you really want is to be able to run all
+of the in-process components with the same process as the container
+application. After all, you've already seen that components can
+behave differently when they are in process as compared to out
+of process.
+<P>
+Visual Basic 4.0 allowed you to run one project within each instance
+of Visual Basic, but it did let you run multiple instances of
+VB, which was a great improvement over version 3.0. Keep in mind
+though, that each instance of Visual Basic is, by definition,
+a separate process. So while you could run a DLL server component
+within the Visual Basic environment, it was always in a different
+process from the application using it. This means there were some
+features you could not test properly without first compiling them
+into a DLL. API-related operations that used process-specific
+data, whether memory or resources, were especially susceptible
+to these limitations.
+<P>
+Now I realize this might sound confusing. All along I've been
+saying that DLL servers always run in the same process as the
+application. Now I've shown that it is possible to test them out
+of process. How can this be? Simple: VB cheats. When you run an
+ActiveX DLL component within the VB design environment, it is
+temporarily registered in the registration database so other instances
+of VB, or other applications, can access that component. However,
+it is registered as an ActiveX EXE server, an out-of-process component.
+<P>
+This situation would be intolerable with Visual Basic 5.0. While
+you can test most DLL server features out of process, VB5 was
+intended to let you create ActiveX controls as well, and ActiveX
+controls must run in process. If Microsoft wanted to make it possible
+to test ActiveX controls within Visual Basic, it was absolutely
+essential that a single instance of Visual Basic be able to support
+both an ActiveX control project and a standard project (which
+uses the control) simultaneously.
+<P>
+As long as Microsoft can support one ActiveX control and standard
+project within a single VB instance, it couldn't be that much
+harder to support multiple ActiveX controls, right? And if Microsoft
+can support ActiveX controls, clearly they should be able to support
+DLL servers also, since they are based on the same underlying
+technology but much less complex, right?
+<P>
+Right. That is what they did.
+<P>
+Each standard executable, ActiveX control, and ActiveX server
+is built as a separate project. But within the Visual Basic environment
+you can use the File, Add Project command to load as many projects
+as you wish into the current environment. For your convenience,
+you can also define groups of projects called, remarkably enough,
+<I>project</I> <I>groups</I>. Think of a project group as nothing
+more than a list of projects that can be loaded as a group. You
+can still load or save the projects individually. The projects
+remain independent. But if you are testing an application with
+five different components and want to test all of them in the
+VB environment at once, it is a lot easier to define a project
+group than to have to add them to the environment one at a time
+every time you want to test your application.
+<P>
+Even though the projects are loaded as a group, you still work
+with them one at a time. For example: How do you know which project
+is referred to by the Option command in the Visual Basic Project
+menu?
+<P>
+All of the projects in the group are listed in the Project window.
+At any one time a single item in the Project window is highlighted.
+That determines which project you are working with. If you look
+at an object in the object browser what you see will depend on
+the project selected. For example: when a component project is
+selected, you will see both public and <I>friend functions</I>
+for objects in the component, (you'll find out about friend functions
+in <A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A>). When a project that uses a component is selected,
+you will only see the public functions for the component. The
+friend functions are hidden (as they should be). Figure 9.2 illustrates
+the Conflict.vbg group, which contains three separate projects.
+The CFLTest.vbp project is the standard executable program. The
+group contains two additional ActiveX DLL code component projects.
+<P>
+<A HREF="f9-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f9-2.gif"><B>Figure 9.2 :</B> <I>Project window containing three projects</I>.</A>
+<P>
+One of the projects in the Project window will have its name displayed
+in bold type (in this case, it's CFLTest.vbp). This determines
+which project will actually run when you use VB's Run command.
+You can choose the startup project by right-clicking on the project
+name and selecting the Set as startup command in the pop-up menu.
+Be sure that your main project (whether it is a stand-alone executable
+or ActiveX server) is set as the startup project. One common error
+that occurs when developing ActiveX components is to work on the
+component, then add a stand-alone test application. When you try
+to run the application, nothing happens. It may take several minutes
+to realize that the component is set as the startup project instead
+of the application.
+<P>
+Why don't you have to run the in-process component? And while
+we're asking questions, how does Visual Basic determine whether
+it should use the component within VB or within a previously compiled
+DLL?
+<P>
+To answer these questions and understand more about how to go
+about running applications that use both in-process and out-of-process
+objects, we'll need to discover a bit more about how Visual Basic
+loads components.
+<H3><A NAME="AComponentisBorn">
+A Component is Born</A></H3>
+<P>
+<A HREF="ch6.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch6.htm" >Chapter 6</A>discussed in some depth how a component appears to the
+system. You learned that CLSIDs are kept in the registry to identify
+a component. That IIDs are kept in the registry to identify interfaces.
+That type library identifiers are kept in the registry to tell
+the system which file contains the type library resource. And
+you learned that all of these identifiers are ultimately nothing
+more than GUIDs that are 16 bytes long.
+<P>
+So let's follow the life cycle of an ActiveX component through
+the creation and testing cycle. We'll start with an ActiveX DLL.
+Feel free to follow along with this step-by-step experiment. The
+sample I used can be found in group Test1.vbg in the Chapter 9
+directory on your CD-ROM.
+<P>
+First create an ActiveX DLL project within the VB environment.
+Give the project a name so you can identify it. Add a property
+to the class module for the project.
+<P>
+Add a standard executable to the environment that will test the
+DLL component by accessing the property you created. Be sure your
+test code accesses a property in the component to ensure that
+an object is actually created. You can place debug.print statements
+in the class Initialize and Terminate events to verify that this
+occurs.
+<P>
+Question: Does the component exist in the system registry? Answer:
+No. But you can nonetheless add a reference to the DLL component
+to your standard project! How is this possible? It is possible
+because Visual Basic does not need to go to the registry to obtain
+information about projects that are currently loaded into the
+environment. It checks the currently loaded projects first.
+<P>
+Add a reference to the component project to your test project
+using the project References command. Then make sure that the
+standard project is set to run at startup. Now run the project.
+Running the standard executable project also serves to run the
+DLL code for the first time.
+<P>
+Question: Does the component exist now in the system registry?
+Answer: Yes! Visual Basic may not need to register the component
+in order to use it in process, but once you run a DLL server within
+the VB environment, it becomes available to other applications,
+including other instances of Visual Basic. This makes it possible
+to test a DLL server in the same way it was done with Visual Basic
+4.0-in two separate instances of Visual Basic. The DLL component
+appears in the registry as an EXE server, just as it did in VB4.
+Visual Basic can provide in-process support for components only
+when both the component project and the client project that uses
+the component are loaded into the same instance of Visual Basic.
+<P>
+Run a separate instance of Visual Basic. Create a standard project
+and try adding a reference to your new component. It works! Try
+creating an instance of the component. This works also.
+<P>
+Question: When testing a DLL server as an out-of-process component,
+who is the server for the object? Where is the type library? Answer:
+The server for the object is Visual Basic itself. (Check the registry
+using the techniques described in <A HREF="ch6.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch6.htm" >Chapter 6</A>to see for yourself.)
+The type library is also provided by Visual Basic based on the
+project file, the name of which is recorded in the registry in
+the typelib section for the object. If you are testing a project
+that has not yet been saved, Visual Basic creates a temp file
+with a filename in the form VB??.TMP to hold the project information.
+<P>
+Now stop the project in the instance of Visual Basic that contains
+the component (close the standard executable project). Question:
+Is the information still in the registry? Answer: No. Visual Basic
+deletes the temporary file and removes the information from the
+registry. If you try creating the component using the other instance
+of Visual Basic, the operation will fail.
+<P>
+Now save the project. You'll need it later in the chapter, if
+you are following along with the experiment.
+<P>
+Our conclusions are that to debug in-process components (ActiveX
+DLL servers, ActiveX controls), you add the projects for the controls
+to an instance of Visual Basic, set the main application project
+to be the startup project, and run the application. You can now
+use all of Visual Basic's debugging features for all of the projects
+that are running in the environment. You can even single-step
+through both your main application and the components.
+<H4>Again, with EXE Components</H4>
+<P>
+The situation for EXE components is similar in some ways, radically
+different in others.
+<P>
+The first point to consider is this: ActiveX EXE server components
+run in separate process spaces. This means that each server component
+must be tested in its own instance of Visual Basic.
+<P>
+So let's start with the same experiment, this time using two instances
+of Visual Basic. The sample I used can be found as projects EXETest2.vbp
+and gtpTest2.vbp in the <A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm" >Chapter 9</A>sample directory on your CD-ROM.
+But to reproduce the steps and errors shown here you'll have to
+create a project from scratch, because some of the project settings
+in these examples already reflect the later parts of the test
+sequence.
+<P>
+In the first instance, create an ActiveX EXE project, give it
+a unique name, and add a property to the class. Be sure the instancing
+property for the class is set to MultiUse. In the second instance,
+create a standard EXE project that will test the object.
+<P>
+Question: Can you add a reference to the ActiveX EXE server yet?
+Answer: No. The test application cannot add a reference to the
+component until it has been registered. This differs from the
+in-process case, where Visual Basic was already aware of all of
+the component projects that were loaded with the test application.
+<P>
+Now run the component. You can add a reference to the component
+to your test application. Visual Basic registers the component
+when it was run (just as it did with DLL components). Just as
+before, Visual Basic registers itself as the server for the object.
+<P>
+Next, run the test application. It should now be able to create
+objects provided by the component. Try stepping through a property
+call on the component. You will see that as you single-step, you
+will automatically switch between the two instances of Visual
+Basic as you move between the component code and that of your
+test application!
+<P>
+Finally, save both projects. You will need them shortly.
+<P>
+In conclusions, we find that to debug out-of-process components
+(ActiveX EXE servers, some ActiveX Documents), each component
+must be run in its own instance of Visual Basic. Be sure to run
+each component so that Visual Basic will be able to create objects
+as needed.
+<P>
+Keep in mind that you can combine these techniques! If an ActiveX
+EXE component uses an ActiveX DLL component, you can add the DLL
+component project to the same instance of Visual Basic as the
+EXE component and debug them both.
+<P>
+So far the testing process seems quite simple. Brace yourself,
+it's about to become a bit more complicated. But first, let's
+take a quick look at ActiveX controls.
+<H4>About ActiveX Controls</H4>
+<P>
+ActiveX controls will be discussed in more depth in Part 3, but
+here is a quick preview. ActiveX controls are created and tested
+just like ActiveX DLL servers, with the following exceptions:
+<UL>
+<LI>Controls are referenced through the Components command of
+the Project menu instead of the References command. 
+<LI>When an ActiveX control project is added to the VB environment,
+it is automatically added as a component reference for any other
+projects loaded into the environment that request it.
+<LI>ActiveX controls are disabled when their designer is open.
+Thus you must close the designer before you attempt to add the
+control to another project.
+<LI>Since ActiveX controls can't be run out of process, VB does
+not bother creating a temporary registry entry for controls each
+time they are run.
+</UL>
+<P>
+You'll read more about this in Part 3.
+<H3><A NAME="TheComponentCompiled">
+The Component Compiled</A></H3>
+<P>
+The first time you create and test a component, everything should
+work fine, just as it did in the experiments described in the
+previous section. But to introduce some of the complexities that
+are possible, try the following.
+<UL>
+<LI>Close Visual Basic so that you are starting with a clean slate.
+<LI>Open the DLL test project that you created earlier.
+<LI>Run the test program. Everything should work just as it did
+before.
+<LI>Close the DLL project.
+<LI>Open the ActiveX EXE component in one instance of Visual Basic.
+Run the program.
+<LI>Open the EXE component test program in a second instance of
+Visual Basic.
+<LI>Try running the test program. It will fail! 
+</UL>
+<P>
+Depending on how you accessed the component, you may get a compile-time
+error or an error when accessing the property. You will also see
+the reference dialog box appear showing that the component is
+missing!
+<P>
+Uncheck the entry in the reference list where the missing component
+is indicated and close the dialog box. Bring up the References
+dialog box again, and find the reference to the component. Activate
+the checkbox to add the reference back in. Now run the program.
+It will work again. What happened?
+<H4>Visual Basic and GUIDs</H4>
+<P>
+Using the registry editor, find the program identifier for your
+component in the HKEY_CLASSES_ROOT key in the registry (techniques
+for doing this were shown in <A HREF="ch6.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch6.htm" >Chapter 6</A>. Look at the CLSID subkey
+and write down the number that you find.
+<P>
+Now reload the component project. You can do this by either exiting
+Visual Basic and restarting it, then reloading the project, or
+by simply opening the project again using the File, Open command.
+<P>
+Run the component project and try running the test project. You
+will get the message: &quot;Connection to Type Library or object
+library for remote process has been lost. Press OK for dialog
+to remove reference.&quot; This is effectively the same error
+you saw earlier. 
+<P>
+Look at the CLSID subkey for the object again. (Be sure to use
+the Refresh command in the registry editor to reload the registry
+based on the current settings.) The CLSID is different!
+<P>
+Now, this is serious!
+<P>
+If you remember our earlier discussion of COM you'll remember
+that a key part of COM is that types of object and interfaces
+are uniquely identified, not by name, but by their class or interface
+identifiers. If the class identifier changes, as far as Windows
+is concerned you have a completely different type of object. No
+wonder the test program couldn't reference the component-once
+the class identifier had changed, the old component no longer
+existed.
+<P>
+When you delete the old &quot;missing&quot; reference and add
+a new reference, you are, in effect, telling your test program
+that you are using a completely different component. This new
+component just happens to work because the names of its classes
+and properties are the same as the old one, but when Visual Basic
+saves or compiles the test project, it will now save the identifiers
+to the new component instead. If you eliminate this component
+(by reloading the project), your test program will once again
+fail because the component that it expects no longer exists. You
+could avoid this problem by creating objects dynamically (using
+the CreateObject function) and using only late binding. In that
+case Visual Basic does not store GUID information with the project
+but also retrieves it each time the object is used. This solution
+is obviously less than ideal.
+<P>
+Why isn't this a problem with the ActiveX DLL server? Because
+Visual Basic is smart enough to update the references to components
+that are running in the same instance of Visual Basic. It knows
+that you added a reference to a component in the project group
+and can go ahead and update the test application to the new GUIDs
+as needed. 
+<P>
+Does this mean that there is never a problem with testing DLLs?
+<P>
+Not at all, because the GUIDs for DLL servers are changing in
+the registry as well. If you were to test the DLL out of process
+(as described earlier), you would run into exactly the same problem
+you faced with the EXE server. However, there are worse problems
+to consider. What happens when you start compiling the DLLs and
+EXEs? If the GUIDs changed each time, you would never be able
+to recompile them, because client applications would never be
+able to find objects between one version and the next.
+<P>
+Clearly there must be some way to tell Visual Basic to keep using
+the same GUID values between sessions. Well, let's see&#133;.
+<H4>Project Compatibility</H4>
+<P>
+Reload your EXE server component, and this time make the executable
+using the File, Make command. This accomplishes two things. First,
+the component is now registered in the system registry. The new
+executable is listed as the server for the component. Second,
+if you look at the Component tab of the Project-Properties dialog
+box, you will see that the version compatibility option has been
+set to project compatibility with the executable.
+<P>
+Run the component project. Update the References dialog box in
+your test program to reference this component. This is necessary
+in this particular case because you reloaded the EXE server project,
+thus creating a new type of object. You will see that there are
+now two different components with the same name in your References
+dialog box: one implemented by the executable, the other implemented
+by your project. (Look at the bottom of the References dialog
+box where it displays the server name. The executable will have
+an .EXE extension; the component running in the VB environment
+will have the .VBP extension.) Be sure you reference the one that
+is implemented by the component project running within Visual
+Basic.
+<P>
+Now run the test program. It will work. You will be able to step
+into the project just as before.
+<P>
+Let's take a closer look at this.
+<P>
+In my implementation of this experiment, the component name was
+gtpEXETest2.EXEClass2. If this name is registered in the registry
+as being implemented by the compiled executable, how is it possible
+for the object to also be implemented by VB so that a test application
+can debug it?
+<P>
+Once again, VB cheats. When you run a component in an instance
+of Visual Basic, Visual Basic changes the registry entry for the
+program ID to refer to a CLSID that is implemented by Visual Basic
+instead. This CLSID is <I>not</I> the same as the one for the
+compiled executable. That's why you can see two separate entries
+for the component in the References dialog box. One is for the
+compiled executable. The other is the temporary one that is created
+by Visual Basic when the component is running in the design environment.
+Your test program refers to the temporary CLSID, not the executable
+one.
+<P>
+So why bother with the executable at all? It is never actually
+used by the test program, right?
+<P>
+Right. The compiled executable is not used by the test program
+at all. But it <I>is</I> used by Visual Basic to determine the
+GUID values for the temporary component registration.
+<P>
+When you made the executable for the first time, the executable
+was assigned a complete set of GUID values for the component type,
+interfaces, and type libraries. Visual Basic also set the project
+compatibility option, which tells VB to preserve those GUID values
+if possible on future builds of the project.
+<P>
+Visual Basic is also smart enough to use those values when running
+the component in design mode. Of course it can't use the exact
+values-they would conflict with the compiled program. But VB can
+modify them slightly, by adding an offset to the GUID values.
+<P>
+The important thing is that Visual Basic can use the same values
+every time. Try the following: Stop the instance of VB that is
+running the EXE server and reload the server project. Run the
+server project. Now run the test program again. The missing reference
+problem has vanished. Visual Basic uses the information in the
+executable file to make sure that the server has the same GUID
+values, even when run within the environment. When you are finished
+testing the server object, you can change the reference of the
+test program to the executable.
+<P>
+Visual Basic's ability to preserve GUID information is extremely
+important. It makes it possible to upgrade components and still
+have them work with older applications that use them. However,
+what you have seen so far is just the tip of the iceberg with
+regards to compatibility issues. These issues will be discussed
+in much more depth in <A HREF="ch25.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch25.htm" >Chapter 25</A>, &quot;Versioning.&quot; The
+intent at this point is to provide you with enough information
+to create, test, and debug your applications.
+<H4>Single Use EXE Servers</H4>
+<P>
+Create two projects in much the same way as you created the ActiveX
+EXE server example earlier. You'll find projects gtpSingleEXE
+(the component server) and EXETest2.vbp (the test program) in
+the <A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm" >Chapter 9</A>sample directory on your CD-ROM. The test program
+creates an instance of the server's object every time you click
+on a command button.
+<P>
+In fact, the only difference between this example and the prior
+one is that the component's object class has its Instancing property
+set to Single Use. Now try the following:
+<UL>
+<LI>Run the server.
+<LI>Run the test program.
+<LI>Click the command button to create an object.
+<LI>Click the command button again to create another object.
+</UL>
+<P>
+At this point the test program will fail with the message that
+the Visual Basic design environment can provide only one instance
+of a class. The fact that your test application released the first
+object that it created has no bearing on this issue. Once an instance
+of Visual Basic creates an instance of a single use object, it
+cannot create another until it has been stopped and restarted.
+<P>
+This makes single-use EXE servers a bit more difficult to debug.
+Your best bet in cases like this might be to use the compiled
+EXE server for most of the objects, using CreateObject on the
+one object that you wish to test (but you'll probably have to
+use late binding in this case).
+<H3><A NAME="TipsandTechniques">
+Tips and Techniques</A></H3>
+<P>
+Here are some tips that should prove helpful while creating and
+testing ActiveX components.
+<H4>Registry Clutter</H4>
+<P>
+Visual Basic temporarily registers components when they are run
+within the VB environment, then unregisters them when you stop
+execution. If VB terminates abnormally, those components may never
+be unregistered, thus leading to increasing clutter in your system
+registry.
+<P>
+Microsoft has developed a program called RegClean that is designed
+to remove registry entries to objects that no longer exist. You
+should delete the Visual Basic .TMP files before running RegClean.
+Now I must caution you: I've heard reports from people claiming
+that RegClean has messed up their registration database. I have
+used earlier versions of this program without problems, so I can't
+attest to that myself. I would strongly recommend under Windows
+NT that you make an emergency repair disk before running RegClean
+so you can restore your system registry if worse comes to worst.
+Look for the NT rdisk.exe program to accomplish this task.
+<H4>Full Compile</H4>
+<P>
+Visual Basic supports three compilation modes while working within
+the VB environment. These modes are set by selecting the Compile
+on Demand and Background Compile checkboxes in the General tab
+of the Options dialog box, which is under the Tools menu. The
+three modes are as follows:
+<UL>
+<LI>Full Compile: This mode is set by clearing the Compile on
+Demand checkbox. All projects in the environment are compiled
+each time they are run.
+<LI>Compile on Demand: This mode is set by selecting the Compile
+on Demand checkbox but leaving the Background Compile checkbox
+cleared. In this mode, code is compiled as it is needed. For example:
+if your program doesn't actually create an instance of a class
+object, the class module may never be compiled.
+<LI>Background Compile: This mode is set by selecting both the
+Compile on Demand and Background Compile checkboxes. This mode
+is similar to Compile on Demand, except that it will use any available
+idle time to start compiling additional modules.
+</UL>
+<P>
+You can use any of these modes when working with objects, but
+it is very disconcerting to be running a project and suddenly
+have an object that it is using fail due to a compilation error.
+(It's bad enough when they fail because of <I>real</I> bugs.)
+Personally, I do almost all of my work in Full Compile mode. That
+way I can deal with all syntax errors before I begin the real
+test and debug process.
+<P>
+This approach can be inefficient for very large projects that
+take a long time to compile. So at the very least you should use
+full compilation on your EXE server projects. It will save you
+a lot of extra effort switching between instances and dealing
+with timeout errors. Use Ctrl+F5 or the menu command Run, Start
+with full compile.
+<H4>Who Implements Servers?</H4>
+<P>
+Let's say you have a component named MyExeServer. The component
+has been compiled to MyExeServer.exe. You are also running the
+component in an instance of Visual Basic. When you run an application
+that uses the component, which one will you get?
+<P>
+If your application uses early binding (in other words, you added
+a reference to the component and defined object variables using
+the component type), your object will be created by whichever
+component you referenced. If you chose the compiled program in
+the References dialog box, your object will be created by that
+program. If you chose the VB project in the References dialog
+box, your object will be created by VB and you will be able to
+debug the component.
+<P>
+If your application uses late binding (in other words, you reference
+the component As Object and you use the CreateObject function
+to create the object), you will receive an object created by VB
+when it is running the component project. Objects created while
+the project is not running will be provided by the compiled executable.
+Be careful not to stop VB while using a component that it provides.
+This will cause an error in your client application. 
+<P>
+What if you have a project that references a compiled EXE or DLL
+server and you want to test the component as a VB project instead?
+<P>
+It depends. If your program is using the component with late binding
+(it uses the CreateObject function to create objects from the
+component), you will automatically receive components from a running
+VB project because Visual Basic modifies the program ID to reference
+the VB-provided component when it starts running. However, if
+you have added the component as a reference to your project, you
+will need to bring up the References dialog box and explicitly
+set your project to use the components provided by the running
+VB instance. (Once again, look for the component that is implemented
+by a VB project using the VBP extension.)
+<H4>StartMode</H4>
+<P>
+When does a Visual Basic application stop running? When its last
+form is closed.
+<P>
+When does a Visual Basic ActiveX EXE server stop running? When
+its last object is released and last form closed.
+<P>
+What happens when you try to run an ActiveX server application
+directly? If it has a Sub Main in a standard module, the subroutine
+will run. When the subroutine ends, assuming no forms have been
+loaded in the meanwhile, the application will close. If there
+are no forms loaded and no Sub Main, the application will load,
+then end immediately. The only thing it will accomplish is to
+register itself into the system registration database.
+<P>
+What happens when you try to run an ActiveX server application
+in the VB design environment? Pretty much the same thing. But
+you've already seen that it is necessary to place the component
+into run mode in order for Visual Basic to provide instances of
+the component to other applications. How do you prevent the server
+program from ending immediately? 
+<P>
+The answer is in the Components tab of the Project dialog box
+under the Options menu. If you set the Start Mode option to ActiveX
+Component, Visual Basic keeps the project in run mode until you
+explicitly stop the project, even though it has no forms open
+or no objects outstanding. This option only affects the behavior
+of the component within the VB environment.
+<P>
+By the way, during the Sub Main routine of an ActiveX EXE server
+you can read the App.StartMode property to see if the program
+was started due to a client object request (in which case it will
+have the value vbSModeAutomation) or was launched by the user
+(in which case it will have the value vbSModeStandalone). Remember
+that Sub Main in an ActiveX server launched to provide components
+is not called until the first object is created.
+<H2><A NAME="ReferencingandReferenceOrder"><FONT SIZE=5 COLOR=#FF0000>
+Referencing and Reference Order</FONT></A></H2>
+<P>
+What happens when methods or properties in two objects conflict
+with each other? This can occur when two objects define global
+method, properties, or enumerated constants.
+<P>
+In these cases, Visual Basic uses whichever one comes first in
+the reference order. This is demonstrated by the Conflict.vbg
+group of projects in the <A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm" >Chapter 9</A>directory on your CD-ROM.
+<P>
+The Conflict and Conflict2 projects both contain a property called
+MyGlobal, which is accessible globally (the Instancing property
+of the class is set to Global MultiUse). 
+<P>
+The code in the Conflict project for this property is as follows:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get MyGlobal() As Variant
+    MyGlobal = &quot;Global from Conflict&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+And in the Conflict2 project:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get MyGlobal() As Variant
+    MyGlobal = &quot;Global from Conflict2&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The CFLTest project contains the following code to verify which
+property is accessed:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdMyGlobal_Click()
+    MsgBox MyGlobal
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+What value will be displayed? It depends on the reference order
+displayed in the References dialog box. If Conflict appears ahead
+of Conflict2, the first one will be accessed. You can use the
+Priority buttons to change the positions of object references
+in the list. However, you cannot move an added reference ahead
+of the Visual Basic libraries. This issue is especially important
+with regard to enumerated constants, which are global in all cases.
+<H2><A NAME="ErrorHandling"><FONT SIZE=5 COLOR=#FF0000>
+Error Handling</FONT></A></H2>
+<P>
+The Microsoft Visual Basic documentation discusses two approaches
+for handling errors. The API style requires that you return an
+error status to indicate that a function succeeded or failed.
+The Basic style uses Visual Basic's built-in error handling (the
+notorious &quot;on error&quot; statement).
+<P>
+Microsoft also suggests that you remain consistent in your choice.
+Functions should consistently return error values, or use a ByRef
+parameter to return an error value, or raise errors that can be
+handled by the client.
+<P>
+This is a rather frustrating subject to deal with, because no
+matter which approach I recommend, a large number of readers will
+declare that I'm wrong. The truth is that there is no clear right
+or wrong on this issue. So instead of going right into recommendations,
+let's take a closer look at how ActiveX errors are handled.
+<P>
+The ErrTest program group in the <A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm" >Chapter 9</A>directory on your CD-ROM
+contains two projects, ErrTest.vbp and ErrClient.vbp. The ErrTest
+project contains a DLL server with a single class whose Instancing
+property is set to Global MultiUse (to save the hassle of creating
+objects just to test object functions). This class contains three
+functions that perform a simple division. The first of these,
+DivideBy1, uses API-style error checking. Because the function
+returns a numeric value, the error result must be returned in
+a separate ByRef parameter, errval. The function is shown below:
+<BLOCKQUOTE>
+<PRE>
+' This one demonstrates an API like approach
+Public Function DivideBy1(numerator As Long, denominator As Long, errval As Long) As Long
+    If denominator = 0 Then
+        ' Catch the error situation
+        errval = -1
+        Exit Function
+    End If
+    DivideBy1 = numerator / denominator
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+When using this function, the client must first define a long
+variable to pass as the errval property, then check the result
+after the call. You could make errval optional so clients who
+don't care about the resulting value can avoid passing the extra
+parameter.
+<P>
+The DivideBy2 function takes the approach of allowing the client
+to handle the error. It is shown below:
+<BLOCKQUOTE>
+<PRE>
+' Let the client handle the error
+Public Function DivideBy2(numerator As Long, denominator As Long) As Long
+    DivideBy2 = numerator / denominator
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+The DivideBy3 function uses OLE error handling. It uses its own
+internal error handling to detect the division error (it could
+also use the DivideBy1 technique of checking the denominator value
+first). When an error is detected using either technique, it raises
+the error in the client application. We'll take a closer look
+at the raise operation shortly.
+<BLOCKQUOTE>
+<PRE>
+' Basic (exception style) error handling
+Public Function DivideBy3(numerator As Long, denominator As Long) As Long
+On Error GoTo problem3:
+    DivideBy3 = numerator / denominator
+    Exit Function
+problem3:
+    Err.Raise vbObjectError + 1000, &quot;clsErrorMaker&quot;, &quot;Error Maker Numeric Error&quot;
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+Figure 9.3 shows ErrClient program that is used to test this component.
+The array of option buttons determine which function to call.
+The buttons perform either a simple division (which does not cause
+an error), and a division by zero. This code is shown in the listing
+below.
+<P>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed: ErrTest - Error testing program
+' Copyright (c) 1996 by Desaware Inc. All Rights Reserved
+Option Explicit
+
+Dim CurrentOptionIndex As Integer
+
+' Set the current option
+Private Sub cmdOp_Click(Index As Integer)
+    Dim numerator As Long
+    Dim denominator As Long
+    Dim errval&amp;
+    Dim result&amp;
+    Select Case Index
+        Case 0  ' Any legal values to show correct operation
+            numerator = 10
+            denominator = 5
+        Case 1  ' Divide by zero error
+            numerator = 10
+            denominator = 0
+    End Select
+    
+    Select Case CurrentOptionIndex
+        Case 0  ' API style
+            result = DivideBy1(numerator, denominator, errval)
+            If errval = -1 Then
+                MsgBox &quot;Error occurred&quot;
+            End If
+        Case 1  ' No handling
+            result = DivideBy2(numerator, denominator)
+        Case 2  ' Basic style
+            result = DivideBy3(numerator, denominator)
+    End Select
+End Sub
+
+Private Sub optFunction_Click(Index As Integer)
+    CurrentOptionIndex = Index
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+In the General tab of the Options dialog box under the Tools menu,
+you will find an error trapping selection. There are three options.
+Break on all errors causes VB to break as soon as an error occurs
+regardless of the setting of the error handlers. Break in class
+module causes unhandled errors to cause VB to break in the component
+module. Break on unhandled errors causes VB to break in the client
+at the line that caused the error.
+<P>
+Let's explore these permutations one at a time.
+<P>
+The DivideBy1 case is the simplest. No Visual Basic error is ever
+raised. It is up to the client to check for errors.
+<P>
+The DivideBy2 case is somewhat trickier. When the error trapping
+mode is set to break on all errors or to break in the class module,
+Visual Basic will break in the clsErrorMaker class where the division
+occurs. Otherwise it will break in the ErrClient application on
+the line that called the DivideBy2 method. This is because a client
+automatically handles errors generated by a component, so the
+error within the component is considered to be handled by the
+client.
+<P>
+The DivideBy3 case includes error handling, which in turn raises
+an error to the application. When the error trapping mode is set
+to break on all errors, Visual Basic will again break on the line
+in the clsErrorMaker class where the division occurs. When the
+error trapping mode is set to break in the class module, the error
+is triggered on the line: Err.Raise vbObjectError + 1000, &quot;clsErrorMaker,&quot;
+&quot;Error Maker Numeric Error.&quot; Why is this? The line with
+the division is not considered an error in the class module because
+it was handled by the class module. But the Err.Raise command
+triggers an error that is not handled in the class module and
+will be passed upward to the client. This is the first real error
+in the class module and will thus cause a break in this trapping
+mode. When the error trapping mode is set to break on unhandled
+errors, VB will break on the line in the ErrClient application
+that called the DivideBy3 method.
+<H3><A NAME="OLEErrorHandlingandquotBasicquotErrorHandling">
+OLE Error Handling and &quot;Basic&quot; Error Handling?</A></H3>
+<P>
+Way back in <A HREF="ch4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch4.htm" >Chapter 4</A>when we looked at some of the fundamental
+technologies of OLE, one of the important items on the list was
+<P>
+<I><B>A standard error reporting mechanism and set of error codes
+and values.</B></I>
+<P>
+Why is this necessary? Because COM objects can be created by many
+different languages. Without a standard error reporting mechanism,
+there would be no way for clients to handle component errors without
+having specialized knowledge of each component. And the whole
+idea of COM was to allow clients to work with generic objects
+without such specialized information.
+<P>
+The exact method OLE uses to raise errors is not important. What
+is important is that every OLE error value be a 32-bit value.
+The value is broken up as shown in Table 9.1.<BR>
+<P>
+<CENTER><B>Table 9.1:&nbsp;Breakdown of an OLE Error Value</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144><center><B>Bit Values (31 Is High, 0 Is Low)</B></TD>
+<TD WIDTH=432><B>Meaning</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><center>31</TD><TD WIDTH=432>1 = Failure, 0 = Success
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><center>27-30</TD><TD WIDTH=432>Reserved or used internally by OLE
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><center>16-26</TD><TD WIDTH=432>Facility: Indicates the subsystem that generated the error. For example: Windows is 8. ActiveX automation is 2.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><center>0-15</TD><TD WIDTH=432>The actual error number
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Many errors are assigned standard numbers. For example: Let's
+say you attempted to execute a method on a dispatch interface
+that did not exist. You would probably get error code &amp;H80020003.
+This is comprised of the following values combined:
+<UL>
+<LI>&amp;H80000000-Bit 31 is set, indicating an error.
+<LI>&amp;H00020000-Bits 16-26 are 2, indicating that an automation
+error occurred.
+<LI>&amp;H00000003-Bits 0-15 are 3, indicating the &quot;member
+not found&quot; error.
+</UL>
+<P>
+You can define your own errors. In fact, the clsErrorMaker object
+does this by returning the value vbObjectError + 1000. 
+<P>
+What is vbObjectError? It's the value &amp;H80040000. This is
+comprised of the following values combined:
+<UL>
+<LI>&amp;H80000000-Bit 31 is set indicating an error.
+<LI>&amp;H00040000-Bits 16-26 are 4, indicating that the error
+is interface specific (each interface defines its own errors).
+</UL>
+<P>
+What error numbers can you use? You share vbObjectError with VB
+itself, so you should not use any values below 512. You can't
+use values over 65536 because they would overflow into the facility
+field. That's why all errors that you raise should be in the range
+vbObjectError+512 to vbObjectError + 65536.
+<P>
+Now here's a question: Instead of raising errors in this range,
+could you use API techniques to simply return a result in this
+range to indicate an error?
+<P>
+Of course you can. In fact, if you were to call OLE DLL functions
+directly (which is possible), you would find that many of them
+return an HRESULT value that is exactly that: an OLE error value.
+<P>
+Raising an event using the Err.Raise method provides an effective
+way to trigger errors in clients that use your component. You
+should provide a source name and description as well. I like to
+use the name of the object as the source name.
+<H3><A NAME="EXEServerComponents">
+EXE Server Components</A></H3>
+<P>
+EXE server components deserve extra attention because they can
+trigger a unique set of errors that are associated with the fact
+that they run in a separate process space. The EXEErr.vbp project
+is a simple server that demonstrates some operations that you
+should never intentionally place in a server. They are shown in
+the listing below.
+<BLOCKQUOTE>
+<PRE>
+' GTP EXEErr - EXE error server
+' Copyright (c) 1997 by Desaware Inc.
+' All Rights Reserved
+
+Option Explicit
+
+' Don't ever do this!
+Public Sub KillThisComponent()
+    End
+End Sub
+
+' Don't do this either
+Public Sub NeverReturns()
+    Do
+    Loop While True
+End Sub
+
+' Loads a form that after a few seconds will
+' end the program
+Public Sub LoadBadForm()
+    Load BadForm
+End Sub
+
+' Function to call that does nothing
+Public Sub SafeFunction()
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The KillThisComponent method terminates the server during the
+method call. It should go without saying that you should never,
+ever do this. But it does provide an excellent simulation of what
+happens when a memory exception or illegal operation (previously
+known as General Protection Fault) occurs in a component. Not
+that an exception would ever occur in one of your components,
+but&#133;
+<P>
+The NeverReturns method simulates a component that hangs, whether
+through an infinite loop bug or other long operation. This type
+of problem has been known to happen. 
+<P>
+The LoadBadForm method loads an invisible form that contains a
+timer control set with a 2-second timeout. When the timeout expires,
+the End statement is executed, terminating the server. When running
+the server in the VB environment, this can be used to demonstrate
+what happens when you attempt to access an object that cannot
+be created.
+<P>
+The SafeFunction method provides one safe function to call for
+testing.
+<P>
+The ErrTest2.vbp project shown in the listing below shows the
+code for some tests that you can perform on the server to illustrate
+and handle some of these errors. The form for this project contains
+five command buttons that simply call the Click functions shown
+in the listing.
+<BLOCKQUOTE>
+<PRE>
+' gtp - Tests gtpEXEError
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+Option Explicit
+
+
+Private Sub cmdBadError2_Click()
+    Dim obj As New BadClass
+On Error GoTo BadError2
+    obj.KillThisComponent
+    Exit Sub
+BadError2:
+    MsgBox &quot;The error was caught&quot;
+End Sub
+
+Private Sub cmdBadError_Click()
+    Dim obj As New BadClass
+    obj.KillThisComponent
+End Sub
+
+Private Sub cmdEnd_Click()
+    Dim obj As New BadClass
+    obj.LoadBadForm
+End Sub
+
+Private Sub cmdNever_Click()
+    Dim obj As New BadClass
+    obj.NeverReturns
+End Sub
+
+
+Private Sub cmdSafe_Click()
+    Dim obj As New BadClass
+On Error GoTo safeerror
+    obj.SafeFunction
+    Exit Sub
+safeerror:
+    MsgBox &quot;Couldn't call the safe method&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The cmdBadError_Click and cmdBadError2_Click functions demonstrate
+what happens when a server operation fails. Fortunately, this
+is not a common occurrence. Should you take care to have error
+handling enabled in every place where you use an EXE server? It
+depends on your application. In many cases you might be just fine
+with having your application terminate in this rather unusual
+case. However, you should be aware that any error handling you
+do have enabled will also be triggered by this type of error;
+take that into account in your error-handling routine.
+<P>
+The cmdNever_Click routine starts the server into an infinite
+loop. The trick for testing this situation is to run a second
+instance of the ErrTest2 application and click on the cmdSafe_Click
+button (a safe operation). Because this EXE server runs in a single
+thread, the infinite loop started by the first ErrTest2 program
+prevents the second instance from accessing the server, causing
+a &quot;server busy&quot; error.
+<P>
+The cmdEnd_Click method causes the server to terminate after a
+couple of seconds. Try selecting this command and then the cmdSafe_Click
+operation. This shows what happens when the server cannot provide
+an object of the specified type.
+<H3><A NAME="RecommendationsandTradeoffs">
+Recommendations and Trade-offs</A></H3>
+<P>
+The following are some recommendations I hope you will find helpful.
+<P>
+The most important form of error handling is to prevent errors
+through good design. Responding to errors caused by invalid client
+operations or parameters is one thing, but you don't really want
+to be raising errors due to bugs in your code.
+<P>
+If your component uses other components that may raise errors,
+you should use error handling in your component, then raise your
+own errors to the client. People using your component will generally
+want to deal with the methods and properties you define. The last
+thing they want to do is deal with a myriad of unhandled errors
+triggered by subcomponents. You should document the errors your
+component can raise.
+<P>
+Rather than raising errors in each function that can trigger an
+error, consider using a centralized error-handling function for
+the object. This eliminates the need to specify the source each
+time. It also allows you to centralize description strings to
+make localization easier. (I often put all description strings
+into a single standard module.)
+<P>
+Use error numbers that are equal to, or a fixed offset from, the
+context identifiers used in your help file. For example: if your
+errors have context identifier numbers 1000-2000, you could use
+error numbers 600-1600 and just add 400 to calculate one from
+the other. This makes it easy to include the context ID in the
+Err.Raise statement.
+<P>
+The API style error handling has the advantage of often being
+easier to both read and debug. Unlike the Basic style, there are
+no sudden jumps in the flow of the program to keep track of (one
+of the reasons that the Goto statement is so hated by programmers).
+I personally prefer it for most situations, especially within
+my own applications and when creating ActiveX components. I tend
+to use Basic style errors more often with ActiveX controls because
+VB programmers are accustomed to controls raising errors when
+they occur. Hopefully Visual Basic will one day evolve to support
+true structured exception handling, a more block-structured form
+of raising errors that does not have the radical changes in program
+flow that the On Error Goto statement causes.
+<P>
+When in doubt, you can always support both the API and Basic style
+error reporting. Just implement a property that lets your object's
+user choose between the two. Then raise errors only if they have
+enabled Basic style error reporting.
+<P>
+Now that you know how components work within your system, it's
+time to look inside at the Visual Basic class module, for it and
+its close relatives the form, ActiveX control, and ActiveX document
+modules, form the foundation of every Visual Basic object.
+<HR>
+
+<CENTER><P><A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

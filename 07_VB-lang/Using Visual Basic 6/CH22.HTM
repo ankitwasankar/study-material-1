@@ -1,0 +1,670 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 22 -- Creating Controls On-the-Fly Using Control Arrays</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch21.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch21/ch21.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch23.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch23/ch23.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 22 -<BR>
+Creating Controls On-the-Fly Using Control Arrays</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">What Is a Control Array?</A>
+	<UL>
+		<LI><A HREF="#Heading2">Creating a Control Array at Design Time</A>
+		<LI><A HREF="#Heading3">Extending Control Arrays at Runtime</A>
+	</UL>
+	<LI><A HREF="#Heading4">Working with a Common Event Handler</A>
+	<LI><A HREF="#Heading5">Grouping Objects with the Frame Control</A>
+	<LI><A HREF="#Heading6">Using the Scroll Bar Controls</A>
+	<LI><A HREF="#Heading7">Using For...Next Loops with Control Arrays</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>What Is a Control Array?</H2>
+<P>In Visual Basic, you can create arrays of any data type you want. You can also
+create an array of controls. Control arrays are a distinctive feature of Visual Basic
+that brings efficiency and power to the language. You can use them to create a common
+event procedure that's shared among all the controls in the control array. You also
+can use them to add and remove controls and forms to your program dynamically at
+runtime. This chapter shows you all you need to know to be able to work effectively
+with them.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Can I create a control array?</STRONG></P>
+	<P>The name Index is used for other purposes, so check the online help before assuming
+	that a control can be added to a control array. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>All the intrinsic controls can be used in control arrays. These controls all have
+an Index property that's used to identify a particular control in a control array.</P>
+<P>
+<H3><A NAME="Heading2"></A>Creating a Control Array at Design Time</H3>
+<P>Many control arrays that you create will be built at design time. As you add controls
+to your form, you will need to group some of them into control arrays. This example
+shows you how to do that.</P>
+<P><B>Create a control array of CommandButtons</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Add a CommandButton to the center of the form frmMain and name it cmdMyButton.
+	Set the value of cmdMyButton's Caption property to Action.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Make sure that cmdMyButton is selected. Choose <B>Copy</B> from the
+	<B>Edit</B> menu to copy the CommandButton to the Clipboard.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Choose <B>Paste</B> from the <B>Edit</B> menu . You're presented with
+	a dialog box asking whether you want to create a control array. Click <B>Yes</B>
+	to create the control array.
+	<P>
+</DL>
+
+<P>Now that the control array is created, if you go to the Properties window and
+display the Object drop-down list, notice that there are now two CommandButtons with
+the name cmdMyButton, each with its own subscript (see Figure 22.1).</P>
+<P><A HREF="javascript:popUp('22fig01.gif')"><B>FIGURE 22.1</B></A> <I>When a control
+is part of a control array, you must always reference the subscript to access the
+control.</I></P>
+<P>Double-click either CommandButton to look at the Click event procedure. Notice
+that it now has an Index argument (see Figure 22.2). This argument is an Integer
+that indicates the subscript of the control to which the event procedure applies.
+Because all controls of a control array share the same event procedure, you differentiate
+between controls by the value of Index--0 is the first control, 1 is the second control,
+2 is the third, and so on.</P>
+<P><A HREF="javascript:popUp('22fig02.gif')"><B>FIGURE 22.2</B></A> <I>The Index
+argument is filled by Visual Basic whenever an event occurs for a control in a control
+array.</I></P>
+<P>The code in Listing 22.1 displays a string in the titlebar of the form frmMain
+that reports which CommandButton of the control array cmdMyButton() the user clicked.
+Copying this code to the cmdMyButton_Click(Index as Integer) event procedure can
+give you a sense of how to work with the Index argument. Figure 22.3 shows this code
+in action.</P>
+<P>
+<H4>LISTING 22.1&#160;&#160;The CommandButton's Click Event Handler</H4>
+<PRE><B>01 </B>Private Sub cmdMyButton_Click(Index As Integer)</PRE>
+<PRE><B>02 </B>` Change the form's caption to indicate which</PRE>
+<PRE><B>03 </B>` button in the control array generated an event.</PRE>
+<PRE><B>04 </B>Me.Caption = &quot;You clicked button #&quot; &amp; Index &amp; &quot;.&quot;</PRE>
+<PRE><B>05 </B>End Sub</PRE>
+<P>LISTING 22.1 Refers to the form in which this code resides</P>
+<P><A HREF="javascript:popUp('22fig03.gif')"><B>FIGURE 22.3</B></A> <I>After the
+user clicks the button on the right, the form's title changes accordingly.</I></P>
+<P>
+<H3><A NAME="Heading3"></A>Extending Control Arrays at Runtime</H3>
+<P>Making a control array at design time will suffice if you know how many controls
+you will need in the array. But what do you do if you don't know how many controls
+you will need in your control array until the program is running? You solve this
+problem by adding controls to your control array at runtime by using the Load statement.</P>
+<P><B>Add a control to a control array at runtime</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Add a CommandButton to the upper-left corner of the form frmDArry and
+	name it cmdCtrlArray.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Creating a control array</STRONG></P>
+	<P>This action creates a control array with one element. The Index must be set to
+	zero initially, so that controls loaded later will be added to the control array
+	correctly. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>In the Properties window, set the value of the CommandButton's Index<B>
+	</B>property to 0.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>So you can tell the controls apart at runtime, set the CommandButton's
+	caption to Button #0.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Add the code in Listing 22.2 to the form's Form_Load() event.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Save and run the code.
+	<P>
+</DL>
+
+<H4>LISTING 22.2&#160;&#160;Adding a New CommandButton</H4>
+<PRE><B>01 </B>Private Sub Form_Load()</PRE>
+<PRE><B>02 </B>`Create a new command button</PRE>
+<PRE><B>03 </B>Load cmdCtrlArray(1)</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>`Move it directly underneath the old one</PRE>
+<PRE><B>06</B> cmdCtrlArray(1).Left = cmdCtrlArray(0).Left</PRE>
+<PRE><B>07 </B>cmdCtrlArray(1).Top = cmdCtrlArray(0).Top _</PRE>
+<PRE>+ cmdCtrlArray(0).Height</PRE>
+<PRE><B>08 </B>cmdCtrlArray(1).Caption = &quot;Button #1&quot;</PRE>
+<PRE><B>09</B></PRE>
+<PRE><B>10 </B>`Make the new button visible</PRE>
+<PRE><B>11 </B>cmdCtrlArray(1).Visible = True</PRE>
+<PRE><B>12</B></PRE>
+<PRE><B>13 </B>End Sub</PRE>
+<P>When you run the code, notice that the program makes a new CommandButton on the
+form and places it just below the first (see Figure 22.4).</P>
+<P><A HREF="javascript:popUp('22fig04.gif')"><B>FIGURE 22.4</B></A> <I>Using the
+Load statement creates another CommandButton on the form. The rest of the code takes
+care of positioning the control correctly.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Where did the control go?</STRONG></P>
+	<P>All newly created elements of a control array have a Visible value of False. When
+	you make your new controls at runtime, don't forget to put a line of code in that
+	sets the value of the Visible property to True. Otherwise, you can't see the control.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>You must do a certain amount of tweaking to get a newly created control to be
+operational in your program. New controls are exact duplicates of the first control
+element of the control array. The values of all properties except Index and Visible
+are identical--including the values of Left and Top. Thus, when you create a new
+control, it will be placed right over the first control in the array. For the new
+control to be able to coexist with other controls in the control array, you must
+move the control to a new position.</P>
+<P>
+<H2><A NAME="Heading4"></A>Working with a Common Event Handler</H2>
+<P>As you saw in the preceding example, one benefit of control arrays is the ability
+to have a common event handler. This section features a program that allows users
+to input some numbers into a numeric telephone touch pad to place a call. Users also
+can set whether the call should be made by pulse or tone and can choose to send a
+fax or a simple voice call.</P>
+<P>Don't worry if you don't know anything about telephony programming--you won't
+be writing any. This example is simply designed to show how control arrays could
+be used in this application.</P>
+<P>This program uses a control array of CommandButtons to handle user input. Each
+keypad button is part of the cmdNum control array. Using a control array greatly
+simplifies matters. In this project, if you didn't use a control array, you would
+have 12 event procedures to program--not a very pleasant undertaking. However, when
+you use a control array, you have only one event procedure to program. You use the
+Index argument within the control array's one event procedure to figure out which
+control fired the event procedure (see Figure 22.5).</P>
+<P>Listing 22.3 shows the code for the Click() event procedure of the control array.
+Notice that the control array's event procedure uses a Select Case statement to provide
+different responses depending on which button has been clicked.</P>
+<P>
+<H4>LISTING 22.3&#160;&#160;Keypad Event Handler</H4>
+<PRE><B>01</B> Private Sub cmdNum_Click(Index As Integer)</PRE>
+<PRE><B>02</B> Dim strChar As String</PRE>
+<PRE><B>03</B></PRE>
+<PRE><B>04</B> `Find out which button was clicked by analyzing</PRE>
+<PRE><B>05</B> the Index argument. Depending on which button</PRE>
+<PRE><B>06</B> `you push, set the other string variable accordingly.</PRE>
+<PRE><B>07</B> Select Case Index</PRE>
+<PRE><B>08</B> `This button has the &quot;*&quot; character</PRE>
+<PRE><B>09 </B>Case 10</PRE>
+<PRE><B>10</B> strChar = &quot;*&quot;</PRE>
+<PRE><B>11</B> `This button has the &quot;#&quot; character</PRE>
+<PRE><B>12</B> Case 11</PRE>
+<PRE><B>13</B> strChar = &quot;#&quot;</PRE>
+<PRE><B>14</B> `All the buttons have captions that match</PRE>
+<PRE><B>15</B> `their index value.</PRE>
+<PRE><B>16</B> Case Else</PRE>
+<PRE><B>17</B> strChar = CStr(Index)</PRE>
+<PRE><B>18</B> End Select</PRE>
+<PRE><B>19</B></PRE>
+<PRE><B>20</B> ` Add the new digit to the phone number.</PRE>
+<PRE><B>21 </B>lblNumber.Caption = lblNumber.Caption &amp; strChar</PRE>
+<PRE><B>22</B></PRE>
+<PRE><B>23 </B>End Sub</PRE>
+<P><A HREF="javascript:popUp('22fig05.gif')"><B>FIGURE 22.5</B></A> <I>Every element
+of a control array is listed in the Properties window with its subscript.</I></P>
+<P>The only issue with this code is that each CommandButton's Index property must
+match exactly with its Caption property. For instance, this code assumes that the
+button marked as the one digit has a control array index of 1, the two button has
+an index of 2, and so on. If these buttons were deleted and re-created, they would
+have to be put back in order exactly or the code wouldn't work.</P>
+<P>Listing 22.4 shows a revised version of this code, which still uses a single event
+handler but doesn't rely on the value of Index. Instead, it simply uses the value
+of the Caption property. It's also quite a bit shorter and more reliable.</P>
+<P>
+<H4>LISTING 22.4&#160;&#160;Revised Keypad Event Handler</H4>
+<PRE><B>01</B> Private Sub cmdNum_Click(Index As Integer)</PRE>
+<PRE><B>02</B> lblNumber.Caption = lblNumber.Caption _</PRE>
+<PRE>&amp; cmdNum(Index).Caption</PRE>
+<PRE><B>03</B> End Sub</PRE>
+<P>
+<H2><A NAME="Heading5"></A>Grouping Objects with the Frame Control</H2>
+<P>In earlier chapters, you learned that within a group of OptionButtons, only one
+OptionButton can have a value of True (see Figure 22.6). But as you saw in the dialer
+application in the last section, sometimes you need to have sets of OptionButtons
+so that you can return many different sets of choices.</P>
+<P><A HREF="javascript:popUp('22fig06.gif')"><B>FIGURE 22.6</B></A> <I>If you don't
+group your OptionButtons in containers, they all work as one big group.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Frames aren't the only containers</STRONG></P>
+	<P>PictureBox controls can also be used as containers, as can the 3D Panel control.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>You group OptionButtons by using a container control such as a frame. After a
+set of OptionButtons is pasted into a frame, the members of the set are exclusive
+to one another.</P>
+<P>You add a Frame control to a form as you would any other control. After a control
+is pasted into a frame, the frame becomes that control's container. Thus, all coordinates
+of the child controls are relative to the frame. When you move a frame, all the controls
+within the frame move with it.</P>
+<P>There's a trick to adding controls to the Frame control.</P>
+<P><B>Add a control to a frame</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>If the control is already on the form, select it and choose <B>Cut</B>
+	from the <B>Edit</B> menu.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Select the Frame control and choose <B>Paste</B> from the <B>Edit</B>
+	menu. The control will be placed inside the frame.
+	<P>
+</DL>
+
+<P>Before you add or paste a control into a frame, make sure that the frame is selected.
+If you don't have the frame selected, the control is really not being added to the
+frame. Also, after a control is added or pasted into a frame, it can't be moved out
+of the frame except by pressing Delete or choosing <B>Cut</B> from the <B>Edit</B>
+menu. (See Figure 22.7.)</P>
+<P><A HREF="javascript:popUp('22fig07.gif')"><B>FIGURE 22.7</B></A> <I>Make sure
+that the frame is selected before you add controls to it.</I></P>
+<P>
+<H2><A NAME="Heading6"></A>Using the Scroll Bar Controls</H2>
+<P>The standard scroll bar controls, HScrollBar and VScrollBar, allow you to move
+through data or a range of values by clicking the up and down scroll arrows or by
+moving the scrollbar's scroll box (the little button between the scroll arrows).
+The scroll bar controls have a few special properties that you should know about,
+as described in Table 22.1.</P>
+<P>
+<H4>TABLE 22.1&#160;&#160;Special Properties for the HScrollBar and VScrollBar Controls</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Min</TD>
+		<TD ALIGN="LEFT">Sets the lowest possible value of the control when the scroll box is positioned at
+			the topmost or leftmost of the respective scroll bar. The default value is 0, but
+			negative numbers can also be used.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Max</TD>
+		<TD ALIGN="LEFT">Sets the highest possible value of the control when the scroll box is at the bottommost
+			or rightmost of the respective scroll bar. The default value is 32,767.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Value</TD>
+		<TD ALIGN="LEFT">The position of the scroll box relative to the Max and Min properties.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">LargeChange</TD>
+		<TD ALIGN="LEFT">Sets the amount of change of the Value property when users click between the scroll
+			box and scroll arrow.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SmallChange</TD>
+		<TD ALIGN="LEFT">Sets the amount of change of the Value property when users click the scroll arrow.</TD>
+	</TR>
+</TABLE>
+</P>
+<P><B>Make a form with VScrollBar and HScrollBar controls</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project and name it SmpScrll.vbp. Rename the default form
+	frmMain. Set the value of the Caption property to Simple Scroll Bars.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add VScrollBar and HScrollBar controls to the form. Name the VScrollBar
+	control vscrNS and the HScrollBar control hscrWE.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add two TextBox controls. Name one txtNS and the other txtWE. Set the
+	Text property for both TextBoxes to an empty string (see Figure 22.8).
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Set the properties for the VScrollBar and HScrollBar controls as listed
+	in Table 22.2.
+	<P>
+</DL>
+
+<H4>TABLE 22.2&#160;&#160;Property Settings for ScrollBar Controls</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Property</TD>
+		<TD ALIGN="LEFT">Setting</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Min</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Max</TD>
+		<TD ALIGN="LEFT">20</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SmallChange</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">LargeChange</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+</TABLE>
+</P>
+<P><A HREF="javascript:popUp('22fig08.gif')"><B>FIGURE 22.8</B></A> <I>The only difference
+between the HScrollBar and VScrollBar controls is their orientation.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>5. </B>Add the following code to the General section of frmMain:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub hscrWE_Change()
+    txtWE.Text = CStr(hscrWE.Value)
+End Sub
+Private Sub vscrNS_Change()
+    txtNS.Text = CStr(vscrNS.Value)
+</PRE>
+	<PRE>End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Save and run the code.
+	<P>
+</DL>
+
+<P>When you run the code, notice that when you click the scroll arrows of the HScrollBar
+or VScrollBar control, the value of the respective TextBox changes by 1, the value
+of the SmallChange property. If you click the area between the scroll box and the
+scroll arrow, the amount in the TextBox changes by 2, the value of the LargeChange
+property (see Figure 22.9).</P>
+<P><A HREF="javascript:popUp('22fig09.gif')"><B>FIGURE 22.9</B></A> <I>Because the
+Max property is set to 20, when you move the scroll bars, the values shown in the
+TextBoxes will never exceed 20.</I></P>
+<P>
+<H2><A NAME="Heading7"></A>Using For...Next Loops with Control Arrays</H2>
+<P>Using For...Next loops is an efficient way to traverse and manipulate elements
+in a control array. Listings 22.5 and 22.6 show you two ways to create and manipulate
+elements in a control array. Listing 22.5 illustrates the old-fashioned way--creating
+the controls one at a time by using the Load statement. Listing 22.6 shows you a
+way to make the controls by using a For...Next loop. Compare the two.</P>
+<P>
+<H4>LISTING 22.5&#160;&#160;Dynamically Making and Manipulating a Control Array One
+<BR>
+Element at a Time</H4>
+<PRE><B>01</B> Private Sub cmdMakeArray_Click()</PRE>
+<PRE><B>02</B> `Create additional controls in the</PRE>
+<PRE><B>03</B> `imgFace control array.</PRE>
+<PRE>04 Load imgFace(1)</PRE>
+<PRE><B>05</B> Load imgFace(2)</PRE>
+<PRE><B>06</B> Load imgFace(3)</PRE>
+<PRE><B>07</B> Load imgFace(4)</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09</B> `Set the top new elements of the control array</PRE>
+<PRE><B>10</B> `to the top of the one before it.</PRE>
+<PRE><B>11</B> imgFace(1).Top = imgFace(0).Top</PRE>
+<PRE><B>12</B> imgFace(2).Top = imgFace(1).Top</PRE>
+<PRE><B>13</B> imgFace(3).Top = imgFace(2).Top</PRE>
+<PRE><B>14 </B>imgFace(4).Top = imgFace(3).Top</PRE>
+<PRE><B>15</B></PRE>
+<PRE><B>16</B> `Set the left starting position of the new</PRE>
+<PRE><B>17</B> `control to the left plus the width of the control</PRE>
+<PRE><B>18</B> `before it</PRE>
+<PRE><B>19 </B>imgFace(1).Left = imgFace(0).Left + imgFace(0).Width</PRE>
+<PRE><B>20 </B>imgFace(2).Left = imgFace(1).Left + imgFace(1).Width</PRE>
+<PRE><B>21</B> imgFace(3).Left = imgFace(2).Left + imgFace(2).Width</PRE>
+<PRE><B>22</B> imgFace(4).Left = imgFace(3).Left + imgFace(3).Width</PRE>
+<PRE><B>23</B></PRE>
+<PRE><B><I>24</I></B> `Set ALL of the controls in the control array</PRE>
+<PRE><B>25</B> `and make them visible</PRE>
+<PRE><B>26</B> imgFace(0).Visible = True</PRE>
+<PRE><B>27 </B>imgFace(1).Visible = True</PRE>
+<PRE><B>28</B> imgFace(2).Visible = True</PRE>
+<PRE><B>29</B> imgFace(3).Visible = True</PRE>
+<PRE><B>30</B> imgFace(4).Visible = True</PRE>
+<PRE><B>31</B> End Sub</PRE>
+<P>
+<H4>LISTING 22.6&#160;&#160;Using For...Next Loops to Make and Manipulate Elements
+in a <BR>
+Control Array</H4>
+<PRE><B>01</B> Private Sub cmdLoopArray_Click()</PRE>
+<PRE><B>02</B> Dim i As Integer `Counter variable</PRE>
+<PRE><B>03</B></PRE>
+<PRE><B>04</B> `Set the picture of the first element of the</PRE>
+<PRE><B>05</B> `imgFace control array to the picture in the control,</PRE>
+<PRE><B>06</B> `imgHappy face.</PRE>
+<PRE><B>07</B> imgFace(0).Picture = imgHappy.Picture</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09</B> For i = 1 To 4</PRE>
+<PRE><B>10</B> `Create a new control in the array</PRE>
+<PRE><B>11</B> Load imgFace(i)</PRE>
+<PRE><B>12</B> `Set the top of the new control to top of the</PRE>
+<PRE><B>13</B> `one before it.</PRE>
+<PRE><B>14</B> imgFace(i).Top = imgFace(i - 1).Top</PRE>
+<PRE><B>15</B> `Set the left starting position of the new</PRE>
+<PRE><B>16</B> `control to the left plus the width of the control</PRE>
+<PRE><B>17</B> `before it</PRE>
+<PRE><B>18</B> imgFace(i).Left = imgFace(i - 1).Left _</PRE>
+<PRE>+ imgFace(i - 1).Width</PRE>
+<PRE><B>19</B> imgFace(i).Visible = True</PRE>
+<PRE><B>20 </B>Next i</PRE>
+<PRE><B>21</B></PRE>
+<PRE><B>22</B> End Sub</PRE>
+<P>As you compare the two, notice that everything you can do one at a time, with
+regard to control array elements, you can do with much more elegance by using a For...Next
+loop. For...Next loops can also control an unknown number of elements in any control
+array, giving you versatility and extensibility.</P>
+<P>Figure 22.12 shows the results of the application. The upper portion of the project's
+form shows an implementation of the code in Listings 22.5 and 22.6. The bottom portion
+of the form shows a way to use the VScrollBar control to dynamically generate a varying
+number of controls in a control array of ImageBoxes.</P>
+<P><A HREF="javascript:popUp('22fig10.gif')"><B>FIGURE 22.10</B></A> <I>The number
+of controls shown will be one more than the scroll position because the zero element
+is the first element in the control array.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Don't try this at home... or work</STRONG></P>
+	<P>In a real-world production environment, unloading and re-creating control array
+	elements each time you need them is a grossly inefficient programming practice. It's
+	done here to demonstrate this Visual Basic feature. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>When you closely study the code in Listing 22.7 (the Change event procedure for
+one of the VScrollBar controls), notice that not only does the code dynamically create
+new elements of the ImageBox control array through the Load statement, but it also
+dynamically destroys all but the zero value element of the control array through
+the Unload statement.</P>
+<P>
+<H4>LISTING 22.7&#160;&#160;Creating and Destroying Elements of a Control Array</H4>
+<PRE><B>01</B> Private Sub vscrFirst_Change()</PRE>
+<PRE><B>02</B> `This sub removes all the existing elements of</PRE>
+<PRE><B>03</B> `the control array, imgFirst(), except for the</PRE>
+<PRE><B>04</B> `first one, and then creates a new set of elements</PRE>
+<PRE><B>05</B> `as determined by the value of the vertical scrollbar</PRE>
+<PRE><B>06</B> `position.</PRE>
+<PRE><B>07</B></PRE>
+<PRE><B>08</B> `Number of images in</PRE>
+<PRE><B>09</B> `ImageBox Control array</PRE>
+<PRE>10 Static intNumOfImage As Integer</PRE>
+<PRE><B>11</B> Dim i As Integer `Counter variable</PRE>
+<PRE><B>12</B></PRE>
+<PRE><B>13</B> `Report the value of the scrollbar position</PRE>
+<PRE><B>14</B> `in a TextBox. Don't forget to convert to an integer.</PRE>
+<PRE><B>15</B> txtFirst.Text = CStr(vscrFirst.Value)</PRE>
+<PRE><B>16</B></PRE>
+<PRE><B>17</B> `Set the Picture property of the first element of</PRE>
+<PRE><B>18</B> `the ImageBox control array to the picture in the</PRE>
+<PRE><B>19</B> `happy face image box.</PRE>
+<PRE><B>20</B> imgFirst(0).Picture = imgHappy.Picture</PRE>
+<PRE><B>21</B></PRE>
+<PRE><B>22</B> `Unload all pre-existing elements of the ImageBox</PRE>
+<PRE><B>23</B> `control array.</PRE>
+<PRE><B>24</B></PRE>
+<PRE><B>25</B> `Make sure the previous value of the Static variable</PRE>
+<PRE><B>26</B> `is greater than zero. If the value is zero, you would</PRE>
+<PRE><B>27</B> `be trying to the zero element control array element.</PRE>
+<PRE><B>28</B> `This is bad!</PRE>
+<PRE><B>29</B> If intNumOfImage &gt; 0 Then</PRE>
+<PRE><B>30</B> `If the number is over zero, there are elements left</PRE>
+<PRE><B>31</B> `over from your last time uses of this event</PRE>
+<PRE><B>32</B> `procedure.</PRE>
+<PRE><B>33</B></PRE>
+<PRE><B>34</B> `(Remember, a the value of a Static variable holds</PRE>
+<PRE><B>35</B> `value after the event procedure goes out of scope.)</PRE>
+<PRE><B>36</B> For i = 1 To intNumOfImage</PRE>
+<PRE><B>37</B> `Nuke all the elements of the control array</PRE>
+<PRE><B>38</B> Unload imgFirst(i)</PRE>
+<PRE><B>39</B> Next i</PRE>
+<PRE><B>40</B> End If</PRE>
+<PRE><B>41</B></PRE>
+<PRE><B>42</B> `Set a new value for the static variable, intNumOfImage</PRE>
+<PRE><B>43</B> `based upon the value of the scroll bar position.</PRE>
+<PRE><B>44</B> intNumOfImage = vscrFirst.Value</PRE>
+<PRE><B>45</B></PRE>
+<PRE><B>46</B> `Traverse the intended number of new controls for the</PRE>
+<PRE><B>47</B> `control array.</PRE>
+<PRE><B>48</B> For i = 1 To intNumOfImage</PRE>
+<PRE><B>49</B> `Make a new ImageBox for the control array</PRE>
+<PRE><B>50</B> Load imgFirst(i)</PRE>
+<PRE><B>51</B> `Set the top of the new control to top of the</PRE>
+<PRE><B>52</B> `one before it.</PRE>
+<PRE><B>53</B> imgFirst(i).Top = imgFirst(i - 1).Top</PRE>
+<PRE><B>54</B> `Set the left starting position of the new</PRE>
+<PRE><B>55</B> `control to the left plus the width of the control</PRE>
+<PRE><B>56</B> `before it</PRE>
+<PRE><B>57</B> imgFirst(i).Left = imgFirst(i - 1).Left _</PRE>
+<PRE>+ imgFirst(i - 1).Width</PRE>
+<PRE><B>58</B> Next i</PRE>
+<PRE><B>59</B></PRE>
+<PRE><B>60</B> `Traverse ALL of the controls in the control array</PRE>
+<PRE><B>61</B> `and make them visible</PRE>
+<PRE><B>62</B> For i = 0 To intNumOfImage</PRE>
+<PRE><B>63</B> imgFirst(i).Visible = True</PRE>
+<PRE><B>64</B> Next i</PRE>
+<PRE><B>65</B> End Sub</PRE>
+<P>One note about this application: If you try to Load a control in a control array
+by using a subscript for an already loaded control, you will get an error. If you
+click the Make Control Array the Hard Way button and then click the Make Control
+Array Using Loops button, an error will be generated (see Figure 22.11). This is
+because the first button's Click event procedure creates a control array, and the
+second button's Click event procedure tries to re-create the same control array by
+using the same subscripts. Be careful when you work with control arrays and For...Next
+loops.</P>
+<P><A HREF="javascript:popUp('22fig11.gif')"><B>FIGURE 22.11</B></A> <I>Using a Load
+statement on an array element that already exists will cause an error.</I></P>
+<H1><I></I></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch21.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch21/ch21.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch23.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch23/ch23.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

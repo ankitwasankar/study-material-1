@@ -1,0 +1,1373 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 13 -- Object Lifetime</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;13</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Object Lifetime</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#Referencing">
+Referencing</A>
+<UL>
+<LI><A HREF="#WhatHappensWhen">
+What Happens When&#133;?</A>
+</UL>
+<LI><A HREF="#CircularReferences">
+Circular References</A>
+<UL>
+<LI><A HREF="#ObjectModelDilemmas">
+Object Model Dilemmas</A>
+<LI><A HREF="#EnforcingObjectModelRules">
+Enforcing Object Model Rules</A>
+<LI><A HREF="#DealingwithCircularReferences">
+Dealing with Circular References</A>
+<LI><A HREF="#InitializationEvents">
+Initialization Events</A>
+<LI><A HREF="#TerminationEvents">
+Termination Events</A>
+<LI><A HREF="#UnkillableApplications">
+Unkillable Applications</A>
+<LI><A HREF="#PrivateObjects">
+Private Objects</A>
+<LI><A HREF="#TrackYourObjects">
+Track Your Objects</A>
+<LI><A HREF="#DontStopYourApplication">
+Don't Stop Your Application</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+When you've worked with objects for a while, they almost seem
+to take on lives of their own. Objects are born, they spin around
+your system for a while, then they die. Sometimes, however, they
+can get a little bit out of control. You have to be careful to
+kill them off when you're done with them or they can clutter up
+your system, taking up resources that other objects need. (Don't
+worry though, I know of no major religion that has an ethical
+problem with killing off COM objects whenever you feel like it.)
+<P>
+Killing off objects can be tricky. Keeping track of where they
+are referenced and remembering to clear those references when
+necessary is hard enough. The real challenge, however, is designing
+an object model that makes it possible to do so. It is all too
+easy to define an object model that will give your objects near
+immortality.
+<H2><A NAME="Referencing"><FONT SIZE=5 COLOR=#FF0000>
+Referencing</FONT></A></H2>
+<P>
+<A HREF="ch4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch4.htm" >Chapter 4</A>introduced the idea of object variables and how they
+work. Let's take a moment to quickly review this subject.
+<P>
+Object variables are different from other types of variables.
+The major difference is that unlike regular variables, object
+variables do not actually hold any data. Instead they contain
+a pointer to one of the interfaces for an object.
+<P>
+Consider the process of declaring two data variables and assigning
+one to another. Figure 13.1 shows two string variables, variable
+A and variable B. Variable A is initially loaded with the string
+&quot;Data in A&quot;, and B with the string &quot;Data in B&quot;.
+Both variables actually contain the string data. When you assign
+B to A using the term A = B, the data from variable B is copied
+into A.
+<P>
+<A HREF="f13-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f13-1.gif"><B>Figure 13.1 :</B> <I>Data variable assignment</I>.</A>
+<P>
+Figure 13.2 illustrates the same operation with object variables.
+The two variables contain pointers to the interfaces of the object
+variables. Each object variable keeps track of how many different
+variables point to the object. Initially, each object is referenced
+by one object, and thus has a reference count of 1.
+<P>
+<A HREF="f13-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f13-2.gif"><B>Figure 13.2 :</B> <I>Object variable assignment</I>.</A>
+<P>
+When you perform the assignment operation: Set A=B, the operation
+that is performed goes beyond a simple assignment. First, Visual
+Basic must perform a release operation on the ObjectA interface.
+This decrements the reference count for the object to 0 and causes
+the object to be destroyed. When variable A is loaded with a pointer
+to ObjectB, an AddRef operation is performed on the ObjectB interface.
+This increases its reference count to 2.
+<H3><A NAME="WhatHappensWhen">
+What Happens When&#133;?</A></H3>
+<P>
+Let's take a look at what actually happens when some common Visual
+Basic object operations take place. The code for this section
+can be found in sample application Test1.vbp in the <A HREF="ch13.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch13.htm" >Chapter 13</A>
+sample directory on your CD-ROM. First, consider the process of
+declaring an object variable:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdStart1_Click()
+    Dim A As myobject
+    
+    Debug.Print &quot;A is declared&quot;
+    If A Is Nothing Then
+        Debug.Print &quot;A is nothing&quot;
+    End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The object myobject is a simple object that contains Debug.Print
+statements in its Class_Initialize and Class_Terminate event to
+let you see when the object is created or destroyed. It contains
+a Name property to help identify individual objects.
+<P>
+In this case variable A is declared. But it does not point to
+an object. Internally, its pointer value is zero, which is an
+invalid pointer address. But this invalid address is not considered
+an error; it is a way of telling Visual Basic and your program
+that the variable has not been assigned to an object. This zero
+pointer is given a special name in Visual Basic called Nothing.
+So at this point in time, variable A is said to be equal to Nothing.
+You can test this using the operation: &quot;If A Is Nothing Then&#133;&quot;.
+In this case you will get the message &quot;A is nothing&quot;
+because A has never been assigned to an object. If you tried to
+access a property of variable A (such as A.Name) you would get
+an error because you cannot access a property of an object that
+does not exist.
+<P>
+Let's look at the cmdStart2_Click example:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdStart2_Click()
+    Dim A As New myobject
+    
+    Debug.Print &quot;A is declared&quot;
+    MsgBox &quot;Look at the immediate window&quot;
+    Debug.Print &quot;Message box returns&quot;
+    If A Is Nothing Then
+        Debug.Print &quot;A is nothing&quot;
+    Else
+        Debug.Print &quot;A is valid&quot;
+    End If
+   
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The big difference between this sample and the previous one is
+that A is declared with the New operator. When you run the program,
+you will see the following display in the Immediate window:
+<BLOCKQUOTE>
+<PRE>
+A is declared
+Message box returns
+Object is created
+A is valid
+Object is destroyed
+</PRE>
+</BLOCKQUOTE>
+<P>
+One thing that might seem odd about this sequence is that the
+New operator does not actually create the object. It does, however,
+tell Visual Basic that any time you access the variable it should
+create a new object if one does not exist. When is the variable
+accessed in this example? When you perform the comparison to Nothing.
+In fact, a variable declared with the New operator will never
+be equal to Nothing-Visual Basic will create new objects any time
+you try to reference it. This can be seen in the following code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdStart3_Click()
+    Dim A As New myobject
+    
+    Debug.Print &quot;A is declared&quot;
+    If A Is Nothing Then
+        Debug.Print &quot;A is nothing&quot;
+    Else
+        Debug.Print &quot;A is valid&quot;
+    End If
+    
+    Set A = Nothing
+    
+    If A Is Nothing Then
+        Debug.Print &quot;A is nothing&quot;
+    Else
+        Debug.Print &quot;A is valid&quot;
+    End If
+    
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The result in the Immediate window is as follows:
+<BLOCKQUOTE>
+<PRE>
+A is declared
+Object is created
+A is valid
+Object is destroyed
+Object is created
+A is valid
+Object is destroyed
+</PRE>
+</BLOCKQUOTE>
+<P>
+The first object is destroyed when you perform the operation:
+Set A = Nothing, but as soon as you try to test the object variable
+again, VB creates a new one. 
+<P>
+Remember I mentioned earlier that killing objects in Visual Basic
+can be challenging. As you can see, keeping them dead can be tricky
+as well. This may not seem like a big deal, but what if your object
+performs extensive initialization and termination operations when
+it is created and destroyed? If you aren't careful, you might
+find that your application is wasting quite a bit of processing
+time creating and destroying objects that you never actually use.
+The cmdStart4_Click example demonstrates a way to avoid this problem:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdStart4_Click()
+    Dim A As myobject
+    
+    Debug.Print &quot;A is declared&quot;
+    
+    If A Is Nothing Then
+        Debug.Print &quot;A is nothing&quot;
+    Else
+        Debug.Print &quot;A is valid&quot;
+    End If
+    
+    Debug.Print &quot;About to call Set A = New myobject&quot;
+    Set A = New myobject
+    Debug.Print &quot;Set A = New myobject called&quot;
+    
+    If A Is Nothing Then
+        Debug.Print &quot;A is nothing&quot;
+    Else
+        Debug.Print &quot;A is valid&quot;
+    End If
+    
+    Set A = Nothing
+    
+    If A Is Nothing Then
+        Debug.Print &quot;A is nothing&quot;
+    Else
+        Debug.Print &quot;A is valid&quot;
+    End If
+
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This function produces the following results:
+<BLOCKQUOTE>
+<PRE>
+A is declared
+A is nothing
+About to call Set A = New myobject
+Object is created
+Set A = New myobject called
+A is valid
+Object is destroyed
+A is nothing
+</PRE>
+</BLOCKQUOTE>
+<P>
+The declaration does not create the object, and the object is
+not automatically created when it is accessed. It is created by
+the call to Set A = New myobject. Because the object is not set
+to be automatically created on access, it remains dead after you
+have set the variable to Nothing.
+<P>
+Generally speaking it is better to take this approach instead
+of dimensioning variables with the New operator. It provides you
+with better control over the lifetimes of objects.
+<P>
+Along the way you may have noticed that the object is always destroyed
+when the function exists. This happens because variable A is local
+to the function and its lifetime is limited to the duration of
+the function call. When the function exists, the variable is destroyed,
+and with it the object that it points to.
+<P>
+Now let's take a moment and verify the operation shown in Figure
+13.2 with the code shown in the cmdStart5_Click routine:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdStart5_Click()
+    Dim A As myobject
+    Dim B As myobject
+    Set A = New myobject
+    Set B = New myobject
+    Debug.Print &quot;A and B are set&quot;
+    A.Name = &quot;Object A&quot;
+    B.Name = &quot;Object B&quot;
+    Debug.Print &quot;Name properties are set&quot;
+    Debug.Print &quot;About to Set A=B&quot;
+    Set A = B
+    Debug.Print &quot;Set A=B done&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This function produces the following results:
+<BLOCKQUOTE>
+<PRE>
+Object is created
+Object is created
+A and B are set
+Name properties are set
+About to Set A=B
+Object ObjectA is destroyed
+Set A=B done
+Object ObjectB is destroyed
+</PRE>
+</BLOCKQUOTE>
+<P>
+As you can see, the Set A = B operation does, in fact, cause object
+A to be destroyed.
+<P>
+The secret to making sure your objects are destroyed is to know
+where they are being referenced. But, as you are about to see,
+this is sometimes easier said than done.
+<H2><A NAME="CircularReferences"><FONT SIZE=5 COLOR=#FF0000>
+Circular References</FONT></A></H2>
+<P>
+It's remarkably easy to demonstrate a circular reference. Just
+add the line:
+<BLOCKQUOTE>
+<PRE>
+Public CircularReference as myobject
+</PRE>
+</BLOCKQUOTE>
+<P>
+to the myobject class (this is already done in the test1.vbp project).
+Use of this property is shown in the cmdStart6_Click function:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdStart6_Click()
+    Dim A As myobject
+    Set A = New myobject
+    Debug.Print &quot;About to set circular reference&quot;
+    Set A.CircularReference = A
+    Debug.Print &quot;About to set A to Nothing&quot;
+    Set A = Nothing
+    Debug.Print &quot;A is Nothing&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The resulting display in the Immediate window when you run this
+function is as follows:
+<BLOCKQUOTE>
+<PRE>
+Object is created
+About to set circular reference
+About to set A to Nothing
+A is Nothing
+</PRE>
+</BLOCKQUOTE>
+<P>
+The object is not destroyed. Why? Because when you execute the
+line Set A.CircularReference = A, you set a second variable to
+point to the object. The fact that the variable is part of the
+object itself is irrelevant. The reference count for the object
+is still set to two.
+<P>
+When you set variable A to Nothing, the reference count is decremented
+to 1, but this is not enough to destroy the object. The object
+continues to live on, even though it can no longer be accessed
+anywhere in your program. (All of the variables referencing the
+object that are not part of the object itself have been cleared.)
+This object will continue to exist until you terminate the application.
+You can see this if you close the frmTest1 form (do not use the
+VB Stop command). The object will finally be destroyed as the
+application closes.
+<P>
+Of course, you are unlikely to have objects referencing themselves,
+other than by accident. So why are circular references a concern?
+To see this, let us take another look at our rabbit breeding program
+from <A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch12.htm" >Chapter 12</A>.
+<H3><A NAME="ObjectModelDilemmas">
+Object Model Dilemmas</A></H3>
+<P>
+The rabbit breeding examples were intended to demonstrate issues
+relating to grouping of objects. No real effort was made to design
+a useful object model for the example. Circular references do
+not happen by accident-they result from design choices. So let's
+take another look at the rabbit tests, but this time turn our
+attention to the object model. To keep things simple, we'll start
+with the Rabbit3.vbp project (which was collection-based) because
+the method of grouping rabbit objects is irrelevant to this example.
+All files have been renamed with the suffix 5 instead of 3.
+<P>
+The rabbit class, now renamed clsRabbit5.cls, can remain unchanged
+for now. Each rabbit has a unique number and a color. The number
+of possible colors has been reduced to make the sample programs
+easier to follow. The Debug.Print statements are enabled so that
+we can track rabbit creation and sales.
+<P>
+By the way, for the purposes of this example, &quot;selling&quot;
+a rabbit is a nice way of saying that a rabbit object has been
+destroyed. Killing rabbits seemed a bit harsh for a family-oriented
+programming book.
+<P>
+The RabbitCollection5 class contains a hutch of rabbits-a group
+of clsRabbit5 objects. Now, we're going to invent a rule for this
+object model: that each clsRabbit5 object can only be in one RabbitCollection5
+object at a time. This makes sense, because it would be a very
+talented rabbit indeed who could be in two rabbit hutches at once.
+There is no code yet to enforce this rule; it's just a design
+requirement. When we implement the code, any combination of operations
+that would let a clsRabbit5 object exist in two RabbitCollect5
+collections at once will be considered illegal, and possibly a
+bug.
+<P>
+We're going to want to come up with a way to transfer rabbits
+from one RabbitCollection5 hutch to another. We're going to need
+a way to remove a rabbit from a RabbitCollection5 hutch (through
+sale or transfer to another collection).We're still going to need
+a way to obtain a list of rabbits of a given type. However, the
+resulting list will be returned as a regular collection, not a
+RabbitCollection5 collection. Why? Because if we returned it in
+a RabbitCollection5 collection, we would be violating the earlier
+rule that no rabbit be in two RabbitCollection5 collections at
+once.
+<P>
+Listing 13.1 shows the initial implementation for the RabbitCollection5
+class.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.1:&nbsp;The RabbitCollection5 Class Module<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Rabbit Test
+' Copyright (c) 1997 by Desaware Inc. all Rights Reserved
+
+Option Explicit
+
+'local variable to hold collection
+Private m_Hutch As Collection
+
+' Add an existing rabbit or create a new one
+Public Sub Add(Optional obj As clsRabbit5)
+    ' If no object was passed, create a new one
+    If obj Is Nothing Then Set obj = New clsRabbit5
+    m_Hutch.Add obj
+End Sub
+
+
+Public Property Get Count() As Long
+    Count = m_Hutch.Count
+End Property
+
+
+Public Property Get Item(IndexKey As Long) As clsRabbit3
+    Set Item = m_Hutch(IndexKey)
+End Property
+
+
+Public Sub Remove(IndexKey As Long)
+    m_Hutch.Remove IndexKey
+End Sub
+
+' Find the index for an object in the collection
+Public Function Find(findobj As clsRabbit5)
+    Dim obj As clsRabbit5
+    Dim counter&amp;
+    For counter = 1 To m_Hutch.Count
+        If m_Hutch(counter) Is findobj Then
+            Find = counter
+            Exit Function
+        End If
+    Next counter
+End Function
+
+' Enable For...Each support
+Public Property Get NewEnum() As Iunknown
+    Set NewEnum = m_Hutch.[_NewEnum]
+End Property
+
+' Initialize and destruct the internal collection
+
+Private Sub Class_Initialize()
+    Set m_Hutch = New Collection
+End Sub
+
+Private Sub Class_Terminate()
+    Set m_Hutch = Nothing
+End Sub
+
+' Function to obtain a new collection containing
+' only white rabbits
+Public Function GetWhiteRabbits() As Collection
+    Dim col As New Collection
+    Dim obj As clsRabbit3
+    For Each obj In m_Hutch
+        If obj.Color = &quot;White&quot; Then
+            col.Add obj
+        End If
+    Next
+    Set GetWhiteRabbits = col
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+There are a few changes from the original RabbitCollection3 implementation
+from <A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch12.htm" >Chapter 12</A>. The Add method now allows you to add an existing
+clsRabbit5 object to the hutch. This capability will be necessary
+to transfer rabbits from one collection to another. Why not use
+the separate AddExisting method from the <A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch12.htm" >Chapter 12</A> example? No
+reason-it's another way of accomplishing the same thing.
+<P>
+A new Find method can be used to obtain the index of a clsRabbit5
+object in the collection. The GetWhiteRabbits method returns a
+collection containing references to all of the white rabbits in
+the RabbitCollection5 collection.
+<P>
+The RabbitTest5 application (project RbtTest5.vbp) demonstrates
+the use of the modified classes. The main form for the application
+is shown in Figure 13.3. The listing for the form module is shown
+in Listing 13.2.
+<P>
+<A HREF="f13-4.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f13-4.gif"><B>Figure 13.4 :</B> <I>Referencing in the Rabbit5 example</I>.</A>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.2:&nbsp;Code for Form frmRabbitTest5<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Rabbit5 example
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+' Define two hutches
+Dim Hutch1 As RabbitCollection5
+Dim Hutch2 As RabbitCollection5
+Dim PetStore As New PetStore5
+
+' Load the two Hutch variables
+Private Sub cmdLoad_Click()
+    Set Hutch1 = PetStore.BuyRabbits(5)
+    Set Hutch2 = PetStore.BuyRabbits(5)
+End Sub
+
+' Display contents of a Hutch variable
+Private Sub cmdShow_Click(Index As Integer)
+    Dim obj As clsRabbit5
+    Dim UseHutch As RabbitCollection5
+    ' Get the right hutch to display
+    If Index = 1 Then
+        Set UseHutch = Hutch1
+    Else
+        Set UseHutch = Hutch2
+    End If
+    lstRabbits.Clear
+    For Each obj In UseHutch
+        lstRabbits.AddItem obj.Number &amp; &quot; - &quot; &amp; obj.Color
+    Next
+End Sub
+
+' Transfer first rabbit from hutch1 to hutch2
+Private Sub cmdTransfer1_Click()
+    Dim obj As clsRabbit5
+    Set obj = Hutch1(1)
+    Hutch1.Remove 1
+    Hutch2.Add obj
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The LoadCollections button loads the two Hutch variables with
+five rabbits each. The Show 1 and Show 2 buttons list the contents
+of the corresponding Hutch variable into the list box. The Transfer1
+button moves the first rabbit from Hutch1 into the Hutch2 collection.
+You can experiment with the Show buttons to verify the operation
+of this code.
+<P>
+While this code does work correctly, it is clear that it suffers
+from a major design flaw within the object model.
+<P>
+We defined a rule that no rabbit can be in two RabbitCollection5
+objects at once. But there is nothing in the object model to enforce
+the rule. If you forgot to remove the clsRabbit object from the
+first hutch, it would appear in both at once. Worse, you could
+add the same clsRabbit object multiple times to the same hutch
+if you wanted to. You can see this in the cmdBadTransfer_Click()
+routine in the RabbitTest5 sample program. This type of cloning
+may be fun in software, but it is not yet a biological possibility.
+So while this approach may be fine for your own use (assuming
+you or the programmers working with you are very careful), the
+lack of enforcement to the design rules makes it a poor design.
+<H3><A NAME="EnforcingObjectModelRules">
+Enforcing Object Model Rules</A></H3>
+<P>
+The demonstration will now continue with the Rabbit6 project group,
+which contains the Rabbit6 server project and RabbitTest6 test
+program (project RbtTest6.vbp).
+<P>
+Adding enforcement to the rule that a clsRabbit6 object exist
+in only one RabbitCollection6 collection at once requires that
+the server be aware of all Rabbit6Collections that exist. Otherwise
+there is no possible way to determine which collection contains
+which clsRabbit6 objects. How can this be accomplished? There
+are two fundamental approaches you can use.
+<UL>
+<LI>Keep a list of all of the RabbitCollection6 objects at a global
+or higher level.
+<LI>Have each clsRabbit6 object keep track of which RabbitCollection6
+object is holding it.
+</UL>
+<P>
+We're going to avoid discussing the global approach for now. A
+sample of this approach is included in the StockMonitor application
+in <A HREF="ch15.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch15.htm" >Chapter 15</A> (see, I haven't forgotten it).
+<P>
+Besides, there is a certain logical elegance to having each clsRabbit6
+object know where it is. From a conceptual point of view, it makes
+sense that an object should know where it is, just as it makes
+sense that a location should know which objects it is holding.
+As a VB programmer you are well acquainted with this idea, though
+you may not recognize it. Visual Basic controls have <I>Parent</I>
+properties that allow them to access the methods and properties
+of the form or control that contains them. This is exactly the
+same situation (and you can be sure that Visual Basic does some
+work behind the scenes to avoid some of the side effects you are
+about to see).
+<H4>Keep Track of the Container</H4>
+<P>
+This approach has each clsRabbit6 keep track of the RabbitCollection6
+object that is holding it. This is done by adding a private object
+variable to the clsRabbit6 object and exposing it through two
+property procedures as follows:
+<BLOCKQUOTE>
+<PRE>
+Private m_Hutch As RabbitCollection6
+' Anyone can find out which hutch contains the rabbit
+Public Property Get Hutch() As RabbitCollection6
+    Set Hutch = m_Hutch
+End Property
+
+' Only code within the project can set the Hutch for a rabbit
+Friend Property Let Hutch(vNewValue As RabbitCollection6)
+    Set m_Hutch = vNewValue
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Let property procedure is a Friend function. There is no problem
+with letting clients that are using your object model determine
+which hutch a rabbit is in, but you don't want clients to be able
+to set the rabbit's hutch without calling the appropriate method
+in the RabbitCollection6 object. This allows the RabbitCollection6
+object to enforce the object model rules. The RabbitCollection6
+object is modified to enforce the rules as shown in Listing 13.3.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.3:&nbsp;The RabbitCollection6 Class Module<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Rabbit Test
+' Copyright (c) 1997 by Desaware Inc. all Rights Reserved
+
+Option Explicit
+
+'local variable to hold collection
+Private m_Hutch As Collection
+
+' Add an existing rabbit or create a new one
+Public Sub Add(Optional obj As clsRabbit6)
+    Dim IndexToRemove As Long
+    
+    ' If no object was passed, create a new one
+    If obj Is Nothing Then
+        Set obj = New clsRabbit6
+    Else
+        If Find(obj) &gt; 0 Then
+            RaiseError 0    ' Object exists error
+        End If
+    End If
+    
+    m_Hutch.Add obj
+    
+    ' Set the hutch for the rabbit
+    If Not obj.Hutch Is Nothing Then
+        ' When object belonging to a hutch is added
+        ' to a new hutch, remove it from the other one
+        IndexToRemove = obj.Hutch.Find(obj)
+        obj.Hutch.Remove IndexToRemove
+    End If
+    ' And always have the object refer to this hutch
+    obj.Hutch = Me
+End Sub
+
+
+Public Property Get Count() As Long
+    Count = m_Hutch.Count
+End Property
+
+
+Public Property Get Item(IndexKey As Long) As clsRabbit6
+    If IndexKey &lt; 1 Or IndexKey &gt; m_Hutch.Count Then
+        RaiseError 1
+    End If
+    Set Item = m_Hutch(IndexKey)
+End Property
+
+' Remove an object from the hutch
+Public Sub Remove(IndexKey As Long)
+    Dim obj As clsRabbit6
+    If IndexKey &lt; 1 Or IndexKey &gt; m_Hutch.Count Then
+        RaiseError 1
+    End If
+    Set obj = m_Hutch(IndexKey)
+    ' Remove object from this hutch
+    obj.Hutch = Nothing
+    m_Hutch.Remove IndexKey
+End Sub
+
+' Find the index for an object in the collection
+Public Function Find(findobj As clsRabbit6)
+    Dim obj As clsRabbit6
+    Dim counter&amp;
+    For counter = 1 To m_Hutch.Count
+        If m_Hutch(counter) Is findobj Then
+            Find = counter
+            Exit Function
+        End If
+    Next counter
+End Function
+
+
+' Enable For...Each support
+Public Property Get NewEnum() As IUnknown
+    Set NewEnum = m_Hutch.[_NewEnum]
+End Property
+
+' Initialize and destruct the internal collection
+
+Private Sub Class_Initialize()
+    Set m_Hutch = New Collection
+End Sub
+
+
+Private Sub Class_Terminate()
+    Set m_Hutch = Nothing
+End Sub
+
+
+' Function to obtain a new collection containing
+' only white rabbits
+Public Function GetWhiteRabbits() As Collection
+    Dim col As New Collection
+    Dim obj As clsRabbit6
+    For Each obj In m_Hutch
+        If obj.Color = &quot;White&quot; Then
+            col.Add obj
+        End If
+    Next
+    Set GetWhiteRabbits = col
+End Function
+
+' Centralized error handling
+' 0 = Attempt to add existing object
+
+Public Sub RaiseError(erroffset As Integer)
+    Dim e$
+    Select Case erroffset
+        Case 0
+            e$ = &quot;Object already exists in collection&quot;
+        Case 1
+            e$ = &quot;Invalid collection index&quot;
+    End Select
+    Err.Raise vbObjectError + 1000 + erroffset, &quot;RabbitCollection6&quot;, e$
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The major changes affect the Add and Remove functions, though
+as you see, additional error checking has been added to the Item
+method as well.
+<P>
+The Add method now has a test to make sure you are not trying
+to add to the collection an object that is already present. Using
+the Find method, it tests the object you are trying to add against
+the current list. If it finds it, an error is raised. The Add
+method tests the Hutch property of the object you are trying to
+add to see if it is referencing a ClassRabbit6 collection object.
+If it is, the object is removed from the other collection. Finally,
+the object's Hutch property is set to the current collection.
+The Remove method has to set the Hutch property for the object
+being removed to Nothing before it actually removes it from the
+collection.
+<P>
+The RabbitTest6 test project is similar to the RabbitTest5 program
+except for the two transfer tests:
+<BLOCKQUOTE>
+<PRE>
+' Transfer first rabbit from hutch1 to hutch2
+Private Sub cmdTransfer1_Click()
+    Dim obj As clsRabbit6
+    Set obj = Hutch1(1)
+    Hutch2.Add obj
+End Sub
+
+' The rules are enforced this time
+Private Sub cmdBadTransfer_Click()
+    Dim obj As clsRabbit6
+    Set obj = Hutch1(1)
+    Hutch1.Add obj
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The cmdTransfer1_Click() function works fine even though you do
+not explicitly remove the object from Hutch1. The Hutch2.Add method
+automatically removes the rabbit from the Hutch1 collection. In
+the cmdBadTransfer_Click method, an error is raised when you try
+to add an object a second time to the collection. Seems perfect,
+doesn't it? There's just one problem.
+<H4>It's a Circular Reference After All</H4>
+<P>
+Go back to the Rabbit5 program group. Click on the Load Collections
+button and watch the Immediate window to see the ten rabbits get
+created. Click on Load Collections again. You'll see the next
+ten rabbits get created as the new collections are created to
+replace the prior ones. You'll see the previous ten clsRabbit6
+objects destroyed as the original collections are destroyed.
+<P>
+Now try the same operation with the Rabbit6 program group. When
+you load the new collections, neither the rabbit objects nor the
+collections are destroyed! Let's take a closer look at what is
+going on here.
+<P>
+Figure 13.4 illustrates the referencing for one of the RabbitCollection5
+collections. The reference count for an object can be determined
+from the number of incoming arrows to the object. What happens
+when you set the Hutch1 variable to Nothing or to another collection?
+The reference count on the RabbitCollection5 object is set to
+zero. This will cause it to terminate. This termination will cause
+the variables for this collection to be destroyed, including the
+internal m_Hutch collection. As this collection is destroyed,
+it will stop referencing the objects that are part of the collections.
+One by one the references of the clsRabbit5 objects will be decremented
+to 0. As this occurs they will be destroyed as well.
+<P>
+<A HREF="f13-5.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f13-5.gif"><B>Figure 13.5 :</B> <I>Referencing in the Rabbit6 example</I>.</A>
+<P>
+Figure 13.5 illustrates the referencing for one of the RabbitCollection6
+collections. As you can see, each of the clsRabbit6 objects that
+are part of the collection contains a reference back to the Collection
+object. As a result, the Collection object has a reference count
+of six. When the Hutch1 variable is set to Nothing or to another
+collection, this decrements the RabbitCollection6 object's reference
+count from 6 to 5. This does not cause the object to be destroyed
+or trigger its termination event. As a result the collection and
+all of the objects it references will not be destroyed until the
+application terminates, unless your program explicitly removes
+each of the clsRabbit6 objects from the collection first!
+<P>
+<A HREF="f13-6.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f13-6.gif"><B>Figure 13.6 :</B> <I>Referencing in the Rabbit7 example</I>.</A>
+<H3><A NAME="DealingwithCircularReferences">
+Dealing with Circular References</A></H3>
+<P>
+When you come right down to it, there are only three ways to deal
+with the problem of circular references.
+<OL>
+<LI>You can require clients to explicitly clear object references.
+<LI>You can design them out of your object model.
+<LI>You can break the circle.
+</OL>
+<H4>Explicitly Clearing Object References</H4>
+<P>
+The first option is obvious. The following code is triggered by
+clicking the Safe Load Collections button:
+<BLOCKQUOTE>
+<PRE>
+' A way to load Hutch variables that kills
+' off the prior ones first
+Private Sub cmdSafe_Click()
+    If Not Hutch1 Is Nothing Then
+        Do While Hutch1.Count &gt; 0
+            Hutch1.Remove 1
+        Loop
+    End If
+    Set Hutch1 = PetStore.BuyRabbits(5)
+    If Not Hutch2 Is Nothing Then
+        Do While Hutch2.Count &gt; 0
+            Hutch2.Remove 1
+        Loop
+    End If
+    Set Hutch2 = PetStore.BuyRabbits(5)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+By removing all of the clsRabbit6 objects from the collection
+before the assignment, the reference count for the collection
+is reduced to one, then to zero when the Hutch1 variable is set
+to another collection.
+<P>
+By the way, you should keep in mind that while removing a clsRabbit6
+object from the collection does destroy the object in this example,
+it is only because the object in this example is only referenced
+from the collection. If you held a reference to a clsRabbit object
+elsewhere (perhaps by obtaining a collection using the GetWhiteRabbits
+function) the object would still be removed from the collection,
+but it would not be destroyed until the other reference is eliminated
+as well.
+<P>
+This is one of the easiest approaches to take. It's not particularly
+elegant because it does require extra effort on the part of the
+client. In fact, your first reaction may be that it is the worst
+possible choice.
+<P>
+In general, this reaction would be a healthy one. It is certainly
+very poor design to expose objects that require special operations
+to terminate. So for a public object (such as RabbitCollection6)
+this is the worst possible choice. However, this approach is sound
+within a project. If you have a class that you are using in a
+well-defined manner within the project, there is no reason why
+you should not take this approach if it is the easiest one to
+implement.
+<P>
+In fact, this approach suggests the next one, in which we combine
+it with a redesign of the object model to eliminate the problem
+from the client's perspective.
+<H4>Redesign the Object Model</H4>
+<P>
+The Rabbit7 program group demonstrates how you can make minor
+changes to the object model that resolve the circular reference
+problem, at least from the perspective of client applications.
+As before, the suffix of each of the group files has been incremented,
+this time from 6 to 7. The trick in this case is to redefine the
+current RabbitCollection7 so that it is only used internally and
+to create a new RabbitCollection7B, which is the public object
+that implements collections of clsRabbit7 objects. 
+<P>
+The RabbitCollection7B module, shown in Listing 13.4, contains
+a single RabbitCollection7 object and exposes all of the RabbitCollection7
+methods and properties through delegation to this internal object.
+Remember to set the default property in the Procedure Attributes
+dialog box to the Item property. Also set the Procedure ID (Dispatch
+ID) for the NewEnum property to -4 and its attribute to Hidden.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 13.4:&nbsp;The RabbitCollection7B Class Module<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed:
+' Rabbit7 example
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Private m_Internal As RabbitCollection7
+
+' All methods delegate to internal collection
+Public Sub Add(Optional obj As clsRabbit7)
+    m_Internal.Add obj
+End Sub
+
+Public Property Get Count() As Long
+    Count = m_Internal.Count
+End Property
+
+Public Property Get Item(IndexKey As Long) As clsRabbit7
+    Set Item = m_Internal.Item(IndexKey)
+End Property
+
+Public Sub Remove(IndexKey As Long)
+    m_Internal.Remove IndexKey
+End Sub
+
+Public Function Find(findobj As clsRabbit7)
+    Find = m_Internal.Find(findobj)
+End Function
+
+Public Property Get NewEnum() As IUnknown
+    Set NewEnum = m_Internal.NewEnum
+End Property
+
+Public Function GetWhiteRabbits() As Collection
+    Set GetWhiteRabbits = m_Internal.GetWhiteRabbits
+End Function
+
+Private Sub Class_Initialize()
+    Set m_Internal = New RabbitCollection7
+End Sub
+
+' On termination of this object, the contained
+' object will be deleted properly
+Private Sub Class_Terminate()
+    Do While m_Internal.Count &gt; 0
+        m_Internal.Remove 1
+    Loop
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+All references to the rabbit collection objects in the PetStore
+module and RabbitTest7 project are changed to refer to RabbitCollection7B
+instead. However, the references in the clsRabbit7 class module
+remain set to the RabbitCollection7 object. One result of this
+is that the Hutch property can no longer be public. Making it
+public would expose the RabbitCollection7 object, and we are now
+using it only internally. It has been changed to also be a Friend
+function for this example.
+<P>
+The real work is done in the class initialization and termination
+events for the RabbitCollection7B object. The initialization event
+creates the internal object. The termination event deletes all
+of the clsRabbit7 objects contained within the embedded collection,
+allowing it to terminate properly.
+<P>
+How do we know that the termination event will trigger properly
+for the RabbitCollection7B object? Figure 13.6 shows the referencing
+for this object. As you can see, while the RabbitCollection7 object
+still carries multiple references, the RabbitCollection7B object
+does not. When the Hutch1 variable is reassigned, the RabbitCollection7B
+object will terminate. In the process of terminating, it will
+explicitly clean up its embedded RabbitCollection7 object.
+<P>
+<A HREF="f13-7.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f13-7.gif"><B>Figure 13.7 :</B> <I>Referencing in the Rabbit 8 example</I>.</A>
+<P>
+This approach also requires one minor change to the RabbitCollection7
+object. The Count property has been changed as follows:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get Count() As Long
+    If Not m_Hutch Is Nothing Then
+        Count = m_Hutch.Count
+    End If
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Why is this necessary? Because when an application terminates,
+you do not know the order in which objects are destroyed. What
+happens if the embedded RabbitCollection7 object is terminated
+before the RabbitCollection7B object that is holding it? The termination
+function sets the m_Hutch variable to Nothing. When the termination
+event for the RabbitCollection7B object executes, it calls the
+Count method for the object, which in turn tries to access the
+m_Hutch variable that no longer exists. This raises the question:
+How can an object call methods in an object that has already had
+its termination event called?
+<P>
+The automatic termination of objects when an application ends
+is a special case where the termination order is undefined. Visual
+Basic is trying to clean up any objects that are left. This problem
+would not occur if the container application was kind enough to
+clear its Hutch1 and Hutch2 variables when the form was terminated
+as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Sub Form_Terminate()
+    Set Hutch1 = Nothing
+    Set Hutch2 = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+You cannot assume that your component's clients will clean up
+after themselves properly. Your components should be tested by
+terminating an application while objects are still held by the
+client.
+<H4>Break the Circle</H4>
+<P>
+With Visual Basic 5.0, you have an interesting new technique for
+breaking circular references. You can take advantage of VB's ability
+to raise events to break the circular reference. This is done
+in the Rabbit8.vbg group, in which all files have had their suffix
+incremented to 8.
+<P>
+A new object called clsGetContainer8 is defined to act as a sink
+object that the clsRabbit8 objects will be able to point to instead
+of the RabbitCollection8 object. Having the clsRabbit8 objects
+connect to a different object is an obvious solution and easy
+to implement. The question is: How can that object obtain references
+to the container? The answer is to use an event. The clsGetContainer8
+object contains the following code:
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed - Rabbit Test
+' Copyright (c) 1997 by Desaware Inc. all Rights Reserved
+
+Option Explicit
+
+Public Event ContainerRequest(ContainerObject As Object)
+
+' This method raises an event in the container which
+' retrieves an object reference to its container
+Public Function GetContainer() As Object
+    Dim obj As Object
+    RaiseEvent ContainerRequest(obj)
+    Set GetContainer = obj
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+Each RabbitCollection8 collection object will contain a single
+clsGetContainer8 object. It will also support the ContainerRequest
+event. When the clsGetContainer8 object needs an object reference
+to its container, it raises an event in the container. The event
+code then sets the ContainerObject parameter to refer to the container
+itself. 
+<P>
+The clsGetContainer8 subobject for the collection is defined as
+follows:
+<BLOCKQUOTE>
+<PRE>
+Private WithEvents ContainerSubObject As clsGetContainer8
+</PRE>
+</BLOCKQUOTE>
+<P>
+The object is created during the RabbitCollection8_Initialize
+event as follows:
+<BLOCKQUOTE>
+<PRE>
+Set ContainerSubObject = New clsGetContainer8
+</PRE>
+</BLOCKQUOTE>
+<P>
+The event code is as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Sub ContainerSubObject_ContainerRequest(ContainerObject As Object)
+    Set ContainerObject = Me
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The clsRabbit8 object needs to connect to the subobject instead
+of the container itself. It will need the following function to
+obtain that reference:
+<BLOCKQUOTE>
+<PRE>
+Friend Function GetContainerSubObject() As clsGetContainer8
+    Set GetContainerSubObject = ContainerSubObject
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+In the clsRabbit8 object, the Hutch property is declared as follows:
+<BLOCKQUOTE>
+<PRE>
+' Which hutch is holding this rabbit?
+Private m_Hutch As clsGetContainer8
+
+' Anyone can find out which hutch contains the rabbit
+Public Property Get Hutch() As RabbitCollection8
+    If m_Hutch Is Nothing Then Exit Property
+    Set Hutch = m_Hutch.GetContainer()
+End Property
+
+' Only code within the project can set the Hutch for a rabbit
+Friend Property Let Hutch(vNewValue As RabbitCollection8)
+    If vNewValue Is Nothing Then
+        Set m_Hutch = Nothing
+        Exit Property
+    End If
+    Set m_Hutch = vNewValue.GetContainerSubObject()
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Let's walk through the sequence in more detail.
+<P>
+When a clsRabbit8 object is created, it is added to a RabbitCollection8
+collection object.
+<P>
+The clsRabbit8 object needs to hold a reference to the collection,
+but if it holds a reference to the collection itself, a circular
+reference problem will occur. Instead, the Hutch property setting
+uses the GetContainerSubObject function to retrieve a reference
+to a clsGetContainer8 object that is held by the RabbitCollection8
+object.
+<P>
+Any time a clsRabbit8 object needs a reference to its container,
+it calls the GetContainer method of the clsGetContainer8 object
+it is referencing. This method raises an event in the RabbitCollection8
+object. The collection uses this event to return a reference to
+itself to the clsGetContainer8 object, which returns the reference
+back to the clsRabbit8 object.
+<P>
+When the Hutch1 variable is set to Nothing or assigned to a different
+variable, the RabbitCollection8 object is destroyed. This works
+because an event sink does not add a reference count to the client
+object. During the collection's terminate event, the internal
+collection is deleted, which in turn deletes all of the clsRabbit8
+objects. Once these objects and the Collection object are deleted,
+the clsGetContainer8 object will have no more references and will
+be deleted as well. 
+<P>
+Why does this work? Because an event server holds a reference
+to an internal event sink subobject instead of the client object
+that is receiving the events. Events work this way in order to
+prevent exactly the kind of circular reference problems that we
+are dealing with here. In effect, this approach takes advantage
+of the event mechanism's method for eliminating circular references
+and applies it to a more general case. The architecture is illustrated
+in Figure 13.7.
+<P>
+<A HREF="f13-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f13-3.gif"><B>Figure 13.3 :</B> <I>RabbitTest5 main form in action</I>.</A> 
+<P>
+There are a few more topics to cover before we conclude our discussion
+of object lifetime.
+<H3><A NAME="InitializationEvents">
+Initialization Events</A></H3>
+<P>
+Visual Basic class, form, MDI Form, and control and document modules
+all support initialization and termination events.
+<P>
+Use the initialization event to initialize object data. One common
+use that was demonstrated in the various Rabbit examples is the
+actual creation of subobjects that are referenced by the object.
+Remember that the initialization event is triggered for each object
+that is created.
+<P>
+What if you have class-specific initialization that must take
+place the first time an object of a certain class type is created?
+An example of this would be if you wanted the rabbit number in
+the Rabbit examples to start with some number other than 1. To
+do this you would have to initialize the global RabbitCounter
+variable in the modRabbit8 module the first time any object in
+the RabbitCollection8 class is created. You do this by setting
+up a Boolean variable in the global module that indicates whether
+the initialization has taken place. Test the value of this variable
+during each object's initialization event. If the variable is
+False, perform initialization and set the variable to True to
+indicate to other objects that the first-time initialization is
+complete.
+<P>
+Try to limit the amount of code in initialization events. This
+is especially important for EXE servers where a long initialization
+event could cause an OLE time-out in the client application.
+<H3><A NAME="TerminationEvents">
+Termination Events</A></H3>
+<P>
+Use termination events to set object references in your object
+to Nothing.
+<P>
+Be sure to test your application shutdown by closing the client
+application and verifying that the objects in your application
+are, in fact, destroyed and that the client application really
+terminates.
+<P>
+Remember that during application shutdown the order of object
+destruction is not guaranteed.
+<P>
+Be sure to test termination in the compiled version of the component
+as well. The behavior is slightly different from the behavior
+in the design environment. (For example: in the design environment,
+a DLL server is never actually unloaded from VB's process space.)
+<H3><A NAME="UnkillableApplications">
+Unkillable Applications</A></H3>
+<P>
+The Rabbit examples we've used in this chapter have one advantage
+over EXE servers. All of the objects are in process. When you
+finally close the main application, Windows is smart enough to
+destroy all of the objects-even those you've lost track of due
+to circular references.
+<P>
+This does not work with EXE servers. If you have an EXE server
+named ServerA that holds an object reference to another executable
+named ServerB, and ServerB also holds a reference to an object
+in ServerA, neither application will ever terminate. This is because
+an EXE server can only close once all of its objects have been
+destroyed. So be extra careful to clean up your objects when working
+with EXE server components.
+<H3><A NAME="PrivateObjects">
+Private Objects</A></H3>
+<P>
+Never pass a reference to a private object to a client that is
+not part of the component itself. Yes, it will work most of the
+time, but private objects will not prevent a server from being
+unloaded. This means that you may leave your client with an object
+reference to an object that does not exist, which will likely
+lead to either a memory exception or other corruption of your
+application's memory.
+<P>
+Private objects are not the same as objects whose Instancing property
+is set to Public Not Creatable. Public-Not Creatable objects are
+public and are designed to be passed to clients and other components
+as needed. It's just that a client cannot create one of these
+objects on its own-it must obtain a reference to one that was
+created by another object in your component.
+<H3><A NAME="TrackYourObjects">
+Track Your Objects</A></H3>
+<P>
+The Rabbit sample program demonstrates how you can use a module
+counter and debug.print statements to keep track of object creation
+and deletion. Visual Basic 5.0 preserves and allows you to display
+the contents of the Immediate window after the application stops
+running, so it is easy to verify that your objects are being destroyed
+properly.
+<H3><A NAME="DontStopYourApplication">
+Don't Stop Your Application</A></H3>
+<P>
+There are two ways to stop a program in the VB environment. One
+is to close the application by using the System menu on the main
+form (the same way you would close a compiled application), the
+other is to use the Run, End command or its toolbar equivalent.
+<P>
+In a related way, there are two ways to terminate a running application.
+One is to unload its main form. The other is to use the End statement.
+<P>
+As a general rule, within the Visual Basic environment, always
+close the application using the System menu or other exit mechanism
+that you've programmed into the application. Do not use the Run,
+End command or its toolbar equivalent.
+<P>
+As a nearly absolute rule for compiled applications, never use
+the End statement to terminate a program or component. The only
+exception I can think of is when you've detected an internal application
+error so terrible that you don't dare run another line of code.
+I don't think I've ever used the End statement in a VB program
+other than to demonstrate how bad it is.
+<P>
+Why is this? Because when you use the Run, End command, its toolbar
+equivalent, or the End statement, you are telling Visual Basic
+to immediately stop all code execution. Visual Basic will proceed
+to clean up memory wherever it can. However, it will not execute
+any of your termination code.
+<P>
+Not only does this prevent you from testing your termination code,
+you may find that some objects were not cleaned up properly. For
+example: if you have used API functions to create system objects,
+Visual Basic and Windows may not be able to clean up those objects
+when your application ends. Visual Basic definitely will not close
+or free those objects before you try to run the application again.
+Thus, you may find that a file you opened the first time fails
+on the next attempt due to a permission error or lock condition.
+<P>
+So get in the habit of closing your applications using the System
+menu. With VB5's toolbar customization, you can even remove the
+Run, End button from the debug and top-level toolbars, which will
+help force you into better VB programming habits. And speaking
+of avoiding bad programming habits: it's just possible that you've
+heard about Visual Basic's new support for multithreading and
+are dying to try it out. As you will see in the next chapter,
+multithreading can be fun to play with, and it can be extremely
+useful, but only when used judiciously.
+<HR>
+<P>
+
+<CENTER><P><A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch12.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch14.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,1424 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 16 -- Drawing Graphics</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;16</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Drawing Graphics</FONT></H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#TheAppletsCanvas">
+
+The Applet's Canvas</A>
+
+<LI><A HREF="#ExampleUsingtheCoordinateSystem">
+
+Example: Using the Coordinate System</A>
+
+<LI><A HREF="#DrawingShapes">
+
+Drawing Shapes</A>
+
+<LI><A HREF="#ExampleDrawingaRectangle">
+
+Example: Drawing a Rectangle</A>
+
+<LI><A HREF="#ExampleDrawingOtherShapes">
+
+Example: Drawing Other Shapes</A>
+
+<LI><A HREF="#UnderstandingtheShapeAppletApplet">
+
+Understanding the ShapeApplet Applet</A>
+
+<UL>
+
+<LI><A HREF="#DrawingOvals">
+
+Drawing Ovals</A>
+
+<LI><A HREF="#DrawingArcs">
+
+Drawing Arcs</A>
+
+<LI><A HREF="#ExampleDrawingArcsinanApplet">
+
+Example: Drawing Arcs in an Applet</A>
+
+<LI><A HREF="#DrawingPolygons">
+
+Drawing Polygons</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+Almost all applets need to create some sort of display, whether
+
+that display is as simple as a line of text or as sophisticated
+
+as an animation sequence. Because Windows is a graphical system,
+
+everything you see on the screen during a Windows session is displayed
+
+graphically. This is true even of text. Because of its graphical
+
+nature, a system like Java's must include the capability to handle
+
+device-independent graphics. In this chapter, you see not only
+
+how you can display various graphical shapes, but also how to
+
+query the system about the characteristics of the display.
+
+<H2><A NAME="TheAppletsCanvas"><FONT SIZE=5 COLOR=#Ff0000>
+
+The Applet's Canvas</FONT></A></H2>
+
+<P>
+
+Every applet has an area of the screen, called the canvas, in
+
+which it can create its display. The size of an applet's canvas
+
+depends on the size of the applet, which is in turn controlled
+
+by the parameters included in an HTML document's <TT>&lt;applet&gt;</TT>
+
+tag. Generally, the larger the applet appears in the HTML document,
+
+the larger the applet's visible canvas. Anything that you try
+
+to draw outside of the visible canvas doesn't appear on the screen.
+
+<P>
+
+You draw graphical images on the canvas by using coordinates that
+
+identify pixel locations. Chances are good that you've had some
+
+sort of computer-graphics experience before Java, so you know
+
+that the coordinates that define pixel locations on a computer
+
+screen can be organized in various ways. Windows, for example,
+
+supports a number of different mapping modes that determines how
+
+coordinates are calculated in a window.
+
+<P>
+
+Thankfully, Java does away with the complications of displaying
+
+graphics in a window by adopting a single coordinate system. This
+
+coordinate system has its origin (point 0,0) in the upper-left
+
+corner, with the X axis increasing to the right, and the Y axis
+
+increasing downward, as shown in Figure 16.1.
+
+<P>
+
+<IMG SRC="f16-1.gif"><B> Figure 16.1 : </B><I>An applet's canvas uses the typical computer-display coordinate system.
+
+
+
+</I></A><P>
+
+<H2><A NAME="ExampleUsingtheCoordinateSystem"><FONT SIZE=5 COLOR=#Ff0000>
+
+Example: Using the Coordinate System</FONT></A></H2>
+
+<P>
+
+When you want to draw something on an applet's canvas, you use
+
+the coordinate system shown in Figure 16.1. This coordinate system
+
+situates the system's origin in the applet's upper-left corner,
+
+just as it's shown in Figure 16.1. For example, Figure 16.2 shows
+
+an applet displaying a single line in its canvas. This line was
+
+drawn starting at coordinates 5,10, as shown in Figure 16.3.
+
+<P>
+
+<IMG SRC="f16-2.gif"><B> Figure 16.2 : </B><I>This applet displays a single line.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f16-3.gif"><B> Figure 16.3 : </B><I>The line in Figure 16.2 is drawn at the coordinates 5,10.
+
+
+
+</I></A><P>
+
+<H2><A NAME="DrawingShapes"><FONT SIZE=5 COLOR=#Ff0000>
+
+Drawing Shapes</FONT></A></H2>
+
+<P>
+
+Java's <TT>Graphics</TT> class includes methods for drawing many
+
+different types of shapes, everything from straight lines to polygons.
+
+You were introduced to the <TT>Graphics</TT> class in Part II
+
+of this book when you displayed text in an applet's <TT>paint()</TT>
+
+method. As you may recall, a reference to a <TT>Graphics</TT>
+
+object is passed to the <TT>paint()</TT> method as its single
+
+argument. Because the <TT>Graphics</TT> class is part of the <TT>awt</TT>
+
+package, you have to include one of the following lines at the
+
+top of your applet's code to use the class:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.Graphics
+
+import java.awt.*
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The first line in the preceding imports only the <TT>Graphics</TT>
+
+class, whereas the second line imports all the classes included
+
+in the <TT>awt</TT> package. Table 16.1 lists the most commonly
+
+used drawing methods in the <TT>Graphics</TT> class.<BR>
+
+<P>
+
+<CENTER><B>Table 16.1&nbsp;&nbsp;Drawing Methods of the </B><I>Graphics</I><B>
+
+Class.</B></CENTER>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD WIDTH=176><I><B>Method</B></I></TD><TD WIDTH=375><I><B>Description</B></I>
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>clearRect()</TT></TD><TD WIDTH=375>Erases a rectangular area of the canvas.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>copyArea()</TT></TD><TD WIDTH=375>Copies a rectangular area of the canvas to another area.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>drawArc()</TT></TD><TD WIDTH=375>Draws a hollow arc.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>drawLine()</TT></TD><TD WIDTH=375>Draws a straight line.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>drawOval()</TT></TD><TD WIDTH=375>Draws a hollow oval.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>drawPolygon()</TT></TD><TD WIDTH=375>Draws a hollow polygon.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>drawRect()</TT></TD><TD WIDTH=375>Draws a hollow rectangle.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>drawRoundRect()</TT></TD><TD WIDTH=375>Draws a hollow rectangle with rounded corners.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>drawString()</TT></TD><TD WIDTH=375>Displays a text string.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>fillArc()</TT></TD><TD WIDTH=375>Draws a filled arc.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>fillOval()</TT></TD><TD WIDTH=375>Draws a filled oval.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>fillPolygon()</TT></TD><TD WIDTH=375>Draws a filled polygon.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>fillRect()</TT></TD><TD WIDTH=375>Draws a filled rectangle.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>fillRoundRect()</TT></TD><TD WIDTH=375>Draws a filled rectangle with rounded corners.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>getColor()</TT></TD><TD WIDTH=375>Retrieves the current drawing color.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>getFont()</TT></TD><TD WIDTH=375>Retrieves the currently used font.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>getFontMetrics()</TT></TD><TD WIDTH=375>Retrieves information about the current font.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>setColor()</TT></TD><TD WIDTH=375>Sets the drawing color.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=176><TT>setFont()</TT></TD><TD WIDTH=375>Sets the font.
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+To draw a shape in an applet's display area, you only need to
+
+call the appropriate method and supply the arguments required
+
+by the method. These arguments are based on the coordinates at
+
+which you want to draw the shape. For example, the following code
+
+example draws a straight line from coordinate 5,10 to 20,30:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+g.drawLine(5, 10, 20, 30);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>g</TT> in the preceding code line is the <TT>Graphics</TT>
+
+object passed to the <TT>paint()</TT> method. As you can see,
+
+the <TT>drawLine()</TT> method takes four arguments, which are
+
+X,Y coordinate pairs that specify the starting and ending points
+
+of the line.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>TIP</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+There may be times when you need to retrieve information about the system's currently set graphical attributes. Java's <TT>Graphics</TT> class supplies methods like <TT>getColor()</TT>, <TT>getFont()</TT>, and <TT>getFontMetrics()</TT> to enable you to 
+obtain this information.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="ExampleDrawingaRectangle"><FONT SIZE=5 COLOR=#Ff0000>
+
+Example: Drawing a Rectangle</FONT></A></H2>
+
+<P>
+
+Most of the shape-drawing methods are as easy to use as the <TT>drawLine()</TT>
+
+method is. Suppose that you want to write an applet that draws
+
+a filled rounded rectangle inside a hollow rectangle. You'd then
+
+add calls to the <TT>Graphics</TT> class's <TT>fillRoundRect()</TT>
+
+and <TT>drawRect()</TT> to the applet's <TT>paint()</TT> method.
+
+Listing 16.1 is just such an applet, whereas Listing 16.2 is the
+
+HTML document that displays the applet. Figure 16.4 shows the
+
+applet running under Appletviewer.
+
+<P>
+
+<IMG SRC="f16-4.gif"><B> Figure 16.4 : </B><I>This is RectApplet running under Appletviewer.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 16.1&nbsp;&nbsp;RECTAPPLET.JAVA: Drawing Rectangles.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class RectApplet extends Applet
+
+{
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawRect(35, 15, 125, 200);
+
+        g.fillRoundRect(50, 30, 95, 170, 15, 15);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 16.2&nbsp;&nbsp;RECTAPPLET.htmlL: HTML Document for
+
+RectApplet.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;title&gt;Applet Test Page&lt;/title&gt;
+
+&lt;h1&gt;Applet Test Page&lt;/h1&gt;
+
+&lt;applet
+
+    code=&quot;RectApplet.class&quot;
+
+    width=200
+
+    height=250
+
+    name=&quot;RectApplet&quot;&gt;
+
+&lt;/applet&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+In RectApplet's <TT>paint()</TT> method, you can see the method
+
+calls that produce the graphical display. The first line creates
+
+the outside rectangle. That method call looks like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+g.drawRect(35, 15, 125, 200);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>drawRect()</TT> method's four arguments are the X,Y coordinates
+
+of the rectangle's upper-left corner and the width and height
+
+of the rectangle. The rounded filled rectangle is almost as easy
+
+to draw:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+g.fillRoundRect(50, 30, 95, 170, 15, 15);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The first four arguments of the <TT>fillRoundRect()</TT> method
+
+are the same as those for the <TT>drawRect()</TT> method. The
+
+fifth and sixth arguments are the size of the rectangle that represents
+
+the rounded corners. Think of this rectangle as being placed on
+
+each corner of the main rectangle and a curved line drawn between
+
+its corners, as shown in Figure 16.5.
+
+<P>
+
+<IMG SRC="f16-5.gif"><B> Figure 16.5 : </B><I>The coordinates for the rounded corners are given as the width and height of the rectangle that encloses the rounded corner.
+
+
+
+</I></A><P>
+
+<H2><A NAME="ExampleDrawingOtherShapes"><FONT SIZE=5 COLOR=#Ff0000>
+
+Example: Drawing Other Shapes</FONT></A></H2>
+
+<P>
+
+Some shapes you can draw with the <TT>Graphics</TT> class are
+
+more complex than others. For example, the <TT>drawArc()</TT>
+
+method requires six arguments in order to draw a simple curved
+
+line. To see how drawing other shapes works, you'll now create
+
+the ShapeApplet applet, which enables you to switch from one shape
+
+to another in the applet's display. Listing 16.3 is ShapeApplet's
+
+source code. Figures 16.6 and 16.7 show what the applet looks
+
+like running under the Appletviewer application.
+
+<P>
+
+<IMG SRC="f16-6.gif"><B> Figure 16.6 : </B><I>This is what ShapeApplet looks like when it first runs.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f16-7.gif"><B> Figure 16.7 : </B><I>This is ShapeApplet displaying an oval.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 16.3&nbsp;&nbsp;ShapeApplet.java: An Applet That Draws
+
+Various Shapes.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class ShapeApplet extends Applet
+
+{
+
+    int shape;
+
+    Button button;
+
+
+
+    public void init()
+
+    {
+
+        shape = 0;
+
+        button = new Button(&quot;Next Shape&quot;);
+
+        add(button);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        int x[] = {35, 150, 60, 140, 60, 150, 35};
+
+        int y[] = {50, 80, 110, 140, 170, 200, 230};
+
+        int numPts = 7;
+
+
+
+        switch(shape)
+
+        {
+
+            case 0:
+
+                g.drawLine(35, 50, 160, 230);
+
+                break;
+
+            case 1:
+
+                g.drawRect(35, 50, 125, 180);
+
+                break;
+
+            case 2:
+
+                g.drawRoundRect(35, 50, 125, 180, 15, 15);
+
+                break;
+
+            case 3:
+
+                g.drawOval(35, 50, 125, 180);
+
+                break;
+
+            case 4:
+
+                g.drawArc(35, 50, 125, 180, 90, 180);
+
+                break;
+
+            case 5:
+
+                g.drawPolygon(x, y, numPts);
+
+                break;
+
+            case 6:
+
+                g.fillPolygon(x, y, numPts);
+
+                break;
+
+        }
+
+    }
+
+
+
+    public boolean action(Event event, Object arg)
+
+    {
+
+        ++shape;
+
+        if (shape == 7)
+
+            shape = 0;
+
+        repaint();
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>ShapeApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's shape data field.<BR>
+
+    Declare the class's button data field.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Initialize the shape counter.<BR>
+
+        Create the applet's <TT>Button</TT> object.<BR>
+
+        Add the <TT>Button</TT> object to the applet.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Initialize the X and Y coordinates for the polygons.<BR>
+
+        Initialize the polygon point count.<BR>
+
+        Display a shape based on the value of the shape counter.
+
+<BR>
+
+    Override the <TT>action()</TT> method.<BR>
+
+        Increment the shape counter.<BR>
+
+        Reset the shape counter if it has reached its maximum
+
+value.<BR>
+
+        Force the applet to repaint its canvas with the next shape.
+
+<BR>
+
+        Tell Java that the method executed okay.
+
+</BLOCKQUOTE>
+
+<P>
+
+To run ShapeApplet, use the HTML document shown in Listing 16.2,
+
+except change all occurrences of RectApplet to ShapeApplet. When
+
+you run the applet with Appletviewer, you see the window shown
+
+in Figure 16.6. To change the shape displayed in the applet's
+
+canvas, click the Next Shape button.
+
+<H2><A NAME="UnderstandingtheShapeAppletApplet"><FONT SIZE=5 COLOR=#Ff0000>
+
+Understanding the ShapeApplet Applet</FONT></A></H2>
+
+<P>
+
+You don't need to concern yourself at this point with the button
+
+control that ShapeApplet uses to switch shapes, except to know
+
+that just like the <TT>TextField</TT> controls you've been using,
+
+clicking the button causes Java to call the applet's <TT>action()</TT>
+
+method. The <TT>action()</TT> method increments the shape counter,
+
+<TT>shape</TT>, and tells the applet to redraw itself. In the
+
+<TT>paint()</TT> method, the value of <TT>shape</TT> is used in
+
+a <TT>switch</TT> statement to determine which shape gets drawn.
+
+You learned about <TT>switch</TT> statements back in <A HREF="ch9.html" >Chapter 9</A>
+
+&quot;The <TT>if</TT> and <TT>switch</TT> Statements.&quot;
+
+<H3><A NAME="DrawingOvals">
+
+Drawing Ovals</A></H3>
+
+<P>
+
+The real meat of this program are the calls to the <TT>Graphics</TT>
+
+object's various shape-drawing methods. You already know about
+
+the first three: <TT>drawLine()</TT>, <TT>drawRect()</TT>, and
+
+<TT>drawRoundRect()</TT>. The call to <TT>drawOval()</TT>, however,
+
+is new and looks like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+g.drawOval(35, 50, 125, 180);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+As you can see, this method, which draws ovals and circles, takes
+
+four arguments. These arguments are the X,Y coordinates, width,
+
+and height of a rectangle that can enclose the oval. Figure 16.8
+
+shows how the resultant oval relates to its enclosing rectangle.
+
+<P>
+
+<IMG SRC="f16-8.gif"><B> Figure 16.8 : </B><I>An oval's coordinates are actually the coordinates of <r>an enclosing rectangle.
+
+
+
+</I></A><P>
+
+<H3><A NAME="DrawingArcs">
+
+Drawing Arcs</A></H3>
+
+<P>
+
+Next in <TT>paint()</TT> is the <TT>drawArc()</TT> method, which
+
+is the most complicated (at least, from an understanding point
+
+of view) of the shape-drawing methods. The call to <TT>drawArc()</TT>
+
+looks like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+g.drawArc(35, 50, 125, 180, 90, 180);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The first four arguments are the same as the arguments for <TT>drawOval()</TT>:
+
+the X,Y coordinates, width, and height of the enclosing rectangle.
+
+The last two arguments are the angle at which to start drawing
+
+the arc and the number of degrees around the arc to draw.
+
+<P>
+
+To understand all this angle nonsense, take a look at figure 16.9,
+
+which shows how Java relates the arc's starting angle to the degrees
+
+of an oval. In the preceding example call to <TT>drawArc()</TT>,
+
+the fifth argument is 90, which means Java starts drawing the
+
+arc, within the arc's enclosing rectangle, at the 90-degree point.
+
+The sixth argument of 180 tells Java to draw around the arc 180
+
+degrees (or halfway around the full 360 degrees). It doesn't mean
+
+that the ending point should be at the 180-degree point. Figure
+
+16.10 shows the resultant arc.
+
+<P>
+
+<IMG SRC="f16-9.gif"><B> Figure 16.9 : </B><I>The degrees of an oval start on the right side and travel counter-clockwise around the arc.
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f16-10.gif"><B> Figure 16.10 : </B><I>The arc shown here starts at the 90-degree point and sweeps 180 degrees around the arc.
+
+</I></A><P>
+
+<H3><A NAME="ExampleDrawingArcsinanApplet">
+
+Example: Drawing Arcs in an Applet</A></H3>
+
+<P>
+
+Because understanding the angles involved in drawing arcs can
+
+be a little confusing, in this example you'll create an applet
+
+called ArcApplet that enables you to enter different values for
+
+<TT>drawArc()</TT>'s fifth and sixth arguments and immediately
+
+see the results. Listing 16.4 is the source code for the applet.
+
+Use Listing 16.2 to create ArcApplet's HTML document, by changing
+
+each occurrence of RectApplet to ArcApplet.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 16.4&nbsp;&nbsp;ARCAPPLET.JAVA: An Arc-Drawing Applet.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class ArcApplet extends Applet
+
+{
+
+    TextField textField1, textField2;
+
+
+
+    public void init()
+
+    {
+
+        textField1 = new TextField(10);
+
+        textField2 = new TextField(10);
+
+
+
+        add(textField1);
+
+        add(textField2);
+
+
+
+        textField1.setText(&quot;0&quot;);
+
+        textField2.setText(&quot;360&quot;);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        String s = textField1.getText();
+
+        int start = Integer.parseInt(s);
+
+
+
+        s = textField2.getText();
+
+        int sweep = Integer.parseInt(s);
+
+
+
+        g.drawArc(35, 50, 125, 180, start, sweep);
+
+    }
+
+
+
+    public boolean action(Event event, Object arg)
+
+    {
+
+        repaint();
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>ArcApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's <TT>TextField</TT> objects.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create the two <TT>TextField</TT> objects.<BR>
+
+        Add the <TT>TextField</TT> objects to the applet.<BR>
+
+        Set the text for the <TT>TextField</TT> objects.<BR>
+
+    Override the <TT>paint() </TT>method.<BR>
+
+        Get the starting angle and convert it to an integer.<BR>
+
+        Get the sweep angle and convert it to an integer.<BR>
+
+        Display the selected arc.<BR>
+
+    Override the <TT>action()</TT> method.<BR>
+
+        Force the applet to repaint its canvas with the next shape.
+
+<BR>
+
+        Tell Java that the method executed okay.
+
+</BLOCKQUOTE>
+
+<P>
+
+When you run ArcApplet using Appletviewer, you see the window
+
+shown in Figure 16.11. (Looks kind of like a guy with shifty eyes
+
+and a big nose, doesn't it?) Because the starting angle (in the
+
+first text box) is 0 and the drawing degrees (the second box)
+
+is 360, the arc is actually a full oval. By changing the values
+
+in the two boxes and pressing Enter, you can cause the applet
+
+to display different arcs. For example, Figure 16.12 shows an
+
+arc that has a starting angle of 120 degrees and drawing degrees
+
+of 245.
+
+<P>
+
+<P>
+
+<IMG SRC="f16-11.gif"><B> Figure 16.11 : </B><I>This is ArcApplet at startup.
+
+</I></A><P>
+
+<IMG SRC="f16-12.gif"><B> Figure 16.12 : </B><I>You can use ArcApplet to experiment with different arc angle settings.
+
+</I></A><P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+Most of the shape-drawing methods come in two versions, one that draws a hollow shape and one that draws a filled shape. The method that draws the filled shape has the same name as the one that draws the hollow shape, except you change the word 
+<TT>draw</TT> in the name to <TT>fill</TT>. For example, because <TT>drawArc()</TT> draws a hollow arc, the method <TT>fillArc()</TT> draws a filled arc.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H3><A NAME="DrawingPolygons">
+
+Drawing Polygons</A></H3>
+
+<P>
+
+Polygons are simply many-sided shapes. For example, a triangle
+
+is a polygon (it is, in fact, the simplest polygon). Squares,
+
+rectangles, and hexagons are all polygons, as well. Because a
+
+polygon comprises many different lines, before you can draw a
+
+polygon in Java, you need to create arrays that contain the X,Y
+
+coordinates for each line in the polygon. In Listing 16.3, ShapeApplet
+
+defines those arrays like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+int x[] = {35, 150, 60, 140, 60, 150, 35};
+
+int y[] = {50, 80, 110, 140, 170, 200, 230};
+
+int numPts = 7;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The first array, called <TT>x[]</TT> in the preceding, is the
+
+X coordinates for each X,Y pair, and the second array, called
+
+<TT>y[]</TT>, is the Y coordinates for each X,Y pair. By looking
+
+at the values defined in the arrays, you can see that the first
+
+line gets drawn from 35,50 to 150,80. Because all the lines in
+
+a polygon are connected, Java can continue drawing lines by using
+
+the previous ending point (in this case, 150,80) and the next
+
+coordinate pair, which is 60,110. Java will continue to work through
+
+the arrays until it uses all the given coordinates. The actual
+
+method call that draws the polygon looks like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+g.drawPolygon(x, y, numPts);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>drawPolygon()</TT> method's three arguments are the array
+
+holding the X coordinates, the array holding the Y coordinates,
+
+and the number of points defined in the arrays. You can use a
+
+literal value for the third argument, but it's often handy to
+
+define a variable as shown in the example (<TT>numPts</TT>). Then,
+
+if you change the arrays, you can change the variable at the same
+
+time and not have to worry about correcting any method calls that
+
+use the arrays along with point count.
+
+<P>
+
+Figure 16.13 shows the polygon drawn by the values given in the
+
+<TT>x[]</TT> and <TT>y[]</TT> arrays in the preceding. Looks more
+
+like a squiggly line than a polygon. That's because when you draw
+
+a hollow polygon, Java doesn't connect the starting and ending
+
+point. If you draw a filled polygon, though, you'll see that the
+
+connecting side is really there, as shown in Figure 16.14.
+
+<P>
+
+<IMG SRC="f16-13.gif"><B> Figure 16.13 : </B><I>A hollow polygon is always missing one side.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f16-14.gif"><B> Figure 16.14 : </B><I>A filled polygon actually looks like a polygon instead of a squiggly line.
+
+
+
+</I></A><P><P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+If you need more control over your polygons, Java includes a <TT>Polygon</TT> class from which you can create polygon objects from the coordinate arrays. The <TT>Polygon</TT> class includes handy methods that enable you to add points to a polygon, 
+determine whether a point is inside the polygon, and retrieve the polygon's bounding rectangle. You create a <TT>Polygon</TT> object with a line like <TT>Polygon polygon = new Polygon(x, y, numPts)</TT>. The arguments for the class's constructor are the 
+same as those for the <TT>drawPolygon()</TT> method. The <TT>Polygon</TT> class's public methods are <TT>addPoint(x, y)</TT>, <TT>getBoundingBox()</TT> (which returns a <TT>Rectangle</TT> object), and <TT>inside()</TT> (which returns a <TT>boolean</TT> 
+value).
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+Java's <TT>Graphics</TT> class enables you to draw many types
+
+of shapes, including lines, rectangles, ovals, and arcs. You can
+
+use these shape-drawing methods to enhance the appearance of your
+
+applets, drawing frames around objects, and even putting together
+
+simple illustrations. In addition, you can set the drawing color
+
+used by the <TT>Graphics</TT> class, as well as query the system
+
+for its current graphics settings. In the next chapter, you add
+
+to your graphics knowledge by learning how to create, manipulate,
+
+and display graphical text.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>What do you call the area of an applet in which you can draw?
+
+<LI>How is Java's graphical coordinate system organized?
+
+<LI>What is the difference in the shapes drawn by the <TT>drawRect()</TT>
+
+and <TT>fillRect()</TT> methods?
+
+<LI>What are the four arguments for the <TT>drawRect()</TT> method?
+
+<LI>How do the arguments for the <TT>drawRoundRect()</TT> method
+
+differ from the arguments for <TT>drawRect()</TT>?
+
+<LI>Why does the <TT>drawPolygon()</TT> method require that you
+
+set up arrays of coordinates?
+
+<LI>What are the six arguments required by the <TT>drawArc()</TT>
+
+method?
+
+<LI>Why would you want to use the <TT>polygon</TT> class?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Write the code needed to draw a 100&#180;200 rectangle at
+
+the coordinates 50,75.
+
+<LI>Write an applet that displays a square inside a circle.
+
+<LI>Write an applet that enables the user to choose the width,
+
+height, and location of a rectangle. The applet should display
+
+the rectangle at the given coordinates.
+
+<LI>Modify the ArcApplet applet so that the user can select not
+
+only the arc's drawing points, but also the size of the arc's
+
+bounding rectangle.
+
+<LI>Write an applet called FaceApplet that displays a face made
+
+from ovals and arcs. The final applet should look like Figure
+
+16.15. (You can find the solution to this problem in the CHAP16
+
+folder of this book's CD-ROM.) <BR>
+
+<IMG SRC="f16-15.gif"><B> Figure 16.15 : </B><I>This is what FaceApplet should look like when running under Appletviewer.
+
+
+
+</I></A><P>
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch15.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch17.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

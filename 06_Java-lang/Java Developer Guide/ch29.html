@@ -1,0 +1,324 @@
+<HTML>
+
+<HEAD>
+   <TITLE>Chapter 29 -- Protocol Handlers</TITLE>
+   <META>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT COLOR=#Ff0000>Chapter 29</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#Ff0000>Protocol Handlers</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+<UL>
+<LI><A HREF="#UsingProtocolHandlers" >Using Protocol Handlers</A>
+<LI><A HREF="#DevelopingaProtocolHandler" >Developing a Protocol Handler</A>
+<LI><A HREF="#ASimpleProtocolHandler" >A Simple Protocol Handler</A>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+In this chapter you'll learn how to write protocol handlers to
+support the use of custom protocols by Web browsers. You'll also
+learn how Web browsers implement protocols other than HTTP and
+how they are integrated with the browser's operation. You'll develop
+a simple protocol handler and integrate it with a Web client program.
+This chapter builds on the material presented in <A HREF="ch17.html" >Chapter 17</A>,
+&quot;Network Programming with the <TT><FONT FACE="Courier">java.net</FONT></TT>
+Package.&quot;
+<H2><A NAME="UsingProtocolHandlers"><FONT SIZE=5 COLOR=#Ff0000>Using
+Protocol Handlers</FONT></A></H2>
+<P>
+Most popular Web browsers support protocols other than HTTP. These
+other protocols include FTP, gopher, e-mail, and application-specific
+protocols. Support for these protocols is usually built into the
+browser, causing the browser to become larger and slower to load.
+<P>
+Java supports additional protocols through the use of <I>protocol
+handlers</I>, also referred to as <I>stream handlers</I>. These
+protocol handlers are used to retrieve Web objects using application-specific
+protocols. The protocols are specified in the URL referencing
+the object.
+<P>
+Protocol handlers are implemented as subclasses of the <TT><FONT FACE="Courier">URLStreamHandler</FONT></TT>
+class. The <TT><FONT FACE="Courier">URLStreamHandler</FONT></TT>
+class defines four access methods that can be overridden by its
+subclasses, but only the <TT><FONT FACE="Courier">openConnection()</FONT></TT>
+method is required to be overridden.
+<P>
+The <TT><FONT FACE="Courier">openConnection()</FONT></TT> method
+takes an URL with its assigned protocol as a parameter and returns
+an object of class <TT><FONT FACE="Courier">URLConnection</FONT></TT>.
+The <TT><FONT FACE="Courier">URLConnection</FONT></TT> object
+can then be used to create input and output streams and to access
+the resource addressed by the URL.
+<P>
+The <TT><FONT FACE="Courier">parseURL()</FONT></TT> and <TT><FONT FACE="Courier">setURL()</FONT></TT>
+methods are used to implement custom URL syntax parsing. The <TT><FONT FACE="Courier">toExternalForm()</FONT></TT>
+method is used to convert an URL of the protocol type to a <TT><FONT FACE="Courier">String</FONT></TT>
+object.
+<P>
+The purpose of a protocol handler is to implement a custom protocol
+needed to access Web objects identified by URLs that require the
+custom protocol. Protocol handlers, like content handlers, are
+not directly instantiated or accessed. The methods of the <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+object that is returned by a protocol handler are invoked to access
+the resource referenced by the protocol.
+<P>
+A protocol is identified beginning with the first character of
+the URL and continuing to the first colon (<TT><FONT FACE="Courier">:</FONT></TT>)
+contained in the URL. For example, the protocol of the URL <TT><A HREF="http://www.jaworski.com">http://www.jaworski.com</A></TT>
+is http and the protocol of the URL <TT><FONT FACE="Courier">fortune://jaworski.com</FONT></TT>
+is fortune.
+<P>
+A protocol handler is associated with a specific protocol through
+the use of the <TT><FONT FACE="Courier">URLStreamHandlerFactory</FONT></TT>
+interface. A class that implements the <TT><FONT FACE="Courier">URLStreamHandlerFactory</FONT></TT>
+interface must implement the <TT><FONT FACE="Courier">createURLStreamHandler()</FONT></TT>
+method. This method returns an <TT><FONT FACE="Courier">URLStreamHandler</FONT></TT>
+object to be used for a specific protocol. An <TT><FONT FACE="Courier">URLStreamHandlerFactory</FONT></TT>
+object is installed using the static <TT><FONT FACE="Courier">setURLStreamHandlerFactory()</FONT></TT>
+method of the <TT><FONT FACE="Courier">URL</FONT></TT> class.
+<H2><A NAME="DevelopingaProtocolHandler"><FONT SIZE=5 COLOR=#Ff0000>Developing
+a Protocol Handler</FONT></A></H2>
+<P>
+The first step to implement a protocol handler is to define the
+protocol handler as a subclass of the <TT><FONT FACE="Courier">URLStreamHandler</FONT></TT>
+class. The <TT><FONT FACE="Courier">openConnection()</FONT></TT>
+method of the protocol handler creates an <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+object that can be used to access an URL designating the specified
+protocol.
+<P>
+A protocol handler is associated with a specific protocol type
+through the use of an <TT><FONT FACE="Courier">URLStreamHandlerFactory</FONT></TT>
+object. The <TT><FONT FACE="Courier">createURLStreamHandler()</FONT></TT>
+method of the <TT><FONT FACE="Courier">URLStreamHandlerFactory</FONT></TT>
+interface is used to return a protocol handler for a specific
+protocol type.
+<P>
+The <TT><FONT FACE="Courier">setURLStreamHandlerFactory()</FONT></TT>
+method of the URL class is used to set an <TT><FONT FACE="Courier">URLStreamHandlerFactory</FONT></TT>
+as the default <TT><FONT FACE="Courier">URLStreamHandlerFactory</FONT></TT>
+to be used with all protocol types.
+<H2><A NAME="ASimpleProtocolHandler"><FONT SIZE=5 COLOR=#Ff0000>A
+Simple Protocol Handler</FONT></A></H2>
+<P>
+This section presents an example of implementing a simple protocol
+handler. My ncSA server comes with a CGI program, named fortune,
+that returns a fortune cookie-type message when the program's
+URL is accessed. This section defines the fortune protocol to
+access the fortune program on my Web server and on other ncSA
+Web servers. The fortune protocol is not a real Internet protocol;
+I contrived it to illustrate the use of protocol handlers. The
+URL for the fortune protocol consists of <TT><FONT FACE="Courier">fortune://</FONT></TT>
+followed by the host name. For example, <TT><FONT FACE="Courier">fortune://jaworski.com</FONT></TT>
+accesses the fortune protocol on my Web server.
+<P>
+The definition of the <TT><FONT FACE="Courier">URLFortuneHandler</FONT></TT>
+class is shown in Listing 29.1.
+<P>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 29.1. The source code for the </B><TT><B><FONT FACE="Courier">URLFortuneHandler</FONT></B></TT><B>
+class.</B>
+<P>
+<TT><FONT FACE="Courier">import java.net.*;<BR>
+import java.io.*;<BR>
+<BR>
+public class URLFortuneHandler extends URLStreamHandler {<BR>
+&nbsp;public URLConnection openConnection(URL url) throws IOException
+{<BR>
+&nbsp;&nbsp;String host=url.getHost();<BR>
+&nbsp;&nbsp;URL newURL = new URL(&quot;http://&quot;+host+&quot;/cgi-bin/fortune&quot;);
+<BR>
+&nbsp;&nbsp;return newURL.openConnection();<BR>
+&nbsp;}<BR>
+}</FONT></TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The <TT><FONT FACE="Courier">URLFortuneHandler</FONT></TT> class
+extends the <TT><FONT FACE="Courier">URLStreamHandler</FONT></TT>
+class and provides a single method. The <TT><FONT FACE="Courier">openConnection()</FONT></TT>
+method takes an URL object as a parameter and returns an object
+of the <TT><FONT FACE="Courier">URLConnection</FONT></TT> class.
+It also throws the <TT><FONT FACE="Courier">IOException</FONT></TT>
+exception.
+<P>
+The <TT><FONT FACE="Courier">openConnection()</FONT></TT> method
+uses the <TT><FONT FACE="Courier">getHost()</FONT></TT> method
+of the URL class to extract the host name contained in the URL.
+It then uses a new <TT><FONT FACE="Courier">http</FONT></TT> URL
+by concatenating <TT>http://</TT>
+with the host name and then the location of the fortune CGI program,
+<TT><FONT FACE="Courier">/cgi-bin/fortune</FONT></TT>. The <TT><FONT FACE="Courier">openConection()</FONT></TT>
+method of the <TT><FONT FACE="Courier">URL</FONT></TT> class is
+used to return the <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+object associated with the new URL.
+<P>
+The <TT><FONT FACE="Courier">URLFortuneHandler</FONT></TT> class
+wraps the fortune CGI program using the fortune protocol. This
+protocol is implemented through an HTTP connection to the CGI
+program.
+<H3>The <TT><FONT SIZE=4 FACE="Courier">GetFortuneApp</FONT></TT><FONT SIZE=4>
+Program</FONT></H3>
+<P>
+The <TT><FONT FACE="Courier">GetFortuneApp</FONT></TT> program
+illustrates the use of protocol handlers. It accesses the fortune
+CGI program on my Web server using the fortune protocol. The source
+code of the <TT><FONT FACE="Courier">GetFortuneApp</FONT></TT>
+program is shown in Listing 29.2.
+<P>
+<HR>
+<BLOCKQUOTE>
+<B>Listing 29.2. The source code for the </B><TT><B><FONT FACE="Courier">GetFortuneApp</FONT></B></TT><B>
+program.</B>
+<P>
+<TT><FONT FACE="Courier">import java.net.*;<BR>
+import java.io.*;<BR>
+<BR>
+public class GetFortuneApp {<BR>
+&nbsp;public static void main(String args[]){<BR>
+&nbsp;&nbsp;try{<BR>
+&nbsp;&nbsp;&nbsp;FortuneFactory fortuneFactory = new FortuneFactory();
+<BR>
+&nbsp;&nbsp;&nbsp;URL.setURLStreamHandlerFactory(fortuneFactory);
+<BR>
+&nbsp;&nbsp;&nbsp;if(args.length!=1) error(&quot;Usage: java GetFortuneApp
+FortuneURL&quot;);<BR>
+&nbsp;&nbsp;&nbsp;System.out.println(&quot;Fetching URL: &quot;+args[0]);
+<BR>
+&nbsp;&nbsp;&nbsp;URL url = new URL(args[0]);<BR>
+&nbsp;&nbsp;&nbsp;System.out.println((String) url.getContent());
+<BR>
+&nbsp;&nbsp;}catch (MalformedURLException ex){<BR>
+&nbsp;&nbsp;&nbsp;error(&quot;Bad URL&quot;);<BR>
+&nbsp;&nbsp;}catch (IOException ex){<BR>
+&nbsp;&nbsp;&nbsp;error(&quot;IOException occurred.&quot;);<BR>
+&nbsp;&nbsp;}<BR>
+&nbsp;}<BR>
+&nbsp;public static void error(String s){<BR>
+&nbsp;&nbsp;System.out.println(s);<BR>
+&nbsp;&nbsp;System.exit(1);<BR>
+&nbsp;}<BR>
+}<BR>
+class FortuneFactory implements URLStreamHandlerFactory {<BR>
+&nbsp;public FortuneFactory() {<BR>
+&nbsp;}<BR>
+&nbsp;public URLStreamHandler createURLStreamHandler(String protocol)
+{<BR>
+&nbsp;&nbsp;if(protocol.equals(&quot;fortune&quot;)){<BR>
+&nbsp;&nbsp;&nbsp;System.out.println(&quot;Requested protocol:
+&quot;+protocol);<BR>
+&nbsp;&nbsp;&nbsp;return new URLFortuneHandler();<BR>
+&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;return null;<BR>
+&nbsp;}<BR>
+}</FONT></TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+When you invoke the <TT><FONT FACE="Courier">GetFortuneApp</FONT></TT>
+program, provide it with the <TT><FONT FACE="Courier">fortune://jaworski.com</FONT></TT>
+URL as a parameter. The <TT><FONT FACE="Courier">GetFortuneApp</FONT></TT>
+program's output is as follows (you will get a different fortune
+each time you execute the program):
+<BLOCKQUOTE>
+<TT><FONT FACE="Courier">C:\java\jdg\ch29&gt;java GetFortuneApp
+fortune://jaworski.com<BR>
+Fetching URL: fortune://jaworski.com<BR>
+Requested protocol: fortune</FONT></TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT><FONT FACE="Courier">JACK AND THE BEANSTACK<BR>
+by Mark Isaak<BR>
+Long ago, in a finite state far away, there lived a JOVIAL</FONT></TT>
+</BLOCKQUOTE>
+<P>
+character named Jack. Jack and his relations were poor. Often
+their hash table was bare. One day Jack's parent said to him,
+&quot;Our matrices are sparse. You must go to the market to exchange
+our RAM for some BASICs.&quot; She compiled a linked list of items
+to retrieve and passed it to him.
+<P>
+So Jack set out. But as he was walking along a Hamilton path,
+he met the traveling salesman.
+<P>
+&quot;Whither dost thy flow chart take thou?&quot; prompted the
+salesman in high-level language.
+<P>
+&quot;I'm going to the market to exchange this RAM for some chips
+and Apples,&quot; commented Jack.
+<P>
+&quot;I have a much better algorithm. You needn't join a queue
+there; I will swap your RAM for these magic kernels now.&quot;
+<P>
+Jack made the trade, then backtracked to his house. But when he
+told his busy-waiting parent of the deal, she became so angry
+she started thrashing.
+<P>
+&quot;Don't you even have any artificial intelligence? All these
+kernels together hardly make up one byte,&quot; and she popped
+them out the window ...
+<P>
+<BLOCKQUOTE>
+<TT><FONT FACE="Courier">C:\java\jdg\ch29&gt;</FONT></TT>
+</BLOCKQUOTE>
+<P>
+<TT><FONT FACE="Courier">GetFortuneApp</FONT></TT> connects to
+my Web server, invokes the fortune CGI program, and then displays
+the program's results.
+<P>
+The <TT><FONT FACE="Courier">main()</FONT></TT> method creates
+an object of the <TT><FONT FACE="Courier">FortuneFactory</FONT></TT>
+class that implements the <TT><FONT FACE="Courier">URLStreamHandlerFactory</FONT></TT>
+interface. It then sets the object as the default protocol handler.
+An <TT><FONT FACE="Courier">URL</FONT></TT> object is created
+using the URL string passed as the program's parameter. The <TT><FONT FACE="Courier">getContent()</FONT></TT>
+method of the <TT><FONT FACE="Courier">URL</FONT></TT> class is
+then used to extract the information generated by accessing the
+URL using the fortune protocol. The <TT><FONT FACE="Courier">getContent()</FONT></TT>
+method results in the <TT><FONT FACE="Courier">FortuneFactory</FONT></TT>
+object assigned to the <TT><FONT FACE="Courier">fortuneFactory</FONT></TT>
+variable being invoked to retrieve an appropriate protocol handler.
+An object of class <TT><FONT FACE="Courier">URLFortuneHandler</FONT></TT>
+is returned and its <TT><FONT FACE="Courier">openConnection()</FONT></TT>
+method is invoked to extract the <TT><FONT FACE="Courier">URLConnection</FONT></TT>
+object. This is performed behind the scenes as the result of invoking
+the URL class's <TT><FONT FACE="Courier">getContent()</FONT></TT>
+method. The information returned from accessing the URL is then
+displayed.
+<P>
+The <TT><FONT FACE="Courier">GetFortuneApp</FONT></TT> program
+defines the <TT><FONT FACE="Courier">FortuneFactory</FONT></TT>
+class as implementing the <TT><FONT FACE="Courier">URLStreamHandlerFactory</FONT></TT>
+interface. It implements the <TT><FONT FACE="Courier">createURLStreamHandler()</FONT></TT>
+method and checks to see if the protocol type passed to it is
+fortune. If it is not, the <TT><FONT FACE="Courier">null</FONT></TT>
+value is returned to signal that the Java-supplied protocol handler
+should be used. If the protocol type is fortune, the requested
+protocol is displayed and an <TT><FONT FACE="Courier">URLFortuneHandler</FONT></TT>
+object is returned.
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>Summary</FONT></A>
+</H2>
+<P>
+In this chapter you have learned how to write protocol handlers
+to access URLs via custom protocols. You have developed the <TT><FONT FACE="Courier">URLFortuneHandler</FONT></TT>
+and integrated it with the <TT><FONT FACE="Courier">GetFortuneApp</FONT></TT>
+program. This chapter marks the conclusion of the networking part
+of this book. Part VI, &quot;Programming the Web with Applets
+and Scripts,&quot; shows you how to develop Java applets.
+<P>
+<HR WIDTH="100%"></P>
+
+<CENTER><P><A HREF="ch28.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A><A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A><A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A><A HREF="ch30.html"><IMG 
+SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A></P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+</BODY>
+</HTML>

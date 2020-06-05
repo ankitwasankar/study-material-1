@@ -1,0 +1,49 @@
+private void btnFind_Click(object sender, EventArgs e) {
+
+            string searchFor = "";
+            string searchOn = "";
+            string searchString = "";
+            int results = 0;
+
+            if (txtFind.Text.Trim() == "") {
+                MessageBox.Show("Nothing to Search For");
+                return;
+            }
+
+            if (cb1.Text == "Last Name") {
+                searchFor = txtFind.Text.Trim();
+                searchOn = "last_Name=";
+                searchString = searchOn + "'" + searchFor + "'";
+            }
+
+            if (cb1.Text == "Job Title") {
+                searchFor = txtFind.Text.Trim();
+                searchOn = "job_Title=";
+                searchString = searchOn + "'" + searchFor + "'";
+            }
+
+
+            DataRow[] returnedRows;
+
+            returnedRows = ds1.Tables["Workers"].Select(searchString);
+
+            results = returnedRows.Length;
+
+            if (results > 0) {
+                string searchMessage = "";
+
+                DataRow dr1;
+
+                dr1 = returnedRows[0];
+
+                searchMessage = dr1["first_Name"].ToString() + " " + dr1["last_Name"].ToString();
+
+                searchMessage += ", Job Title: " + dr1["job_Title"].ToString();
+
+                MessageBox.Show(searchMessage);
+            }
+            else {
+                MessageBox.Show("No such Record");
+            }
+
+}

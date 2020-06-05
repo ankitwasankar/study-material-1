@@ -1,0 +1,554 @@
+<HTML>
+<HEAD>
+<TITLE>lax06.htm </TITLE>
+<LINK REL="ToC" HREF="httoc.htm">
+<LINK REL="Index" HREF="htindex.htm">
+<LINK REL="Next" HREF="lax07.htm">
+<LINK REL="Previous" HREF="lax05.htm"></HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080">
+<A NAME="I0"></A><P ALIGN=CENTER>
+<A HREF="lax05.htm" TARGET="_self"><IMG SRC="blanprev.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Previous Page"></A>
+<A HREF="httoc.htm" TARGET="_self"><IMG SRC="blantoc.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="TOC"></A>
+<A HREF="lax07.htm" TARGET="_self"><IMG SRC="blannext.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Next Page"></A>
+<A HREF="http://www.mcp.com/sams/" TARGET="_self"><IMG SRC="blanhome.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="See Page"></A>
+<HR ALIGN=CENTER>
+<P>
+<UL>
+<UL>
+<UL>
+<UL>
+<LI>
+<A HREF="#E69E35" >Alerting Users During the Data Entry</A>
+<LI>
+<A HREF="#E69E36" >A Data Verification Example</A>
+<LI>
+<A HREF="#E69E37" >Creating the Form</A></UL>
+<LI>
+<A HREF="#E68E33" ><IMG SRC="task.gif">Validating Numeric Data Entries</A>
+<LI>
+<A HREF="#E68E34" ><IMG SRC="task.gif">Validating Date Entries</A>
+<LI>
+<A HREF="#E68E35" ><IMG SRC="task.gif">Verifying String Data Entries</A>
+<LI>
+<A HREF="#E68E36" ><IMG SRC="task.gif">Implementing an OnChange Event</A>
+<LI>
+<A HREF="#E68E37" ><IMG SRC="task.gif">Implementing a Validate and Submit Routine</A>
+<UL>
+<LI>
+<A HREF="#E69E38" >Using the OnSubmit Event</A>
+<LI>
+<A HREF="#E69E39" >Workshop Wrap-Up</A>
+<LI>
+<A HREF="#E69E40" >Next Steps</A>
+<LI>
+<A HREF="#E69E41" >Q&amp;A</A></UL></UL></UL></UL>
+<HR ALIGN=CENTER>
+<A NAME="E66E12"></A>
+<H1 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=6 COLOR="#FF0000"><B>- 6 -</B>
+<BR><B>Checking Form Data</B></FONT></CENTER></H1>
+<BR>
+<P>In this chapter, you
+<BR>
+<UL>
+<LI>Learn the importance of client-side data verification
+<BR>
+<BR>
+<LI>Check for valid dates
+<BR>
+<BR>
+<LI>Check for valid numeric entries
+<BR>
+<BR>
+<LI>Learn how to check strings for valid characters
+<BR>
+<BR>
+<LI>Submit a form programmatically
+<BR>
+<BR>
+</UL>
+<P>Tasks in this chapter:
+<BR>
+<UL>
+<LI>Validating numeric data entries
+<BR>
+<BR>
+<LI>Validating date entries
+<BR>
+<BR>
+<LI>Verifying string data entries
+<BR>
+<BR>
+<LI>Implementing an OnChange event
+<BR>
+<BR>
+<LI>Implementing a validate and submit routine
+<BR>
+<BR>
+</UL>
+<P>Almost every Web site, especially those run by commercial or semi-commercial organizations, solicits information from the user. Whether it's a simple request for further information or the user places a complex order, the information that you as webmaster receive is by and large unchecked, and you therefore rely upon the user to enter the details correctly.
+<BR>
+<P>The usual remedy to this is to write a server-side CGI script, which is not too onerous a task. However, the user must wait for the information to travel to the server, the script to run, and a new Web page to appear in the browser before he finds out whether his information is within the limits. If the information isn't valid, he re-enters the offending section and waits again. This current method of data verification obviously wastes time and bandwidth and assumes that you have access to the server's CGI-BIN or CGI-LOCAL directories and that you have the resources to create a server-side script in languages such as Perl or PHP/FI.
+<BR>
+<P>When you add client-side data verification, you can perform all this verification at the browser. The user is immediately aware&#151;even as she is typing&#151;of whether the data is acceptable. You cannot stop the mischievous netizens who insist on filling out forms using e-mail addresses such as me@imnottelling.com, but at least you can do something to reduce the amount of totally unusable information.
+<BR>
+<P>This chapter concentrates on the data-verification methods you can add to a current HTML form without using ActiveX controls. Part of Chapter 16, &quot;Real Life Examples II,&quot; shows you how to build an interactive form with ActiveX controls and the HTML layout control.
+<BR>
+<P>The main object of the exercise is to stop poorly formatted data or data that doesn't fit your criteria from reaching the server. This means that you have to perform some type of validation on the data before it is submitted. The form object has an OnSubmit event that is fired either when the user clicks the Submit button or when the script calls the form object's submit method&#151;ideal for handling the validation process.
+<BR>
+<BR>
+<A NAME="E69E35"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Alerting Users During the Data Entry</B></FONT></CENTER></H4>
+<BR>
+<P>Prior to submission, while the user is entering data, you can use several methods to alert the user to a problem with his input. The HTML text box has an OnChange event that fires when the focus moves away from the text box only if the text is different from the last time the event fired. For example, you can enter, This is some text, into an empty HTML text box, and the OnChange event fires when you move to the next text box or control. Return to the text box, delete the word text, retype it, and move away. Because the text is unchanged, the OnChange doesn't fire&#151;quite logical really!
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>The ActiveX text box Change() event does not work in this way. The Change() event is fired with every keystroke, and placing validation code in the Change() event handler can drive a user to distraction if it is not implemented thoughtfully.</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>Using the OnChange event, you can test for data acceptability and caution the user if the test fails. Of course, this method on its own doesn't really solve your problem because the user can simply choose to click OK on the Alert box and then ignore its warning&#151;which means you still receive bad data at the server. There is no substitute for preventing poor data from being submitted. However, ongoing verification during the entry phase used in conjunction with a final verification helps both you and the users. 
+<BR>
+<BR>
+<A NAME="E69E36"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>A Data Verification Example</B></FONT></CENTER></H4>
+<BR>
+<P>Listing 6.1 shows the source code for the example you use in this chapter; Figure 6.1 shows the Web page when it's run in the browser. It contains five HTML text boxes. The first is an optional field that contains no verification. Two fields require a numerical entry, one requires a date, and one asks for the user's e-mail address. As the user enters data and moves to the next field, the data is verified, and if the script finds a problem, it alerts the user. The verification takes place in a series of functions that can be called from any of the fields, which allows for speedy maintenance should you need to add further verifiable fields to the form. Finally, the user clicks the submit button, which is a normal button. The data is reverified, and if it's found to be correct, the form data is submitted to the server. 
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>The line numbers are included in the code for explanation purposes and do not appear in the finished HTML page.</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>
+<FONT COLOR="#000080"><B>Listing 6.1. The sample source code for validate.htm.</B></FONT>
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;Data Validation&lt;/TITLE&gt;
+1:&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+2:Function ValidateNumber(ByVal TheNumber, ByVal FieldName)
+3: If Not IsNumeric(TheNumber) Then
+4:  x = MsgBox(&quot;Invalid Numeric Entry&quot;,16,FieldName)
+5:  ValidateNumber = False
+6: Else
+7:  ValidateNumber = True
+8: End If
+9:End Function
+10:Function ValidateDate(ByVal TheDate, ByVal FieldName)
+11: If Not IsDate(TheDate) Then
+12:  x = MsgBox(&quot;Invalid Date&quot;,16,FieldName)
+13:  ValidateDate = False
+14: Else
+15:  ValidateDate = True
+16: End If
+17:End Function
+18:Function IsEMail(ByVal TheEMail, ByVal FieldName)
+19: If InStr(TheEMail, &quot;@&quot;) &gt; 2 Then
+20:    If Len(TheEMail) - InStr(TheEMail, &quot;@&quot;) &gt; 6 Then
+21:       If InStr(InStr(TheEMail, &quot;@&quot;),TheEMail,&quot;.&quot;) &gt; 0 Then
+22:          If Len(TheEMail) - InStr(InStr(TheEMail, &quot;@&quot;),TheEMail,&quot;.&quot;) =&gt; 2 Then
+23:             ValidateEMail = True
+24:          Else
+25:             ValidateEMail = False
+26:          End If
+27:       Else
+28:          ValidateEMail = False
+29:       End If
+30:    Else
+31:       ValidateEMail = False
+32:    End If
+33: Else
+34:    ValidateEMail = False
+35: End If
+36: If ValidateEMail = True Then
+37:    IsEMail = True
+38: Else
+39:    x = MsgBox(&quot;Invalid Entry&quot;,16,FieldName)
+40:    IsEMail = False
+41:End If
+42:End Function
+43:Sub txtQty_OnChange
+44: x = ValidateNumber(Document.Form1.txtQty.Value, &quot;Quantity&quot;)
+45:End Sub
+46:Sub txtSize_OnChange
+47: x = ValidateNumber(Document.Form1.txtSize.Value, &quot;Size&quot;)
+48:End Sub
+49:Sub txtDate_OnChange
+50: x = ValidateDate(Document.Form1.txtDate.Value, &quot;Date&quot;)
+51:End Sub
+52:Sub txtEmail_OnChange
+53: x = IsEMail(Document.Form1.txtEmail.Value, &quot;EMail&quot;)
+54:End Sub
+55:Sub cmdButton1_OnClick
+56:  If ValidateNumber(Document.Form1.txtQty.Value, &quot;Quantity&quot;) And _
+57:    ValidateDate(Document.Form1.txtDate.Value, &quot;Date&quot;) And _
+58:    ValidateNumber(Document.Form1.txtSize.Value, &quot;Size&quot;) And _
+59:    IsEMail(Document.Form1.txtEmail.Value, &quot;EMail&quot;) Then
+60:      Document.Form1.Submit
+61:  Else
+62:      Exit Sub
+63:  End If
+64:End Sub
+65:&lt;/SCRIPT&gt;
+&lt;/HEAD&gt;
+&lt;BODY BGCOLOR=&quot;white&quot;&gt;
+&lt;FORM NAME=&quot;Form1&quot; ACTION=&quot;http://www.vbscripts.com/test/formtest.phtml&quot; METHOD=POST&gt;
+&lt;PRE&gt;
+Your Name       &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtUserName&quot;&gt;
+Quantity        &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtQty&quot;&gt;
+Size in Metres  &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtSize&quot;&gt;
+Date            &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtDate&quot;&gt;
+Your EMail      &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtEmail&quot;&gt;
+&lt;INPUT TYPE=&quot;Button&quot; NAME=&quot;cmdButton1&quot; VALUE=&quot;Submit Now&quot;&gt;
+&lt;/PRE&gt;
+&lt;/FORM&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;</FONT></PRE>
+<P><B><A HREF="06lax01.gif">Figure 6.1. The sample form in the browser.</A></B>
+<BR>
+<BR>
+<A NAME="E69E37"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Creating the Form</B></FONT></CENTER></H4>
+<BR>
+<P>The form itself is a straightforward HTML form; no surprises here. The form's action is set to a PHP/FI-scripted HTML page, which simply displays the data entered in the form. The HTML for the form is shown in the following code block:
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>For more details on PHP/FI server-side scripting, see the address http://www.vex.net/php/. You can find the source code for formtest.phtml on the CD-ROM.</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<PRE>
+<FONT COLOR="#000080">&lt;FORM NAME=&quot;Form1&quot; ACTION=&quot;http://www.vbscripts.com/test/formtest.phtml&quot; METHOD=POST&gt;
+&lt;PRE&gt;
+Your Name       &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtUserName&quot;&gt;
+Quantity        &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtQty&quot;&gt;
+Size in Metres  &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtSize&quot;&gt;
+Date            &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtDate&quot;&gt;
+Your EMail      &lt;INPUT TYPE=&quot;text&quot; NAME=&quot;txtEmail&quot;&gt;
+&lt;INPUT TYPE=&quot;Button&quot; NAME=&quot;cmdButton1&quot; VALUE=&quot;Submit Now&quot;&gt;
+&lt;/PRE&gt;
+&lt;/FORM&gt;</FONT></PRE>
+<BR>
+<A NAME="E68E33"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Validating Numeric Data Entries</B></FONT></CENTER></H3>
+<BR>
+<P>Each of the verifications is held in a separate function. Functions in VBScript are procedures that return a value to the code that called them. The following code is the function that validates the numerical data: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">2:Function ValidateNumber(ByVal TheNumber, ByVal FieldName)
+3: If Not IsNumeric(TheNumber) Then
+4:  x = MsgBox(&quot;Invalid Numeric Entry&quot;,16,FieldName)
+5:  ValidateNumber = False
+6: Else
+7:  ValidateNumber = True
+8: End If
+9:End Function</FONT></PRE>
+<P>The function prototype in line 2 requires that two values are passed into the function:  first, TheNumber, which is the value to be validated, and second, FieldName, which is the name of the field being validated.
+<BR>
+<P>The keyword ByVal instructs the scripting engine to pass only the value of these variables into the function. For more detail on functions and procedures, see Chapter 9, &quot;Making Your Program Flow.&quot;
+<BR>
+<P>Line 3, where the actual verification takes place, introduces you to a new concept, negation.
+<BR>
+<P>Suppose x equals 10. The statement If x = 10 Then returns True, and the lines following the If... statement execute. However, reversing the condition is known as negation; if x is <I>not</I> equal to 10, the code lines between the If and End If execute if you write the statement as If Not x = 10 Then. To learn more about If...Then conditional statements, see Chapter 9, &quot;Making Your Program Flow.&quot;
+<BR>
+<P>Determining whether a series of characters is numeric isn't an easy task if you consider the logic that must be performed. However, VBScript's built-in checking functions include IsNumeric.  If the entered string can be converted to a number, the function returns True; if it cannot be converted, the function returns False. Remember that all data coming from an HTML form is string data; for instance, the number 400 appears to the program as &quot;400&quot;.
+<BR>
+<P>Lines 4 and 5 execute only if the data entered into the field cannot be converted into a number (such as non-numeric characters). Line 4 displays a message box to the user informing her that the entry is invalid; the message box uses an OK button and a Stop icon. The user then has the option to return to the field and retype the entry. Line 5 sets the function's own return value to False. 
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>For more details on the MsgBox function, see Chapter 3, &quot;Communicating with Your Users.&quot;</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>Line 6 is part of the If...Then...Else conditional statement. Line 7, which executes only if the IsNumeric function returns True, sets the function's own return value to True.
+<BR>
+<P>Lines 8 and 9 finish the If...Then statement and end the function, passing execution back to the code that called the function and returning a value of either True or False. 
+<BR>
+<BR>
+<A NAME="E68E34"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Validating Date Entries</B></FONT></CENTER></H3>
+<BR>
+<P>The function for validating the date in this example is very similar to the numerical validation function: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">10:Function ValidateDate(ByVal TheDate, ByVal FieldName)
+11: If Not IsDate(TheDate) Then
+12:  x = MsgBox(&quot;Invalid Date&quot;,16,FieldName)
+13:  ValidateDate = False
+14: Else
+15:  ValidateDate = True
+16: End If
+17:End Function</FONT></PRE>
+<P>The function prototype in line 10 requires that two values are passed into the function: first, TheDate, which is the date entered by the user to be validated, and second, FieldName. 
+<BR>
+<P>Line 11 is where the date verification takes place. To learn more about If...Then conditional statements, see Chapter 9, &quot;Making Your Program Flow.&quot;
+<BR>
+<P>The IsDate function,  which is built into the VBScript engine, saves you from writing a huge script to cover all possible combinations that are valid dates&#151;12-Jun-96, 12-June-1996, 12-6-96, 12/06/96, 06/12/96, and so on. The IsDate function operates on the user's date setting in the International section of his Windows system. What is a valid date in one country might be invalid in another. Suppose a user in Sweden types the date 96.06.12, which is a valid date format in Sweden, because his Windows system is set to Swedish date formats. IsDate correctly returns True. However, this presents a problem when you send the data to the server.
+<BR>
+<P>Instead of writing a mammoth server-side script to handle every possible date format in the world, you can restrict the date to a certain format and display it to the user&#151;for example, <I>mm-dd-yy</I>. You can then create a script that checks for this rather rigid date format.
+<BR>
+<P>Chapter 8, &quot;Adding Date and Time Functions,&quot; shows a more flexible alternative that breaks the user's date input into month, day, and year and rearranges it to your desired format.
+<BR>
+<P>Lines 12 and 13 execute only if the data entered into the field is not a valid date. Line 14 is part of the If...Then...Else conditional statement. Line 15, which executes only if the IsDate function returns True, sets the function's own return value to True.
+<BR>
+<P>Lines 16 and 17 finish the If...Then statement and end the function, passing execution back to the code that called the function and returning a value of either True or False. 
+<BR>
+<BR>
+<A NAME="E68E35"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Verifying String Data Entries</B></FONT></CENTER></H3>
+<BR>
+<P>Verifying string data can become somewhat complicated because you must decide what the string pattern should look like and hard code that pattern into the script, as the following code shows: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">18:Function IsEMail(ByVal TheEMail, ByVal FieldName)
+19: If InStr(TheEMail, &quot;@&quot;) &gt; 2 Then
+20:    If Len(TheEMail) - InStr(TheEMail, &quot;@&quot;) &gt; 6 Then
+21:       If InStr(InStr(TheEMail, &quot;@&quot;),TheEMail,&quot;.&quot;) &gt; 0 Then
+22:          If Len(TheEMail) - InStr(InStr(TheEMail, &quot;@&quot;),TheEMail,&quot;.&quot;) =&gt; 2 Then
+23:             ValidateEMail = True
+24:          Else
+25:             ValidateEMail = False
+26:          End If
+27:       Else
+28:          ValidateEMail = False
+29:       End If
+30:    Else
+31:       ValidateEMail = False
+32:    End If
+33: Else
+34:    ValidateEMail = False
+35: End If
+36: If ValidateEMail = True Then
+37:    IsEMail = True
+38: Else
+39:    x = MsgBox(&quot;Invalid Entry&quot;,16,FieldName)
+40:    IsEMail = False
+41:End If
+42:End Function</FONT></PRE>
+<P>The pattern of an e-mail address at minimum should be ***@***.***, where * is alphanumeric. Lines 19 to 22 check for this minimum pattern.
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>For more details about InStr, Len, and other character-manipulation functions, read Chapter 7, &quot;Manipulating Strings.&quot;</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>Line 19 uses the InStr function to find the @ character somewhere in the string. InStr returns the position of the character if found or 0 if it is not found within the search string. The criteria you set for the first part of the pattern is that the @ character must appear at least three characters in from the left. As a result, the InStr function in line 19 must return at least 3 for the first part of the pattern to be true. 
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>If you want to learn more about If and Then, read Chapter 9, &quot;Making Your Program Flow.&quot;</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>If the first part succeeds, the second part of the pattern dictates that there must be a minimum of seven characters after the @ symbol. Line 20 tests this condition by subtracting the position of the @ symbol from the length of the overall string, which is found with the Len function. 
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">20:    If Len(TheEMail) - InStr(TheEMail, &quot;@&quot;) &gt; 6 Then</FONT></PRE>
+<P>In the minimum pattern, the length of the string is 11 characters, and the @ symbol resides at position 4; therefore, the minimum number of characters to the right of the @ is 7. Line 20 tests for any amount greater than 6.
+<BR>
+<P>The next stage is a little more complex. Line 21 determines whether a . (period) appears somewhere after the @ symbol. Notice that the InStr function appears twice in line 21:
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">21:       If InStr(InStr(TheEMail, &quot;@&quot;),TheEMail,&quot;.&quot;) &gt; 0 Then</FONT></PRE>
+<P>The full syntax of InStr is
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">InStr(Start,String1,String2) </FONT></PRE>
+<P>In Line 21, you use the position of the @ symbol to determine where InStr should start its search for the . symbol. If it does find a . symbol somewhere after the @ symbol, the function returns the position of the character, and you can proceed to the final part of the pattern, which is determining whether the . symbol appears at least two characters in from the right. As you know, the e-mail address could be a .com, .edu, .com.bh, .co.uk, and so on.
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">22:          If Len(TheEMail) - InStr(InStr(TheEMail, &quot;@&quot;),TheEMail,&quot;.&quot;) =&gt; 2 Then</FONT></PRE>
+<P>Line 22 uses the position of the @, the position of the ., and the overall length of the string to determine how many characters appear after the . symbol. Two or more characters at the end makes the pattern complete and fits our definition of the minimum e-mail address. Of course, as I said earlier, this doesn't stop someone from entering aaa@aaa.aaa.
+<BR>
+<P>If the validation of the e-mail address fails at any stage, the variable ValidateEmail is set to False. Finally, the script makes a check of the variable, and if all is well, the function's own return value is set to True. If the data is invalid, the return value is set to False, and a warning message is displayed to the user. 
+<BR>
+<BR>
+<A NAME="E68E36"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Implementing an OnChange Event</B></FONT></CENTER></H3>
+<BR>
+<P>Where were all these functions called? What set them going? When the user enters a new or changed value in one of the text boxes and then moves away from that text box, an OnChange event fires. The following segment shows the event handlers for each of the text boxes, not including the first text box, which is not validated: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">43:Sub txtQty_OnChange
+44: x = ValidateNumber(Document.Form1.txtQty.Value, &quot;Quantity&quot;)
+45:End Sub
+46:Sub txtSize_OnChange
+47: x = ValidateNumber(Document.Form1.txtSize.Value, &quot;Size&quot;)
+48:End Sub
+49:Sub txtDate_OnChange
+50: x = ValidateDate(Document.Form1.txtDate.Value, &quot;Date&quot;)
+51:End Sub
+52:Sub txtEmail_OnChange
+53: x = IsEMail(Document.Form1.txtEmail.Value, &quot;EMail&quot;)
+54:End Sub</FONT></PRE>
+<P>I put these event handlers out on their own so that you can read them easily, but it is legal to write the event handler within the HTML definition of the text box in this way:
+<BR>
+<PRE>
+<FONT COLOR="#000080"> &lt;INPUT LANGUAGE=&quot;vbscript&quot; TYPE=text ONCHANGE=&quot; x = call 
+ValidateNumber(Document.Form1.txtSize.value,&amp;quot;Size&amp;quot;)&quot;
+         NAME=&quot;txtSize&quot;&gt;</FONT></PRE>
+<P>In fact, if you create these event handlers within the ActiveX Control Pad, that is exactly the automatic code that the Control Pad creates. 
+<BR>
+<BR>
+<A NAME="E68E37"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Implementing a Validate and Submit Routine</B></FONT></CENTER></H3>
+<BR>
+<P>As mentioned in the introduction to the chapter, the main goal of data validation is to reduce the amount of poor data or to eliminate it altogether. What the example accomplishes so far is really a cosmetic exercise in informing the user of the invalidity of his data entry, hoping that this spurs him into action to change the entry. However, the script doesn't guarantee this. The ultimate precaution is to hide the data submission behind a wall of validation. Only after all the validation checks that you specify are completed successfully is the data submitted to the server, as you can see from the following code:
+<BR>
+<PRE>
+<FONT COLOR="#000080">55:Sub cmdButton1_OnClick
+56:  If ValidateNumber(Document.Form1.txtQty.Value, &quot;Quantity&quot;) And _
+57:    ValidateDate(Document.Form1.txtDate.Value, &quot;Date&quot;) And _
+58:    ValidateNumber(Document.Form1.txtSize.Value, &quot;Size&quot;) And _
+59:    IsEMail(Document.Form1.txtEmail.Value, &quot;EMail&quot;) Then
+60:      Document.Form1.Submit
+61:  Else
+62:      Exit Sub
+63:  End If
+64:End Sub</FONT></PRE>
+<P>Lines 56 through 59 are actually the same line, joined together at runtime with the special underscore character. All checks must return True for the overall statement to be True. One of the nice things about this method of checking is that each check is carried out regardless of the result of the last. The user receives a prompt for all fields that fail the test.
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>Because you use functions to perform the validation, you can call them from many different places within your script, rather than rewrite the same code over and over.</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>When the data is in order, line 60 calls the form's submit method and the data is on its way. 
+<BR>
+<BR>
+<A NAME="E69E38"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Using the OnSubmit Event</B></FONT></CENTER></H4>
+<BR>
+<P>The ActiveX and VBScript documentation refers to using the OnSubmit event to perform data validation in such a way that prevents form submission if the validation fails. However, the documentation does not describe the very odd way in which the OnSubmit event must be implemented.
+<BR>
+<P>OnSubmit is an event and, as such, the code attached to that event should be within an event handler. But the OnSubmit event must be used as though it is a function. Here's how you declare the prototype for the OnSubmit &quot;event.&quot;
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">Function myForm_OnSubmit()</FONT></PRE>
+<P>This is done so that OnSubmit can return a value. OnSubmit returns True if the form data is validated, in which case the form data is submitted; it returns False if the form data fails validation, in which case the form data is not submitted.
+<BR>
+<P>Within the OnSubmit event handler/function, you can include calls to all your validation routines, as this amendment to the previous example shows: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">55:Function Form1_OnSubmit
+56:  If ValidateNumber(Document.Form1.txtQty.Value, &quot;Quantity&quot;) And _
+57:    ValidateDate(Document.Form1.txtDate.Value, &quot;Date&quot;) And _
+58:    ValidateNumber(Document.Form1.txtSize.Value, &quot;Size&quot;) And _
+59:    IsEMail(Document.Form1.txtEmail.Value, &quot;EMail&quot;) Then
+60:      Form1_OnSubmit = True
+61:  Else
+62:      Form1_OnSubmit = False
+63:  End If
+64:End Sub</FONT></PRE>
+<P>To use this code with the previous example, you would also have to change the button control type to Submit. 
+<BR>
+<BR>
+<A NAME="E69E39"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Workshop Wrap-Up</B></FONT></CENTER></H4>
+<BR>
+<P>In this chapter, you saw that client-side data verification is economical in terms of time and bandwidth. You can use several methods to ensure that data is formatted correctly and to alert users to any problems with their data along the way. Here's a brief summary:
+<BR>
+<UL>
+<LI>Use the OnBlur or OnChange events to determine when a user has finished working on one field and moved onto another field&#151;your signal to check the data.
+<BR>
+<BR>
+<LI>Forcing the cursor back to the field can cause an infinite loop.
+<BR>
+<BR>
+<LI>Check for a valid numeric value using IsNumeric.
+<BR>
+<BR>
+<LI>Check for a valid date value using IsDate.
+<BR>
+<BR>
+<LI>If you have to check a string for a particular pattern, decide what the rules of that pattern are and how you are going to check for those rules before you start programming.
+<BR>
+<BR>
+<LI>Always make the submission of data to the server conditional upon successful data validation.
+<BR>
+<BR>
+</UL>
+<BR>
+<A NAME="E69E40"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Next Steps</B></FONT></CENTER></H4>
+<BR>
+<P>You have just learned how to interactively and programatically validate data and then submit that data to the server. To brush up on your skills to create even more complex validation routines, look at the following chapters:
+<BR>
+<UL>
+<LI>Chapter 7, &quot;Manipulating Strings,&quot; discusses formatting and breaking down strings.
+<BR>
+<BR>
+<LI>For more information about date and time functions, see Chapter 8, &quot;Time for a Date with the Client.&quot;
+<BR>
+<BR>
+<LI>When you use If...Then conditional statements, consult Chapter 9, &quot;Making Your Program Flow.&quot;
+<BR>
+<BR>
+</UL>
+<BR>
+<A NAME="E69E41"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Q&amp;A</B></FONT></CENTER></H4>
+<BR>
+<P><B>Q: If I put my validation routines on the client-side, isn't it possible for someone to see what could be sensitive information?</B>
+<BR>
+<P><B>A:</B> Yes, and for this reason, you should be careful what you place in a client-side validation routine. For example, don't write a script that says something like if myform.password.value &lt;&gt; &quot;letmein&quot; then.... If you do, you've just blown it!<A NAME="I2"></A>
+<BR>
+<P ALIGN=CENTER>
+<A HREF="lax05.htm" TARGET="_self"><IMG SRC="blanprev.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Previous Page"></A>
+<A HREF="#I0" TARGET="_self"><IMG SRC="blantop.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Page Top"></A>
+<A HREF="httoc.htm" TARGET="_self"><IMG SRC="blantoc.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="TOC"></A>
+<A HREF="lax07.htm" TARGET="_self"><IMG SRC="blannext.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Next Page"></A>
+<A HREF="http://www.mcp.com/sams/" TARGET="_self"><IMG SRC="blanhome.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="See Page"></A>
+</BODY></HTML>

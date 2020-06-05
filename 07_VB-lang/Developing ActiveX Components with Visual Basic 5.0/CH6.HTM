@@ -1,0 +1,1234 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 6 -- The Life and Times of an ActiveX Component
+</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;6</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>The Life and Times of an ActiveX
+Component</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#ObjectsAreTheyRealorAreTheyMemory">
+Objects: Are They Real or Are They Memory?</A>
+<UL>
+<LI><A HREF="#AnInterlude">
+An Interlude</A>
+</UL>
+<LI><A HREF="#ProcessSpacesTheFinalFrontier">
+Process Spaces: The Final Frontier</A>
+<UL>
+<LI><A HREF="#BacktoCOMObjects">
+Back to COM Objects</A>
+</UL>
+<LI><A HREF="#TheLifeCycleofaDLLObject">
+The Life Cycle of a DLL Object</A>
+<UL>
+<LI><A HREF="#ALookBehindtheScenes">
+A Look Behind the Scenes</A>
+</UL>
+<LI><A HREF="#TheLifeCycleofanEXEObject">
+The Life Cycle of an EXE Object</A>
+<LI><A HREF="#PerformanceIssues">
+Performance Issues</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+You can probably tell from what you've read so far that I'm one
+of those people who like to understand how things work. But it's
+not idle curiosity. The way I see it, understanding how something
+works can help you to understand how to use it.
+<P>
+The trick is to set a balance. If you go into too much depth trying
+to understanding how a technology works, you can find yourself
+with no time left to do anything with it. Not enough depth and
+your application of the technology will become nothing more than
+applying formulas based on sample programs that other people wrote.
+This is fine if what you are trying to accomplish matches the
+sample. But as soon as you try to go beyond the sample, you find
+it impossible to proceed because you don't really know what you're
+doing.
+<P>
+Setting that balance with regard to ActiveX is the challenge that
+I've faced in writing these chapters. I've tried to provide the
+conceptual background without bogging you down in the details
+of how COM objects are actually implemented. (Refer to Kraig Brockschmidt's
+book, <I>Inside OLE, </I>second edition, Microsoft Press, 1995,
+for a good text on OLE/ActiveX that covers the internal implementation
+details.)
+<P>
+One more subject remains to be covered before we can dive into
+the specifics of creating Visual Basic components. You need to
+understand a little bit about how ActiveX objects are created
+and how they exist in your system. Without this knowledge you
+will not be able to easily determine the trade-offs involved in
+choosing between the different types of ActiveX objects that Visual
+Basic 5.0 supports. 
+<H2><A NAME="ObjectsAreTheyRealorAreTheyMemory"><FONT SIZE=5 COLOR=#FF0000>
+Objects: Are They Real or Are They Memory?</FONT></A></H2>
+<P>
+Let's think back for a moment about COM objects. What are the
+characteristics of an object?
+<UL>
+<LI>It has a GUID-A globally unique identifier.
+<LI>It supports one or more interfaces.
+<LI>It may have data associated with it, but the only way that
+you can access that data is through the interfaces. (Remember
+that even public variables in a Visual Basic class are actually
+accessed behind the scenes as separate Property Get and Property
+Let functions belonging to the class interface.)
+</UL>
+<P>
+Now, if you think about it, the above list is really quite intangible.
+A GUID is a number. Interfaces are a list of function declarations-a
+contract, so to speak. Data is an abstraction until you actually
+point to a block of memory and say, &quot;Here it is.&quot;
+<P>
+This is all very nice, but you can't load a number, execute a
+contract, or manipulate abstractions. (Well, actually, I had a
+number of college professors who seemed to be able to do all of
+these quite readily, but I never particularly enjoyed their classes,
+so let's just move on.) An object must have a tangible reality
+in order to use it in an application. Specifically, an interface
+must be implemented with actual code that can be loaded into actual
+memory and executed. An object's data must also exist somewhere
+in memory, and there has to be some mechanism in the operating
+system to take a GUID and somehow create the object that it refers
+to.
+<P>
+Let's skip the GUID issue for later in the chapter. For now, let's
+concentrate on two ideas:
+<UL>
+<LI>A interface must be implemented in code.
+<LI>An object's data must exist in memory.
+</UL>
+<P>
+Sounds simple enough, but consider this: Nothing that I've said
+up until now suggests that there is a one-to-one correspondence
+between an object's interface and a particular implementation
+of that interface. This raises an interesting question: Is it
+possible for a dozen different programs and DLLs to each have
+its own code implementation for a particular interface on a particular
+object?
+<P>
+Also, nothing I've written suggests that an object's data must
+exist in memory belonging to any particular application or even
+a particular system on a network. Is it possible for code to execute
+functions in an interface on one system that manipulates object
+data that exists on another system half way around the world?
+<P>
+The answer to both of these question is yes. So perhaps there
+is more to this subject than meets the eye.
+<P>
+The good news is that some of the more esoteric variations can
+be safely ignored. With Visual Basic, the only time you will have
+multiple code implementations for an object is when you create
+new versions of your object handler. And managing objects across
+a network is handled nicely with remote automation, a subject
+this book will cover only briefly.
+<P>
+But there is one issue that will have a major impact on your components.
+It will determine not only their potential capabilities but have
+a dramatic impact on their performance. You see, on a 32-bit operating
+system, different applications are separated into their own process
+spaces, and though they may exist on the same machine, in many
+ways they might as well be on different ones.
+<P>
+Now, if you are a knowledgeable Win32 programmer, your reaction
+to the term <I>process space</I> is most likely to nod your head
+in understanding. And chances are that the next section in this
+chapter will not only be clear to you but quite superfluous, so
+feel free to skip it.
+<P>
+However if you are among the multitude who has worked extensively
+under 16-bit operating systems and applications, but you are still
+a bit uncertain with regards to the 32-bit world, read on. But
+first, a short interlude.
+<H3><A NAME="AnInterlude">
+An Interlude</A></H3>
+<P>
+To be sung to the tune of <I>The Way We Were</I>.
+<blockquote>
+Memory
+<BR>Like the code I've left behind
+<BR>Misty-banked extended memory
+<BR>oh, the way things were.
+<BR>Six-forty K
+<BR>And the crashes that we saw.
+<BR>From UAE to GP fault,
+<BR>oh, the way things were.
+<BR>Could it be that things were all so simple then
+<BR>wasting time rebooting one more time?
+<BR>If we could write each application once again,
+<BR>Tell me would we?
+<BR>Could we?
+<BR>Memory
+<BR>Wasn't bountiful and yet
+<BR>What we used to squeeze in 10K
+<BR>Now takes over 20 meg!
+<BR>So let's remember
+<BR>Whenever we assemble,
+<BR>Who has time to remember?
+<BR>The way things were
+<BR>The way things were&#133;
+</blockquote>
+<H2><A NAME="ProcessSpacesTheFinalFrontier"><FONT SIZE=5 COLOR=#FF0000>
+Process Spaces: The Final Frontier</FONT></A></H2>
+<P>
+Whether you're dealing with code or data, one truth remains. The
+information must exist in memory in order for the processor to
+deal with it. But how that memory is organized can have an enormous
+impact on the computing environment, both in terms of performance
+and stability.
+<P>
+In the days of 16-bit operating systems (Windows 3.x), system
+memory was a giant sea in which applications lived. Code and data
+could be intermixed, even among different applications. Figure
+6.1 illustrates this situation, showing two applications and a
+dynamic link library. Purists may note that this does not illustrate
+either the linear way in which memory is physically organized
+or the internal architecture, which would distinguish between
+low memory and extended memory, or between physical memory and
+virtual memory.
+<P>
+<A HREF="f6-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f6-1.gif"><B>Figure 6.1 :</B> <I>Memory organization under Windows 3.x</I>.</A>
+<P>
+But what the purists know in this case really has no impact on
+how, as programmers, we usually look at memory. From our perspective
+under the Windows operating system, memory can be thought of as
+a sea in which blocks are allocated. We don't really care where
+those blocks are, or what order they are in, or whether they are
+loaded into physical memory or currently swapped out onto disk.
+<P>
+Let's take a moment and reflect on the differences between dynamic
+link libraries (DLLs) and executable programs. First, it is important
+to realize that both DLLs and executables are fundamentally the
+same-they use the same file format (with slightly different options)
+and are loaded in much the same way. Both can contain code and
+data. The only real difference is the way Windows interacts with
+them.
+<P>
+When Windows loads a DLL, it runs its initialization code, then
+leaves it alone. Functions in the DLL will only be called if they
+are explicitly referenced by an application. When Windows loads
+an executable, the application's initialization code is responsible
+for creating what is called a <I>message pump</I>, essentially
+a program loop that runs as long as the application is running.
+The message pump requests messages from the operating system.
+Windows keeps track of the application as a separate task, sending
+messages as necessary and allocating a share of CPU time to it.
+<P>
+Dynamic link libraries are designed to be loaded by an application
+whenever it needs to access functions in what is, in effect, a
+shared library. Calling a function in a DLL once it is loaded
+is a very fast operation. You might think that calling a function
+in another application is just as fast. After all, the memory
+is directly accessible; but this is not the case. The reason is
+that programs almost never call functions in another application
+directly. Instead, they send messages to the other application.
+Sending a message involves quite a bit of overhead when compared
+to a simple function call.
+<P>
+There is one serious problem with the type of memory organization
+shown in Figure 6.1. Since all of the code and data for all of
+the executables and DLLs exist in the same sea of memory, there
+exists the possibility that they can interfere with each other.
+As long as all of the code is bug-free and only references its
+own data areas, everything works fine (and we all know how common
+bug-free code is). But if a program accidentally modifies memory
+belonging to another application, or to the operating system itself,
+not only is the program likely to crash but it can also bring
+down the entire system.
+<P>
+Microsoft's 32-bit operating systems use a radically different
+memory architecture that largely solves this problem. Each executable
+runs as its own process, and the operating system divides available
+CPU time among the running processes. The sea of memory that it
+runs in is called the process space for the application. This
+is shown in Figure 6.2. As you can see, the process space for
+each application is walled off from other applications and from
+the operating system. It is impossible for code in one application
+to access memory belonging to another process unless both processes
+take explicit action to define a shared memory space through specialized
+techniques built into the operating system. Applications can also
+communicate with each other by sending messages to each other
+and using the operating system's ability to copy data from one
+process space to another.
+<P>
+<A HREF="f6-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f6-2.gif"><B>Figure 6.2 :</B> <I>Memory organization under Win32</I>.</A>
+<P>
+One subtle issue relates to the use of dynamic link libraries
+under Win32. Figure 6.2 suggests that a DLL is loaded into memory
+separately for each process that uses it. Conceptually, this is
+accurate. It may seem like a waste of memory; after all, one of
+the advantages of DLLs is that multiple applications can share
+the same code. Fear not. Even though the DLL appears to be loaded
+multiple times from the application's point of view, at a lower
+level the physical memory for the DLL's code is usually shared.
+The data segments are separate for each process, however, so you
+cannot share data using a DLL in the manner that you can under
+a 16-bit operating system. In addition, this description applies
+most accurately to Windows NT. Under Windows 95, DLL and operating
+system memory is shared globally-one of the reasons Windows 95
+is not as stable and reliable as Windows NT.
+<P>
+For a more low-level and in-depth look at Win32 memory organization
+and processes, along with the API functions used to work with
+them, refer to Chapters 14 and 15 of my book, <I>Dan Appleman's
+Visual Basic 5.0 Programmer's Guide to the Win32 API, </I>ZD Press,
+1997.
+<H3><A NAME="BacktoCOMObjects">
+Back to COM Objects</A></H3>
+<P>
+As mentioned earlier, a COM object exists in memory both as code
+(to implement the interfaces) and as data. The code for a COM
+object can be in an executable file or a dynamic link library.
+The data must always exist within a single process space (and
+for obvious efficiency reasons, this will be the same process
+space containing the implementing code).
+<P>
+Which leaves an interesting problem. If 32-bit operating systems
+define unbreakable walls between processes, how can one application
+reference an object that is created and implemented by another
+application?
+<P>
+The first thing to realize is that the data portion of the object
+is inconsequential. An object's data is only accessible by the
+code that implements it, and that code will always be in the same
+process as the data. So when we talk about accessing an object
+belonging to another application, we are really talking about
+the ability to obtain an interface pointer to that object and
+call the functions belonging to that interface. The data is never
+accessed directly.
+<P>
+But even the interface poses a problem. Because of the separation
+between process spaces, it is not possible to call functions belonging
+to another process directly. OLE solves this problem in a rather
+clever way. When you request an interface to an object implemented
+in another process, OLE creates a proxy object in your application's
+process space. This fake object exposes the same interface as
+the actual object. When you call a function on the proxy object,
+Windows collects all of the parameters to the function and, using
+the interprocess capabilities of the operating system, copies
+the parameter values to the process that contains the object's
+implementation code and data. It then calls the matching function
+on the real object's interface. This process, called <I>marshaling</I>,
+is illustrated in Figure 6.3.
+<P>
+<A HREF="f6-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f6-3.gif"><B>Figure 6.3 :</B> <I>How objects cross process spaces</I>.</A>
+<P>
+How does Windows know enough about an object to be able to create
+this proxy object? After all, to do this, it would need a list
+of the functions for each interface of the object, along with
+the parameters to each function. There are actually a number of
+answers to this question, depending on the programming language
+in use. Suffice it to say this is exactly the kind of information
+that a type library is designed to provide, and type libraries
+are created automatically for your Visual Basic classes when you
+create them. It is possible for people implementing objects in
+C or C++ to define their own marshaling code, but as a VB programmer
+you are unlikely to ever do this.
+<P>
+The concept of marshaling can be extended even farther. After
+all, once you have the ability to marshal function calls across
+process spaces, how much extra effort can it be to marshal them
+across a network to another system? 
+<P>
+This leaves us with a number of scenarios for where a COM object
+can exist:
+<H4>Within Your Own Application</H4>
+<P>
+The interfaces for the object are implemented in your executable
+(typically as class modules). The data is allocated and managed
+by the application.
+<H4>Within an ActiveX DLL</H4>
+<P>
+The interfaces for the object are implemented in the dynamic link
+library. The data is allocated and managed by the DLL. Because
+the DLL is loaded into the process space of the application, no
+marshaling is required.
+<H4>Within an ActiveX EXE</H4>
+<P>
+The interfaces for the object are implemented in the executable.
+The data is allocated and managed by the executable. Windows creates
+a proxy object any time you need to access the object. All function
+calls to the proxy object are marshaled to the other process.
+This involves a certain amount of overhead.
+<H4>On a Remote System</H4>
+<P>
+The interfaces for the object are implemented in a DLL or executable
+that is present on another system. The data exists there as well.
+Distributed COM (DCOM) or remote automation creates the necessary
+proxy object on your system and takes care of marshaling the data
+across the network. Not only do you have the overhead of the marshaling
+between processes, you also have overhead due to the marshaling
+between systems. The main benefit of remote automation comes into
+play when the remote system already contains the data you need
+to work with (perhaps in the form of a large database). The overhead
+of marshaling a few function calls may be negligible compared
+to the alternative of transferring megabytes of data across the
+network.
+<P>
+You may be wondering why I have not yet mentioned ActiveX controls
+or ActiveX documents. This is because both of these types of objects
+are just specialized cases of the scenarios described above. Once
+you understand these scenarios, you'll find it easy to apply them
+to specialized ActiveX components.
+<P>
+So much for theory. Let's take a look at a couple of these scenarios
+in practice.
+<H2><A NAME="TheLifeCycleofaDLLObject"><FONT SIZE=5 COLOR=#FF0000>
+The Life Cycle of a DLL Object</FONT></A></H2>
+<P>
+Throughout this book I've been stressing the idea that ActiveX
+technology in fact permeates every aspect of Visual Basic and
+that COM objects are substantially the same, regardless of whether
+they are implemented as classes within your own application or
+as DLL objects. This is important because if all of these objects
+are essentially the same (which they are), once you understand
+how to work with one, you really do know how to work with any
+of them. This implies that the best way to learn ActiveX technology
+is not to initially deal separately with each type of ActiveX
+component, but instead to first understand thoroughly the core
+COM technology. After that, it becomes relatively simple to cover
+those features that are unique to a particular type of component.
+So to begin our exploration of a DLL-based object, rather than
+creating one from scratch, let's turn an existing class into a
+DLL object so it can be easily shared by other applications. 
+<P>
+The obvious candidate is the clsBankLoan class from <A HREF="ch5.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch5.htm" >Chapter 5</A>
+Not only is this class used directly by the application, but its
+interface forms the basis for the clsSecurityLoan and clsLoanShark
+classes. It serves as a contained object for clsLoanShark class
+as well. The steps to convert it into a stand-alone DLL object
+are simple.
+<OL>
+<LI>Copy the Loan5 project into a new directory, possibly renaming
+the files for convenience (you can find the modified code with
+the name Loan6 in the samples\ch06 directory on your CD-ROM).
+<LI>Create a new DLL project called gtpBankLoan (gtp stands for
+<I>Guide To the Perplexed</I>).
+<LI>Add the existing clsBankLoan class to the project.
+<LI>Remove the default class1 class created by VB.
+<LI>Select the clsBankLoan class in the Project window, and in
+the Property window change its instancing property to 5-Multiuse
+(this tells VB to make the object public).
+<LI>For testing purposes, add the original Loan project (now named
+Loan6) to the workspace. 
+<LI>Remove the clsBankLoan class from the project. (Note: the
+ability to support multiple projects in a workspace is new to
+Visual Basic 5.0. If this operation is not clear, you should review
+the Visual Basic documentation relating to the File menu commands
+or the chapter titled &quot;Managing Projects&quot; in the programmer's
+guide.)
+<LI>Use the menu command <B>Project</B>, <B>References</B> to
+add a reference to gtpBankLoan to the Loan6 application.
+<LI>In the Project window, click on the Loan6 project entry with
+the right mouse button and select <B>Set as Startup</B>.
+<LI>Now run the Loan6 program. It works just as it did before,
+except that now it is using the clsBankLoan object exposed by
+the gtpBankLoan project. Note that not a single line of code needed
+to be changed. 
+<LI>Now, let's continue the process by compiling the program into
+a DLL. In the Project window, select the gtpBankLoan project.
+<LI>Select the Properties tab.
+<LI>In the General tab, add a project description.
+<LI>In the Make tab, select the auto-increment checkbox (this
+should be done routinely) and add any copyright information that
+you need.
+<LI>In the Compile tab, select native code compilation. (We're
+going to be doing some performance tests shortly, and use of native
+code lets us duck the native versus P-code question for now.)
+<LI>Using the menu command <B>File,</B> <B>Make</B>, make the
+DLL.
+<LI>Close the project workspace and open just the Loan6.vbp project.
+If you look at the project references, you will see that the clsBankLoan
+reference is implemented by the DLL instead of the project.
+</OL>
+<P>
+Once again, you will see that the Loan6 project works just as
+it did before.
+<P>
+For now, don't worry about the various settings in the Project
+Settings dialog box-this subject will be covered in greater depth
+later in this book.
+<P>
+To run the Loan6 example, you have to make sure the objects are
+registered. This requires two operations:
+<UL>
+<LI>Register the gtpbkln.DLL objects using the command line: 'regsvr32
+gtpbkln.dll'.
+<LI>Register the gtpPln.exe objects by running the program. (You'll
+find out more about this object later in the chapter.) You won't
+see anything happen, but the program will be registered.
+</UL>
+<H3><A NAME="ALookBehindtheScenes">
+A Look Behind the Scenes</A></H3>
+<P>
+How does the Loan6 project know that the clsBankLoan object is
+implemented by the gtpbkln.dll dynamic link library? How does
+any application know which DLL or EXE contains the code that implements
+that object? The answer is in the registry.
+<P>
+In the Tools directory on your Visual Basic 5.0 CD-ROM you'll
+find a subdirectory called OLETOOLS, which in turn contains a
+program called OLEView (or OLEVW32.EXE). Refer to the readme file
+in this directory for more details on installing this application.
+<P>
+OLEView is a great tool for seeing what is going on behind the
+scenes in the system registry. It also makes it easy to launch
+the registry editor regedt32.exe that is in the system directory
+of your Windows system. Use caution when running regedt32.exe-if
+you change the contents of the registry you can seriously damage
+your system, perhaps making it impossible to reboot. The registry
+editor provides the ability to dump information about an entry
+to a text file.<BR>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+<I>The directory locations, times, and actual GUID or CLSID values that you find on your system may differ from the ones shown here. The values shown here are for illustration purposes only!</I>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+If you look in the HKEY_CLASSES_ROOT key for the registry, lo
+and behold, you'll find an entry much like this one for the clsBankLoan
+class:
+<BLOCKQUOTE>
+<PRE>
+Key Name:          gtpBankLoan.clsBankLoan
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+Value 0
+    Name:            &lt;NO NAME&gt;
+    Type:            REG_SZ
+    Data:            gtpBankLoan.clsBankLoan
+  
+Key Name:          gtpBankLoan.clsBankLoan\Clsid
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+Value 0
+    Name:            &lt;NO NAME&gt;
+    Type:            REG_SZ
+    Data:            {CBBEF242-2DEE-11D0-92E4-00AA0036005A}
+</PRE>
+</BLOCKQUOTE>
+<P>
+The system registry is made of a hierarchy. Each level of the
+hierarchy has an associated name called a <I>Key</I>-it's similar
+to a directory name on disk. Each key can have a default (unnamed)
+value and as many named values as desired. The gtpBankLoan.clsBankLoan
+key has a default value that is a string containing the name of
+the object. It has a subkey called Clsid. As you may recall, Clsid
+is short for class ID, or class identifier. In this case, the
+Clsid key contains the string representation of the 16-byte number
+that uniquely identifies the object. When an application requests
+an object by name, for example, when you use the CreateObject
+function, this is where Windows can go to find the identifier
+for the object.
+<P>
+Once you have the object's identifier, you need to find an executable
+file (DLL or EXE) that knows how to create the object and contains
+the code to implement its interfaces. This can be found in the
+HKEY_CLASSES_ROOT\CLSID section in the registry, where you will
+find the following key.
+<BLOCKQUOTE>
+<PRE>
+Key Name:          CLSID\{CBBEF242-2DEE-11D0-92E4-00AA0036005A}
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            gtpBankLoan.clsBankLoan
+ 
+Key Name:          CLSID\{CBBEF242-2DEE-11D0-92E4-00AA0036005A}\Implemented Categories
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+ 
+Key Name:          CLSID\{CBBEF242-2DEE-11D0-92E4-00AA0036005A}\Implemented Categories\{40FC6ED5-2438-11CF-A3DB-080036F12502}
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+ 
+Key Name:          CLSID\{CBBEF242-2DEE-11D0-92E4-00AA0036005A}\InprocServer32
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            D:\ZDBOOK4\Samples\CH06\gtpBkLn.dll
+ 
+ 
+Key Name:          CLSID\{CBBEF242-2DEE-11D0-92E4-00AA0036005A}\ProgID
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            gtpBankLoan.clsBankLoan
+ 
+ 
+Key Name:          CLSID\{CBBEF242-2DEE-11D0-92E4-00AA0036005A}\Programmable
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+ 
+Key Name:          CLSID\{CBBEF242-2DEE-11D0-92E4-00AA0036005A}\TypeLib
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            {CBBEF1B4-2DEE-11D0-92E4-00AA0036005A}
+ 
+ 
+Key Name:          CLSID\{CBBEF242-2DEE-11D0-92E4-00AA0036005A}\Version
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-4:27 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            2.0
+</PRE>
+</BLOCKQUOTE>
+<P>
+Let's tackle these one at a time. The default value for the CLSID\{CBBEF242-2DEE-11D0-92E4-00AA0036005A}
+key is the name of the object: gtpBankLoan.clsBankLoan. Under
+this key there are additional subkeys as shown in Table 6.1.<BR>
+<P>
+<CENTER><B>Table 6.1:&nbsp;Object Subkeys</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144><B>Subkey</B></TD><TD WIDTH=432><B>Description of Entry</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Implemented Categories</TD><TD WIDTH=432>Contains one or more subkeys that are GUID values for a key in the HKEY_CLASSES_ROOT\Component Categories entry in the registry. Each entry under this key describes something about 
+the 
+object. In this case, the object is marked as Programmable. As a VB programmer, you are unlikely to ever care about this entry.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>InProcServer32</TD><TD WIDTH=432>This entry tells the system which DLL contains the code to implement this object in process (within the same process of the application trying to use the object).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>ProgID</TD><TD WIDTH=432>The programmatic identifier of the object. In other words, the name you would use within a program to identify the object. In this case it is gtpBankLoan.clsBankLoan.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Programmable</TD><TD WIDTH=432>Another way of indicating that this object is Programmable (via ActiveX automation)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>TypeLib</TD><TD WIDTH=432>This key contains the value of the GUID for the type library, which is the library that defines the interfaces supported by the object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Version</TD><TD WIDTH=432>The version of the object, in this case, 2.0. Versioning will be discussed at great length later in this book.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The most important piece of information here is clearly the InProcServer32
+field. Now you can see how an application can find the DLL or
+EXE that implements an object.
+<P>
+You can retrieve most of this information in a somewhat easier
+fashion by using the OLEView application and searching for the
+gtpBankLoan.clsBankLoan object.
+<P>
+There's one more trail to follow: the TypeLib value. To look at
+a type library, you can use the OLEView application (there are
+entries in the HKEY_CLASSES_ROOT\Typelib key, but these once again
+reference the DLL containing the type library). The easiest way
+to load the type library is to use the menu command, File, View
+Type Library, and load it from the DLL directly. (Even though
+the file types listed show .TLB and .OLB, you can load the type
+library resource from a DLL as well.) OLEView can save a summary
+of the type library information to a text file. Here is the summary
+for the clsBankLoan class:
+<BLOCKQUOTE>
+<PRE>
+'===============================================================
+' Type Library: gtpBankLoan, Library Version 2.000
+' GUID: {CBBEF1B4-2DEE-11D0-92E4-00AA0036005A}
+' LCID: 0X00000000
+' Documentation: gtpBankLoan: Chapter 6 sample object for Guide To The Perplexed.
+' Help: 
+'===============================================================
+
+'===============================================================
+' Type Info: _clsBankLoan, TypeInfo Version 1.000
+' GUID: {CBBEF241-2DEE-11D0-92E4-00AA0036005A}
+' LCID: 0X00000000
+' TypeKind: dispinterface
+'---------------------------------------------------------------
+
+' Function: QueryInterface
+' 
+Declare Sub QueryInterface (ByRef riid As Variant, ByRef ppvObj As Variant)
+
+' Function: AddRef
+' 
+Declare Function AddRef () As ULONG
+
+' Function: Release
+' 
+Declare Function Release () As ULONG
+
+' Function: GetTypeInfoCount
+' 
+Declare Sub GetTypeInfoCount (ByRef pctinfo As Variant)
+
+' Function: GetTypeInfo
+' 
+Declare Sub GetTypeInfo (ByVal itinfo As UINT, ByVal lcid As ULONG,
+ByRef pptinfo As Variant)
+
+' Function: GetIDsOfNames
+' 
+Declare Sub GetIDsOfNames (ByRef riid As Variant, ByRef rgszNames As Variant,
+ByVal cNames As UINT, ByVal lcid As ULONG, ByRef rgdispid As Variant)
+
+' Function: Invoke
+' 
+Declare Sub Invoke (ByVal dispidMember As Long, ByRef riid As Variant, ByVal
+lcid As ULONG, ByVal wFlags As USHORT, ByRef pdispparams As Variant,
+ByRef pvarResult As Variant, ByRef pexcepinfo As Variant, ByRef puArgErr
+As Variant)
+
+' Function: AmountAvailable
+' 
+Declare Function AmountAvailable () As Currency
+
+' Function: AmountAvailable
+' 
+Declare Sub AmountAvailable (ByVal  Currency)
+
+' Function: Duration
+' 
+Declare Function Duration () As Integer
+
+' Function: Duration
+' 
+Declare Sub Duration (ByVal  Integer)
+
+' Function: Interest
+' 
+Declare Function Interest () As Double
+
+' Function: Interest
+' 
+Declare Sub Interest (ByVal  Double)
+
+' Function: Payment
+' 
+Declare Function Payment () As Currency
+
+' Function: Summary
+' 
+Declare Function Summary () As String
+
+' Function: SourceType
+' 
+Declare Function SourceType () As String
+
+' Function: MainInterface
+' 
+Declare Function MainInterface () As LPDISPATCH
+
+'===============================================================
+' Type Info: clsBankLoan, TypeInfo Version 1.000
+' GUID: {CBBEF242-2DEE-11D0-92E4-00AA0036005A}
+' LCID: 0X00000000
+' TypeKind: coclass
+'---------------------------------------------------------------
+</PRE>
+</BLOCKQUOTE>
+<P>
+The programmed interface used for this object is called _clsBankLoan.
+Note how the first seven functions in the interface correspond
+to the functions from the IUnknown and IDispatch interfaces. This
+is what you would expect from a dual interface. Note also how
+properties that were defined as public variables in the class
+are actually implemented as two functions. The OLEView application
+provides more detailed information for each function, much of
+which is comprehensible only to OLE gurus, and most of which is
+of interest only to Visual Basic and other object containers.
+<P>
+The type library also contains a reference to the class GUID (the
+<I>co-class</I> type shown at the end of the list). This allows
+VB to go from the type library to the CLSID for an object.
+<P>
+With this background, it's now easy to follow the life cycle of
+an object implemented in a DLL.
+<P>
+<B>At Registration Time:</B> Before any application (including
+Loan6) can access the gtpBankLoan.clsBankLoan object, information
+about the object must be stored in the system registry. Visual
+Basic does this for you automatically at compile time. When distributing
+applications, the various components are typically registered
+by the installation program or by using the regsvr32.exe program.
+<P>
+Visual Basic DLLs contain the exported functions DllRegisterServer
+and DllUnregisterServer, which can be called to perform the registration
+(or clear the registration) for the objects supported by the DLL.
+These functions are called by regsvr32.exe or the installation
+program as needed.
+<P>
+<B>During Design Time:</B> A reference to the gtpBankLoan.clsBankLoan
+object was added to the Loan6 project.
+<UL>
+<LI>Visual Basic can use the program ID (gtpBankLoan.clsBankLoan)
+to search the registry for the CLSID for the object.
+<LI>Visual Basic looks in the registry to find the server for
+the object. It finds gtpbkln.dll.
+<LI>Visual Basic reads the type library from the DLL. It now knows
+all about the interface for the object. 
+<LI>When you save a project, the TypeLib identifier is stored
+in the project file. When Visual Basic loads a project it can
+read the type library first and obtain from it the CLSID for the
+object.
+</UL>
+<P>
+<B>During Compilation:</B> (This stage also occurs when running
+in the VB environment.) Because the interface information is available
+at design time, all calls to object variables defined as clsBankLoan
+objects can be early bound. Visual Basic can compile direct calls
+to the functions on the interface instead of depending on the
+IDispatch interface for the object.
+<P>
+<B>At Runtime:</B> When Loan6 tries to create a clsBankLoan object,
+it uses the CLSID of the object when searching the registry for
+the name of the DLL that implements the object.
+<UL>
+<LI>Visual Basic then loads the DLL.
+<LI>Visual Basic uses functionality built into OLE to create objects
+as needed. When OLE creates an object, it returns a pointer to
+the IUnknown interface for the object. Visual Basic then uses
+QueryInterface to obtain the _clsBankLoan interface, which it
+can assign to a clsBankLoan object variable. The object is created
+with a reference count of 1.
+<LI>Properties and methods for the object interface are executed
+by calling functions in the interface directly (early bound).
+<LI>When the project is closed or the object variable is set to
+Nothing, the reference count for the object is set to zero. The
+gtpbkln.dll DLL sees that the reference is zero and frees the
+memory for the object. When all objects implemented by the DLL
+are freed, the DLL can be unloaded.
+</UL>
+<H2><A NAME="TheLifeCycleofanEXEObject"><FONT SIZE=5 COLOR=#FF0000>
+The Life Cycle of an EXE Object</FONT></A></H2>
+<P>
+The DLL object described in the previous section has two major
+characteristics: it is implemented in a dynamic link library,
+and it runs in process.
+<P>
+What happens when an object is implemented in an executable file
+that runs in a different process? To demonstrate this, let's add
+another object type to the Loan6 application. 
+<P>
+Interest rates have risen, and more and more people purchase their
+homes using loans from their parents. The Loan6 example has been
+extended to handle parent loans. Parent loans are implemented
+using a class in an EXE server called gtpPln.vbp. This project
+has a single-class module called clsParentLoan (ParLn.cls), which
+is shown in Listing 6.1.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 6.1:&nbsp;Listing for Class clsParentLoan<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: Guide to the Perplexed
+' Copyright (c) 1997 by Desaware Inc.  All Rights Reserved
+' Chapter 6
+
+
+Implements clsBankLoan
+
+Option Explicit
+
+' Amount of loan available
+Public AmountAvailable As Currency
+
+' Term of loan
+Public Duration As Integer
+
+' Interest
+Public Interest As Double
+
+' Margin requirement
+Public Margin As Double
+
+
+' Calculate the loan payment
+Private Function Payment() As Currency
+   Dim factor As Double
+   Dim iper As Double
+   iper = Interest / 12
+   factor = iper * ((1 + iper) ^ Duration)
+   Payment = AmountAvailable * factor / (((1 + iper) ^ Duration)-1)
+End Function
+
+' Obtain string description of loan
+Public Function Summary() As String
+   Summary = Format$(AmountAvailable, &quot;Currency&quot;) &amp; &quot;  &quot; &amp; Format$(Interest,_
+   &quot;Percent&quot;) &amp; &quot;  &quot; &amp; Duration &amp; &quot; months.&quot;
+End Function
+
+Public Function SourceType() As String
+   SourceType = &quot;Loan from parents&quot;
+End Function
+
+' The clsBankLoan Interface
+Private Property Let clsBankLoan_AmountAvailable(ByVal RHS As Currency)
+   AmountAvailable = RHS
+End Property
+
+Private Property Get clsBankLoan_AmountAvailable() As Currency
+   clsBankLoan_AmountAvailable = AmountAvailable
+End Property
+
+Private Property Let clsBankLoan_Duration(ByVal RHS As Integer)
+   Duration = RHS
+End Property
+
+Private Property Get clsBankLoan_Duration() As Integer
+   clsBankLoan_Duration = Duration
+End Property
+
+Private Property Let clsBankLoan_Interest(ByVal RHS As Double)
+   If RHS &gt; 0.02 Then
+      RHS = RHS / 10
+   End If
+   Interest = RHS
+End Property
+
+Private Property Get clsBankLoan_Interest() As Double
+   clsBankLoan_Interest = Interest
+End Property
+
+' Get reference to other interface
+Private Function clsBankLoan_MainInterface() As Object
+   Dim myobj As clsParentLoan
+   Set myobj = Me    ' Get correct interface
+   Set clsBankLoan_MainInterface = myobj
+End Function
+
+Private Function clsBankLoan_Payment() As Currency
+   clsBankLoan_Payment = Payment()
+End Function
+
+Private Function clsBankLoan_SourceType() As String
+   clsBankLoan_SourceType = SourceType()
+End Function
+
+Private Function clsBankLoan_Summary() As String
+   clsBankLoan_Summary = Summary()
+End Function
+
+Public Function LatePenalty() As String
+   LatePenalty = &quot;Don't worry about us, we'll be fine&quot;
+End Function</FONT>
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This class is based on the clsSecurityLoan class from the Loan6
+application. As you can see, it also implements the clsBankLoan
+interface. In order to make this possible, the project also has
+to reference the gtpBankLoan.clsBankLoan class. This is accomplished
+by using the Project, References command to add a reference to
+gtpBankLoan.
+<P>
+Could this class use aggregation in the same manner as the clsLoanShark
+class? Absolutely!
+<P>
+This again demonstrates an important fact. The choice of whether
+to implement an object in a class, DLL server, or EXE server may
+depend on many factors, including the logical division of functionality,
+performance issues, distribution issues, and special features
+associated with each (which will be discussed later). But once
+you've chosen where to implement the object, the code itself is
+essentially identical in each case.
+<P>
+An object in an EXE server can be registered in several ways.
+It is registered automatically when the program is compiled. It
+is registered when the executable is run, or when run with the
+command line option /regserver. You can unregister EXE objects
+by running the program with the /UnRegServer command line option.
+<P>
+The entries created for an EXE server in the registry are similar
+to those created for a DLL server. The biggest difference is that
+the server appears under the \LocalServer32 key instead of the
+\InProcServer32 key. This indicates that the server implementing
+the object runs on the local system but is not in process. The
+registry entries are shown below:
+<BLOCKQUOTE>
+<PRE>
+Key Name:          CLSID\{2B8BE8E9-2E0D-11D0-92E4-00AA0036005A}
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-8:04 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            gtpParentLoan.clsParentLoan
+ 
+ 
+Key Name:          CLSID\{2B8BE8E9-2E0D-11D0-92E4-00AA0036005A}\LocalServer32
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-8:04 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            D:\ZDBOOK4\Samples\CH06\gtpPLn.exe
+ 
+ 
+Key Name:          CLSID\{2B8BE8E9-2E0D-11D0-92E4-00AA0036005A}\ProgID
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   10/24/96-8:04 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            gtpParentLoan.clsParentLoan
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The type library for an EXE implemented object is essentially
+the same as that of a DLL implemented object.
+<P>
+Now let's take a look at the life cycle of an EXE implemented
+object.
+<P>
+<B>At Registration:</B> Registration performs the same task as
+with the DLL object, but with an EXE it is accomplished by running
+the application as described earlier.
+<P>
+<B>During Design Time:</B> A reference to the gtpParentLoan.clsParentLoan
+object was added to the Loan6 project. Then: 
+<UL>
+<LI>Visual Basic uses the program ID (gtpParentLoan.clsParentLoan)
+to search the registry for the CLSID for the object.
+<LI>Visual Basic looks in the registry to find the server for
+the object. It finds gtpPln.exe.
+<LI>Visual Basic reads the type library from the EXE. It now knows
+all about the interface for the object. 
+<LI>As with the DLL case, Visual Basic stores the TypeLib information
+in the project file so that it can load the reference information
+via the type library when you reload the project.
+</UL>
+<P>
+<B>During Compilation:</B> (This occurs also when running in the
+VB environment.) Because the interface information is available
+at design time, all calls to object variables defined as clsParentLoan
+objects can be early bound. Visual Basic can compile direct calls
+to the functions on the interface instead of depending on the
+IDispatch interface for the object.
+<P>
+<B>At Runtime:</B> When Loan6 tries to create a clsBankLoan object,
+it uses the CLSID of the object to search the registry for the
+name of the EXE that implements the object.
+<UL>
+<LI>Visual Basic then launches gtpPln.exe.
+<LI>Visual Basic uses functionality built into OLE to create objects
+as needed. When OLE creates an out-of-process object, it first
+creates the object in the process space of the gtpPln.exe application.
+It then creates a proxy object in the process space of the Loan6
+application and returns a pointer to the IUnknown interface for
+the proxy object. The proxy object can reproduce the interfaces
+of the real object. Visual Basic can thus use QueryInterface to
+obtain the _clsParentLoan on the proxy object, which it can assign
+to a clsBankLoan object variable. The object is created with a
+reference count of 1.
+<LI>Properties and methods for the object interface are executed
+by calling functions in the interface of the proxy object. The
+proxy object marshals the function calls and parameters, and OLE
+sends the information to the real object in the gtpPln.exe process
+space. If the function returns a value or any of the parameters
+are passed by reference, Windows marshals those results back to
+the Loan6 process space so that they can be returned to the calling
+application.
+<LI>When the project is closed or the object variable is set to
+Nothing, the reference count for the object is set to zero. The
+gtpPln.exe program sees that the reference is zero and frees the
+memory for the object. When all objects implemented by the program
+are freed, the application terminates.
+</UL>
+<P>
+The life cycle of an out-of-process object is almost identical
+to that of a DLL object, and those differences that do exist are
+hidden from the programmer. Why then, is it so important that
+you understand the differences between objects? One reason is
+that your choice of implementation can have a major impact on
+performance.
+<H2><A NAME="PerformanceIssues"><FONT SIZE=5 COLOR=#FF0000>
+Performance Issues</FONT></A></H2>
+<P>
+The perform.vbp project in the samples\ch06 directory on your
+CD-ROM demonstrates the performance impact involved in implementing
+an object out of process. The code for the main form for the project
+is shown in Listing 6.2. The code is very similar to that used
+in the binding.vbp example in <A HREF="ch4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch4.htm" >Chapter 4</A>.
+<P>
+This project uses the actual objects defined for the Loan6 application.
+References are added to the clsBankLoan and clsParentLoan objects
+using the Project References command. The clsSecurityLoan class
+is added directly into the project.
+<P>
+Three objects are defined, one for each class. The number of repetitions
+for the out-of-process example is much smaller than the two in-process
+examples. This is necessary in order to avoid taking hours to
+perform the test. (Once again, you can choose any values for these
+constants that run in a reasonable time on your system.)
+<P>
+The first operation during the cmdTest_Click event is to access
+a property in each of the objects. This is necessary because Visual
+Basic does not actually create an object until it is referenced.
+The New modifier in the dimension statement does not actually
+create the object-it merely indicates to the application that
+the object should be created as soon as it is referenced. In this
+case, we want to create the objects before beginning to measure
+the access times in order to avoid distorting the results.
+<P>
+Since we want to measure the time to perform a function call,
+it makes sense to choose a function that does as little as possible.
+The function that retrieves the Duration property is as simple
+as a function gets, since all it does is return an integer.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 6.2:&nbsp;Listing for the Perform Project<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: A Guide to the Perplexed
+' Performance example
+' Copyright (c) 1997 by Desaware Inc.
+
+Option Explicit
+
+' System API call to retrieve time in milliseconds
+Private Declare Function GetTickCount&amp; Lib &quot;kernel32&quot; ()
+
+' Mark the time
+Dim CurrentTime As Long
+
+Dim InApp As New clsSecurityLoan
+Dim InProcDLL As New clsBankLoan
+Dim OutProcEXE As New clsParentLoan
+
+Const repeats = 1000000
+Const oprepeats = 10000&amp;
+
+
+Private Sub cmdTest_Click()
+   Dim ctr&amp;
+   Dim res%
+   Dim InAppTime As Long
+   Dim InProcTime As Long
+   Dim OutProcTime As Long
+   
+   ' Access each object to make sure they are loaded
+   ' We don't want load time as part of this measurement
+   res = InApp.Duration
+   res = InProcDLL.Duration
+   res = OutProcEXE.Duration
+   
+   Screen.MousePointer = vbHourglass
+   CurrentTime = GetTickCount()
+   For ctr = 1 To repeats
+      ' Duration is fast, so this is a good measure
+      res = InApp.Duration
+   Next ctr
+   InAppTime = (GetTickCount()-CurrentTime)
+   ' Now inproc operation
+   CurrentTime = GetTickCount()
+   For ctr = 1 To repeats
+      res = InProcDLL.Duration
+   Next ctr
+   InProcTime = (GetTickCount()-CurrentTime)
+   
+   ' Now out of proc operation
+   CurrentTime = GetTickCount()
+   For ctr = 1 To oprepeats   ' use less time out of process
+      res = OutProcEXE.Duration
+   Next ctr
+   OutProcTime = (GetTickCount()-CurrentTime)
+   
+   Screen.MousePointer = vbNormal
+
+   lstResults.AddItem &quot;Within application&quot;
+   lstResults.AddItem &quot;  &quot; &amp; GetTime(InAppTime) &amp; &quot; microseconds&quot;
+   lstResults.AddItem &quot;In Process DLL&quot;
+   lstResults.AddItem &quot;  &quot; &amp; GetTime(InProcTime) &amp; &quot; microseconds&quot;
+   lstResults.AddItem &quot;Out of Process EXE&quot;
+   lstResults.AddItem &quot;  &quot; &amp; GetTime(OutProcTime) * CDbl(repeats / oprepeats) &amp;_
+   &quot; microseconds&quot;
+End Sub
+
+
+' Get a formatted string for the time in microseconds
+Public Function GetTime(timeval As Long) As String
+   ' timeval is the difference in milliseconds
+   GetTime = Format$(CDbl(timeval) / repeats * 1000#, &quot;0.###&quot;)
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Figure 6.4 illustrates a typical set of results. Be sure to use
+the executable provided or compile the project into your own native
+code executable before running the test, otherwise you'll also
+be measuring the difference between performance with PCode compilation
+and that of native code compilation, which will give you incorrect
+results. Also remember that both gtpPln.exe and gtpBkln.dll must
+be registered for this program to run.
+<P>
+<A HREF="f6-4.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f6-4.gif"><B>Figure 6.4 :</B> <I>Main form of the Perform project in action</I>.</A>
+<P>
+As you can see, there is no real difference in performance between
+implementing an object in a DLL and implementing it within a project.
+The minor differences that you will see are due to poor resolution
+in the timer, and the fact that each of the loops may take different
+amounts of times depending on what else is going on in the system.
+(Remember, Windows 32-bit operating systems are multitasking,
+so other operations may be taking place on your system while these
+measurements are taking place.)
+<P>
+The difference between the in-process calls and out-of-process
+calls is, on the other hand, staggering. Minimizing cross-process
+operations is therefore an important goal if you want to improve
+an application's performance.
+<P>
+Here's a subtle point that you may have missed. Even though the
+access to the clsParentLoan object is out of process, it is nonetheless
+early bound! Since the Perform object added a reference to the
+object and uses an object variable of type clsParentLoan, it is
+able to bind directly to the class interface of the object. But
+since the object is out of process, it is actually binding to
+the class interface of the proxy object.
+<P>
+If you compare the results shown here with those of the binding
+application in <A HREF="ch4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch4.htm" >Chapter 4</A> you'll see that the performance degradation
+of using an out-of-process object is substantially greater than
+that of using late binding. Using late binding in this case with
+the clsParentLoan object would indeed slow things down even further,
+but the slowdown would hardly be noticeable given the delays caused
+by the out-of-process marshaling. 
+<P>
+All ActiveX components ultimately fall into the category of either
+in-process or out-of-process servers. But within those broad categories
+you'll find a number of variations-as you will see in the next
+chapter.
+<HR>
+
+<CENTER><P><A HREF="ch5.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch5.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch7.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch7.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

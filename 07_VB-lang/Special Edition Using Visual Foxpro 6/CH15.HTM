@@ -1,0 +1,3273 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 15 - Creating Classes with Visual FoxPro</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch14.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch16.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;15</H1>
+<H1>Creating Classes with Visual FoxPro</H1>
+
+<UL>
+<LI><A HREF="#AnOverviewofClasses">
+An Overview of Classes</A>
+<LI><A HREF="#VisualClasses">
+Visual Classes</A>
+<UL>
+<LI><A HREF="#SingleControlClasses">
+Single Control Classes</A>
+<LI><A HREF="#CombinationControls">
+Combination Controls</A>
+<LI><A HREF="#TheControlClass">
+The Control Class</A>
+<LI><A HREF="#TheContainerClass">
+The Container Class</A>
+<LI><A HREF="#TheForm">
+The Form</A>
+<LI><A HREF="#Toolbars">
+Toolbars</A>
+<LI><A HREF="#AFinalWordonVisualClasses">
+A Final Word on Visual Classes</A>
+</UL>
+<LI><A HREF="#NonvisualClasses">
+Nonvisual Classes</A>
+<UL>
+<LI><A HREF="#WhyCreateNonvisualClasses">
+Why Create Nonvisual Classes?</A>
+<LI><A HREF="#TypesofNonvisualClasses">
+Types of Nonvisual Classes</A>
+<LI><A HREF="#WrapperClasses">
+Wrapper Classes</A>
+<LI><A HREF="#ManagerClasses">
+Manager Classes</A>
+<LI><A HREF="#BusinessClasses">
+Business Classes</A>
+<LI><A HREF="#RoundingOuttheStoryCreatingaFramework">
+Rounding Out the Story: Creating a Framework</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="AnOverviewofClasses"><FONT SIZE=5 COLOR=#FF0000>
+An Overview of Classes</FONT></A></H2>
+<P>
+The previous two chapters covered the nuts and bolts of OOP in
+Visual FoxPro. You learned the applicable concepts behind object
+orientation in Visual FoxPro in <A HREF="ch13/ch13.htm" >Chapter 13</A>, &quot;Introduction
+to Object-Oriented Programming,&quot; and you learned how classes
+are created in <A HREF="ch14.htm" >Chapter 14</A>, &quot;OOP with Visual FoxPro.&quot;
+<P>
+In this chapter, you learn the typical types of classes you create
+with Visual FoxPro. Different categories of classes are investigated
+and explained, and examples of each type of class are presented
+as well.
+<P>
+Before I go further, I must say that there is no realistic limit
+to the types of classes you can create with Visual FoxPro (unless
+you think there are limits to your imagination). For the most
+part, the classifications presented in this chapter should be
+representative of what you can do. Don't let anyone tell you that
+a class you have dreamed up is invalid because it is not listed
+or does not fit into a category detailed in this or any book.
+You are the master of your system's destiny. Don't let anyone
+tell you otherwise.
+<P>
+The types of classes created in this chapter can be placed in
+two general categories: visual classes and nonvisual classes.
+<H2><A NAME="VisualClasses"><FONT SIZE=5 COLOR=#FF0000>
+Visual Classes</FONT></A></H2>
+<P>
+A <I>visual class </I>is a class designed for display purposes.
+For example, a form is a visual class; so is a <TT>CommandButton</TT>
+and a <TT>CheckBox</TT>. The main purpose behind visual classes
+is for interface (usually called a Graphical User Interface or
+GUI) work.
+<P>
+Within this class category you can typically design classes in
+the following subcategories:
+<BLOCKQUOTE>
+Single controls<BR>
+Combination controls<BR>
+Containers<BR>
+Forms<BR>
+Toolbars<BR>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>A Terminology Issue</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+One of the base classes that comes built-in to Visual FoxPro is named control. In addition to this base class, all other classes used within a form (such as <TT>TextBox</TT>, <TT>CommandButton</TT>, and so on) are also given the generic name of control. Sound confusing? You're right, it is.
+<BR>
+In order to bring some sense to this terminology, I have adopted the following conventions. When you learn how to create classes based on a form control, such as a <TT>CommandButton</TT>, you will see the term single control. For controls created from the control class, you will see the term combination control. These naming conventions work because the purpose of the control class is to combine multiple controls together so that they work as one control.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>Showing Classes in Print</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+I want to take a moment to explain the code presented in this chapter. You develop classes in Visual FoxPro visually (using the Visual Class Designer). However, for the purpose of this chapter, code is the best way to present the contents of a class.<BR>
+Fortunately, the Class Browser (which is discussed in <A HREF="ch16.htm" >Chapter 16</A>, &quot;Managing Classes with Visual FoxPro&quot;) includes a function that exports the code of a visual class. The code shown in this chapter (as well as in <A HREF="ch16.htm">Chapters 16</a> and <A HREF="ch17/ch17.htm">17</a>, &quot;Advanced Object-Orientated Programming&quot;) is exported using the Class Browser.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="SingleControlClasses">
+Single Control Classes</A></H3>
+<P>
+A <I>single control</I> is a class designed to be used as a control
+on a form. This type of class is based on any FoxPro form control
+class that does not support the capability to add additional objects
+to itself. These classes include <TT>CommandButton</TT>s, <TT>TextBox</TT>es,
+<TT>Label</TT>s, and so on.
+<P>
+There are two kinds of single control classes you typically create.
+The first kind is a single control class designed to set the default
+of the display characteristics for the control for future use.
+For example, if you were to decide on a standard font for all
+your controls (Windows 95 uses 9-point Arial as its standard),
+you could create single control classes with the proper settings
+and then subclass them. This ensures a common look throughout
+your applications.
+<P>
+The second type of single control classes are created after you
+are done with the standard look and feel. The classes you create
+from there on will in all likelihood be for functionality. I will
+illustrate this second type of class with a few examples.
+<P>
+<B>The OK Command Button&nbsp;&nbsp;</B>A good example of a single
+control class is an OK button, which, when pressed, releases the
+form it is on. <TT>OkButton</TT> is a class that does this.
+<P>
+The following code shows a sample OK button:
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Okbutton
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        okbutton
+*-- ParentClass:  CommandButton
+*-- BaseClass:    CommandButton
+*-- CommandButton that releases the form it's on.
+*
+DEFINE CLASS okbutton AS CommandButton
+
+    AutoSize = .F.
+    Height = 29
+    Width = 41
+    Caption = &quot;OK&quot;
+    Default = .T.
+    Name = &quot;okbutton&quot;
+
+    PROCEDURE Click
+        RELEASE thisform
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: okbutton
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<P>
+This button can be dropped on any form. When it is clicked, it
+will release the form. Figure 15.1 shows what the OK button looks
+like when you drop it on a form.
+<P>
+<IMG SRC="f15-1.gif"><B>Figure 15.1 : </B><I>A form with an OK button</I>.</A>
+<P>
+Notice that the method for releasing the form is to use <TT>RELEASE
+THISFORM</TT> in the <TT>Click</TT> event. The <TT>THISFORM</TT>
+keyword is mentioned in <A HREF="ch14.htm" >Chapter 14</A>. This command releases the
+form the OK button is on.
+<P>
+By setting the <TT>Default</TT> property to <TT>.T.</TT>, the
+command button's <TT>Click</TT> event is made to fire automatically
+when the user presses the Enter key when the cursor is not in
+an <TT>EditBox</TT> control. Conversely, if you want the button's
+<TT>Click</TT> event to fire when the user hits the Esc key, you
+should set the <TT>Cancel</TT> property of the button to <TT>.T.</TT>.
+<P>
+<B>Subclassing a Single Control Class&nbsp;&nbsp;</B>Technically,
+every class created in Visual FoxPro is a subclass of another
+class. Even the <TT>Custom</TT>-based classes are subclasses (<TT>Custom</TT>
+is the name of a FoxPro base class).
+<P>
+After you create a class, you can subclass it. How this works
+is detailed in <A HREF="ch14.htm" >Chapter 14</A>, but here's a little example of it.
+Suppose you want a special version of the OK button that has tooltip
+text attached to it. (<I>Tooltip text</I> is the text that pops
+up when the mouse hovers over a control.) The following code,
+which creates a class called <TT>OkButtonWithToolTip</TT>, shows
+how to do this:
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: okbuttonwithtooltip
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        okbuttonwithtooltip (d:\data\docs\books\vfu\code\oop2.vcx)
+*-- ParentClass:  okbutton (d:\data\docs\books\vfu\code\oop2.vcx)
+*-- BaseClass:    CommandButton
+*-- Subclass of an OK button - adds a ToolTip.
+*
+DEFINE CLASS okbuttonwithtooltip AS okbutton
+
+    Height = 29
+    Width = 41
+    ToolTipText = &quot;Releases the form&quot;
+    Name = &quot;okbuttonwithtooltip&quot;
+
+ENDDEFINE
+*
+*-- EndDefine: okbuttonwithtooltip
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<P>
+That's all there is to it. Notice that there is very little code
+attached to this button. The <TT>Click</TT> event is not represented
+here at all; it is inherited from the parent class. In fact, the
+only relevant code in this class is the value in the <TT>ToolTipText</TT>
+property.
+<P>
+For the record, most controls have a <TT>ToolTipText</TT> property.
+You might notice that although the property has been filled, the
+tooltip text does not show up when the mouse hovers over the control.
+If this happens, check out the <TT>ShowTips</TT> property on the
+form and make sure that it is set to <TT>.T.</TT>. Figure 15.2
+shows an example of what you should expect to see.
+<P>
+<IMG SRC="f15-2.gif"><B>Figure 15.2 : </B><I>A sample button with tooltip text</I>.</A>
+<P>
+To make sure that your tooltip shows up all the time, you can
+place code in the <TT>MouseMove</TT> event that checks the setting
+of the <TT>ShowTips</TT> property on the form and sets it to <TT>.T.</TT>.
+If you're wondering why the code does not go in the <TT>Init</TT>
+of the button, the answer has to do with the order in which controls
+are initialized with a container. You will learn about this in
+a little bit.
+<P>
+<B>Why Subclass?&nbsp;&nbsp;</B><TT>OkButtonWithToolTip</TT> seems
+to be a rather silly example of a subclass. After all, adding
+tooltip text is very simple. Why subclass the button at all? Why
+not make the change to the OK button itself? It's a judgment call,
+certainly. However, it is vital to bear in mind that changing
+a class will change every instance of that class as well as all
+the descendant subclasses. If you modify the base class, you will
+be making the assumption that all instances of the OK button will
+have this tooltip. This assumption might not be a valid one. Hence,
+you choose to subclass.
+<P>
+<B>Another Single Control Example&nbsp;&nbsp;</B>Believe it or
+not, there are a series of published standards for Windows GUI
+interfaces. In fact, there is one standard for the Windows 3.1-based
+interface, which applies to Windows 3.1, Windows for Workgroups,
+and Windows NT 3.x, and another for Windows 95 and Windows NT
+4.0. Windows 98 and Windows NT 5.0 have still other interface
+guidelines. One standard for Windows applications calls for error
+messages to be placed in a <TT>MessageBox()</TT>-type window.
+Visual FoxPro has the capability to automatically display an error
+message when the <TT>Valid</TT> method returns <TT>.F.</TT>. The
+error message is the character string returned from the <TT>ErrorMessage</TT>
+method. The problem is that the <TT>ErrorMessage</TT> method puts
+the error message in the form of a <TT>WAIT WINDOW</TT> instead
+of a <TT>MessageBox</TT>.
+<P>
+The <TT>ErrorMessage</TT> event fires automatically when the <TT>Valid</TT>
+method returns <TT>.F.</TT>, that is, <TT>Valid</TT> fires when
+the control tries to lose focus. Therefore, the solution would
+seem to be to put a <TT>MessageBox()</TT>-type message in the
+<TT>ErrorMessage</TT> method and not return a value.
+<P>
+However, there is one little problem. If the <TT>ErrorMessage</TT>
+does not return a string, Visual FoxPro displays a default message
+of <TT>Invalid Input</TT>. The only way to turn this off is to
+set the <TT>SET NOTIFY</TT> command to <TT>OFF</TT>.
+<P>
+Not a big problem, right? Unfortunately, other classes might change
+this setting or might rely on the setting to be <TT>ON</TT>. In
+effect, you cannot rely on the <TT>SET NOTIFY</TT> setting unless
+you set it yourself. To do so, use <TT>SET NOTIFY OFF</TT> when
+the control gains focus and then set it back the way it was on
+the way out (that is, when the control loses focus).
+<P>
+<TT>NoNotifyTextBox</TT> is a sample of this type of control.
+A protected property called <TT>cNotifySetting</TT> has been added
+to hold the setting of <TT>SET NOTIFY</TT> before the class changes
+it. Here's the code:
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: NoNotifyTextBox
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        nonotifyTextBox
+*-- ParentClass:  TextBox
+*-- BaseClass:    TextBox
+*-- Text box that sets NOTIFY off for error messaging.
+*
+DEFINE CLASS nonotifyTextBox AS TextBox
+
+    Height = 24
+    Width = 113
+    Name = &quot;nonotifyTextBox&quot;
+
+    *-- The setting of SET NOTIFY when the control got focus.
+    PROTECTED cnotifysetting
+
+    PROCEDURE LostFocus
+        LOCAL lcNotify
+        lcNotify = this.cNotifySetting
+        SET NOTIFY &amp;lcNotify
+    ENDPROC
+
+    PROCEDURE GotFocus
+        this.cNotifySetting = SET(&quot;notify&quot;)
+        SET NOTIFY OFF
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: nonotifyTextBox
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<P>
+Notice that the property <TT>cNotifySetting</TT> is protected.
+This follows the guidelines discussed in the last chapter for
+protecting properties. Because this property has no use to the
+outside world and, in fact, could harm the system if changed by
+the outside world, you just hide it and forget about it.
+<P>
+After you create classes like <TT>NoNotifyTextBox</TT>, you can
+use them in forms or subclass them as you see fit and be sure
+that you will have the behavior you are looking for.
+<H3><A NAME="CombinationControls">
+Combination Controls</A></H3>
+<P>
+Sometimes you might want to combine several controls together
+to operate as one. For example, take the task of specifying the
+name of an existing file on a form. This requires two controls
+interacting as one: a <TT>TextBox</TT> that enables the user to
+enter a filename to validate a file's existence and a <TT>CommandButton</TT>
+that displays a <TT>GetFile()</TT> box and places the results
+in the <TT>TextBox</TT>.
+<P>
+You could create each control separately and drop them individually
+on a form. However, because both controls are coming together
+to do one task, it makes sense to make one control out of the
+two and drop them on the form as one control. This achieves several
+goals. First, you can encapsulate all the behavior and information
+in one place. Second, it makes it easier to add this functionality
+to a form. Third, you can duplicate the look and functionality
+on other forms easily. Fourth, it avoids any code at the form
+level (code necessary to get the two controls to interact).
+<P>
+The base class for this is the control class. The <I>control class</I>
+is a class designed to create composite classes where several
+controls come together to act as one. Conceptually, the control
+class is not much of anything except a package into which controls
+can be placed. You will learn the specifics of the control class
+&quot;package&quot; in the following section, &quot;The General
+Idea.&quot; First, Listing 15.1 shows a sample class called <TT>GetAFile</TT>,
+which illustrates what you try to accomplish with a combination
+control.<P>
+
+<HR>
+<B>Listing 15.1&nbsp;&nbsp;</B><TT><B>15CODE01</B></TT><B>-Illustrates
+a Combination Control<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Getafilecontrol
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        getafilecontrol
+*-- ParentClass:  control
+*-- BaseClass:    control
+*-- A combination of controls that allow a user to select an existing file.
+*
+DEFINE CLASS getafilecontrol AS control
+
+    Width = 358
+    Height = 26
+    BackStyle = 0
+    BorderWidth = 0
+    cvalue = &quot;&quot;
+    *-- The caption to display on the GETFILE box.
+    cdisplaycaption = &quot;Please select a file.&quot;
+    *-- Caption for the OPEN button. See GetFile() for more information on this.
+    copenbuttoncaption = &quot;Open&quot;
+    *-- File extensions to allow for. See GetFile()
+    *-- for more information on this.
+    cfileextensions = &quot;&quot;
+    *-- The type of buttons on the GetFile() dialog.
+    *-- See GetFile() for more information on this.
+    nbuttontype = 0
+    *-- Should the path shown be a minimum path or not?
+    lminimumpath = .T.
+    Name = &quot;getafilecontrol&quot;
+
+    ADD OBJECT cmdgetfile AS CommandButton WITH ;
+        Top = 0, ;
+        Left = 330, ;
+        Height = 24, ;
+        Width = 24, ;
+        Caption = &quot;...&quot;, ;
+        Name = &quot;cmdGetFile&quot;
+
+    ADD OBJECT cfilenameTextBox AS nonotifyTextBox WITH ;
+        Value = &quot;&quot;, ;
+        Format = &quot;!&quot;, ;
+        Height = 24, ;
+        Left = 0, ;
+        Top = 0, ;
+        Width = 325, ;
+        Name = &quot;cFileNameTextBox&quot;
+
+    PROCEDURE Refresh
+        this.cFileNameTextBox.Value = this.cValue
+        this.cFileNameTextBox.SetFocus()
+    ENDPROC
+
+    *-- Accepts a string parameter and validates that it is an existing file.
+    PROCEDURE validatefilename
+        LPARAMETERS tcFileName
+        LOCAL llRetVal
+
+        llRetVal = EMPTY(tcFileName) OR FILE(ALLTRIM(tcFileName))
+
+        IF !llRetVal
+            =MessageBox(&quot;File does not exist: &quot; + ALLTRIM(tcFileName))
+        ENDIF
+
+        tcFileName = ALLTRIM(tcFileName)
+
+        IF llRetVal
+            this.cValue = tcFileName
+        ENDIF
+
+        RETURN llRetVal
+    ENDPROC
+
+    *-- Display the files for the user to select from with a GetFile() dialog.
+    PROCEDURE displayfiles
+        LOCAL lcValue, lcDialogCaption, lcOpenButtonCaption, lnButtonType
+
+        lcDialogCaption = this.cDisplayCaption
+        lcOpenButtonCaption = this.cOpenButtonCaption
+        lcFileExtensions = this.cFileExtensions
+        lnButtonType = this.nButtonType
+
+        lcValue =    GETFILE(lcFileExtensions, ;
+                            lcDialogCaption, ;
+                            lcOpenButtonCaption, ;
+                            lnButtonType)
+
+        IF !EMPTY(lcValue)
+            IF this.lminimumpath
+                lcValue = SYS(2014, lcValue)
+            ENDIF
+            this.cValue = lcValue
+        ENDIF
+
+        this.refresh()
+    ENDPROC
+
+    PROCEDURE cmdgetfile.Click
+        this.parent.DisplayFiles()
+    ENDPROC
+
+    PROCEDURE cfilenameTextBox.Valid
+        RETURN this.parent.validatefilename(this.value)
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: getafilecontrol
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+<B>The General Idea&nbsp;&nbsp;</B>First, some general theory:
+The idea is for the <TT>TextBox</TT> and the <TT>CommandButton</TT>
+to work together to enable the user to select a file. The <TT>TextBox</TT>
+provides for manual, type-it-in functionality. The <TT>CommandButton</TT>
+brings up a <TT>GetFile()</TT> dialog box from which the user
+can select a file. If a file is selected, it is shown in the <TT>TextBox</TT>.
+<P>
+The job of the container around these controls (that's the <I>controls</I>
+referred to in the class names) is to give the interface to the
+controls. From the outside world, the two controls packaged together
+are one control. The fact that a <TT>TextBox</TT> and a <TT>CommandButton</TT>
+are working together is something the developer of the class needs
+to know, but not something the developer using the control in
+an application needs to know. The job of the interface is to communicate
+with the outside world in terms of the options the user wants
+to set when selecting a file. An interface also holds the name
+of the file selected. This brings me to my next point.
+<P>
+<B>The Control Package's Custom Properties&nbsp;&nbsp;</B>The
+package around the controls has the following custom properties
+added to it:
+<BLOCKQUOTE>
+<PRE>
+    cvalue = &quot;&quot;
+    cdisplaycaption = &quot;Please select a file.&quot;
+    copenbuttoncaption = &quot;Open&quot;
+    cfileextensions = &quot;&quot;
+    nbuttontype = 0
+    lminimumpath = .T.
+</PRE>
+</BLOCKQUOTE>
+<P>
+The <TT>cValue</TT> property is the name of the file selected
+by the user. I used the name <TT>cValue</TT> because it is equivalent
+to the <TT>Value</TT> property of most data controls: It holds
+the value returned by the control. By the way, if you're wondering
+about the <TT><I>c</I></TT> in
+<TT>cValue</TT>, it's a common naming convention for all custom
+properties: The first character of the name indicates the data
+type of the property (which in this case is <TT>Character</TT>).
+<P>
+The <TT>cDisplayCaption</TT> property is the message that displays
+on the <TT>GetFile()</TT> box, which is displayed by the command
+button. The property name is based on the name of the corresponding
+parameter discussed in the <TT>GetFile()</TT> help topic.
+<P>
+The <TT>cOpenButtonCaption</TT> property is the caption for the
+Open button. By default, the name of the button on the <TT>GetFile()</TT>
+dialog box is OK; however, this class sets the default to Open
+instead. Again, the name is a naming convention version of the
+parameter name in the help file.
+<P>
+The <TT>cFileExtensions</TT> property is a list of file extensions
+to show in the <TT>GetFile()</TT> box (you can still select any
+file you like, by the way). The list of file extensions is separated
+by semicolons or vertical bars (<TT>|</TT>). Visual FoxPro automatically
+parses out the file extensions in the <TT>GetFile()</TT> box.
+Again, the name is a naming convention version of the parameter
+name in the help file.
+<P>
+The <TT>nButtonType</TT> property is a numeric property that is
+also used for the <TT>GetFile()</TT> box. The number defaults
+to <TT>0</TT>, which shows an OK button (which is really named
+Open by default) and Cancel button. A value of <TT>1</TT> shows
+OK, New, and Cancel buttons. A value of <TT>2</TT> shows OK, None,
+and Cancel buttons. Once again, the name is a naming convention
+version of the parameter name in the help file.
+<P>
+The <TT>lMinimumPath</TT> property specifies whether a minimum
+or absolute path is used. A filename specified with a path can
+be shown in one of two ways. The path can be an <I>absolute</I>
+path, in other words, the specified path is the path you want
+to store. The other way is to store a <I>relative</I> path, which
+adjusts the path to show the minimum path designation to get to
+the file from a directory. An absolute path, which is the type
+of value returned from <TT>GetFile()</TT>, can be converted to
+a relative path with <TT>SYS(2014)</TT>. If <TT>lMinimumPath</TT>
+is set to <TT>.T.</TT> (as it is by default), the filename returned
+by the <TT>GetFile()</TT> dialog box is adjusted with <TT>SYS(2014)</TT>
+against the current directory.
+<P>
+The purpose of naming properties in this manner is to give the
+developer using the class a clue as to the values allowed, that
+is, it makes the class a little easier to use and understand.
+<P>
+<B>Custom and Overridden Methods&nbsp;&nbsp;</B>The <TT>Refresh</TT>
+method sets the text box's <TT>Value</TT> property to match the
+<TT>cValue</TT> property of the control package. The <TT>SetFocus</TT>
+call to the <TT>TextBox</TT> puts the cursor in the <TT>TextBox</TT>
+for editing.
+<P>
+<TT>ValidateFileName</TT> is a custom method that tests the validity
+of a filename entered in the text box and is called by the text
+box's <TT>Valid</TT> method.
+<P>
+<TT>DisplayFiles</TT> is the method that actually displays the
+<TT>GetFile()</TT> dialog box and uses the properties of the control
+package as part of the <TT>GetFile()</TT> call. After <TT>GetFile()</TT>
+is done and the user has made a selection, the selected value
+is placed in the control package's <TT>cValue</TT> property. A
+call to <TT>Refresh</TT> keeps everything in synch.
+<P>
+<B>Object Members&nbsp;&nbsp;</B>The object members are <TT>CmdGetFile</TT>
+and <TT>cFileNameTextBox</TT>.
+<BLOCKQUOTE>
+<TT><B>CmdGetFile</B></TT><I><B>&nbsp;&nbsp;</B></I>This
+is a command button. The <TT>Click</TT> method <TT>cmdGetFile</TT>
+calls <TT>DisplayFiles</TT>, which displays a <TT>GetFile()</TT>
+based on the settings in the control package. The returned value
+is then stored to the <TT>cValue</TT> property of the package,
+and the box's <TT>Refresh</TT> method is called. The <TT>Refresh</TT>
+method puts the text box in synch.
+<BR>
+<TT><B>cFileNameTextBox</B></TT><I><B>&nbsp;&nbsp;</B></I>This
+control enables the user to enter the filename manually. It is
+based on the <TT>NoNotifyTextBox</TT> class created previously
+in this chapter. Basing <TT>cFileNameTextBox</TT> on <TT>NoNotifyTextBox</TT>
+is a good example of how classes are reused in other classes.
+</BLOCKQUOTE>
+<P>
+The <TT>Valid</TT> method in this control checks the entered filename
+to make sure it is valid. An empty filename is considered valid;
+if it weren't, the user would have no way of exiting the <TT>TextBox</TT>
+control to get to the <TT>CommandButton</TT>. If the text box's
+<TT>Valid</TT> method returns <TT>.F.</TT>, the <TT>ErrorMessage</TT>
+event calls the <TT>ErrorMessage</TT> method, which in turn displays
+an error message telling the user that file was not found.
+<P>
+If the entered filename is valid, the filename is stored in the
+<TT>cValue</TT> property of the control package.
+<P>
+<B>Using the Combination Control in a Form&nbsp;&nbsp;</B>As far
+as the outside world is concerned (the outside world is anything
+outside <TT>GetAFileControl</TT>), the operative property is the
+<TT>cValue</TT> property. In order to get the name of the file
+entered or selected by the user, the outside world just queries
+the <TT>cValue</TT> property. In order to set up the control,
+the outside world sets the properties discussed previously. Figure
+15.3 shows a form with <TT>GetAFileControl</TT> on it.
+<P>
+<IMG SRC="f15-3.gif"><B>Figure 15.3 : </B><I>A form with GetAFileControl</I>.</A>
+<P>
+As far as the outside world is concerned, the only control that
+exists is <TT>GetAFileControl</TT>. The embedded <TT>TextBox</TT>
+and <TT>CommandButton</TT> controls do not exist. In other words,
+if this combination control were dropped on a form with the name
+<TT>GetAFileControl1</TT>, attempting to query <TT>GetAFileControl1.cFileNameTextBox.Value</TT>
+from the outside world would generate an error.
+<P>
+Why is this so? To understand why, you need to take a little closer
+look under the hood of the control class.
+<H3><A NAME="TheControlClass">
+The Control Class</A></H3>
+<P>
+Now that you have seen an example of a combination control, take
+a step back and learn the technical issues related to working
+with this class.
+<P>
+First of all, although a control-based class is a composite class
+with additional member objects, the control class automatically
+makes all its member objects private. This means that anything
+using the class cannot see those member objects.
+<P>
+To illustrate this, take a look at Figure 15.4, which shows the
+property window of a form with <TT>GetAFileControl</TT> placed
+on it. I've expanded the list of objects to make the point. Notice
+that only the control package is on the list. The individual objects
+inside the control package do not exist as far as the form is
+concerned. You access the individual objects within the combination
+control class.
+<P>
+<IMG SRC="f15-4.gif"><B>Figure 15.4 : </B><I>Objects shown for the GetAFileControl instance</I>.</A>
+<P>
+This behavior makes perfect sense. Because you're creating a <I>control</I>
+as far as the outside world is concerned, all the components of
+the control are one object. This does introduce some interesting
+issues, which are discussed next one at a time.
+<P>
+<B>Communicating with Combination Controls&nbsp;&nbsp;</B>By definition,
+the outside world can only communicate with a combination control
+through the package. This means that any information passing first
+goes to the package; the package must then transmit the information
+to the individual members.
+<P>
+A good example of this is the <TT>cValue</TT> property added to
+the <TT>GetAFileControl</TT> class. <TT>cValue</TT> can be set
+from the outside world but will be shown in the <TT>TextBox</TT>
+only when the <TT>Refresh</TT> method is called-it is the <TT>Refresh</TT>
+method's responsibility to transmit the value to the <TT>TextBox</TT>.
+Likewise, <TT>TextBox</TT> and <TT>CommandButton</TT> have the
+responsibility of telling the package about changes to <TT>cValue</TT>
+that happen as a result of actions taken within their control.
+<P>
+You can take advantage of a new feature in Visual FoxPro 6 by
+using the <TT>assign</TT> and <TT>access</TT> methods for the
+<TT>cValue</TT> property. By adding a method named <TT>cValue_access</TT>,
+you are creating an <TT>access</TT> method. An <TT>access</TT>
+method is like an event method that fires whenever the property
+it is associated with is accessed. In the <TT>GetAFileControl</TT>
+class, you might add a <TT>cValue_access</TT> method like the
+one shown in the following:
+<BLOCKQUOTE>
+<PRE>
+PROCEDURE cValue_access
+IF THIS.cValue &lt;&gt; THIS.cFileNameTextBox.Value
+   THIS.cValue = THIS.cFileNameTextBox.Value
+ENDIF
+RETURN THIS.cValue
+</PRE>
+</BLOCKQUOTE>
+<P>
+This <TT>access</TT> method will run whenever any outside object
+tries to read the value of the <TT>cValue</TT> property, and its
+code ensures that the value of the <TT>TextBox</TT> and the <TT>cValue</TT>
+property are in synch with each other.
+<P>
+This also means that any methods to which the outside world needs
+access must be contained at the package level. For example, if
+the <TT>Click</TT> method of the <TT>CommandButton</TT> were applicable
+to the outside world, a method would have to be added to the package
+that the <TT>CommandButton</TT> would call (as opposed to placing
+the code directly within the <TT>CommandButton</TT>'s <TT>Click</TT>
+method). Alternatively, the code could be placed in the <TT>CommandButton</TT>'s
+<TT>Click</TT> method, but you would still have to add a method
+to the package for the outside world to run the <TT>CommandButton</TT>'s
+<TT>Click</TT> method. The method added to the package would just
+call the <TT>Click</TT> method of the <TT>CommandButton</TT>.
+<P>
+<B>Adding Objects at Runtime&nbsp;&nbsp;</B>Control classes do
+not have an <TT>AddObject()</TT> method; therefore, you cannot
+add controls to the package at runtime.
+<P>
+<B>Subclassing Combination Controls&nbsp;&nbsp;</B>There are a
+few ramifications regarding subclassing combination controls.
+<BLOCKQUOTE>
+<I><B>Adding Controls to a Subclass&nbsp;&nbsp;</B></I>You cannot
+add controls to the package in a subclass (just as you cannot
+add a control to a subclass of the <TT>CommandButton</TT> class).
+<BR>
+<I><B>Accessing Package Contents in a Subclass&nbsp;&nbsp;</B></I>The
+objects contained in the combination control's package are not
+visible when you subclass it. This means that any methods or properties
+you might want to modify in a subclass must be hooked to the package
+as opposed to one of the member objects. This requires some care
+in designing the class hierarchy.<BR>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can provide for this situation if you first fully define all the control classes that you will use in the package as classes, with all the necessary code, before you put them in the package.<BR>
+For example, you could define a <TT>TextBox</TT> class as a subclass of the <TT>NoNotifyTextbox</TT> and name it <TT>GetAFileTextbox</TT>. Then, in the <TT>GetAFileTextbox</TT> class, you write the code for the <TT>Valid</TT> event and then use that class in the <TT>ADDOBJECT</TT> command of the <TT>GetAFileControl</TT> class.
+<BR>
+This process, fully defining a class before you use it a package, is called late composition. It is called late because the package is not assembled until late in the class definitions.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+If you look at <TT>GetAFileControl</TT>, you'll notice that all
+the methods for the <TT>TextBox</TT> and the <TT>CommandButton</TT>
+call methods on the package. In effect, this hedges your bets.
+You should do a little more work up front to preserve flexibility
+down the road.
+<P>
+<B>A Final Word&nbsp;&nbsp;</B>As container-type classes go, the
+control class does have limitations, but the limitations of the
+control class are its strength. It gives you the opportunity to
+create tightly controlled classes to use on your forms. However,
+many developers find control classes limiting because of the lack
+of capability to add controls at runtime, to add controls to a
+subclass, or to access the controls within the package can present
+a restrictive working environment.
+<P>
+The container class, on the other hand, gives you the ability
+to create composite classes with more flexibility. This is the
+next topic.
+<H3><A NAME="TheContainerClass">
+The Container Class</A></H3>
+<P>
+A container class is similar to the control class with one major
+exception: The controls in a container class's package are visible
+to the outside world (unless specifically protected in the class).
+<P>
+By the way, there are many classes that support containership.
+For example, a form is a type of container class (only more specialized).
+Page frames and grids are also examples of classes that support
+containership. This discussion focuses on the container class,
+but many of the discussions are applicable to the other container-type
+classes as well.
+<P>
+Container classes are wonderful for a whole host of different
+jobs. In fact, any time multiple objects need to be brought together,
+a container can do the job. (I usually prefer to combine controls
+in a container to accomplish a task.)
+<P>
+To illustrate the difference between a control class and a container
+class, I'll redefine the <TT>GetAFileControl</TT> class to work
+off the container class instead of the control class. First, Listing
+15.2 shows the exported code.<P>
+
+<HR>
+<B>Listing 15.2&nbsp;&nbsp;</B><TT><B>15CODE02</B></TT><B>-The
+</B><TT><B>GetAFileControl</B></TT><B>
+Class Defined as a Container<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Getafilecontainer
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        getafilecontainer
+*-- ParentClass:  container
+*-- BaseClass:    container
+*-- A combination of controls that allow a user to select an existing file.
+*
+DEFINE CLASS getafilecontainer AS container
+
+    Width = 358
+    Height = 26
+    BackStyle = 0
+    BorderWidth = 0
+    cvalue = &quot;&quot;
+    *-- The caption to display on the GETFILE box.
+    cdisplaycaption = &quot;Please select a file.&quot;
+    *-- Caption for the OPEN button. See GetFile() for more information on this.
+    copenbuttoncaption = &quot;Open&quot;
+    *-- File extensions to allow for. See GetFile() for more information on this.
+    cfileextensions = &quot;&quot;
+    *-- The type of buttons on the GetFile() dialog. See GetFile()
+	    for more information on this.
+    nbuttontype = 0
+    *-- Should the path shown be a minimum path or not?
+    lminimumpath = .T.
+    Name = &quot;getafilecontainer&quot;
+
+    ADD OBJECT cmdgetfile AS cmdGetfile WITH ;
+        Top = 0, ;
+        Left = 330, ;
+        Height = 24, ;
+        Width = 24, ;
+        Caption = &quot;...&quot;, ;
+        Name = &quot;cmdGetFile&quot;
+
+    ADD OBJECT cfilenameTextBox AS cFileNameTextBox WITH ;
+        Value = &quot;&quot;, ;
+        Format = &quot;!&quot;, ;
+        Height = 24, ;
+        Left = 0, ;
+        Top = 0, ;
+        Width = 325, ;
+        Name = &quot;cFileNameTextBox&quot;
+
+    *-- Accepts a string parameter and validates that it is an existing file.
+    PROCEDURE validatefilename
+        LPARAMETERS tcFileName
+        LOCAL llRetVal
+
+        llRetVal = EMPTY(tcFileName) OR FILE(ALLTRIM(tcFileName))
+
+        IF !llRetVal
+            =MessageBox(&quot;File does not exist: &quot; + ALLTRIM(tcFileName))
+        ENDIF
+
+        tcFileName = ALLTRIM(tcFileName)
+
+        IF llRetVal
+            this.cValue = tcFileName
+        ENDIF
+
+        RETURN llRetVal
+    ENDPROC
+
+    *-- Display the files for the user to select from with a GetFile() dialog.
+    PROCEDURE displayfiles
+        LOCAL lcValue, lcDialogCaption, lcOpenButtonCaption, lnButtonType
+
+        lcDialogCaption = this.cDisplayCaption
+        lcOpenButtonCaption = this.cOpenButtonCaption
+        lcFileExtensions = this.cFileExtensions
+        lnButtonType = this.nButtonType
+
+        lcValue =    GETFILE(lcFileExtensions, ;
+                            lcDialogCaption, ;
+                            lcOpenButtonCaption, ;
+                            lnButtonType)
+
+        IF !EMPTY(lcValue)
+            IF this.lminimumpath
+                lcValue = SYS(2014, lcValue)
+            ENDIF
+            this.cValue = lcValue
+        ENDIF
+
+        this.refresh()
+    ENDPROC
+
+    PROCEDURE Refresh
+        this.cFileNameTextBox.Value = this.cValue
+        this.cFileNameTextBox.SetFocus()
+    ENDPROC
+
+
+ENDDEFINE
+
+
+DEFINE CLASS cmdGetFile AS CommandButton
+   PROCEDURE Click
+      This.parent.DisplayFiles
+   ENDPROC
+ENDDEFINE
+
+DEFINE CLASS cFileNameTextBox AS NoNotifyTextBox
+    PROCEDURE Valid
+       RETURN This.parent.validatefilename(this.value)
+    ENDPROC
+ENDDEFINE
+
+DEFINE CLASS nonotifyTextBox AS TextBox
+
+    Height = 24
+    Width = 113
+    Name = &quot;nonotifyTextBox&quot;
+
+    *-- The setting of SET NOTIFY when the control got focus.
+    PROTECTED cnotifysetting
+
+    PROCEDURE LostFocus
+        LOCAL lcNotify
+        lcNotify = this.cNotifySetting
+        SET NOTIFY &amp;lcNotify
+    ENDPROC
+
+    PROCEDURE GotFocus
+        this.cNotifySetting = SET(&quot;notify&quot;)
+        SET NOTIFY OFF
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: getafilecontainer
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+At first glance, the code in Listing 15.2 does not seem very different
+than the <TT>GetAFileControl</TT> class from the previous section.
+In fact, it isn't. One thing that I changed was to define each
+of the controls as a class before I put them in the container.
+Another difference is how the two classes (<TT>GetAFileControl</TT>
+and <TT>GetaFileContainer</TT>) operate within the form.
+<P>
+Figures 15.5 and 15.6 show a key difference between when you are
+working with control-based classes as opposed to container-based
+classes. Notice the value of <TT>_screen.activeform.activecontrol.name</TT>,
+which is tracked in the Debug window, and how it differs from
+the top control (an instance of <TT>GetAFileControl</TT>) and
+the lower container (an instance of <TT>GetaFileContainer</TT>).
+<P>
+<IMG SRC="f15-5.gif"><B>Figure 15.5 : </B><I>A form with GetAFileControl active</I>.</A>
+<P>
+<IMG SRC="f15-6.gif"><B>Figure 15.6 : </B><I>A form with GetaFileContainer active</I>.</A>
+<P>
+To the naked eye, the two controls seem the same. Behind the scenes,
+however, they are very different-the control version shows no
+<TT>ActiveControl</TT> for the form regardless of whether the
+<TT>TextBox</TT> has the focus or the <TT>CommandButton</TT> has
+the focus. The container version, on the other hand, shows the
+name of the <TT>TextBox</TT> as the name of the active control.
+<P>
+By the way, this is a good example of the use of <TT>_screen</TT>
+to assist in debugging. You might not always know the name of
+the variable behind a form, but you can usually count on <TT>_screen.activeform</TT>
+to give you a reference to the active form.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+In Visual FoxPro 6, you can use <TT>_VFP</TT> and <TT>_SCREEN</TT> interchangeably.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Order of </B><TT><B>Init</B></TT><B>s&nbsp;&nbsp;</B>So,
+you have a package with multiple objects in it. You put code in
+one object's <TT>Init</TT> that references the container. But
+when you try to instantiate the package, you get an error message
+in the <TT>Init</TT> code and the package refuses to instantiate.
+What did you do wrong?
+<P>
+The answer to this puzzle lies in the order in which the objects
+are created. As it turns out, the container package is the last
+object to get created. The objects inside are created first, and
+the container is created only after all the objects inside have
+successfully been created.
+<P>
+As to the order in which the internal objects instantiate, the
+best way to find out is to look at the order in which the objects
+appear in the property sheet. For best results, try not to put
+code in any of the <TT>Init</TT> events that depends on the order
+in which objects instantiate. You'll be a lot safer that way.
+<P>
+<TT><B>Navigator</B></TT><B>-Another
+Container Class&nbsp;&nbsp;</B> A container of <TT>CommandButton</TT>s
+used for navigating through a table in a form is a good example
+of a container class. Listing 15.3 shows an example of this kind
+of class called <TT>Navigator</TT>.<P>
+
+<HR>
+<B>Listing 15.3&nbsp;&nbsp;</B><TT><B>15CODE03</B></TT><B>-A
+Container-Based Navigation Button Set<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Navigator
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        navigator
+*-- ParentClass:  container
+*-- BaseClass:    container
+*
+DEFINE CLASS navigator AS container
+
+    Width = 350
+    Height = 32
+    BackStyle = 0
+    BorderWidth = 0
+    Name = &quot;navigator&quot;
+
+    ADD OBJECT cmdnext AS cmdNext WITH ;
+        Top = 0, ;
+        Left = 0, ;
+        Height = 31, ;
+        Width = 60, ;
+        Caption = &quot;Next&quot;, ;
+        Name = &quot;cmdNext&quot;
+
+    ADD OBJECT cmdprev AS cmdPrev WITH ;
+        Top = 0, ;
+        Left = 72, ;
+        Height = 31, ;
+        Width = 60, ;
+        Caption = &quot;Prev&quot;, ;
+        Name = &quot;cmdPrev&quot;
+
+    ADD OBJECT cmdtop AS cmdTop WITH ;
+        Top = 0, ;
+        Left = 144, ;
+        Height = 31, ;
+        Width = 60, ;
+        Caption = &quot;Top&quot;, ;
+        Name = &quot;cmdTop&quot;
+
+    ADD OBJECT cmdbottom AS cmdBottom WITH ;
+        Top = 0, ;
+        Left = 216, ;
+        Height = 31, ;
+        Width = 60, ;
+        Caption = &quot;Bottom&quot;, ;
+        Name = &quot;cmdBottom&quot;
+
+    ADD OBJECT cmdok AS okbuttonwithtooltip WITH ;
+        Top = 0, ;
+        Left = 288, ;
+        Height = 31, ;
+        Width = 60, ;
+        Name = &quot;cmdOK&quot;
+
+
+
+
+ENDDEFINE
+
+DEFINE cmdNext AS CommandButton
+    PROCEDURE Click
+        SKIP 1
+        IF EOF()
+            =Messagebox(&quot;At end of file!&quot;, 16)
+            GO BOTTOM
+        ENDIF
+
+        thisform.refresh()
+    ENDPROC
+ENDDEFINE
+
+DEFINE CLASS cmdPrev AS CommandButton
+    PROCEDURE Click
+        SKIP -1
+        IF BOF()
+            =Messagebox(&quot;At beginning of file!&quot;, 16)
+            GO TOP
+        ENDIF
+
+        thisform.refresh()
+    ENDPROC
+ENDDEFINE
+
+DEFINE CLASS cmdTop AS CommandButton
+    PROCEDURE Click
+        GO TOP
+        thisform.refresh()
+    ENDPROC
+ENDEFINE
+
+DEFINE CLASS cmdBottom AS CommandButton
+    PROCEDURE Click
+        GO BOTTOM
+        thisform.refresh()
+    ENDPROC
+ENDDEFINE
+
+DEFINE CLASS okbuttonwithtooltip AS okbutton
+
+    Height = 29
+    Width = 41
+    ToolTipText = &quot;Releases the form&quot;
+    Name = &quot;okbuttonwithtooltip&quot;
+
+ENDDEFINE
+
+*
+*-- EndDefine: navigator
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Each button on the container executes the necessary navigation
+instructions and then executes a call to the host form's <TT>Refresh</TT>
+method. It might seem strange to put code to work with a form
+on a class that is not yet physically part of a form, but that's
+OK. When you document the class, just make sure to specify how
+it is meant to be used.
+<P>
+In order to use the <TT>Navigator</TT> class, all you need to
+do is drop it on a data entry form and you have the ability-without
+coding one line-to move within the file. Figure 15.7 shows a sample
+data entry form with this class dropped on it.
+<P>
+<IMG SRC="f15-7.gif"><B>Figure 15.7 : </B><I>A form with a Navigator container</I>.</A>
+<P>
+When this class is dropped on a form, as shown in Figure 15.8,
+a view of a form's property window and all the controls are available
+for editing and on-the-fly subclassing. You can even extend the
+container and add another control to it in the form. The additional
+control, of course, is not added to the class in the VCX file;
+it's a special version for that form only.
+<P>
+<IMG SRC="f15-8.gif"><B>Figure 15.8 : </B><I>The property window of a container</I>.</A>
+<P>
+The next bit of code is a representation of a form that adds a
+New button to the container (it's available as <TT>MoreBtns.SCX</TT>).
+<BLOCKQUOTE>
+<PRE>
+*  Form..............: Form1
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Form:         form1 (morebtns.scx)
+*-- ParentClass:  form
+*-- BaseClass:    form
+*
+DEFINE CLASS form1 AS form
+
+    Top = 0
+    Left = 0
+    Height = 182
+    Width = 463
+    DoCreate = .T.
+    BackColor = RGB(192,192,192)
+    BorderStyle = 2
+    Caption = &quot;Form1&quot;
+    Name = &quot;Form1&quot;
+
+    ADD OBJECT text1 AS textbox WITH ;
+        BackColor = RGB(192,192,192), ;
+        ControlSource = &quot;test.cmembname&quot;, ;
+        Height = 24, ;
+        Left = 48, ;
+        Top = 24, ;
+        Width = 113, ;
+        Name = &quot;Text1&quot;
+
+    ADD OBJECT text2 AS textbox WITH ;
+        BackColor = RGB(192,192,192), ;
+        ControlSource = &quot;test.cmembtype&quot;, ;
+        Height = 24, ;
+        Left = 48, ;
+        Top = 60, ;
+        Width = 113, ;
+        Name = &quot;Text2&quot;
+
+    ADD OBJECT navigator1 AS navigator WITH ;
+        Top = 120, ;
+        Left = 12, ;
+        Width = 421, ;
+        Height = 32, ;
+        Name = &quot;Navigator1&quot;, ;
+        cmdNext.Name = &quot;cmdNext&quot;, ;
+        cmdPrev.Name = &quot;cmdPrev&quot;, ;
+        cmdTop.Name = &quot;cmdTop&quot;, ;
+        cmdBottom.Name = &quot;cmdBottom&quot;, ;
+        cmdOK.Top = 0, ;
+        cmdOK.Left = 360, ;
+        cmdOK.Height = 31, ;
+        cmdOK.Width = 61, ;
+        cmdOK.Name = &quot;cmdOK&quot;
+
+    ADD OBJECT form1.navigator1.cmdnew AS commandbutton WITH ;
+        Top = 0, ;
+        Left = 288, ;
+        Height = 31, ;
+        Width = 61, ;
+        Caption = &quot;New&quot;, ;
+        Name = &quot;cmdNew&quot;
+
+    PROCEDURE cmdnew.Click
+        APPEND BLANK
+        thisform.refresh()
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: form1
+**************************************************<BR>
+</PRE>
+</BLOCKQUOTE>
+<P>
+Notice how the additional command button (<TT>cmdNew</TT>) is
+added within the code. An <TT>ADD OBJECT</TT> command adds the
+<TT>CommandButton</TT> to the container. This is just one of the
+powerful capabilities of the container class: You can add objects
+to it on-the-fly.
+<P>
+Figure 15.9 shows what the form looks like. As you can see, there
+is no visible indication that the additional <TT>CommandButton</TT>
+was not part of the original class.
+<P>
+<IMG SRC="f15-9.gif"><B>Figure 15.9 : </B><I>A form with an additional CommandButton</I>.</A>
+<P>
+<B>The Flexibility of the Container Class&nbsp;&nbsp;</B>The container
+class is a very versatile class. It has little display baggage
+and yet has the full capabilities one would expect from a container.
+You can add controls to it on-the-fly with <TT>ADD OBJECT</TT>
+and <TT>AddObject()</TT>, and you can combine virtually any controls
+to create combinations that are limited only by your imagination.
+<P>
+Think about two simple controls: a <TT>TextBox</TT> and a <TT>Timer</TT>
+control. Individually, they each have specific duties. Combine
+them in a container and you can create something totally different:
+a clock.
+<P>
+<B>A <I>Clock</I> Class&nbsp;&nbsp;</B> A clock, as a class, is
+simply a combination of a <TT>Timer</TT> and a <TT>TextBox</TT>,
+as shown in Listing 15.4.<P>
+
+<HR>
+<B>Listing 15.4&nbsp;&nbsp;</B><TT><B>15CODE04</B></TT><B>-A
+Clock Built Using a Timer and Some Text Boxes in a Container<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Clock
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        clock
+*-- ParentClass:  container
+*-- BaseClass:    container
+*
+DEFINE CLASS clock AS container
+
+    Width = 367
+    Height = 27
+    BorderWidth = 0
+    SpecialEffect = 2
+    ntimeformat = 0
+    Name = &quot;clock&quot;
+
+    ADD OBJECT txtdate AS txtDate WITH ;
+Height = 22, ;
+        Left = 5, ;
+        Top = 3, ;
+        Width = 250, ;
+Name = &quot;txtDate&quot;
+
+    ADD OBJECT txttime AS textbox WITH ;
+Height = 22, ;
+        Left = 268, ;
+        Top = 3, ;
+        Width = 77, ;
+
+    ADD OBJECT tmrtimer AS trmTimer WITH ;
+        Top = 0, ;
+        Left = 120, ;
+        Height = 24, ;
+        Width = 25, ;
+Name = &quot;tmrTimer&quot;
+
+
+ENDDEFINE
+
+DEFINE CLASS txtDate AS TextBox
+    Alignment = 0
+    BackColor = RGB(255,255,0)
+    BorderStyle = 0
+    Value = (CDOW(date())+&quot; &quot;+CMONTH(date())+&quot; &quot;+  ;
+            ALLT(STR(DAY(date())))+&quot;, &quot;+ALLT(STR(YEAR(date()))))
+    Enabled = .F.
+    DisabledForeColor = RGB(0,0,0)
+    DisabledBackColor = RGB(255,255,255)
+ENDEFINE
+
+DEFINE CLASS txtTime AS TextBox
+    Alignment = 0
+    BorderStyle = 0
+    Value = (IIF(THIS.PARENT.TimeFormat = 0, ;
+             IIF(VAL(SUBSTR(time(),1,2))&gt;12,;
+             ALLT(STR((VAL(SUBSTR(time(),1,2))-12)))+SUBSTR(time(),3,6),;
+             time()),time()))
+    Enabled = .F.
+    DisabledForeColor = RGB(0,0,0)
+    DisabledBackColor = RGB(255,255,255)
+ENDDEFINE
+
+DEFINE CLASS tmrTimer AS Timer
+    Interval = 1000
+
+    PROCEDURE Timer
+        this.Parent.txtDate.Value = CDOW(date()) + &quot; &quot; + ;
+                                    CMONTH(date())+&quot; &quot;+ ;
+                                    ALLT(STR(DAY(date()))) + ;
+                                    &quot;, &quot;+ALLT(STR(YEAR(date())))
+
+        IF this.Parent.nTimeFormat = 0
+            this.Parent.txtTime.Value = ;
+                    IIF(VAL(SUBSTR(time(),1,2))&gt;12, ;
+                        ALLT(STR((VAL(SUBSTR(time(),1,2))-12))) + ;
+                        SUBSTR(time(),3,6),time())
+        ELSE
+            this.Parent.txtTime.Value = time()
+        ENDIF
+    ENDPROC
+ENDDEFINE
+*
+*-- EndDefine: clock
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The <TT>Timer</TT> control enables you to run a command or series
+of commands at timed intervals. When the <TT>Interval</TT> property
+is set to a value greater than zero, it controls the amount of
+time between executions of the timer's <TT>Timer</TT> event in
+milliseconds (1/1000 of a second units). When you combine this
+capability with the display characteristics of the <TT>TextBox</TT>
+control to display the time calculated by the timer, you have
+a clock.
+<P>
+Attached to the container is a custom property, <TT>nTimeFormat</TT>,
+that governs whether the time is shown in 12- or 24-hour format.
+Setting the property to <TT>0</TT> shows the time in AM/PM format,
+whereas setting the property to <TT>1</TT> shows  the time in
+military format. Figure 15.10 shows what the clock looks like
+when you drop it on a form (it's on the Web site as a class called
+<TT>ClockForm</TT> in <TT>CHAP15.VCX</TT>).
+<P>
+<IMG SRC="f15-10.gif"><B>Figure 15.10: </B><I>The Clock form</I>.</A>
+<P>
+Once a second the <TT>Timer</TT> event fires and recalculates
+the time. The results of the calculation are placed in the <TT>Value</TT>
+property of the <TT>txtTime</TT> text box.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Remember always that a timer's interval is specified in milliseconds and not seconds. If you want a timer to fire once every second, give it an interval of 1000. Using an interval of 1 will cause your system to appear locked up because the timer is firing 1,000 times each second.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Providing a Consistent Interface&nbsp;&nbsp;</B>Notice the
+placement of the <TT>nTimeFormat</TT> property in the <TT>Clock</TT>
+class: It is placed on the container. Why put it there? You could
+have just as easily put the property on the <TT>Timer</TT> or
+even the <TT>TextBox</TT>.
+<P>
+Whenever you work with a composite class, it is very important
+to provide a consistent interface for the user of the control.
+It is crucial not to force the users of your classes to drill
+down into the member controls in order to accomplish what they
+need to do, especially when you are working with a container that
+can have many controls.
+<P>
+You should use the container to communicate with the outside world.
+Controls within the container can communicate with each other,
+but users should not have to communicate with the controls inside
+the container in order to use your classes. <A HREF="ch16.htm" >Chapter 16</A> shows some
+more examples of container-based controls.
+<H3><A NAME="TheForm">
+The Form</A></H3>
+<P>
+There is not much to talk about regarding form-based classes that
+you have not already come across in the discussions of the Form
+Designer or other classes. Rather than discuss how to create form
+classes, I will show you how form classes are different from SCX-based
+forms.
+<P>
+<B>Bringing Up the Form&nbsp;&nbsp;</B>You are familiar with the
+<TT>DO FORM</TT> syntax; however, this syntax is no longer used
+to work with forms stored as classes in a VCX file. Instead, the
+familiar <TT>CreateObject()</TT> syntax, the means by which all
+objects are instantiated from their classes, is used. Notice that
+after a form is instantiated with <TT>CreateObject()</TT>, you
+must call the <TT>Show</TT> method to display it.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+In Visual FoxPro 6, you can use the <TT>NewObject()</TT> function to create objects from classes. This includes form classes as well as any other class.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Making a Form Modal&nbsp;&nbsp;</B>There are two ways to make
+a form modal. One is to set the <TT>WindowType</TT> property to
+<TT>1</TT> (<TT>0</TT> is modeless). The other is to call the
+<TT>Show</TT> method with a parameter of <TT>1</TT>. Here is an
+example:
+<BLOCKQUOTE>
+<PRE>
+oForm = CreateObject(&quot;Form&quot;)
+oForm.Show(1)
+</PRE>
+</BLOCKQUOTE>
+<P>
+or
+<BLOCKQUOTE>
+<PRE>
+oForm = NewObject(&quot;Form&quot;)
+oForm.Show(1)
+</PRE>
+</BLOCKQUOTE>
+<P>
+Modeless forms raise two issues when dealing with VCX-based forms:
+reading systems events and variable scoping.
+<P>
+<B>Reading System Events&nbsp;&nbsp;</B>Consider the following
+procedure:
+<BLOCKQUOTE>
+<PRE>
+*-- ShowForm.Prg
+
+SET CLASS TO junkme
+oForm = CreateObject(&quot;Form&quot;)
+oForm.Show()
+</PRE>
+</BLOCKQUOTE>
+<P>
+If you run this program from the command window, you will see
+the form flash and then disappear. This happens because of the
+scoping of <TT>oForm</TT>. Because <TT>oForm</TT> is a memory
+variable, the procedure ends and <TT>oForm</TT> loses scope when
+the <TT>Show</TT> method finishes and the form appears. Because
+the variable is released, the form it references is released,
+too, and disappears. The main problem is that the program never
+stops. There is no wait state to tell Visual FoxPro to stop and
+read system events. This is not an issue with the <TT>DO FORM</TT>
+command, though, because it contains its own inherent wait state
+in which the form operates.
+<P>
+The answer to this problem is to issue a <TT>READ EVENTS</TT>
+command, which, in effect, is a replacement for the old foundation
+read. It tells Visual FoxPro to stop and read system events. Without
+it, the program does not stop and eventually terminates.
+<P>
+<B>Variable Scoping Revisited&nbsp;&nbsp;</B>The <TT>READ EVENTS</TT>
+command does not completely eliminate the issue of variable scoping.
+The <TT>READ EVENTS</TT> command stops the program so that it
+can read system events. You can still instantiate a form in a
+procedure and have it flash if the variable loses focus.
+<P>
+You need to be careful with the scoping of your form instance
+variables. Just issuing a <TT>Show</TT> method does not stop processing.
+When the <TT>Show</TT> method completes, control is returned to
+the calling program. A typical example is a form called from the
+<TT>Click</TT> event of a <TT>CommandButton</TT>. Unless something
+is done to keep the variable around, the variable loses scope
+and the form flashes. There are several strategies to deal with
+this problem, and all the strategies deal with the same issue:
+keeping the instance variable in scope.
+<BLOCKQUOTE>
+<I><B>Attaching the Variable to Another Object&nbsp;&nbsp;</B></I>One
+way to keep the variable in scope is to attach the instance variable
+to the object calling the form. For example, consider the class
+shown in Listing 15.5.<BR>
+</BLOCKQUOTE>
+<HR>
+<P>
+<B>Listing 15.5&nbsp;&nbsp;</B><TT><B>15CODE05</B></TT><B>-A
+Command Button Class That Launches Forms<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Launchform
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        launchform
+*-- ParentClass:  CommandButton
+*-- BaseClass:    CommandButton
+*
+DEFINE CLASS launchform AS CommandButton
+
+    Height = 29
+    Width = 94
+    Caption = &quot;LaunchForm&quot;
+    *-- The form to Launch
+    oform = .NULL.
+    Name = &quot;launchform&quot;
+
+    PROCEDURE Click
+        this.oForm = CreateObject(&quot;Form&quot;)
+        this.oForm.Show()
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: launchform
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This <TT>CommandButton</TT> maintains scope as long as the form
+it is attached to maintains scope; therefore, any properties of
+the <TT>CommandButton</TT> retain scope, too. In this example,
+the form launched from within the <TT>Click</TT> event of the
+<TT>CommandButton</TT> would stick around.
+<P>
+A similar strategy is to attach the form instance variable to
+a public object. For example, it could be added to <TT>_screen</TT>.
+There is an example of this in <A HREF="ch17/ch17.htm" >Chapter 17</A>.
+<BLOCKQUOTE>
+<I><B>Making the Variable Global&nbsp;&nbsp;</B></I>Another way
+to keep the variable in scope is to make the variable holding
+the form reference global. This is not the most elegant of solutions,
+but it does work. Perhaps a more elegant method is to declare
+an array in the start up program for the application and use the
+array as the repository for forms you want to keep around.<BR>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Global variables are not necessarily <TT>PUBLIC</TT> variables. A variable can be of three scopes, <TT>PUBLIC</TT>, <TT>PRIVATE</TT>, or <TT>LOCAL</TT>. <TT>PUBLIC</TT> variables exist from the moment they are created until they are either released with the <TT>RELEASE</TT> command or Visual FoxPro closes. <TT>PRIVATE</TT> variables exist from the moment they are created until the routine that created them ends (or they are released by the <TT>RELEASE</TT> command). <TT>LOCAL</TT> variables have the same scope as <TT>PRIVATE</TT> variables except that they are not visible to the routine called from the one that created them.
+<BR>
+So, to create a global variable in an application, all that is needed is to create a <TT>PRIVATE</TT> variable in the highest level program of the application. This <TT>PRIVATE</TT> variable would be available to all other routines in the system.
+<BR>
+The only reason to ever create a <TT>PUBLIC</TT> variable is so that the variable can be referenced by some routine higher in the calling stack than the one creating the variable. Having a routine reference a variable that will be created by some subroutine is a poor design choice, though, because it creates a situation of strong external coupling of the subroutine to the routine that calls it.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The problem with the global approach is managing the public variables.
+Having many public variables in a system that can be used and
+modified in many programs can be a little hairy at times. It's
+really the same issue with using public variables in a system
+in general. Conventional wisdom seems to shy away from this type
+of solution, but it will work if you need it.
+<P>
+<B>Data Environments&nbsp;&nbsp;</B>One of the more significant
+differences between forms in an SCX file and form classes is in
+the area of data environments. You use a <I>data environment</I>
+to specify what tables, views, and relations are used in the form.
+When a form class is created, you cannot save a data environment
+with it. If you save a form as a class that had a data environment
+attached to it, the data environment is lost.
+<P>
+This might look terribly negative, but it really isn't. Although
+you lose the graphically created data environment capabilities,
+you can still create data environment classes in code (this is
+discussed in greater detail in <A HREF="ch17/ch17.htm" >Chapter 17</A>). Also, there might
+be many cases in which the data environment for the form is not
+determined by the form but rather by another class on the form
+(for example, a business object, which is also discussed in <A HREF="ch17/ch17.htm">Chapter
+17</a>).
+<P>
+If you don't want to get involved with data environment classes,
+you can still do what you want with relative ease. All you need
+to do is place code in the <TT>Load</TT> event to open the tables.
+<P>
+Take the example shown in Listing 15.6, which opens the <TT>Customer</TT>
+table in the <TT>TESTDATA</TT> database and then presents some
+of the fields for editing (the form is shown in Figure 15.11).
+<P>
+<IMG SRC="f15-11.gif"><B>Figure 15.11: </B><I>The Customer data form</I>.</A>
+<P>
+<HR>
+<P>
+<B>Listing 15.6&nbsp;&nbsp;</B><TT><B>15CODE06</B></TT><B>-A
+Form Class That Opens Data Tables for Editing<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Customerdataform
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        customerdataform
+*-- ParentClass:  form
+*-- BaseClass:    form
+
+*
+DEFINE CLASS customerdataform AS form
+
+    DataSession = 2
+    Height = 238
+    Width = 356
+    DoCreate = .T.
+    AutoCenter = .T.
+    BackColor = RGB(192,192,192)
+    Caption = &quot;Sample Customer Data&quot;
+    Name = &quot;dataform&quot;
+
+    ADD OBJECT txtcust_id AS TextBox WITH ;
+        ControlSource = &quot;customer.cust_id&quot;, ;
+        Enabled = .F., ;
+        Height = 24, ;
+        Left = 120, ;
+        Top = 24, ;
+        Width = 205, ;
+        Name = &quot;txtCust_Id&quot;
+
+    ADD OBJECT txtcompany AS TextBox WITH ;
+        ControlSource = &quot;customer.company&quot;, ;
+        Height = 24, ;
+        Left = 120, ;
+        Top = 72, ;
+        Width = 205, ;
+        Name = &quot;txtCompany&quot;
+
+    ADD OBJECT txtcontact AS TextBox WITH ;
+        ControlSource = &quot;customer.contact&quot;, ;
+        Height = 24, ;
+        Left = 120, ;
+        Top = 120, ;
+        Width = 205, ;
+        Name = &quot;txtContact&quot;
+
+    ADD OBJECT txttitle AS TextBox WITH ;
+        ControlSource = &quot;customer.title&quot;, ;
+        Height = 24, ;
+        Left = 120, ;
+        Top = 168, ;
+        Width = 205, ;
+        Name = &quot;txtTitle&quot;
+
+    ADD OBJECT label1 AS label WITH ;
+        AutoSize = .T., ;
+        BackStyle = 0, ;
+        Caption = &quot;Customer Id:&quot;, ;
+        Height = 18, ;
+        Left = 12, ;
+        Top = 24, ;
+        Width = 80, ;
+        Name = &quot;Label1&quot;
+
+    ADD OBJECT label2 AS label WITH ;
+        AutoSize = .T., ;
+        BackStyle = 0, ;
+        Caption = &quot;Company:&quot;, ;
+        Height = 18, ;
+        Left = 12, ;
+        Top = 72, ;
+        Width = 64, ;
+        Name = &quot;Label2&quot;
+
+    ADD OBJECT label3 AS label WITH ;
+        AutoSize = .T., ;
+        BackStyle = 0, ;
+        Caption = &quot;Contact:&quot;, ;
+        Height = 18, ;
+        Left = 12, ;
+        Top = 120, ;
+        Width = 52, ;
+        Name = &quot;Label3&quot;
+
+    ADD OBJECT label4 AS label WITH ;
+        AutoSize = .T., ;
+        BackStyle = 0, ;
+        Caption = &quot;Title:&quot;, ;
+        Height = 18, ;
+        Left = 12, ;
+        Top = 168, ;
+        Width = 32, ;
+        Name = &quot;Label4&quot;
+
+    PROCEDURE Load
+        OPEN DATA _SAMPLES+&quot; \data\testdata.dbc&quot;
+        USE customer
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: customerdataform
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro 6 has a new system memory variable named <TT>_SAMPLES</TT>. This variable holds the path to the Visual FoxPro sample files. This is a big help because with Visual Studio 6, the samples for all of the Visual Studio products are stored in a common directory structure. Visual FoxPro 6 does not put its sample files in the familiar Sample directory under the Visual FoxPro home directory.
+<BR>
+In Listing 15.6, you can see the <TT>_SAMPLES</TT> variable used to locate the <TT>TESTDATA</TT> database.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+If you combine this form with the <TT>Navigator</TT> container
+you saw earlier, you have a complete data entry package. Listing
+15.7 shows  what it looks like in code; a visual representation
+is shown in Figure 15.12.
+<P>
+<IMG SRC="f15-12.gif"><B>Figure 15.12: </B><I>The Customer data form with the Navigator
+container</I>.</A><P>
+
+<HR>
+<B>Listing 15.7&nbsp;&nbsp;</B><TT><B>15CODE07</B></TT><B>-The
+Preceding Data Form with the Navigation Buttons Added to It<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Custformwithnavcontainer
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        custformwithnavcontainer
+*-- ParentClass:  customerdataform (d:\data\docs\books\vfu\code\oop2.vcx)
+*-- BaseClass:    form
+*
+DEFINE CLASS custformwithnavcontainer AS customerdataform
+
+    Height = 283
+    Width = 370
+    DoCreate = .T.
+    Name = &quot;custformwithnavcontainer&quot;
+    txtCust_Id.Name = &quot;txtCust_Id&quot;
+    txtCompany.Name = &quot;txtCompany&quot;
+    txtContact.Name = &quot;txtContact&quot;
+    txtTitle.Name = &quot;txtTitle&quot;
+    Label1.Name = &quot;Label1&quot;
+    Label2.Name = &quot;Label2&quot;
+    Label3.Name = &quot;Label3&quot;
+    Label4.Name = &quot;Label4&quot;
+
+    ADD OBJECT navigator1 AS navigator WITH ;
+        Top = 240, ;
+        Left = 12, ;
+        Width = 350, ;
+        Height = 32, ;
+        Name = &quot;Navigator1&quot;, ;
+        cmdNext.Name = &quot;cmdNext&quot;, ;
+        cmdPrev.Name = &quot;cmdPrev&quot;, ;
+        cmdTop.Name = &quot;cmdTop&quot;, ;
+        cmdBottom.Name = &quot;cmdBottom&quot;, ;
+        cmdOK.Name = &quot;cmdOK&quot;
+
+ENDDEFINE
+*
+*-- EndDefine: custformwithnavcontainer
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+As it turns out, even without the native data environment capabilities,
+creating forms as classes is a very viable way to create and display
+forms in Visual FoxPro.
+<P>
+<TT><B>CREATEOBJECT(&quot;form&quot;)</B></TT><B>
+Versus </B><TT><B>DO FORM</B></TT><B>&nbsp;&nbsp;</B>Why
+should you create a form as a class instead of using an SCX file
+and calling it with <TT>DO FORM</TT>? This question brings up
+a few issues you should consider.
+<P>
+The first issue is subclassing. You can subclass forms only if
+they are stored as classes.
+<P>
+Form classes are also more flexible to use than the <TT>DO FORM</TT>
+syntax. I like being able to instantiate a form object with <TT>CreateObject()</TT>
+and then play with it a little before issuing a call to the <TT>Show()</TT>
+method. Finally, the <TT>CreateObject()</TT> syntax does provide
+uniformity among the components of an application. I like the
+simple elegance of having a similar syntax for all my objects
+as opposed to using <TT>CreateObject()</TT> most of the time and
+<TT>DO FORM</TT> some of the time.
+<P>
+Having said this, you can handle the situation in any way you
+feel comfortable. To a degree, it does come down to programmer
+preference.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>Build Forms as Classes or Use the Form Designer?</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Using the Form Designer versus forms as classes is a question that might never have an answer. Both methods work fine in many applications. The key point about the whole issue is that you should use one methodology so that your applications are consistent in how they work.<BR>
+Mixing and matching different methods will only cause your applications to be more difficult to maintain over time. Neither method really has any particular advantages over the other. You can use subclasses as complete forms if the forms are defined as classes, however, you can use form classes to create forms with the Form Designer also, so the form class issue has no influence over whether or not you can use subclassing as a specialization technique.<BR>
+The Form Designer can be used to create <TT>Formsets</TT>, which contain more than one form. But you can programmatically control which forms in the set are visible, so the issue of multiple forms being defined in a single meta file is moot as well
+<BR>
+Again, the key point here is consistency: If you want to build forms as classes, do it that way all the time. If you want to use the Form Designer, use it all the time.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Protecting Members on Forms&nbsp;&nbsp;</B>In earlier chapters
+you learned how to protect members from the outside world. If
+you recall, the rule of thumb for protecting members is to protect
+them if the outside world has no use for them.
+<P>
+With forms, the rules are changed on this issue. It is conceivable
+that you might want to protect something (a method, property,
+or even an object on the form) from the outside world but you
+want it accessible to objects within the form. Unfortunately,
+if you protect something within the form, it is private throughout
+the form. In other words, if it is private, it is considered private
+to everything.
+<P>
+In addition, beware of protected members on objects themselves.
+If you protect a member on an object, it can even be protected
+from itself. Sound strange? Then get a load of this. Remember
+the <TT>NoNotifyTextBox</TT> text box created earlier in this
+chapter? It had a protected member called <TT>cNotifySetting</TT>,
+which held the setting of <TT>SET NOTIFY</TT> when the control
+got focus. Now, suppose I dropped it on a form, as shown in Listing
+15.8.<P>
+
+<HR>
+<B>Listing 15.8&nbsp;&nbsp;</B><TT><B>15CODE08</B></TT><B>-A
+Form with the </B><TT><B>NoNotifyTextBox
+</B></TT><B>Class on It as an Object<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+PUBLIC oform1
+
+
+oform1=CREATEOBJECT(&quot;form1&quot;)
+oform1.Show()
+RETURN
+
+**************************************************
+*-- Form:         form1 (d:\data\docs\books\vfu\code\protect.scx)
+*-- ParentClass:  form
+*-- BaseClass:    form
+*
+DEFINE CLASS form1 AS form
+
+    Top = 0
+    Left = 0
+    Height = 57
+    Width = 301
+    DoCreate = .T.
+    Caption = &quot;Form1&quot;
+    Name = &quot;Form1&quot;
+
+    ADD OBJECT nonotifytextbox1 AS nonotifytextbox WITH ;
+        Left = 84, ;
+        Top = 12, ;
+        Name = &quot;Nonotifytextbox1&quot;
+
+    PROCEDURE nonotifytextbox1.MouseMove
+        LPARAMETERS nButton, nShift, nXCoord, nYCoord
+        WAIT WINDOW this.cNotifySetting
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: form1
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This is an <TT>.SCX</TT>-type form with a <TT>NoNotifyTextBox</TT>
+text box in it. Notice the <TT>MouseMove</TT> event for <TT>NoNotifyTextBox</TT>.
+The code has been entered into the property at the form level
+(that is, the control was not subclassed in a VCX file and the
+code added in the subclass).
+<P>
+If you run this form and move the mouse over the <TT>TextBox</TT>,
+you will get an error stating that <TT>cNotifySetting</TT> does
+not exist (see Figure 15.13). This is because the code was not
+put in the class itself or in a subclass-it was entered at the
+form.
+<P>
+<IMG SRC="f15-13.gif"><B>Figure 15.13: </B><I>A form with an error message</I>.</A>
+<P>
+That's the way it works. Keep an eye out for this one.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The property <TT>cNotifySetting</TT> cannot be seen by the code written in the <TT>NoNotifyTextBox</TT> instance on the form because the code added in the Form Designer is added to the form and not the text box. Look at the code above and you will notice that the method name for the new code is part of the form's class definition. This means that the reference to the <TT>cNoNofitySetting</TT> property is being made by the form.  Because the form is not the text box, the protected property of the text box is hidden from the form.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="Toolbars">
+Toolbars</A></H3>
+<P>
+The final type of visual class covered in this chapter is the
+<TT>Toolbar</TT>. You can think of toolbars as a special type
+of form. You create them by dropping objects on them (usually
+<TT>CommandButton</TT>s but other objects can be added as well).
+The toolbar always stays on top, docks itself automatically (by
+default) when dragged to the top, bottom, right, or left borders
+of the FoxPro desktop, and resizes just like any other toolbar
+in Visual FoxPro. I will illustrate this with a simple navigation
+toolbar.<P>
+
+<HR>
+<B>Listing 15.9&nbsp;&nbsp;</B><TT><B>15CODE09</B></TT><B>-A
+Navigation Toolbar<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Simplenavbar
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        simplenavbar
+*-- ParentClass:  toolbar
+*-- BaseClass:    toolbar
+*
+DEFINE CLASS simplenavbar AS toolbar
+
+    Caption = &quot;Navigator Buttons&quot;
+    Height = 31
+    Left = 0
+    Top = 0
+    Width = 177
+    Name = &quot;simplenavbar&quot;
+
+    ADD OBJECT cmdnext AS CommandButton WITH ;
+        Top = 4, ;
+        Left = 6, ;
+        Height = 25, ;
+        Width = 33, ;
+        FontBold = .F., ;
+        FontSize = 8, ;
+        Caption = &quot;Next&quot;, ;
+        Default = .F., ;
+        ToolTipText = &quot;Next record&quot;, ;
+        Name = &quot;cmdNext&quot;
+
+    ADD OBJECT cmdprev AS CommandButton WITH ;
+        Top = 4, ;
+        Left = 38, ;
+        Height = 25, ;
+        Width = 33, ;
+        FontBold = .F., ;
+        FontSize = 8, ;
+        Caption = &quot;Prev&quot;, ;
+        Default = .F., ;
+        ToolTipText = &quot;Previous record&quot;, ;
+        Name = &quot;cmdPrev&quot;
+
+    ADD OBJECT cmdtop AS CommandButton WITH ;
+        Top = 4, ;
+        Left = 70, ;
+        Height = 25, ;
+        Width = 33, ;
+        FontBold = .F., ;
+        FontSize = 8, ;
+        Caption = &quot;Top&quot;, ;
+        Default = .F., ;
+        ToolTipText = &quot;First record&quot;, ;
+        Name = &quot;cmdTop&quot;
+
+    ADD OBJECT cmdbottom AS CommandButton WITH ;
+        Top = 4, ;
+        Left = 102, ;
+        Height = 25, ;
+        Width = 33, ;
+        FontBold = .F., ;
+        FontSize = 8, ;
+        Caption = &quot;Bott&quot;, ;
+        Default = .F., ;
+        ToolTipText = &quot;Last record&quot;, ;
+        Name = &quot;cmdBottom&quot;
+
+    ADD OBJECT separator1 AS separator WITH ;
+        Top = 4, ;
+        Left = 140, ;
+        Height = 0, ;
+        Width = 0, ;
+        Name = &quot;Separator1&quot;
+
+    ADD OBJECT cmdok AS okbuttonwithtooltip WITH ;
+        Top = 4, ;
+        Left = 140, ;
+        Height = 25, ;
+        Width = 33, ;
+        FontBold = .F., ;
+        FontSize = 8, ;
+        Default = .F., ;
+        Name = &quot;cmdOK&quot;
+
+    PROCEDURE cmdnext.Click
+        IF TYPE(&quot;_screen.activeform&quot;) # 'O' ;
+           OR isNull(_screen.activeform)
+
+            WAIT WINDOW &quot;No form active!&quot;
+            RETURN
+        ENDIF
+
+        SET DATASESSION TO _screen.activeform.datasessionid
+
+        SKIP 1
+        IF EOF()
+            =Messagebox(&quot;At end of file!&quot;, 16)
+            GO BOTTOM
+        ENDIF
+
+        _screen.activeform.refresh()
+    ENDPROC
+
+    PROCEDURE cmdprev.Click
+        IF TYPE(&quot;_screen.activeform&quot;) # 'O' ;
+           OR isNull(_screen.activeform)
+
+            WAIT WINDOW &quot;No form active!&quot;
+            RETURN
+        ENDIF
+
+        SET DATASESSION TO _screen.activeform.datasessionid
+
+        SKIP -1
+        IF BOF()
+            =Messagebox(&quot;At beginning of file!&quot;, 16)
+            GO TOP
+        ENDIF
+
+        _screen.activeform.refresh()
+    ENDPROC
+
+    PROCEDURE cmdtop.Click
+        IF TYPE(&quot;_screen.activeform&quot;) # 'O' ;
+           OR isNull(_screen.activeform)
+
+            WAIT WINDOW &quot;No form active!&quot;
+            RETURN
+        ENDIF
+
+        SET DATASESSION TO _screen.activeform.datasessionid
+
+        GO TOP
+        _screen.activeform.refresh()
+    ENDPROC
+
+    PROCEDURE cmdbottom.Click
+        IF TYPE(&quot;_screen.activeform&quot;) # 'O' ;
+           OR isNull(_screen.activeform)
+
+            WAIT WINDOW &quot;No form active!&quot;
+            RETURN
+        ENDIF
+
+        SET DATASESSION TO _screen.activeform.datasessionid
+
+        GO BOTTOM
+        _screen.activeform.refresh()
+    ENDPROC
+
+    PROCEDURE cmdok.Click
+        IF TYPE(&quot;_screen.activeform&quot;) # 'O' ;
+           OR isNull(_screen.activeform)
+
+            WAIT WINDOW &quot;No form active!&quot;
+            RETURN
+        ENDIF
+
+        SET DATASESSION TO _screen.activeform.datasessionid
+
+        _screen.activeform.release()
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: simplenavbar
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice the differences between this version of the <TT>Navigator</TT>
+buttons and the container version previously shown. In the container-based
+version, each button had the code to move within the current table.
+The code was simple and straightforward. The code for the <TT>Toolbar</TT>
+version is a bit more obtuse. Instead of working directly with
+the form, I use <TT>_screen.activeform</TT>, and there is a <TT>SET
+DATASESSION</TT> command thrown in. The OK button does not issue
+<TT>RELEASE thisform</TT> but rather calls the <TT>Release</TT>
+method. Why the additional work?
+<P>
+The container version is designed to work with a single form;
+each form that uses the container version has an instance of the
+container on it. The toolbar, on the other hand, is designed to
+work generically with many forms.
+<P>
+Because the <TT>Toolbar</TT> exists independently of any individual
+form, you have to deal with the issue of data sessions. A form
+might work in its own data session or in the default one. There
+is no way at design time to know the one with which you will be
+dealing (unless you set rules one way or the other).
+<P>
+The solution to this issue is to specifically set the current
+data session with the <TT>SET DATASESSION</TT> command to the
+current form's data session (which is stored in the form's <TT>DataSessionId</TT>
+property). One way to get to the current form is to use <TT>_screen.activeform</TT>.
+The problem is that <TT>_screen.activeform</TT> might be <TT>null</TT>
+even if a form is visible-hence the check on <TT>_screen.activeform</TT>
+in the <TT>CommandButton</TT>'s <TT>Click</TT> methods.
+<P>
+Furthermore, notice how the form is released. The <TT>Release</TT>
+method (which is a built-in method in the <TT>Form</TT> base class)
+takes care of this action quite nicely. The reason for not using
+something like <TT>RELEASE thisform</TT> is because the <TT>CommandButton</TT>
+is not sitting on a form at all; in addition, it has no clue as
+to the name of the instance variable to release. _<TT>screen.activeform.Release</TT>
+handles these issues for you.
+<P>
+One final note: When objects are added to the toolbar they are
+placed flush against each other. Unlike other classes that support
+containership, you cannot dictate the placement of the objects
+in the toolbar-the class handles that for you. All you can dictate
+is the order in which they are placed.
+<P>
+In order to achieve a separation between objects, you need to
+add a separator control. The control doesn't really do much of
+anything, it just adds a space between controls on the toolbar.
+Figure 15.14 shows an example of a data form with the toolbar.
+In this case, the data form is the simple <TT>Customer</TT> form
+with the <TT>SimpleNavBar</TT> class; both are instantiated separately.
+<P>
+<IMG SRC="f15-14.gif"><B>Figure 15.14: </B><I>A form with SimpleNavBar</I>.</A>
+<P>
+<B>Internal Characteristics of a Toolbar&nbsp;&nbsp;</B>Toolbars
+to do not behave like other forms. They have some specific characteristics,
+including the following:
+<UL>
+<LI>Toolbars are always on top.
+<LI>Toolbars automatically dock when they
+are moved to any of the main Visual FoxPro window borders.
+<LI>When toolbars aren't docked, they have
+a half-height title bar.
+<LI>When the size of a toolbar is changed,
+the controls are arranged to fit.
+<LI>You can move a toolbar by clicking and
+dragging in any area of the toolbar that isn't a control.
+<LI>Many controls placed on the toolbar do
+not receive the focus when they're chosen.
+<LI>Access keys in controls placed on a toolbar
+are disabled.
+<LI>Toolbars never get focus.
+<LI>Timer controls do not work on a toolbar.
+</UL>
+<P>
+In addition to these built-in behaviors, there are some additional
+characteristics that good toolbars should have. Here's a list
+of them:
+<UL>
+<LI>All objects on a toolbar should have tooltips.
+<LI>Pictures are very effective on a toolbar.
+<LI>Buttons should all be the same size.
+<LI>Avoid large objects (such as a list box)
+on docked toolbars.
+</UL>
+<P>
+<B>Large Objects on a Toolbar&nbsp;&nbsp;</B>If you need to put
+a lot of data on a toolbar, it is a good idea not to force a large
+object to exist on the toolbar when it is docked. For the most
+part, large objects (such as a list box) can be mimicked with
+other objects that take up less space (a drop-down list object,
+for example). The idea here is to create a toolbar with both the
+large versions and small versions of the objects on it and to
+show or hide the objects based on whether the toolbar is docked.
+<P>
+Consider the following scenario. You have a toolbar that displays
+a list of customers in the table. (The specific functionality
+isn't important, only that you need to have a toolbar with a list.)
+ You prefer to use the list box because it is larger, but you
+cannot afford the space on the desktop when the toolbar is docked.
+<P>
+Listing 15.10 demonstrates how you could handle the situation.
+<P>
+
+<HR>
+<B>Listing 15.10&nbsp;&nbsp;</B><TT><B>15CODE10</B></TT><B>-A
+Morphing Toolbar<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Morphbar
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        morphbar
+*-- ParentClass:  toolbar
+*-- BaseClass:    toolbar
+*
+DEFINE CLASS morphbar AS toolbar
+
+    Caption = &quot;Toolbar1&quot;
+    DataSession = 1
+    Height = 121
+    Left = 0
+    Top = 0
+    Width = 332
+    Name = &quot;morphbar&quot;
+
+    ADD OBJECT list1 AS listbox WITH ;
+        RowSourceType = 6, ;
+        RowSource = &quot;customer.company&quot;, ;
+        Height = 115, ;
+        Left = 6, ;
+        Top = 4, ;
+        Width = 170, ;
+        Name = &quot;List1&quot;
+
+    ADD OBJECT combo1 AS combobox WITH ;
+        RowSourceType = 6, ;
+        RowSource = &quot;customer.company&quot;, ;
+        Height = 21, ;
+        Left = 175, ;
+        Style = 2, ;
+        Top = 4, ;
+        Width = 153, ;
+        Name = &quot;Combo1&quot;
+
+    PROCEDURE AfterDock
+        IF this.DockPosition = 1 or this.DockPosition = 2
+            *-- Note, you cannot use the Dock() method to undock
+            *-- a toolbar... you have to use the Move() method.
+            *-- Using the Dock() method with the -1 parameter results
+            *-- in a totally bogus error message.
+
+            this.move(1,1)
+        ENDIF
+    ENDPROC
+
+    PROCEDURE Init
+        IF this.docked
+            this.list1.visible = .F.
+            this.combo1.visible = .T.
+        ELSE
+            this.list1.visible = .T.
+            this.combo1.visible = .F.
+        ENDIF
+    ENDPROC
+
+    PROCEDURE BeforeDock
+        *-- nLocation shows where the toolbar will be after
+        *-- is complete. -1 means it will be undocked. 0,1,2,3
+        *-- mean top, left, right and bottom respectively.
+
+        LPARAMETERS nLocation
+
+        DO CASE
+            CASE nLocation = -1  &amp;&amp; Not DOcked
+                this.List1.Visible = .T.
+                this.list1.Enabled = .T.
+                this.Combo1.visible = .F.
+
+            CASE nLocation = 0 OR nLocation = 3  &amp;&amp; Top or bottom
+                this.List1.Visible = .F.
+                this.Combo1.visible = .T.
+                this.Combo1.Enabled = .T.
+        ENDCASE
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: morphbar
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice that there are two objects on this toolbar. The list box
+is kept visible whenever the toolbar is not docked. The combo
+box is made visible whenever the toolbar is not docked. The toolbar
+automatically adjusts its size based on the visible controls on
+it. Cool stuff, no?
+<P>
+Neither a combo box nor a list box work well when docked to the
+side because they just take up too much real estate on the desktop.
+The solution taken in this example is not to let the user dock
+the toolbar to the left or right sides.
+<P>
+The <TT>BeforeDock</TT> event fires when an attempt is made to
+dock or undock the toolbar. The <TT>nLocation</TT> parameter tells
+the event where the toolbar is going. Based on where the toolbar
+is being docked, the visible properties of the lists are adjusted
+appropriately.
+<P>
+A few notes are in order here about the data behind the lists.
+In order to use this class, the <TT>TESTDATA</TT> database, which
+is located in the Sample files <TT>\DATA</TT> directory (<TT>_SAMPLES</TT>
+will give you the path to the Visual FoxPro sample files), has
+to be open and the <TT>Customer</TT> table has to be in use. Here
+are the commands to do this:
+<BLOCKQUOTE>
+<PRE>
+OPEN DATABASE _SAMPLES+&quot; \data\testdata.dbc&quot;
+USE customer
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can't really open the data in this class. Unlike its cousin,
+the <TT>Form</TT> class, the <TT>Toolbar</TT> class does not have
+a <TT>LOAD</TT> method. The <TT>RecordSource</TT> properties of
+both lists look to the <TT>Customer</TT> file. As a result, when
+Visual FoxPro tries to instantiate the class, it looks at the
+properties of the contained objects and validates them. If the
+<TT>Customer</TT> table is not open, the object does not instantiate.
+Even opening the table in the <TT>Init</TT> method of the lists
+won't work.
+<P>
+<B>Coordinating Forms with Toolbars&nbsp;&nbsp;</B>Another issue
+to consider is that of coordinating forms with toolbars. You have
+already learned how to coordinate data sessions with a form; however,
+there are many other issues to consider. Here are just a few:
+<UL>
+<LI>Dealing with forms that do not &quot;do&quot;
+data
+<LI>Releasing the toolbar when the last data
+form is released
+<LI>Making sure the toolbar is up when a form
+that needs it is instantiated
+</UL>
+<P>
+Coordination is merely a matter of sending the appropriate messages
+back and forth. By placing a custom property on data forms, you
+can determine whether a form is a data form by the existence of
+the custom property. When a data form is instantiated, it looks
+for a global variable (<TT>goNavToolBar</TT>). If the variable
+exists, the toolbar is assumed to exist (you make the toolbar
+nonclosable). Each new instance of a data form also sends a message
+to <TT>goNavToolBar</TT> telling it that there is a new data form
+in town (in the following example the toolbar maintains a count
+variable and the new instances increase it by one). When an instantiated
+form is released, it tells the toolbar that there is one less
+data form. If this is the last data form visible on the desktop,
+the toolbar releases itself.  Listing 15.11 shows the code for
+the example, Figure 15.15 shows you what it looks like.
+<P>
+<IMG SRC="f15-15.gif"><B>Figure 15.15: </B><I>The Customer data form with NavigationToolBar</I>.</A>
+<P>
+
+<HR>
+<B>Listing 15.11&nbsp;&nbsp;</B><TT><B>15CODE11</B></TT><B>-A
+Navigator Toolbar That Is Aware of the Forms That Are Visible
+<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Navigatortoolbar
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        navigatortoolbar
+*-- ParentClass:  simplenavbar
+*-- BaseClass:    toolbar
+*
+DEFINE CLASS navigatortoolbar AS simplenavbar
+
+    Height = 31
+    Left = 0
+    Top = 0
+    Width = 171
+    *-- The number of forms active that use this toolbar.
+    *-- When this property reaches 0, the toolbar will release.
+    PROTECTED nnumforms
+    nnumforms = 0
+    Name = &quot;navigatortoolbar&quot;
+    cmdNext.Top = 4
+    cmdNext.Left = 6
+    cmdNext.Default = .F.
+    cmdNext.Name = &quot;cmdNext&quot;
+    cmdPrev.Top = 4
+    cmdPrev.Left = 38
+    cmdPrev.Default = .F.
+    cmdPrev.Name = &quot;cmdPrev&quot;
+    cmdTop.Top = 4
+    cmdTop.Left = 70
+    cmdTop.Default = .F.
+    cmdTop.Name = &quot;cmdTop&quot;
+    cmdBottom.Top = 4
+    cmdBottom.Left = 102
+    cmdBottom.Default = .F.
+    cmdBottom.Name = &quot;cmdBottom&quot;
+    cmdOK.Top = 4
+    cmdOK.Left = 134
+    cmdOK.Default = .F.
+    cmdOK.Name = &quot;cmdOK&quot;
+
+    *-- Add a form to the toolbar form count.
+    PROCEDURE addform
+        *-- This method should be called by form.init()
+
+        this.nNumForms = this.nNumForms + 1
+    ENDPROC
+
+    *-- Remove a form from the toolbar form count.
+    PROCEDURE removeform
+        *-- This method should be called by form.destroy()
+
+        this.nNumForms = this.nNumForms - 1
+
+        IF this.nNumForms = 0
+            this.release()
+        ENDIF
+    ENDPROC
+
+    *-- Release the toolbar. Mimics a form's RELEASE method.
+    PROCEDURE release
+        RELEASE thisform
+    ENDPROC
+
+    PROCEDURE Refresh
+        IF TYPE(&quot;_screen.activeform.lIsDataForm&quot;) = 'L'
+            this.cmdNext.Enabled = .T.
+            this.cmdPrev.Enabled = .T.
+            this.cmdTop.Enabled = .T.
+            this.cmdBottom.Enabled = .T.
+        ELSE
+            this.cmdNext.Enabled = .F.
+            this.cmdPrev.Enabled = .F.
+            this.cmdTop.Enabled = .F.
+            this.cmdBottom.Enabled = .F.
+        ENDIF
+    ENDPROC
+
+    PROCEDURE Destroy
+        this.visible = .f.
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: navigatortoolbar
+**************************************************
+
+*  Class.............: Custformlinkedtotoolbar
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        custformlinkedtotoolbar
+*-- ParentClass:  customerdataform
+*-- BaseClass:    form
+*
+DEFINE CLASS custformlinkedtotoolbar AS customerdataform
+
+    DoCreate = .T.
+    Name = &quot;custformlinkedtotoolbar&quot;
+    txtCust_Id.Name = &quot;txtCust_Id&quot;
+    txtCompany.Name = &quot;txtCompany&quot;
+    txtContact.Name = &quot;txtContact&quot;
+    txtTitle.Name = &quot;txtTitle&quot;
+    Label1.Name = &quot;Label1&quot;
+    Label2.Name = &quot;Label2&quot;
+    Label3.Name = &quot;Label3&quot;
+    Label4.Name = &quot;Label4&quot;
+    lisdataform = .F.
+
+    PROCEDURE Init
+        IF TYPE (&quot;goNavToolBar&quot;) # 'O' OR isnull(goNavToolBar)
+            RELEASE goNavToolBar
+            PUBLIC goNavToolBar
+            goNavToolBar = CreateObject(&quot;NavigatorToolBar&quot;)
+            goNavToolBar.Dock(0,1,0)
+            goNavToolBar.Show()
+        ENDIF
+
+        goNavToolBar.AddForm()
+        goNavToolBar.Refresh()
+    ENDPROC
+
+    PROCEDURE Activate
+        goNavToolBar.Refresh()
+    ENDPROC
+
+    PROCEDURE Deactivate
+        goNavToolBar.Refresh()
+    ENDPROC
+
+    PROCEDURE Destroy
+        goNavToolBar.RemoveForm()
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: custformlinkedtotoolbar
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<H3><A NAME="AFinalWordonVisualClasses">
+A Final Word on Visual Classes</A></H3>
+<P>
+When you create classes in Visual FoxPro, it is not uncommon to
+think only in terms of visual classes. Visual classes certainly
+are fun to create-working with GUI elements has an element of
+art to it. Creating a form that is both functional and pleasing
+to the eye is something of an achievement.
+<P>
+However, OOP does not stop with visual classes. Unlike some languages
+that only support GUI classes, Visual FoxPro supports nonvisual
+classes. What you can do with nonvisual classes is no less remarkable.
+<H2><A NAME="NonvisualClasses"><FONT SIZE=5 COLOR=#FF0000>
+Nonvisual Classes</FONT></A></H2>
+<P>
+A <I>nonvisual class</I> is any class that is not designed primarily
+to be displayed. For example, <TT>CommandButton</TT> is a class
+that is specifically designed to display on a form. The <TT>Timer</TT>
+class, on the other hand, does not show on a form at all.
+<P>
+Nonvisual classes in Visual FoxPro are typically descendants of
+the <TT>Custom</TT> or <TT>Timer</TT> class and often have no
+display component attached to them at all. However, a nonvisual
+class can have a visual component attached to it. And to make
+matters more confusing, classes typically thought of as <I>visual</I>
+classes can be the basis for nonvisual classes, too.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Because nonvisual classes have no display component, that is, they are invisible, you can use any base class in Visual FoxPro as the basis for a nonvisual class. I often use the <TT>Label</TT> base class for the basis of my nonvisual classes for two reasons. One, it takes up less memory than most of the other classes. Two, I can give it a caption that is seen clearly in the form or Class Designer and still set its visible property to <TT>.F.</TT> so that the user never sees it.
+<BR>
+I can add properties and methods to the <TT>Label</TT> class as needed for it to perform the functionality it is required to.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="WhyCreateNonvisualClasses">
+Why Create Nonvisual Classes?</A></H3>
+<P>
+There are many reasons why you would create a nonvisual class.
+In fact, there are as many reasons to create nonvisual classes
+as there are to create visual ones. Here are the main reasons:
+<UL>
+<LI>Code maintenance
+<LI>Code reuse
+<LI>Functionality enhancement
+</UL>
+<P>
+What's the difference between nonvisual and visual classes? The
+basic difference lies in the type of classes you create. Visual
+classes typically center around the user interface, whereas nonvisual
+classes play key roles in management functions. Nonvisual classes
+also incorporate the type of class that is most often neglected
+when people discuss object orientation in systems development:
+business classes.
+<H3><A NAME="TypesofNonvisualClasses">
+Types of Nonvisual Classes</A></H3>
+<P>
+Here are some of the more common types of nonvisual classes that
+you will typically create and use in your applications.
+<P>
+<B>Wrapper Classes&nbsp;&nbsp;</B>When you create classes written
+for management roles, you want to consider the many different
+aspects of management for which you can create a class. One aspect
+is to manage the interface between one program and another. A
+good example of this would be the management of the interface
+between Visual FoxPro code and DLLs, FLLs, or other function libraries.
+These classes are created for several reasons:
+<UL>
+<LI>To make it easier to use these sources
+of functions
+<LI>To enhance their capabilities
+<LI>To encapsulate the definition, loading,
+and error trapping required when working with the function library
+</UL>
+<P>
+This process is known as <I>wrapping a class</I> around some existing
+functionality. Appropriately, these classes are called <I>wrapper
+classes</I>.
+<P>
+<B>Manager Classes&nbsp;&nbsp;</B>Another typical nonvisual class
+is a class that manages other classes. A good example is a class
+that handles multiple instances of forms. Such a class enables
+you to create functions such as Tile All Windows. These classes
+are known as <I>manager classes</I>.
+<P>
+<B>Business Classes&nbsp;&nbsp;</B>A <I>business class</I> is
+a class designed to model an entity in a business environment.
+A good example is the <TT>Customer</TT> class. These classes are
+a combination of information and actions designed to do what a
+business entity needs to do within the context of the problem
+domain (that is, the environment being modeled and automated).
+<P>
+The responsibilities of a business class are determined after
+careful analysis and design. Business class responsibilities can
+be very abstract in nature and require careful modeling before
+implementation. Some common responsibilities might be the following:
+<UL>
+<LI>Can retrieve its information from the
+database
+<LI>Can print itself
+<LI>Can save itself to the database
+</UL>
+<P>
+Business classes are a little more difficult to classify as visual
+or nonvisual. Business classes can, and often do, have visual
+components. A business class can be based on a visual class (a
+<TT>Form</TT> class, for example) with the appropriate properties
+and methods added to the form. In which category does a business
+class belong? It depends on how the object is created. In reality,
+it's all semantics anyway; you can call it what you want.
+<H3><A NAME="WrapperClasses">
+Wrapper Classes</A></H3>
+<P>
+The purpose of a wrapper class is to create a class that manages
+and perhaps even enhances the functionality of some other code.
+Any code can be wrapped into a class. If you have an old procedure
+library written in earlier versions of FoxPro, you could wrap
+a class around it if you like. The tough part is deciding when
+it is appropriate to wrap a class around something.
+<P>
+The best reason to wrap a class around something is to make it
+easier and better to use. A perfect example of a candidate for
+a wrapper class is a DLL or FLL. These function libraries can
+be obscure, their parameters can be difficult to determine, and
+their error-handling requirements can be rather extensive. For
+example, if you are using an FLL library (for example, <TT>FOXTOOLS</TT>),
+what do you do if someone else's code unloads it accidentally
+with <TT>SET LIBRARY TO</TT>? Can you rely on the fact that the
+library is there all the time? Take the example of calling some
+of the Windows API functions (the functions to write and read
+from INI files, for example). These can be difficult to learn
+to use.
+<P>
+When a class is wrapped around some other piece of code, the class
+developer has the ability to control which portions of the DLL
+or FLL are available to the outside world, how they are called,
+and even what values are returned.
+<P>
+Wrapper classes carry a myriad of benefits with them. First of
+all, if a DLL or FLL is used with a wrapper class, the developers
+who use that class do not have to know anything about the DLL
+or FLL that serves as the basis for the class. They also do not
+have to be concerned with issues of loading the DLL or FLL or
+registering its functions. In effect, the result is a much reduced
+learning curve and coding time for all concerned.
+<P>
+Listing 15.12 shows an example of a wrapper class. This class
+is a wrapper around a library of functions called <TT>FOXTOOLS.FLL</TT>
+that ships with Visual FoxPro.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Although in Visual FoxPro 6 most of the functions contained in <TT>FOXTOOLS.FLL</TT> are now part of the VFP language, this example of a wrapper class is still a good exercise for seeing how wrapper classes are built.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<HR>
+<P>
+<B>Listing 15.12&nbsp;&nbsp;</B><TT><B>15CODE12</B></TT><B>-A
+Wrapper Class for </B><TT><B>FOXTOOLS.FLL
+<BR>
+</B></TT>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Foxtools
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        foxtools
+*-- ParentClass:  custom
+*-- BaseClass:    custom
+*
+*
+DEFINE CLASS foxtools AS custom
+
+    Name = &quot;foxtools&quot;
+    PROTECTED lloaded
+
+    PROCEDURE loadlib
+        IF !&quot;FOXTOOLS&quot; $ SET(&quot;library&quot;)
+            SET LIBRARY TO (SYS(2004)+&quot;FOXTOOLS&quot;)
+            this.lLoaded = .T.
+        ENDIF
+    ENDPROC
+
+    PROCEDURE drivetype
+        LPARAMETERS tcDrive
+        LOCAL lnRetVal
+        lnRetVal = (drivetype(tcDrive))
+        RETURN lnRetVal
+    ENDPROC
+
+    PROCEDURE justfname
+        LPARAMETERS tcString
+        LOCAL lcRetVal
+        lcRetVal = (justfname(tcString))
+        RETURN lcRetVal
+    ENDPROC
+
+    PROCEDURE juststem
+        LPARAMETERS tcString
+        LOCAL lcRetVal
+        lcRetVal = (juststem(tcString))
+        RETURN lcRetVal
+    ENDPROC
+
+    PROCEDURE justpath
+        LPARAMETERS tcString
+        LOCAL lcRetVal
+        lcRetVal = (this.addbs(justpath(tcString)))
+        RETURN lcRetVal
+    ENDPROC
+
+    PROCEDURE justdrive
+        LPARAMETERS tcString
+        LOCAL lcRetVal
+        lcRetVal = (this.addbs(justpath(tcString)))
+        RETURN lcRetVal
+    ENDPROC
+
+    PROCEDURE justpathnodrive
+        LPARAMETERS tcString
+        LOCAL    lcRetval, ;
+                lnAtPos
+
+        lcRetVal = this.justpath(tcString)
+        lnAtPos  = AT(':', lcRetVal)
+        IF lnAtPos &gt; 0
+            IF lnAtPos &lt; LEN(lcRetVal)
+                lcRetVal = this.addbs(SUBST(lcRetVal,lnAtPos+1))
+            ELSE
+                lcRetVal = &quot;&quot;
+            ENDIF
+        ENDIF
+
+        RETURN (lcRetVal)
+    ENDPROC
+
+    PROCEDURE addbs
+        LPARAMETERS tcString
+        LOCAL lcRetVal
+        lcRetVal = (addbs(tcString))
+        RETURN lcRetVal
+    ENDPROC
+
+    PROCEDURE isdir
+        LPARAMETERS tcString
+        LOCAL llRetVal, lcTestString, laFiles[1]
+
+        lcTestString = ALLTRIM(this.addbs(tcString)) - &quot;*.*&quot;
+        IF ADIR(laFiles, lcTestString, &quot;DSH&quot;) &gt; 0
+            llRetVal = .t.
+        ELSE
+            llRetVal = .F.
+        ENDIF
+
+        RETURN (llRetVal)
+    ENDPROC
+
+    PROCEDURE cleandir
+        LPARAMETERS tcString
+        RETURN(UPPER(sys(2027, tcString)))
+    ENDPROC
+
+    PROCEDURE cut
+        =_edcut(_wontop())
+    ENDPROC
+
+    PROCEDURE copy
+        =_edcopy(_wontop())
+    ENDPROC
+
+    PROCEDURE paste
+        =_edpaste(_wontop())
+    ENDPROC
+
+    PROCEDURE Error
+        LPARAMETERS tnError, tcMethod, tnLine
+        LOCAL lcMessage
+
+        tcMethod = UPPER(tcMethod)
+
+        DO CASE
+            CASE tnError = 1  &amp;&amp; File not found -- Cause by the library not loaded
+                this.loadlib()
+                RETRY
+
+            OTHERWISE
+                ?? CHR(7)
+                lcMessage = &quot;An error has occurred:&quot; + CHR(13) + ;
+                            &quot;Error Number: &quot; + PADL(tnError,5) + CHR(13) + ;
+                            &quot;      Method: &quot; + tcMethod + CHR(13) + ;
+                            &quot; Line Number: &quot; + PADL(tnLine,5)
+
+                =MESSAGEBOX(lcMessage, 48, &quot;Foxtools Error&quot;)
+        ENDCASE
+    ENDPROC
+
+    PROCEDURE Destroy
+        IF this.lLoaded
+            RELEASE LIBRARY (SYS(2004)+&quot;foxtools.fll&quot;)
+        ENDIF
+    ENDPROC
+
+    PROCEDURE Init
+        this.lLoaded = .F.
+        this.loadlib()
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: foxtools
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Before you go into the theory behind the class, learn all the
+methods and properties that make up this wrapper class. Table
+15.1 presents the methods and properties for <TT>Foxtools</TT>.
+<BR>
+<P>
+<CENTER><B>Table 15.1&nbsp;&nbsp;The Methods and Properties for
+Foxtools</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=115><CENTER><B>Property/Method</B></CENTER></TD>
+<TD WIDTH=461><CENTER><B>Description</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>lLoaded</TT></TD><TD WIDTH=461>The <TT>lLoaded</TT> property is a protected property that keeps track of whether the <TT>FOXTOOLS</TT> library was loaded by this class or from the outside world. If <TT>Foxtools</TT> loaded the library, it releases the library when the instance is cleared.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Addbs([tcPath])</TT></TD><TD WIDTH=461>This function is the equivalent of the <TT>AddBs()</TT> function in <TT>FOXTOOLS</TT>. It accepts a path string as a parameter and adds a backslash to it if there isn't one already.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Cleandir([tcPath])</TT></TD><TD WIDTH=461>This function really doesn't use <TT>FOXTOOLS.FLL</TT> at all but has related functionality. It accepts a filename with a path attached and cleans it up with <TT>SYS(2027)</TT>. Cleaning up means interpreting back steps in path strings and redrawing them. Here is an example:
+<P>
+<TT>oFtools.CleanDir(&quot;D:\APPS\FOX\VFP\..\&quot;) &amp;&amp; Returns &quot;D:\APPS\FOX\&quot;</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>copy()</TT></TD><TD WIDTH=461>This method copies selected text to the Clipboard using the <TT>_edCopy()</TT> function.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Cut()</TT></TD><TD WIDTH=461>This method copies selected text to the Clipboard and then deletes it using the <TT>_edCut()</TT> function.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Destroy(</TT>)</TD><TD WIDTH=461>This method is called when the object is released. The method releases <TT>FOXTOOLS.FLL</TT> if the object loaded it.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>&nbsp;</TT></TD><TD WIDTH=461><TT>drivetype([tcDriveLetter]) </TT>This method calls the <TT>DriveType()</TT> function to get the type of the drive specified.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Error()</TT></TD><TD WIDTH=461>This method is called when a program error occurs in the class. It takes precedence over <TT>ON ERROR</TT>. If the error is an error number <TT>1</TT> (that is, file not found), the method assumes it occurred because someone unloaded <TT>FOXTOOLS.FLL</TT>, in which case the <TT>Error()</TT> method just loads the library with <TT>LoadLib()</TT> and then retries the command. If the error is something other than a &quot;File not found&quot; error, an error dialog box is presented.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Init()</TT></TD><TD WIDTH=461>This method is called when the object is instantiated. It calls <TT>LoadLib()</TT> to load the library if needed.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Isdir([tcPath])</TT></TD><TD WIDTH=461>This method accepts a path string as a parameter and tests it to make sure it's a directory. This method returns a logical value.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115>&nbsp;</TD><TD WIDTH=461><TT>IsDir()</TT> does not really use <TT>Foxtools</TT>, but it is related to the functionality of the library and is therefore included here.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Justdrive([tcPath])</TT></TD><TD WIDTH=461>This method accepts a filename with path string and returns only the drive designation.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Justfname([tcPath])</TT></TD><TD WIDTH=461>This method is the same as <TT>JustDrive()</TT>, but it returns the filename.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Justpath([tcPath])</TT></TD><TD WIDTH=461>This method is the same as <TT>JustDrive()</TT> except that it returns the path. The drive designator is included in the return value.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Justpathnodrive</TT></TD><TD WIDTH=461>This method is the same as <TT>JustPath</TT> except that the drive designator is removed from the string.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Juststem([tcPath])</TT></TD><TD WIDTH=461>This method is the same as <TT>JustFName()</TT> except that this returns the filename minus the extension.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Loadlib()</TT></TD><TD WIDTH=461>This method loads <TT>Foxtools</TT> if it is not already loaded. <TT>lLoaded</TT> is set to <TT>.T.</TT> if this method loads the library.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=115><TT>Paste()</TT></TD><TD WIDTH=461>This method pastes the contents of the Clipboard at the insertion point.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+This class shows the various purposes of a wrapper:
+<UL>
+<LI><I>Ease of use-encapsulating error trapping&nbsp;&nbsp;</I>When
+a library is loaded within Visual FoxPro, it can be unloaded by
+other objects by issuing one command. The <TT>Foxtools</TT> class
+automatically loads <TT>FOXTOOLS.FLL</TT> (if it is not already
+loaded) when the object is instantiated. If the library is released
+by another module or object and a <TT>FoxTools</TT> function is
+called, Visual FoxPro generates a &quot;File Not Found&quot; error
+message. In this case, the error method calls the <TT>LoadLib()</TT>
+method to reload the library. This gives developers a simple way
+to use <TT>Foxtools</TT> without having to worry about someone
+else's code unloading the library.
+<LI><I>Enhancing existing functionality</I>&nbsp;&nbsp;The <TT>JustPath()</TT>
+function in <TT>Foxtools</TT> calculates what portion of a filename
+string is the path designation and returns that path as a string.
+The string can have a backslash at the end. In order to promote
+consistency, the method that calls <TT>JustPath()</TT> also calls
+the <TT>AddBs()</TT> method to add a backslash at the end of the
+string if one does not already exist there. This is an example
+of enhancing functionality, which gives developers a simple, consistent
+return value.
+<LI><I>Adding functionality&nbsp;&nbsp;</I>The <TT>CleanDir()</TT>
+method is designed to adjust a path string for back steps. For
+example, a path string of <TT>C:\WINAPPS\VFP\SAMPLES\DATA\..\GRAPHICS\</TT>
+adjusts to <TT>C:\WINAPPS\VFP\SAMPLES\GRAPHICS\</TT>. This function
+does not call <TT>Foxtools</TT> at all; however, its functionality
+is related to the other functions included in this class. By adding
+a method for this function, you are giving developers access to
+related functionality in one place without requiring them to load
+multiple classes.
+</UL>
+<P>
+The ability to create and use wrapper classes is a major benefit
+to software development. Because the complexity of working with
+something can be hidden within a class without compromising the
+class's functionality, developers who use the wrapper will immediately
+notice an increase in their productivity because they can have
+the wrapper in their arsenals without the cost of learning its
+intricacies.
+<H3><A NAME="ManagerClasses">
+Manager Classes</A></H3>
+<P>
+A second type of nonvisual class that is often created is a manager
+class. This class typically manages instances of another class.
+A good example of this is the management of multiple instances
+of a form to ensure that subsequent instances are properly placed
+on the screen with an identifiable header (for example, <TT>Document1</TT>,
+<TT>Document2</TT>, and so on).
+<P>
+The example shown in Listing 15.13 deals with this issue, showing
+a manager class that manages a simple form class.<P>
+
+<HR>
+<B>Listing 15.13&nbsp;&nbsp;</B><TT><B>15CODE13</B></TT><B>-A
+Form Manager Class<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Program...........: MANAGER.PRG
+*  Author............: Menachem Bazian, CPA
+*  Created...........: 05/03/95
+*) Description.......: Sample Manager Class with Managed Form Class
+*  Major change list.:
+
+*-- This class is designed to manage a particular form class and make
+*-- sure that when the forms are run they are &quot;tiled&quot; properly.
+
+DEFINE CLASS FormManager AS Custom
+    DECLARE aForms[1]
+    nInstance = 0
+
+    PROCEDURE RunForm
+        *-- This method runs the form. The instance of the form class
+        *-- is created in the aForms[] member array.
+
+        LOCAL lnFormLeft, llnFormTop, lcFormCaption
+        nInstance = ALEN(THIS.aForms)
+
+        *-- Set the Top and Left Properties to Cascade the new Form
+        IF nInstance &gt; 1 AND TYPE('THIS.aForms[nInstance -1]') = 'O' ;
+                AND NOT ISNULL(THIS.aForms[nInstance -1])
+            lnFormTop = THIS.aForms[nInstance -1].Top + 20
+            lnFormLeft = THIS.aForms[nInstance -1].Left + 10
+        ELSE
+            lnFormTop = 1
+            lnFormLeft = 1
+        ENDIF
+
+        *-- Set the caption to reflect the instance number
+        lcFormCaption = &quot;Instance &quot; + ALLTRIM(STR(nInstance))
+
+        *-- Instantiate the form and assign the object variable
+        *-- to the array element
+
+        THIS.aForms[nInstance] = CreateObject(&quot;TestForm&quot;)
+        THIS.aForms[nInstance].top = lnFormTop
+        THIS.aForms[nInstance].left = lnFormLeft
+        THIS.aForms[nInstance].caption = lcFormCaption
+        THIS.aForms[nInstance].Show()
+
+        *-- Redimension the array so that more instances of
+        *-- the form can be launched
+        DIMENSION THIS.aforms[nInstance + 1]
+    ENDPROC
+ENDDEFINE
+
+*-- This class is a form class that is designed to work with
+*-- the manager class.
+
+DEFINE CLASS TestForm AS form
+    Top = 0
+    Left = 0
+    Height = 87
+    Width = 294
+    DoCreate = .T.
+    BackColor = RGB(192,192,192)
+    BorderStyle = 2
+    Caption = &quot;Form1&quot;
+    Name = &quot;Form1&quot;
+
+    ADD OBJECT label1 AS label WITH ;
+        FontName = &quot;Courier New&quot;, ;
+        FontSize = 30, ;
+        BackStyle = 0, ;
+        Caption = (time()), ;
+        Height = 61, ;
+        Left = 48, ;
+        Top = 12, ;
+        Width = 205, ;
+        Name = &quot;Label1&quot;
+ENDDEFINE
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice that forms are instantiated through the <TT>RUNFORM</TT>
+method rather than directly with a <TT>CreateObject()</TT> function.
+This enables the manager function to maintain control over the
+objects it instantiates.
+<P>
+By the way, this can be considered a downside to working with
+manager classes, too. If a developer is used to working with the
+familiar <TT>CreateObject()</TT> function to instantiate classes,
+working through a method like the <TT>RUNFORM</TT> method might
+be a bit confusing at first.
+<P>
+By the way, remember the discussion earlier in this chapter about
+instance variable scoping (see &quot;Reading System Events&quot;
+and &quot;Variable Scoping Revisited&quot;)? <TT>FormManager</TT>
+is an example of how to manage instance variable scoping. The
+<TT>aForm[]</TT> property is an array property. Each row in the
+array holds an instance of the form.
+<P>
+Figure 15.16 shows what the forms look like when they are instantiated.
+Notice how they are properly tiled (with the exception of a few
+moved aside to show the contents of the form) and that each one
+has a different caption and time showing.
+<P>
+<IMG SRC="f15-16.gif"><B>Figure 15.16: </B><I>Managed forms</I>.</A>
+<P>
+Manager functions are very useful. They provide a simple way to
+encapsulate code that would normally have to be duplicated every
+time an object is instantiated into one single place.
+<H3><A NAME="BusinessClasses">
+Business Classes</A></H3>
+<P>
+Business classes are object-oriented representations of business
+entities (for example, a customer). The responsibilities of these
+classes vary depending on the behavior of a particular object
+within the problem domain.
+<P>
+The purpose of a business class is multifold. At an abstract level,
+it is possible to determine the basic functionality of a business
+object and then to create a class around it. For example, the
+basic responsibilities of a business object might be the following:
+<UL>
+<LI>To retrieve its data from the database
+<LI>To move within the database tables (First,
+Last, Prev, or Next)
+<LI>To display itself
+<LI>To print itself
+</UL>
+<P>
+These functions could be abstracted in a class. <I>Abstracting</I>
+in this sense means that the functionality can be placed in its
+own class rather than repeating it in multiple classes. The abstract
+class is created as a basis for other classes, not to be used
+in instantiating objects (see Listing 15.14).<P>
+
+<HR>
+<B>Listing 15.14&nbsp;&nbsp;</B><TT><B>15CODE14</B></TT><B>-A
+Business Class<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+DEFINE CLASS BaseBusiness AS custom
+    cAlias = &quot;&quot;
+    oData = .NULL.
+
+    PROCEDURE INIT
+        IF !EMPTY(this.cAlias) AND !used(this.cAlias)
+            =MessageBox(&quot;Alias is not open!&quot;, 16)
+        ENDIF
+    ENDPROC
+
+    PROCEDURE next
+        SELECT (this.cAlias)
+        SKIP 1
+        IF EOF()
+            GO BOTTOM
+        ELSE
+            this.readrecord()
+        ENDIF
+    ENDPROC
+
+    *-- Additional methods here for movement would mimic
+    *-- procedure NEXT
+
+    PROCEDURE readrecord
+        *-- This procedure is initially empty
+        SCATTER NAME this.oData
+    ENDPROC
+
+    *-- Additional methods for saving would follow mimicking
+    *-- procedure readrecord.
+
+ENDDEFINE
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+In order to create a <TT>Customer</TT> object, all you need to
+do is subclass it as follows:
+<BLOCKQUOTE>
+<PRE>
+DEFINE CLASS customer AS basebusiness
+    cAlias = &quot;Customer&quot;
+ENDDEFINE
+</PRE>
+</BLOCKQUOTE>
+<P>
+The fields in the <TT>Customer</TT> alias are automatically added
+as members of <TT>oData</TT>. Thus, if an object called <TT>oCust</TT>
+were instantiated from the <TT>Customer</TT> class, the <TT>cName</TT>
+field would be held in <TT>oCust.oData.cName</TT>.
+<P>
+Of course, the beauty of this method of development is that there
+is little coding to do from one business class to another. In
+effect, all you do is code by exception.
+<P>
+This is one way to create business classes. You will learn more
+about business classes and a sample framework for working with
+business classes in <A HREF="ch17/ch17.htm" >Chapter 17</A>.
+<H3><A NAME="RoundingOuttheStoryCreatingaFramework">
+Rounding Out the Story: Creating a Framework</A></H3>
+<P>
+The classes you create in Visual FoxPro, as in any object-oriented
+language, cover many different areas and serve many different
+purposes. Some classes will be created to serve a specific need
+in the software. For example, creating a <TT>Customer</TT> class
+might be an example of a class designed specifically to the needs
+of a software project. However, as you learned previously, classes
+can be created simply because the functionality represented in
+the class provides a good basis for further subclassing. For example,
+<TT>NoNotifyTextBox</TT> is a generic-type class you can create
+and reuse and from which you can subclass.
+<P>
+When you are starting out with an object-oriented language, the
+first step you probably take is to create a series of classes
+that will be the basis on which you create classes for your applications.
+These classes, taken together, are known as the <I>application
+framework.</I> Part of the framework will be generic; that is,
+they will be based on the FoxPro base classes to provide baseline
+functionality. For example, a subclass of the controls can be
+created with default font and size characteristics. A base form
+class can be created with a default background color, logo, and
+so on.
+<P>
+In addition, the framework might also call for a methodology for
+adding business classes to applications. Although working with
+a framework imposes some limitations, it is well worth it in terms
+of standardization among applications as well as speed in development.
+<A HREF="ch17/ch17.htm" >Chapter 17</A> shows a portion of a framework.
+<P>
+A good framework is the key to success in an object-oriented environment.
+Creating a solid framework (or purchasing one) saves you hours
+in the long run. However, if the framework is shoddy your application
+can suffer greatly. Be careful.
+<HR>
+<CENTER>
+
+<A HREF="ch14.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch16.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

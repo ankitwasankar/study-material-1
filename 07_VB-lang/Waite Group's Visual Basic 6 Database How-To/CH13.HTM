@@ -1,0 +1,1960 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Visual Basic 6 Database How-To -- Ch 13 -- Advanced Database Techniques</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="sams.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/sams.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"><BR>
+Visual Basic 6 Database How-To</H1>
+<CENTER>
+<P><A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch12/ch12.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="apa.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/apa/apa.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1></H1>
+<H1 ALIGN="CENTER">- 13 -<BR>
+Advanced Database Techniques</H1>
+
+<UL>
+	<LI>How do I...
+	<UL>
+		<LI><A HREF="#Search for database records byŠ">13.1 Search for database records by
+		using a Soundex algorithm?</A>
+		<LI><A HREF="#Back up selected database objectŠ">13.2 Back up selected database objects
+		at a set schedule?</A>
+		<LI><A HREF="#Replicate a database by usingŠ">13.3 Replicate a database by using
+		the Jet engine?</A>
+		<LI><A HREF="#Omit specified objects fromŠ">13.4 Omit specified objects from replicas?</A>
+		<LI><A HREF="#Create a nonreplicated versionŠ">13.5 Create a nonreplicated version
+		of a replicated database?</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<H3></H3>
+<P>Many times, there's just one more thing that needs to be done for everything to
+work correctly. The How-To's in this chapter cover various advanced features of database
+programming that help polish your applications. The database back-up and replication
+features are particularly valuable because they can help you reduce support time
+and costs for your applications. A simple automated backup program in the Windows
+startup group can save hours of headaches after your application or customer has
+made a serious mistake.</P>
+<P>
+<H4>13.1 Search for Database Records by Using a Soundex Algorithm</H4>
+<P>The Soundex feature available in many database management systems (DBMS) enables
+you to search for names of people, places, or streets without knowing the exact spelling.
+This How-To demonstrates using the Soundex function and points out some common problems
+with its use.</P>
+<P>
+<H4>13.2 Back Up Selected Database Objects at a Set Schedule</H4>
+<P>The <TT>SQL SELECT...INTO</TT> statement provides a smooth way to perform a very
+selective online backup. This How-To uses an enhanced ActiveX timer control to periodically
+back-up selected database objects.</P>
+<P>
+<H4>13.3 Replicate a Database by Using the Jet Engine</H4>
+<P>Access and the Jet engine enable you to copy databases and keep their contents
+synchronized in different locations. This How-To demonstrates creating and synchronizing
+a replicated database.</P>
+<P>
+<H4>13.4 Omit Specified Objects from Replicas</H4>
+<P>By default, replication makes copies of everything in your database. This How-To
+demonstrates keeping some objects local when making a replica set.</P>
+<P>
+<H4>13.5 Create a Nonreplicated Version of a Replicated Database</H4>
+<P>Strictly speaking, you cannot make a nonreplicated version of a replicated database,
+but you can remove a replica from the replica set and change the replica so that
+its structure can be modified. This How-To changes a replica database into a standalone
+database.</P>
+<P>
+<H2><A NAME="Heading7"></A>13.1 How do I...</H2>
+<P><A NAME="Search for database records byŠ"></A><B>Search for database records by
+using a Soundex algorithm?</B></P>
+<P><B>Problem</B></P>
+<P>The people answering the telephones in the order entry department sometimes have
+a difficult time understanding the names of individuals who call in. How can I write
+more forgiving SQL queries to look up names?</P>
+<P><B>Technique</B></P>
+<P>This How-To uses the Soundex function of Microsoft SQL Server. The sample SQL
+statements should also work with Sybase databases. Soundex is an encoding method
+for converting character strings into four digit codes. The goal is to provide a
+fuzzier search pattern for people trying find name-based data.</P>
+<P><B>Steps</B></P>
+
+<DL>
+	<DT><B></B></DT>
+	<DD><B>1. </B>Connect to a SQL database from your workstation using a SQL command
+	processor such as ISQL/W.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Issue the following commands to set up a test environment and open
+	the file SOUNDEX.SQL from the How-To directory:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>if exists (select * from sysobjects</TT>
+    where id = object_id(`dbo.SoundexText') and sysstat &amp; 0xf = 3)
+    drop table dbo.SoundexTest
+GO
+CREATE TABLE dbo.SoundexTest (
+    LastName char (20) NULL ,
+    FirstName char (20) NULL
+)
+GO
+INSERT INTO SoundexTest VALUES (`Brown', `Laura')
+INSERT INTO SoundexTest VALUES (`Browne', `Laura')
+INSERT INTO SoundexTest VALUES (`Brun', `Laura')
+INSERT INTO SoundexTest VALUES (`Braun', `Laura')
+INSERT INTO SoundexTest VALUES (`Broom', `Laura')
+INSERT INTO SoundexTest VALUES (`Harper', `Bill');
+INSERT INTO SoundexTest VALUES (`Harpster', `Bill');
+INSERT INTO SoundexTest VALUES (`Hahpah', `Bill');
+INSERT INTO SoundexTest VALUES (`Hobber', `Bill');
+INSERT INTO SoundexTest VALUES (`Hopper', `Bill');
+INSERT INTO SoundexTest VALUES (`Hooper', `Bill');
+INSERT INTO SoundexTest VALUES (`Kennedy', `Dennis');
+INSERT INTO SoundexTest VALUES (`Kenney', `Dennis');
+INSERT INTO SoundexTest VALUES (`Kennealy', `Dennis');
+</PRE>
+	<PRE><TT>INSERT INTO SoundexTest VALUES (`Kenney', `Dennis');</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>3. </B>Issue the following <TT>SELECT</TT> statement to verify that all rows
+	were inserted into the database. All rows should be retrieved and displayed as in
+	<BR>
+	Table 13.1.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT * FROM SoundexTest ORDER BY LastName, FirstName</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+
+<BLOCKQUOTE>
+	<H4>Table 13.1. SELECT all rows results.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>LAST NAME</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>First Name</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Braun</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Broom</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Brown</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Browne</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Brun</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Hahpah</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Harper</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Harpster</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Hobber</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Hooper</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Hopper</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Kennealy</TD>
+		<TD ALIGN="LEFT">Dennis</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Kennedy</TD>
+		<TD ALIGN="LEFT">Dennis</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Kenney</TD>
+		<TD ALIGN="LEFT">Dennis</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Kenney</TD>
+		<TD ALIGN="LEFT">Dennis</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Issue a <TT>SOUNDEX SELECT</TT> to find <I>Brown</I>. Table 13.2 shows
+	all five Laura's.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT * FROM SoundexTest</TT>
+WHERE SOUNDEX (LastName) = SOUNDEX (`Brown')
+</PRE>
+	<PRE><TT>ORDER BY LastName, FirstName</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<H4>Table 13.2. SELECT SOUNDEX (`Brown') results.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>LAST NAME</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>First Name</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Braun</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Broom</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Brown</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Browne</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Brun</TD>
+		<TD ALIGN="LEFT">Laura</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Use Soundex to find the various Harper records. Table 13.3 shows the
+	results for various search targets.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT * FROM SoundexTest</TT>
+WHERE SOUNDEX (LastName) = SOUNDEX (`Harper')
+ORDER BY LastName, FirstName
+SELECT * FROM SoundexTest
+WHERE SOUNDEX (LastName) = SOUNDEX (`Harp')
+ORDER BY LastName, FirstName
+SELECT * FROM SoundexTest
+WHERE SOUNDEX (LastName) = SOUNDEX (`Hopper')
+</PRE>
+	<PRE><TT>ORDER BY LastName, FirstName</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<H4>Table 13.3. SELECT SOUNDEX results with different keys.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>TARGET</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Last Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>First Name</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>Harper</I></TD>
+		<TD ALIGN="LEFT">Harper</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>Harp</I></TD>
+		<TD ALIGN="LEFT">No records returned</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>Hopper</I></TD>
+		<TD ALIGN="LEFT">Hobber</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Hooper</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Hopper</TD>
+		<TD ALIGN="LEFT">Bill</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+<P><B>How It Works</B></P>
+<P>The Soundex algorithm was established by the United States government to provide
+name searching for the Social Security Administration and the National Archives.
+The Soundex code is created by taking the first letter of the string and then adding
+values according to Table 13.4.</P>
+<P>
+<H4>Table 13.4. Soundex coding guide.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CODE DIGIT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Letter</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">0</TD>
+		<TD ALIGN="LEFT">All others or word too short</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">1</TD>
+		<TD ALIGN="LEFT"><I>B</I>, <I>P</I>, <I>F</I>, <I>V</I></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">2</TD>
+		<TD ALIGN="LEFT"><I>C</I>, <I>S</I>, <I>G</I>, <I>J</I>, <I>K</I>, <I>Q</I>, <I>X</I>, <I>Z</I></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">3</TD>
+		<TD ALIGN="LEFT"><I>D</I>, <I>T</I></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">4</TD>
+		<TD ALIGN="LEFT"><I>L</I></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">5</TD>
+		<TD ALIGN="LEFT"><I>M</I>, <I>N</I></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">6</TD>
+		<TD ALIGN="LEFT"><I>R</I></TD>
+	</TR>
+</TABLE>
+</P>
+<P>Table 13.5 shows the generated Soundex code and the last name for the sample data.
+Usually, Soundex will give a reasonable result, but it can make some interesting
+mistakes if the <I>R</I> is missed in a query. Notice in particular that the Soundex
+for <I>Harper</I> and <I>Hopper</I> don't match. Soundex can also be problematic
+if too few letters are provided for coding. Because all vowels and the silent letters
+<I>H</I>, <I>Y</I>, and <I>W</I> are dropped from the coding digits, a Soundex search
+for <I>BR </I>will not return any of our <I>B</I> names.</P>
+<P>
+<H4>Table 13.5. Soundex coding results.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>SOUNDEX CODE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Last Name</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">B650</TD>
+		<TD ALIGN="LEFT">Brown</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">B650</TD>
+		<TD ALIGN="LEFT">Browne</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">B650</TD>
+		<TD ALIGN="LEFT">Brun</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">B650</TD>
+		<TD ALIGN="LEFT">Braun</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">B650</TD>
+		<TD ALIGN="LEFT">Broom</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">H616</TD>
+		<TD ALIGN="LEFT">Harper</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">H612</TD>
+		<TD ALIGN="LEFT">Harpster</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">H100</TD>
+		<TD ALIGN="LEFT">Hahpah</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">H160</TD>
+		<TD ALIGN="LEFT">Hopper</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">H160</TD>
+		<TD ALIGN="LEFT">Hobber</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">H160</TD>
+		<TD ALIGN="LEFT">Hooper</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">K530</TD>
+		<TD ALIGN="LEFT">Kennedy</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">K500</TD>
+		<TD ALIGN="LEFT">Kenney</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">K540</TD>
+		<TD ALIGN="LEFT">Kennealy</TD>
+	</TR>
+</TABLE>
+</P>
+<P><B>Comments</B></P>
+<P>This sample showed a way to use the <TT>SOUNDEX</TT> function in queries. Unfortunately,
+these <TT>SELECT</TT> statements are very inefficient because they force the database
+manager to examine each row of the table. If <TT>SOUNDEX</TT> makes sense for your
+application, try to create a column whose value is the <TT>SOUNDEX</TT> of the target
+column, and then create an index on the <TT>SOUNDEX</TT> column.</P>
+<P>
+<H2><A NAME="Heading8"></A>13.2 How do I...</H2>
+<H3><A NAME="Back up selected database objectŠ"></A><B>Back up selected database
+objects at a set schedule?</B></H3>
+<P><B>Problem</B></P>
+<P>There are several tables in my database that need to be automatically backed up
+periodically. How can I force an automatic backup on a periodic basis?</P>
+<P><B>Technique</B></P>
+<P>The solution to this problem requires two core components: an enhanced timer and
+a database backup routine. The enhanced timer will be implemented as an ActiveX control
+that supports a &quot;time to trigger&quot; property and notification event. The
+database backup routine will create a new database and use a <TT>SELECT...INTO</TT>
+statement to implement the selective backup. The remainder of the project is a test
+form.</P>
+<P>The extended timer control is required because the standard Visual Basic control
+only supports timers of approximately one minute in length. The extended timer control
+is driven by the <TT>TimeToTrigger</TT> property and will raise its <TT>ExtendedTimerPop</TT>
+event once per day at the specified time. The standard Visual Basic timer is used
+repeatedly and enabled until the time to trigger is within one minute of the current
+time. Then the Visual Basic timer is set to the precise number of seconds required
+to meet the <TT>TimeToTrigger</TT> property exactly.</P>
+<P><B>Steps</B></P>
+<P>Open the Backup.vbg project group to preview this project. Compile the enhanced
+timer control and then the Backup Test project. Run the Backup Test project (see
+Figure 13.1). Enter a near future time in the Trigger Time field and click the Start
+Timer button. Wait patiently until your system clock is one minute past the trigger
+time. Close the form and check in the application directory for a newly created backup
+copy of the Expense.MDB file whose name begins with the letters <I>BU</I> (for backup).</P>
+<P><A HREF="javascript:popUp('13fig01.gif')"><B>Figure 13.1.</B></A><B> </B><I>The
+Backup Test Form dialog box.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new ActiveX Control project. Name the control <TT>ctlEnhancedTimer</TT>
+	and the project <TT>prjEnhancedTimer</TT>.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Select the <TT>ctlEnhancedTimer</TT> control and set its <TT>InvisibleAtRunTime</TT>
+	property to true.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Draw a single timer control on the object and name it <TT>tmrCheckIt</TT>.
+	Save the project.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Select Add-Ins | Add-In Manager from the main menu and make sure that
+	the VB 6 ActiveX Ctrl Interface Wizard is available in your environment by selecting
+	it and checking Loaded/Unloaded in the Load Behavior frame. Select Add-Ins | ActiveX
+	Control Interface Wizard from the main menu.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Click the Next button to proceed to the Select Interface Members dialog
+	box (see Figure 13.2). Remove all names except the enabled property from the Selected
+	Names window on the right.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('13fig02.gif')"><B>Figure 13.2.</B></A><B> </B><I>The
+Select Interface Members dialog box.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>6. </B>Click Next to proceed to Create Custom Interface Members. Add the single
+	property and event listed in Table 13.6 to the control.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 13.6. Properties, methods, and events for the extended timer control.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>TYPE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Property</TD>
+		<TD ALIGN="LEFT"><TT>TimeToTrigger</TT></TD>
+		<TD ALIGN="LEFT">Date/Time variable to contain the desired trigger time for timer.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Event</TD>
+		<TD ALIGN="LEFT"><TT>ExtendedTimerPop</TT></TD>
+		<TD ALIGN="LEFT">Notifies the container that the <TT>TimeToTrigger</TT> has arrived.</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Click Next to proceed to the wizard's Set Mapping dialog box. Select
+	the public name Enabled and map it to the timer control's Enabled member, as shown
+	in Figure 13.3.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('13fig03.gif')"><B>Figure 13.3.</B></A><B> </B><I>Mapping
+the timer control member.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>8. </B>Click Next to set attributes for the extended timer control. Use the
+	wizard's dialog box to set the <TT>TimeToTrigger</TT> property to be a Date variable
+	with Read/Write capabilities at both runtime and design time.
+	<P>
+	<DT></DT>
+	<DD><B>9. </B>Click Finish to have the wizard complete the skeleton code.
+	<P>
+	<DT></DT>
+	<DD><B>10. </B>Add a Boolean to control variable to the Declarations section of the
+	user control. This variable determines whether the last internal timer has been set
+	for final event notification to the container.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+`Default Property Values:
+Const m_def_TimeToTrigger = 0
+`Property Variables:
+Dim m_TimeToTrigger As Date
+`Event Declarations:
+Event ExtendedTimerPop()
+<B>` Private control variable</B>
+</PRE>
+	<PRE><B><TT>Private m_bLastInternalTimer As Boolean</TT></B></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><B><TT></TT></B></PRE>
+
+<DL>
+	<DT><B><TT></TT></B></DT>
+	<DD><B>11. </B>Add the <TT>SetTimer</TT> helper procedure to set the internal timer
+	control's interval property:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Function SetTimer() As Integer</TT>
+` Determine if this is should be the last internal
+` timer call
+    Dim lDifference As Long
+    lDifference = DateDiff(&quot;s&quot;, TimeValue(Now()), _
+                    TimeValue(TimeToTrigger))
+    If lDifference &lt; 30 And lDifference &gt; 0 Then
+        ` This is the last timer to use
+        m_bLastInternalTimer = True
+        SetTimer = CInt(lDifference) * 1000
+    Else
+        ` Set timer for 30 more seconds
+        m_bLastInternalTimer = False
+        SetTimer = 30000
+    End If
+</PRE>
+	<PRE><TT>End Function</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>12. </B>Add the following code to the timer event of the contained timer to
+	implement a continuous, event-fired loop to achieve the desired long timer:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub tmrCheckIt_Timer()</TT>
+` Handle the internal timer pop
+    If m_bLastInternalTimer Then
+        ` Notify the container
+        tmrCheckIt.Enabled = False
+        RaiseEvent ExtendedTimerPop
+    Else
+        ` Wait a while longer
+        tmrCheckIt.Interval = SetTimer()
+        tmrCheckIt.Enabled = True
+    End If
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>13. </B>Add the following boldface code to the <TT>UserControl_InitProperties</TT>
+	procedure to set the initial timer value:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub UserControl_InitProperties()</TT>
+` Set up the timer variables
+<B>    ` Set the timer</B>
+<B>    If Ambient.UserMode = True Then</B>
+<B>        tmrCheckIt.Interval = SetTimer()</B>
+<B>    End If</B>
+    m_TimeToTrigger = m_def_TimeToTrigger
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>14. </B>Add the following boldface code to the <TT>Property Let Enabled</TT>
+	procedure. The interval must be set correctly for the container to enable the extended
+	timer control at runtime.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Property Let Enabled(ByVal New_Enabled As Boolean)</TT>
+<B>    If Ambient.UserMode = True Then</B>
+<B>        tmrCheckIt.Interval = SetTimer()</B>
+<B>    End If</B>
+    tmrCheckIt.Enabled() = New_Enabled
+    PropertyChanged &quot;Enabled&quot;
+</PRE>
+	<PRE><TT>End Property</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>15. </B>Add the following code to the <TT>Property Let TimeToTrigger</TT>
+	procedure. The check for a valid date is required to prevent invalid calculations.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Property Let TimeToTrigger(ByVal New_TimeToTrigger As Date)</TT>
+    ` Check that the new value is a valid date.
+    If Not IsDate(New_TimeToTrigger) Then
+        Err.Raise 380
+        Err.Clear
+        Exit Property
+    End If
+    m_TimeToTrigger = New_TimeToTrigger
+    PropertyChanged &quot;TimeToTrigger&quot;
+</PRE>
+	<PRE><TT>End Property</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>16. </B>Add the following code to the <TT>UserControl_Resize</TT> procedure
+	to keep the control approximately the same size as the timer control:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub UserControl_Resize()</TT>
+` Resize the user control to a fixed size
+    Size 420, 420
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>17. </B>Select File | Make EnhancedTimer.ocx from the Visual Basic main menu
+	to compile the control. Correct any compilation errors.
+	<P>
+	<DT></DT>
+	<DD><B>18. </B>Select File | Add Project from the main menu and add a new Standard
+	EXE project to your Visual Basic environment. Name the default form <TT>frmBackupTest</TT>.
+	Name the new project <TT>prjBackupTest</TT>. Save the project group and all its components.
+	Name the project group <TT>Backup</TT> when prompted.
+	<P>
+	<DT></DT>
+	<DD><B>19. </B>Test the design-time behavior of the control by drawing the control
+	on the form and experimenting with resizing the control.
+	<P>
+	<DT></DT>
+	<DD><B>20. </B>Add a text box, label, and command button to the test form and set
+	the properties as listed in Table 13.7.
+	<DL>
+		<P>
+	</DL>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 13.7. Objects and properties for the Backup Test form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>frmBackupTest</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Backup Test Form</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdStartTimer</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Start Timer</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtTriggerTime</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ctlEnhancedTimer</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>ctlEnhancedTimer1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AutoSize</TT></TD>
+		<TD ALIGN="LEFT"><TT>-1 `True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Trigger Time:</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>21. </B>Add the following code to the <TT>cmdStartTimer_Click</TT> procedure
+	to set the time to trigger and to enable the control:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdStartTimer_Click()</TT>
+` Start the timer
+    If Not IsDate(txtTriggerTime.Text) Then
+        MsgBox &quot;Invalid time format&quot;
+    Else
+        ctlEnhancedTimer1.TimeToTrigger = txtTriggerTime.Text
+        ctlEnhancedTimer1.Enabled = True
+    End If
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>22. </B>Add the following code to the <TT>ctlEnhancedTimer1_ExtendedTimerPop</TT>
+	procedure to allow for control testing before beginning on the database backup code:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub ctlEnhancedTimer1_ExtendedTimerPop()</TT>
+    Debug.Print &quot;Extended timer pop&quot;
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>23. </B>Compile and test the form. Be sure to save the project group.
+	<P>
+	<DT></DT>
+	<DD><B>24. </B>In the project group window, make the <TT>prjBackupTest</TT> project
+	active by highlighting it with the mouse. Select Project | Add Class Module from
+	the Visual Basic main menu. When the Add Class Module dialog box appears, as in Figure
+	13.4, select VBCLASS.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('13fig04.gif')"><B>Figure 13.4.</B></A><B> </B><I>The
+Add Class Module dialog box.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>25. </B>Select File | New Class from the Class Builder menu. Name the class
+	<TT>clsBackupTable</TT> and click OK.
+	<P>
+	<DT></DT>
+	<DD><B>26. </B>Highlight <TT>clsBackupTable</TT> in the Class Builder Classes window.
+	Add the properties listed in Table 13.8 to the class by selecting File | New Property
+	from the Class Builder menu or by right-clicking in the properties tab. Figure 13.5
+	shows the completed Properties tab.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 13.8. Properties for the clsBackupTable module.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>NAME</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Data Type</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Declaration</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TableName</TT></TD>
+		<TD ALIGN="LEFT">String</TD>
+		<TD ALIGN="LEFT">Public Property</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>DatabaseObject</TT></TD>
+		<TD ALIGN="LEFT">Object</TD>
+		<TD ALIGN="LEFT">Public Property</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+<P><A HREF="javascript:popUp('13fig05.gif')"><B>Figure 13.5.</B></A><B> </B><I>The
+completed Properties tab for <TT>clsBackupTable</TT>.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>27. </B>Click on the Class Builder Methods tab. Add a new method by selecting
+	File | New method from the Class Builder menu or by right-clicking on the Methods
+	tab. Name the method <TT>DoBackup</TT> and give it no arguments and no return data
+	type.
+	<P>
+	<DT></DT>
+	<DD><B>28. </B>Exit from Class Builder by selecting File | Exit from the menu. Update
+	the project with your changes. Save the project group.
+	<P>
+	<DT></DT>
+	<DD><B>29. </B>Add a reference to Data Access Objects by selecting Project | References
+	from the Visual Basic main menu and checking Microsoft DAO 3.51 Object Library. Click
+	OK to close the dialog box.
+	<P>
+	<DT></DT>
+	<DD><B>30. </B>Add the following code to the <TT>DoBackup</TT> procedure to actually
+	implement the table backup by creating a new .MDB file and copying the data:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Public Sub DoBackup()</TT>
+Dim strDbName As String, strSql As String
+Dim dbNew As Database
+    On Error GoTo DbError
+    ` Format a database name from the current time
+</PRE>
+
+	<BLOCKQUOTE>
+		<PRE><TT> STRDBNAME = FORMAT(NOW, &quot;BUYYYYMMMDDHHNNSS&quot;) &amp; &quot;.MDB&quot;</TT></PRE>
+
+	</BLOCKQUOTE>
+	<PRE><TT>    strDbName = App.Path &amp; &quot;\&quot; &amp; strDbName</TT>
+    ` Make sure there isn't already a file with the name of
+    ` the new database.
+    If Dir(strDbName) &lt;&gt; &quot;&quot; Then Kill strDbName
+    ` Create the new database
+    Set dbNew = Workspaces(0).CreateDatabase(strDbName, _
+                dbLangGeneral)
+    ` Create a SQL command string to create the backup
+    strSql = &quot;SELECT &quot; &amp; TableName &amp; &quot;.* INTO &quot; _
+                &amp; TableName &amp; &quot; IN `&quot; &amp; strDbName _
+                &amp; &quot;` FROM &quot; &amp; TableName
+    mvarDatabaseObject.Execute strSql
+    Exit Sub
+DbError:
+    Err.Raise Err.Number, Err.Source, Err.Description
+    Err.Clear
+    Exit Sub
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>31. </B>Add the following declarations to the <TT>frmBackupTest</TT> form.
+	These variables are required for the backup class.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+Private usrBackupTable As New clsBackupTable
+</PRE>
+	<PRE><TT>Private dbOpenDb As Database</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>32. </B>Add a <TT>Form_Load</TT> procedure to initialize the backup class:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Load()</TT>
+Dim strDbName As String
+    On Error GoTo DbError
+    strDbName = App.Path &amp; &quot;\Expense.mdb&quot;
+    ` Open a database for the Backup class to use
+    Set dbOpenDb = Workspaces(0).OpenDatabase(strDbName)
+    Set usrBackupTable.Database = dbOpenDb
+    usrBackupTable.TableName = &quot;Expenses&quot;
+    Exit Sub
+DbError:
+    MsgBox Err.Description &amp; &quot; from &quot; &amp; Err.Source _
+        &amp; &quot; Number = &quot; &amp; CStr(Err.Number)
+    End
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>33. </B>Complete the <TT>ctlEnhancedTimer1_ExtendedTimerPop</TT> procedure
+	by adding an invocation of the <TT>DoBackup</TT> procedure. Don't forget the error
+	handler.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub ctlEnhancedTimer1_ExtendedTimerPop()</TT>
+<B>    On Error GoTo BackupError</B>
+    Debug.Print &quot;Extended timer pop&quot;
+<B>    usrBackupTable.DoBackup</B>
+<B>   ` Restart the timer</B>
+<B>    ctlEnhancedTimer1.Enabled = True</B>
+<B>    Exit Sub</B>
+<B>BackupError:</B>
+<B>    MsgBox Err.Description &amp; &quot; from &quot; &amp; Err.Source _</B>
+<B>        &amp; &quot; Number = &quot; &amp; CStr(Err.Number)</B>
+<B>    Exit Sub</B>
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>The first half of this How-To focuses on creating a timer control to support the
+backup application. In this case, the standard timer control does not provide the
+functionality needed to wake up at a specific time. This control's timeliness can
+be attributed to the SetTimer function specified in step 11. Every thirty seconds
+the control wakes up and checks to see how soon it should fire its event. If there
+is less than 30 seconds, the internal timer is adjusted to exactly the amount of
+time needed so that it wakes up on time.</P>
+<P>On the application side of the How-To, a backup class handles the work of backing
+up a table. When the timer pops, the <TT>clsBackupTable</TT>'s <TT>DoBackup</TT>
+method is invoked, and the timer is restarted. The <TT>Form_Load</TT> procedure initializes
+the backup class, and the button click starts the timer.</P>
+<P><B>Comments</B></P>
+<P>In addition to solving a particular problem, this How-To demonstrated the use
+of component programming to promote code reuse. The <TT>BackupTable</TT> class can
+have many uses outside of this project, especially if it was modified to allow multiple
+table names instead of just one. A variation on the <TT>BackupTable</TT> class could
+also be used in programs placed in the Windows Startup program group to provide an
+automatic backup every time Windows is restarted.</P>
+<P>The enhanced timer control can simplify many aspects of your current timer programs
+because is works reliably for more than a minute. You might want to consider adding
+a schedule table to the enhanced timer control to allow for multiple events or a
+schedule such as daily, weekly, or monthly.</P>
+<P>
+<H2><A NAME="Heading9"></A>13.3 How do I...</H2>
+<H3><A NAME="Replicate a database by usingŠ"></A><B>Replicate a database by using
+the Jet engine?</B></H3>
+<P><B>Problem</B></P>
+<P>The sales representatives in our company like to enter their expense reports on
+their laptop computers. How can I capture the expenses they enter in the field into
+the main expense database file?</P>
+<P><B>Technique</B></P>
+<P>Jet database replication enables you to create database copies and keep them synchronized.
+Both database design and contents are copied whenever the databases are synchronized.
+Replication creation requires that you make one database your Design Master and then
+invoke the <TT>MakeReplica</TT> method to create additional database copies. Use
+the <TT>Synchronize</TT> method to make the data consistent between two databases.</P>
+<P><B>Steps</B></P>
+<P>Open the project Replicate.vbp. Use the Browse buttons and select a source and
+replica database name (see Figure 13.6). Choose a database that can be modified;
+this How-To will make extensive changes. Click Create Replica to create a replica
+database. Use the VisData data maintenance utility (in the VB6 directory) to change
+a record in one of the databases. Click Synchronize. Use VisData to verify the change
+was propagated to the other database.</P>
+<P><A HREF="javascript:popUp('13fig06.gif')"><B>Figure 13.6.</B></A><B> </B><I>The
+Replicate Database form.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new Standard EXE project in your workspace. Name the default
+	form frmReplicate and the project prjReplicate. Save the form and project to disk.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Select Project | Components from the main menu and check Microsoft
+	Common Dialog Control 6.0 (see Figure 13.7). Select Project | References from the
+	Visual Basic main menu and activate the Microsoft DAO 3.51 Object Library by checking
+	its box in the selection list.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Draw text boxes, labels, command buttons, and a Common Dialog control
+	on the form as shown in Figure 13.6. Set the form's objects and properties as listed
+	in Table 13.9.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('13fig07.gif')"><B>Figure 13.7.</B></A><B> </B><I>Selecting
+the Microsoft Common Dialog Control 6.0.</I></P>
+
+
+<BLOCKQUOTE>
+	<H4>Table 13.9. Objects and properties for the Replicate Database form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>frmReplicate</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Replicate Database</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdOpenTo</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Browse</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdSynchronize</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>S&amp;ynchronize</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdCreateReplica</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Create Replica</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdOpenFrom</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Browse</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtReplicaDbName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtDbNameFrom</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommonDialog</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cdOpenFile</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Filter</TT></TD>
+		<TD ALIGN="LEFT"><TT>Access Files (*.mdb)|*.mdb</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AutoSize</TT></TD>
+		<TD ALIGN="LEFT"><TT>-1 `True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Database to replicate:</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AutoSize</TT></TD>
+		<TD ALIGN="LEFT"><TT>-1 `True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Replica file name:</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code to the Browse button procedures:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdOpenFrom_Click()</TT>
+` Open the Replicate from database file
+    cdOpenFile.InitDir = App.Path
+    cdOpenFile.ShowOpen
+    txtDbNameFrom.Text = cdOpenFile.filename
+End Sub
+Private Sub cmdOpenTo_Click()
+` Open the Replicate to database file
+    cdOpenFile.InitDir = App.Path
+    cdOpenFile.filename = &quot;Replica.mdb&quot;
+    cdOpenFile.ShowOpen
+    txtReplicaDbName.Text = cdOpenFile.filename
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5. </B>Add the <TT>MakeReplicable</TT> procedure to the form's code. This
+	procedure checks for the existence of the <TT>Replicable</TT> property, adds it,
+	if needed, and sets the value to <TT>T</TT> to make the <TT>from</TT> database a
+	Design Master.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Function MakeReplicable(ByRef dbMaster As Database) As Boolean</TT>
+` Makes the passed database replicable
+Dim prpReplicable As Property
+Dim intIdx As Integer
+Dim bFound As Boolean
+    On Error GoTo DbError
+    ` Check for existence of the replicable property
+    For intIdx = 0 To (dbMaster.Properties.Count - 1)
+        If dbMaster.Properties(intIdx).Name = &quot;Replicable&quot; Then
+            bFound = True
+            Exit For
+        End If
+    Next
+    If Not bFound Then
+        ` Create the property
+        Set prpReplicable = dbMaster.CreateProperty( _
+            &quot;Replicable&quot;, dbText, &quot;T&quot;)
+        ` Append it to the collection
+        dbMaster.Properties.Append prpReplicable
+    End If
+    ` Set the value of Replicable to true.
+    dbMaster.Properties(&quot;Replicable&quot;).Value = &quot;T&quot;
+    MakeReplicable = True
+    Exit Function
+DbError:
+    MsgBox Err.Description &amp; &quot; From: &quot; &amp; Err.Source _
+            &amp; &quot;Number: &quot; &amp; Err.Number
+    MakeReplicable = False
+    Exit Function
+</PRE>
+	<PRE><TT>End Function</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>6. </B>Add the <TT>CopyReplica</TT> helper function. This function actually
+	creates a replica database using the <TT>from</TT> database as a source.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Function CopyReplica(ByRef dbMaster As Database, strRepName As _</TT>
+   String) As Boolean
+` Makes a replica database from the passed master
+    On Error GoTo DbError
+    ` If the target file exists, purge it
+    If Dir(strRepName) &lt;&gt; &quot;&quot; Then Kill strRepName
+    dbMaster.MakeReplica strRepName, &quot;Replica of &quot; &amp; dbMaster.Name
+    CopyReplica = True
+    Exit Function
+DbError:
+    MsgBox Err.Description &amp; &quot; From: &quot; &amp; Err.Source _
+            &amp; &quot;Number: &quot; &amp; Err.Number
+    CopyReplica = False
+    Exit Function
+</PRE>
+	<PRE><TT>End Function</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>7. </B>Add the following code to the <TT>cmdCreateReplica_Click</TT> procedure.
+	This procedure gains exclusive control of the database, makes it a Design Master,
+	and creates the specified replica. The <TT>bContinue</TT> Boolean prevents proceeding
+	past an error.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdCreateReplica_Click()</TT>
+` Create a replica from the named database
+Dim dbMaster As Database
+Dim bContinue As Boolean
+    On Error GoTo DbError
+    ` Open the database in exclusive mode
+    Set dbMaster = Workspaces(0).OpenDatabase(txtDbNameFrom.Text _
+        True)
+    ` Make the database the Design Master
+    bContinue = MakeReplicable(dbMaster)
+    ` Make the replica
+    bContinue = CopyReplica(dbMaster, txtReplicaDbName.Text)
+    dbMaster.Close
+    Exit Sub
+DbError:
+    MsgBox Err.Description &amp; &quot; From: &quot; &amp; Err.Source _
+            &amp; &quot;Number: &quot; &amp; Err.Number
+    Exit Sub
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>8. </B>Add the code for the <TT>cmdSynchronize_Click</TT> procedure. This
+	procedure synchronizes the contents of two databases in the same replica set.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdSynchronize_Click()</TT>
+Dim dbMaster As Database
+    On Error GoTo DbError
+    ` Open the database in non-exclusive mode
+    Set dbMaster = Workspaces(0).OpenDatabase(txtDbNameFrom.Text _
+        False)
+    ` Synchronize the databases
+    dbMaster.Synchronize txtReplicaDbName.Text, _
+                    dbRepImpExpChanges
+    dbMaster.Close
+    Exit Sub
+DbError:
+    MsgBox Err.Description &amp; &quot; From: &quot; &amp; Err.Source _
+            &amp; &quot;Number: &quot; &amp; Err.Number
+    Exit Sub
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>When you replicate databases, Jet modifies the database properties and the structure
+of your tables substantially in order to track record and design changes. The <TT>Synchronize</TT>
+method uses these additional structures to track database design and data changes
+and apply the changes consistently over many databases.</P>
+<P>The core concept of replication is the replica set governed by a single Design
+Master database. The Design Master is the place where all design changes must occur
+for all replicas. A database is a member of a replica set if it was created as a
+replica of the Design Master or as a replica of an existing replica. Any member of
+the replica set may synchronize data with any other member of the replica set. Figure
+13.8 shows the basic relationships.</P>
+<P><A HREF="javascript:popUp('13fig08.gif')"><B>Figure 13.8.</B></A><B> </B><I>Replica
+set showing creation and synchronization.</I></P>
+<P><B>Database Modifications</B></P>
+<P>Jet makes several database modifications when you make a database replicable.
+When these changes are made, most of them are permanent.</P>
+<P>The new database properties are <TT>Replicable</TT>, <TT>ReplicaID</TT>, and <TT>DesignMasterID</TT>.
+The <TT>Replicable</TT> property indicates that the database can be replicated and
+that the table structures have been modified. Once a database has been made replicable
+with the addition of the <TT>Replicable</TT> property, the <TT>ReplicaID</TT> is
+a unique identifier for this database file.</P>
+<P>The <TT>DesignMasterID</TT> is a unique identifier specifying the database that
+can initiate all design changes for the replica set. Jet replication uses GUIDs (globally
+unique identifiers) wherever it needs a unique key for a database or field value.
+A <I>GUID</I> is a 16-byte generated value designed to be unique no matter where
+or when it is assigned. GUID values are usually displayed in hexadecimal notation
+with added hyphens for visual clarity. The database that is the Design Master has
+the same values for <TT>ReplicaID</TT> and <TT>DesignMasterID</TT>. Figure 13.9 shows
+the important database properties for a Design Master database as viewed by VisData
+application that ships with Visual Basic. Figure 13.10 shows the same properties
+for a replica. Note that the <TT>DesignMasterID</TT> GUID is the same as the <TT>ReplicaID</TT>
+GUID for the Design Master database. The replica database in Figure 13.10 has the
+<TT>ReplicaID</TT> of the Design Master database as its <TT>DesignMasterID</TT>.
+Equal values for <TT>ReplicaID</TT> and <TT>DesignMasterID</TT> are what define a
+database as a Design Master.</P>
+<P><A HREF="javascript:popUp('13fig09.gif')"><B>Figure 13.9.</B></A><B> </B><I>Database
+properties for a Design Master.</I></P>
+<P><A HREF="javascript:popUp('13fig10.gif')"><B>Figure 13.10.</B></A><B> </B><I>Database
+properties for a replica.</I></P>
+<P>In addition to database property changes, making a database replicable adds about
+a dozen system tables to the database to track the Design Master, other replicas,
+table aliases, schema design problems, synchronization system errors, local replica-to-replica
+exchange logs, data conflicts, schedules, deleted records, and generation history.
+Because of all the property and system table changes, making a database replicable
+is a permanent operation. After the <TT>Replicable</TT> database property is set
+to <TT>T</TT>, it cannot be changed.</P>
+<P><B>Table Modifications</B></P>
+<P>In addition to database modifications, replication changes the table structures
+by adding three columns: a unique identifier, a generation identifier, and a lineage
+indicator. The unique identifier is stored in the <TT>s_GUID</TT> column and contains
+a globally unique identifier for this record in any replica.</P>
+<P>The generation identifier is used to speed up incremental synchronization so that
+only changed records need to be sent to other replicas. Each time a record is changed,
+the generation number is set to zero. At synchronization time, all records with generation
+number zero are sent. The generation number is then set at both databases to one
+higher than the last generation number assigned. In addition, records with higher
+generation numbers are sent because they reflect more recent changes. Record additions
+and deletions are also reconciled between the two databases.</P>
+<P>The lineage indicator is used to help resolve conflicts between simultaneous updates
+to data in different databases. When the same record is updated in two different
+replicas, a conflict can result. The <TT>Synchronize</TT> method resolves this conflict
+by using the <TT>s_Lineage</TT> field to determine which record will be placed into
+both databases. The losing database will have a copy of the losing record in a table
+named <I><TT>table_name</TT></I><TT>_Conflict</TT>, where <I><TT>table_name</TT></I>
+is the original table name. For example, a conflict-losing record from the <TT>Expenses</TT>
+table would be saved at the losing location only into the <TT>Expenses_Conflict</TT>
+table.</P>
+<P><B>Comments</B></P>
+<P>Replication is a powerful tool in your database programming kit, but will require
+careful planning to implement successfully. Design considerations for replicated
+databases can become problematic because of our friend Murphy, whose famous law states,
+&quot;If anything can go wrong, it will go wrong and at the worst possible time.&quot;
+I believe that Murphy might have been an optimist when it comes to complex replication
+schemes. Microsoft's core replication technology does a marvelous job of managing
+<I>one-way</I> replication. <I>One-way</I> implies that the data will be changed
+in only one location. With central administration, one-way data is the contents of
+list boxes, zip code tables, and product definitions that you want to push out to
+field laptops. For data collection, <I>one-way</I> means that a central site is collecting
+from multiple remote sites.</P>
+<P>Two-way replication increases programming requirements because of the need to
+design and develop conflict-resolution programs and procedures. The placement of
+conflict losing records into only one database may make it difficult to implement
+conflict resolution programs in the desired location. For example, a sales automation
+application may want all conflict resolutions managed at the home office, but the
+<TT>Synchronize</TT> method might place a conflict notification into a sales rep's
+laptop in East Podunk. Hand-crafted code may then be required to find the remote
+conflicts and transport them back to the home office. One way to avoid conflicts
+is to use one-way replication only and separate tables into databases, depending
+on direction of data movement.</P>
+<P>In addition to the synchronization itself, you should consider carefully your
+approach to how and when you plan to compact databases and run the <TT>RepairDatabase</TT>
+method. Compaction physically removes all deleted records from the database and assists
+with compaction of the generations of tables whose designs have changed. The <TT>RepairDatabase</TT>
+method inspects all system areas and tables for correctness and discards any incorrect
+data. A database that was open for write operations during a power failure or system
+crash can be left in a possibly corrupt state that should be repaired by the <TT>RepairDatabase</TT>
+method.</P>
+<P>
+<H2><A NAME="Heading10"></A>13.4 How do I...</H2>
+<H3><A NAME="Omit specified objects fromŠ"></A><B>Omit specified objects from replicas?</B></H3>
+<P><B>Problem</B></P>
+<P>Replication is working great for my data collection application, but the experimental
+tables in the Design Master database keep getting replicated to the field. How can
+I omit undesired objects from the replicas?</P>
+<P><B>Technique</B></P>
+<P>The Jet <TT>KeepLocal</TT> property was designed to prevent database objects from
+being propagated during replication. Just set value <TT>KeepLocal</TT> to <TT>T</TT>
+in the database's property collection, and the object won't be replicated.</P>
+<P><B>Steps</B></P>
+<P>Open the project Replicate.vbp in the How-To04 directory (refer to Figure 13.06).
+Use the Browse buttons and select Expenses.mdb as the master database name and Replica.mdb
+as the replica database name. Click Create Replica to create a replica database.
+Use the VisData data maintenance utility (in the VB6 directory) to inspect the structures
+of the original and replica databases to verify that the replica contains only the
+Expenses table.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Start with the completed form from How-To 13.3.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add the <TT>SetKeepLocal</TT> helper function to the form's code:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Function SetKeepLocal(dbTarget As Database, strCollName _</TT>
+    As String, strObjectName As String) As Boolean
+` Sets KeepLocal to &quot;T&quot; for the passed object.
+    Dim intIdx As Integer
+    Dim blnFound As Boolean
+    Dim tdfTableDef As TableDef
+    Dim prpProperty As Property
+    Dim docDocument As Document
+    Dim qdfQueryDef As QueryDef
+    On Error GoTo ErrorHandler
+    Select Case strCollName
+        Case &quot;Forms&quot;, &quot;Reports&quot;, &quot;Modules&quot;, &quot;Scripts&quot;
+            Set docDocument = dbTarget.Containers(strCollName). _
+                Documents(strObjectName)
+            blnFound = False
+            For intIdx = 0 To docDocument.Properties.Count - 1
+                If docDocument.Properties(intIdx).Name _
+                = &quot;KeepLocal&quot; Then
+                    blnFound = True
+                    Exit For
+                End If
+            Next intIdx
+            If Not blnFound Then
+                Set prpProperty = docDocument.CreateProperty _
+                    (&quot;KeepLocal&quot;, dbText, &quot;T&quot;)
+                docDocument.Properties.Append prpProperty
+            Else
+                docDocument.Properties(&quot;KeepLocal&quot;).Value = &quot;T&quot;
+            End If
+        Case &quot;TableDefs&quot;
+            Set tdfTableDef = dbTarget.TableDefs(strObjectName)
+            blnFound = False
+            For intIdx = 0 To tdfTableDef.Properties.Count - 1
+                If tdfTableDef.Properties(intIdx).Name _
+                = &quot;KeepLocal&quot; Then
+                    blnFound = True
+                    Exit For
+                End If
+            Next intIdx
+            If Not blnFound Then
+                Set prpProperty = tdfTableDef.CreateProperty _
+                    (&quot;KeepLocal&quot;, dbText, &quot;T&quot;)
+                tdfTableDef.Properties.Append prpProperty
+            Else
+                tdfTableDef.Properties(&quot;KeepLocal&quot;).Value = &quot;T&quot;
+            End If
+        Case &quot;QueryDefs&quot;
+            Set qdfQueryDef = dbTarget.QueryDefs(strObjectName)
+            blnFound = False
+            For intIdx = 0 To qdfQueryDef.Properties.Count - 1
+                If qdfQueryDef.Properties(intIdx).Name _
+                = &quot;KeepLocal&quot; Then
+                    blnFound = True
+                    Exit For
+                End If
+            Next intIdx
+            If Not blnFound Then
+                Set prpProperty = qdfQueryDef.CreateProperty _
+                    (&quot;KeepLocal&quot;, dbText, &quot;T&quot;)
+                qdfQueryDef.Properties.Append prpProperty
+            Else
+                qdfQueryDef.Properties(&quot;KeepLocal&quot;).Value = &quot;T&quot;
+            End If
+    End Select
+    SetKeepLocal = True
+    Exit Function
+ErrorHandler:
+    MsgBox Err.Description &amp; &quot; From: &quot; &amp; Err.Source _
+            &amp; &quot;Number: &quot; &amp; Err.Number
+    SetKeepLocal = False
+    Exit Function
+</PRE>
+	<PRE><TT>End Function</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>3. </B>Remove the dbMaster.Synchronize call and add the following boldface
+	code to the <TT>cmdCreateReplica_Click</TT> procedure:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdCreateReplica_Click()</TT>
+` Create a replica from the named database
+Dim dbMaster As Database
+Dim bContinue As Boolean
+    On Error GoTo DbError
+    ` Open the database in exclusive mode
+    Set dbMaster = Workspaces(0).OpenDatabase(txtDbNameFrom.Text _
+        True)
+<B>    ` Keep everything but the expenses table local</B>
+<B>    bContinue = SetKeepLocal(dbMaster, &quot;QueryDefs&quot;, _</B>
+<B>                &quot;ExpEmployeeNames&quot;)</B>
+<B>    If bContinue Then _</B>
+<B>        bContinue = SetKeepLocal(dbMaster, &quot;QueryDefs&quot;, _</B>
+<B>                        &quot;ExpForOneEmployee&quot;)</B>
+<B>    If bContinue Then _</B>
+<B>        bContinue = SetKeepLocal(dbMaster, &quot;TableDefs&quot;, _</B>
+<B>                        &quot;ObjectLibrary&quot;)</B>
+<B>    ` Make the database the Design Master</B>
+<B>    If bContinue Then _</B>
+<B>        bContinue = MakeReplicable(dbMaster)</B>
+<B>    ` Make the replica</B>
+<B>    If bContinue Then _</B>
+        bContinue = CopyReplica(dbMaster, txtReplicaDbName.Text)
+    dbMaster.Close
+    Exit Sub
+DbError:
+    MsgBox Err.Description &amp; &quot; From: &quot; &amp; Err.Source _
+            &amp; &quot;Number: &quot; &amp; Err.Number
+    Exit Sub
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>When the <TT>KeepLocal</TT> property is set to <TT>T</TT>, the <TT>CreateReplica</TT>
+method doesn't create a replica of the database object. If you later want to replicate
+an object that was originally kept local, change its <TT>Replicable</TT> property
+to <TT>T</TT> in the Design Master and synchronize the replicas to propagate the
+additions. The VisData utility that shipped with Visual Basic can be used to make
+many of these changes.</P>
+<P><B>Comments</B></P>
+<P>In addition to the <TT>KeepLocal</TT> property, partial replication enables replicas
+to contain only part of the Design Master's data. To make a partial replica:</P>
+
+<UL>
+	<LI>Specify the <TT>dbRepMakePartial</TT> option on the <TT>MakeReplica</TT> method.
+</UL>
+
+<P>4 Use the <TT>TableDefs ReplicaFilter</TT> property and <TT>Relations PartialReplica</TT>
+property to specified the desired records.</P>
+
+<UL>
+	<LI>Invoke the <TT>Database</TT> <TT>PopulatePartial</TT> method to move the desired
+	data into the replica.
+</UL>
+
+<H2><A NAME="Heading11"></A>13.5 How do I...</H2>
+<H3><A NAME="Create a nonreplicated versionŠ"></A><B>Create a nonreplicated version
+of a replicated database?</B></H3>
+<P><B>Problem</B></P>
+<P>I've created a set of replica databases, but I want to allow one copy to be modified
+by another developer in her test environment. How can I cut a replica out of the
+replica set so that it can be changed independently of the others?</P>
+<P><B>Technique</B></P>
+<P>Within a set of replicas, only one database is allowed to have design changes,
+such as table creation or field size changes. All other replicas must have their
+design changes made at the Design Master database and synchronized through the replica
+set. This strict requirement ensures that the Data Access Objects <TT>Synchronize</TT>
+method can adequately track and implement changes. After all, &quot;Too many cooks
+spoil the broth.&quot; But there are times when a replica needs to be cut out of
+the replica set. The reasons might include testing a new replication schema without
+affecting the existing replica set, quality assurance testing of the replication
+methods, or a major application design change. The core technique for returning design
+independence to a replica database for structure changes is to make the replica into
+a new Design Master.</P>
+<P><B>Steps</B></P>
+<P>Open the project BreakReplica.vbp (see Figure 13.11). Select Replica.mdb as your
+database. Click Break Replica. Verify so that you can modify table definitions using
+the VisData utility.</P>
+<P><A HREF="javascript:popUp('13fig11.gif')"><B>Figure 13.11.</B></A><B> </B><I>The
+Break Replica Set form.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new Standard EXE project in your workspace. Name the default
+	form <TT>frmBreakReplica</TT> and the project <TT>prjBreakReplica</TT>. Save the
+	form and project to disk.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Select Project | Components from the main menu and check Microsoft
+	Common Dialog Control 6.0. Select Project | References from the Visual Basic main
+	menu and activate the Microsoft DAO 3.51 Object Library by checking its box in the
+	selection list.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Draw controls on the form so that it looks like Figure 13.12. Don't
+	forget to add a Common Dialog control. Set the form's objects and properties as listed
+	in Table 13.10.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 13.10. Objects and properties for the Break Replica Set form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>frmBreakReplica</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Break Replica Set</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdBreakReplica</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Break Replica</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdOpenFrom</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>&amp;Browse</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommonDialog</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cdOpenFile</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Filter</TT></TD>
+		<TD ALIGN="LEFT"><TT>Access Files (*.mdb)|*.mdb</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtDbNameFrom</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>Label1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>AutoSize</TT></TD>
+		<TD ALIGN="LEFT"><TT>-1 `True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Database to remove from set:</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code to the <TT>cmdOpenFrom_Click</TT> procedure
+	to select a filename:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdOpenFrom_Click()</TT>
+` Open the Replicate from database file
+    cdOpenFile.InitDir = App.Path
+    cdOpenFile.ShowOpen
+    txtDbNameFrom.Text = cdOpenFile.filename
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5. </B>Add the following code to the <TT>cmdBreakReplica_Click</TT> procedure
+	to set the selected database's <TT>DesignMasterID</TT> to itself:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdBreakReplica_Click()</TT>
+Dim dbReplica As Database
+    On Error GoTo DbError
+    ` Open the database in exclusive mode
+    Set dbReplica = Workspaces(0).OpenDatabase(txtDbNameFrom.Text _
+        True)
+<TT>    dbReplica.DesignMasterID = dbReplica.ReplicaID</TT>
+    dbReplica.Close
+    Exit Sub
+DbError:
+    MsgBox Err.Description &amp; &quot; From: &quot; &amp; Err.Source _
+            &amp; &quot;Number: &quot; &amp; Err.Number
+    Exit Sub
+</PRE>
+	<PRE><TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>To remove a database from the restrictions placed on replicas, you simply need
+to make the database replica its own Design Master by setting the <TT>DesignMasterID</TT>
+to the <TT>ReplicaID</TT> as shown in step 5. The database will be immediately cut
+out of the replica set and will no longer be easily able to synchronize data structure
+or content changes with its previous replica siblings. In other words, breaking a
+database out of a replica set should be considered permanent. In a production environment,
+the break-up could be very inconvenient if done incorrectly.</P>
+<P>Replicated databases remain replicated with all the extra properties and system
+tables after the database's <TT>Replicable</TT> property is set to <TT>T</TT>. How-To
+13.3 discusses the changes made to the database when it is converted to a replica.
+Breaking a database out of a replica set will not make the database nonreplicable;
+it will allow only its own design changes. All the extra data will still be in the
+database.</P>
+<P><B>Comments</B></P>
+<P>Replication is a fairly permanent decision, but it can be a powerful tool, especially
+with the use of the partial replication methods to propagate design changes with
+very little coding effort. A package being distributed to many locations can use
+replication to propagate design changes while never transmitting any data. Field
+database design changes can be managed by distributing a new, empty member of the
+replica set with the required design changes and synchronizing with a replica filters
+set to pass no records.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch12.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch12/ch12.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="apa.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/apa/apa.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A></P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

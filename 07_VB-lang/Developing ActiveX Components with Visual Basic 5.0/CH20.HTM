@@ -1,0 +1,1087 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 20 -- Property Pages and Others</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;20</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Property Pages and Others</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#PropertyPageFundamentals">
+Property Page Fundamentals</A>
+<UL>
+<LI><A HREF="#PropertyPageProperties">
+Property Page Properties</A>
+<LI><A HREF="#PropertyPageEvents">
+Property Page Events</A>
+</UL>
+<LI><A HREF="#PropertyPageTechniques">
+Property Page Techniques</A>
+<UL>
+<LI><A HREF="#ThePropPageAPropertyPage">
+The PropPageA1 Property Page</A>
+<LI><A HREF="#ThePropPgTvbpProject">
+The PropPgT2.vbp Project</A>
+</UL>
+<LI><A HREF="#AboutBoxesandOthers">
+About Boxes and Others</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+I have a confession to make. I really like property pages.
+<P>
+Yes, I do most of my property editing using the VB property window.
+And yes, Microsoft recommends against doing much in property pages
+other than setting a control's properties. But I can't help but
+be intrigued by the idea of property pages.
+<P>
+By now you should be well acquainted with the fact that, as a
+control author, you are writing for both the container's runtime
+and its design-time environment. The control behavior that you
+define for runtime is ultimately intended for the end user, who
+is the person that the developer using your control is also coding
+for. But the control behavior you define at design time is intended
+exclusively for the developer. There isn't much room for creativity
+and flexibility in the control itself, mostly because Visual Basic
+makes it awkward to interact with the control at design time.
+You can allow such interaction by setting your control's EditAtDesignTime
+property to True, but even so, it's awkward for developers to
+switch to and from edit mode on controls. I rarely do so myself.
+<P>
+The property page, on the other hand, is designed specifically
+to let the developer interact with the control using whatever
+user interface you care to define. It's almost as if you can create
+your own program to allow developers to configure your control.
+Well, actually, that is exactly what property pages offer: the
+ability to create your own unique development environment for
+your control.
+<P>
+Think about it. What does a &quot;unique development environment
+for your control&quot; really mean? It is a far cry from the VB
+documentation, which calls property pages &quot;&#133;an alternative
+to the Properties window for viewing ActiveX control properties.&quot;
+I think my meaning will become clear as you read the rest of this
+chapter, but I offer you this one thought before beginning: There
+is no technical reason whatsoever that requires that a property
+page have anything at all to do with your control's properties.
+Intriguing, isn't it?
+<H2><A NAME="PropertyPageFundamentals"><FONT SIZE=5 COLOR=#FF0000>
+Property Page Fundamentals</FONT></A></H2>
+<P>
+The first thing you should know about property pages is that you
+should always implement them for your controls. The reason for
+this is simple: there is no guarantee that a container using your
+control will have its own property window like the one provided
+by Visual Basic. With this kind of container, property pages provide
+the only way to edit the properties of your control.
+<P>
+The next thing you should know is that property page windows exist
+within a property page container window. This window contains
+OK, Cancel, and Apply buttons, which are used by all of the property
+pages. The container window provides tabs to select from among
+the property pages. The property page container window is modeless
+with respect to the control under Visual Basic, but this may not
+be the case for every container. 
+<P>
+Let us take a moment and review the mechanics and key properties
+and events of property pages.
+<P>
+Every UserControl object has a PropertyPages collection. When
+you click on the dialog button in the PropertyPages entry in the
+VB property window, you'll see a dialog much like the one shown
+in Figure 20.1.
+<P>
+<A HREF="f20-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f20-1.gif"><B>Figure 20.1 :</B> <I>The Connect Property Pages dialog box</I>.</A>
+<P>
+This dialog box lists all of the property pages that are available
+to your control. Three standard property pages are always available:
+the standard color, font, and picture property pages.
+<P>
+Your control's container will always provide a way to bring up
+the property pages for your control. With Visual Basic you can
+use the Properties command on the context menu or the dialog button
+on the Custom property in the property window.
+<P>
+Visual Basic automatically maps properties to standard property
+pages where possible. Font properties are mapped to the standard
+Font property pages, Picture properties to the standard picture
+property page, and properties with type OLE_COLOR to the standard
+color property page. But this default mapping does not mean that
+VB automatically assigns the property page to the dialog button
+in the VB property window.
+<P>
+If you want a property page to be assigned to the dialog button
+for the property in the VB property window, you must use the Tools,
+Procedure Attributes dialog box to assign the property page to
+the property. Select from among the available pages using the
+&quot;Use this page in property browser&quot; combo box.
+<P>
+The implications of this can be rather confusing. Take the BackColor
+property in the Trivial.vbp example for this chapter. If the BackColor
+property is not assigned to the standard color property page,
+when you click on the button in the VB property window, you will
+see a small palette drop down. If it is assigned to the standard
+property page, you will see the property page instead. Which one
+should you use? It's entirely up to you, but in most cases controls
+do not assign standard properties to the standard property pages
+when the container is likely to provide an alternate in its property
+window.
+<P>
+The property page mapping does become important when it comes
+to your own properties. You should map properties to pages wherever
+you wish to provide direct access to its associated property page.
+<P>
+The Trivial.vbp example shown in Listing 20.1 demonstrates a simple
+property page that handles a single String property for a control.
+The page contains a single text box that is used to edit a Text
+property named Test.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 20.1:&nbsp;The TrivialPg Property Page<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+Private Sub txtTest_Change()
+    Changed = True
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+    SelectedControls(0).Test = txtTest.Text
+End Sub
+
+Private Sub PropertyPage_SelectionChanged()
+    txtTest.Text = SelectedControls(0).Test
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This listing demonstrates the most important events and properties
+for a property page. The SelectedControls collection contains
+references to the controls that are associated with the property
+page. The SelectionChanged event occurs any time one or more controls
+are associated with the page. At this time the Text control is
+loaded with the value of the Test property of the control.
+<P>
+If the value of the text box is changed by the developer, the
+txtTest_Change event fires and the property page's Changed property
+is set to True. This property does two things. When it is set
+to True, the Apply button for the property page is enabled. Also,
+the property page automatically triggers the ApplyChanges event
+when the OK button is clicked or another property page is selected.
+<P>
+When the developer clicks the Apply button or clicks the OK button
+while the Changed property is True, the ApplyChanges event is
+triggered. This event indicates the need to write the property
+values to the control. Let's take a closer look at the events
+and properties of the PropertyPage object.
+<H3><A NAME="PropertyPageProperties">
+Property Page Properties</A></H3>
+<P>
+If you take a quick look at the VB property window for a Property
+Page object you will see that it supports virtually all of the
+properties, methods, and events of a standard form. It can contain
+both standard controls and ActiveX controls. This means you have
+effectively as much programming flexibility within a property
+page as Visual Basic can provide. The only limit is that you are
+strongly encouraged to keep your user interface within the property
+page. You can bring up other forms from the property page, but
+doing so strays considerably from what developers are accustomed
+to. So you should do so only when absolutely necessary.
+<P>
+There are a number of properties and events that are unique to
+property pages. These are described in the remainder of this section.
+<H4>The Changed Property</H4>
+<P>
+When this property is True, the Apply button in the property page
+container window is enabled. In addition, clicking on the OK button
+or switching to a different property page will automatically trigger
+the Property page's ApplyChanges event.
+<P>
+If you set this property to True during the ApplyChanges event
+and the event has been triggered by clicking on OK or attempting
+to switch to another page, the page will not close.
+<H4>The SelectedControls Property</H4>
+<P>
+The SelectedControls collection has two properties. The Count
+property indicates the number of controls that are currently selected.
+The Item property, which is the default property for the object,
+contains references to the selected controls.
+<P>
+How do you select more than one control for a property page? With
+Visual Basic, you can do this by first bringing up the property
+pages for one control, then clicking on additional controls while
+holding the control or shift key down. Other containers may provide
+other techniques for selecting multiple controls.
+<P>
+You should consider how you would like to handle multiple control
+selections when designing your property page. You may be tempted
+to just access the first control in the list, but this could lead
+to confusion among developers, not to mention taking from them
+the option of applying property changes to more than one control
+at a time. An example of how to handle this situation follows
+later in this chapter.
+<H4>The StandardSize Property</H4>
+<P>
+When you create a blank property page, it is created with the
+size 395 x 233 pixels. This is a custom size that works fine with
+Visual Basic containers. There are two standard sizes that can
+be set using this property, 375 x 179 and 375 x 101 pixels. A
+well-behaved container will expand the size of its property page
+window to handle whatever size you choose. That said, if you don't
+need the full amount of space provided by the default size, feel
+free to choose one of the smaller sizes. Developers generally
+appreciate it when control vendors don't waste screen space unnecessarily.
+The Microsoft documentation recommends that you avoid using these
+standard settings, as they may not adapt correctly to different
+display resolutions on the developer's system.
+<H3><A NAME="PropertyPageEvents">
+Property Page Events</A></H3>
+<P>
+Property pages support most of the standard form events. They
+do not support a Load or Unload event because, frankly, these
+would serve little purpose. The Initialize and Terminate events
+for property pages work exactly like those of a form. You can
+access controls contained on the property pages during both of
+these events. A property page is not destroyed when you switch
+between property pages by tabbing between pages for a particular
+control. But it usually is destroyed when the property page container
+is closed or you switch to property pages for a different control.
+<H4>The SelectionChanged Event</H4>
+<P>
+This is one of the two truly important events for any property
+page. This event is triggered any time a control is selected for
+editing via the property page. It should be treated somewhat like
+the Load event for a form. During this event you can access the
+associated control using the SelectedControls collection and load
+the current values of properties for the control. It is during
+this event that you should handle the case of multiple selected
+controls.
+<P>
+If the PropertyChanged method is called for any property on the
+control, this event will be triggered. This can lead to interesting
+side effects, as you will see later.
+<P>
+An important part of understanding this event is to take into
+consideration when it does not occur. This event is not triggered
+when you switch between property pages, except as a result of
+a property being changed. Nor can you use the GotFocus or LostFocus
+event to detect the switch between pages. These events are not
+triggered if your page contains any controls (which is usually
+the case). Fortunately, this is rarely a problem. From your point
+of view, tabbing to another page is roughly equivalent to your
+page being temporarily covered by another window.
+<H4>The ApplyChanges Event</H4>
+<P>
+This event is triggered any time the settings in the property
+page need to be written to the control. It occurs when the developer
+clicks on the Apply button or when the Changed property is True
+and the developer either clicks on the OK button, closes the page
+using the system menu, or selects a different page. It is not
+called when the page is closed via the Cancel button.
+<H4>The EditProperties Event</H4>
+<P>
+With some containers, when you click on an individual property
+in the property window, instead of displaying all available property
+pages, the container will display the one property page associated
+with the property whose dialog button you clicked. In this case,
+the EditProperties event will be triggered to indicate which property
+caused the property page to appear. A typical use for this event
+is to set the focus to the control on the property page responsible
+for editing the property in question.
+<P>
+You should not count on this event occurring. A container has
+the option of bringing up all of the property pages associated
+with the control, in which case this event typically will not
+be triggered.
+<H2><A NAME="PropertyPageTechniques"><FONT SIZE=5 COLOR=#FF0000>
+Property Page Techniques</FONT></A></H2>
+<P>
+So far you have seen two approaches for using property pages.
+You've seen that properties on a control can be edited on property
+pages. In <A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm" >Chapter 19</A> you saw that a property page can be used
+to edit a complex property or object. In both cases the property
+pages followed a standard approach:
+<UL>
+<LI>The property page loads property values from the control.
+<LI>The developer has the option of editing the property values
+in the page.
+<LI>The developer may apply or cancel the assignment of changed
+property values to the control.
+</UL>
+<P>
+The PrpPage1.vbg program group contains two projects: The PropPgs1.vbp
+project contains a control, PropPageCtlA, and a property page,
+PropPageA1. The PropPageTest1 project contains a form that holds
+two instances of the PropPageCtlA control.
+<P>
+The PropPageCtlA control contains four properties of interest.
+The Label1Caption and Label2Caption properties are reflected in
+the Label1 and Label2 constituent controls for the control. The
+Label3 constituent control demonstrates control configuration
+without use of properties. The BackColor property controls the
+background color of the control. The ButtonVisible property determines
+whether the Command1 constituent control is visible. The listing
+for the control module is shown in Listing 20.2.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 20.2:&nbsp;The PropPageCtlA Control<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+  ' Guide to the Perplexed
+' PropPgs1 example from chapter 20
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=Label1,Label1,-1,Caption
+Public Property Get Label1Caption() As String
+   Label1Caption = Label1.Caption
+End Property
+
+Public Property Let Label1Caption(ByVal New_Label1Caption As String)
+   Label1.Caption() = New_Label1Caption
+   PropertyChanged &quot;Label1Caption&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=Label2,Label2,-1,Caption
+Public Property Get Label2Caption() As String
+   Label2Caption = Label2.Caption
+End Property
+
+Public Property Let Label2Caption(ByVal New_Label2Caption As String)
+   Label2.Caption() = New_Label2Caption
+   PropertyChanged &quot;Label2Caption&quot;
+End Property
+
+'Load property values from storage
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   UserControl.BackColor = PropBag.ReadProperty(&quot;Backcolor&quot;, &amp;H8000000F)
+   Label1.Caption = PropBag.ReadProperty(&quot;Label1Caption&quot;, &quot;Label1&quot;)
+   Label2.Caption = PropBag.ReadProperty(&quot;Label2Caption&quot;, &quot;Label2&quot;)
+   Command1.Visible = PropBag.ReadProperty(&quot;ButtonVisible&quot;, True)
+End Sub
+
+'Write property values to storage
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;Backcolor&quot;, UserControl.BackColor, &amp;H8000000F)
+   Call PropBag.WriteProperty(&quot;Label1Caption&quot;, Label1.Caption, &quot;Label1&quot;)
+   Call PropBag.WriteProperty(&quot;Label2Caption&quot;, Label2.Caption, &quot;Label2&quot;)
+   Call PropBag.WriteProperty(&quot;ButtonVisible&quot;, Command1.Visible, True)
+End Sub
+
+Public Property Get BackColor() As OLE_COLOR
+   BackColor = UserControl.BackColor
+End Property
+
+Public Property Let BackColor(ByVal vNewValue As OLE_COLOR)
+   UserControl.BackColor = vNewValue
+   PropertyChanged &quot;BackColor&quot;
+End Property
+
+Friend Property Get InternalLabel3() As Label
+   Set InternalLabel3 = Label3
+End Property
+
+Public Property Get ButtonVisible() As Boolean
+   ButtonVisible = Command1.Visible
+End Property
+
+Public Property Let ButtonVisible(ByVal vNewValue As Boolean)
+   Command1.Visible = vNewValue
+End Property
+
+Public Sub About()
+   frmAbout.Show vbModal
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+There are a couple of interesting features to note about this
+control. The control has a third label control, Label3, that is
+not exposed through a public property. However, the control does
+include a Friend function, which exposes a reference to the Label3
+control. This can allow a property page to gain direct access
+to the label, since it is part of the same project. It would be
+a major error to expose a constituent object publicly in this
+manner, since that would give access to the object to everyone
+using your control. However, it is safe to do so within your own
+project, since you have full control over what is done with the
+object.
+<H3><A NAME="ThePropPageAPropertyPage">
+The PropPageA1 Property Page</A></H3>
+<P>
+The PropPageA1 page demonstrates a number of property page techniques:
+<UL>
+<LI>The standard way of editing a property, used with the Label1Caption
+property
+<LI>The immediate update method of editing a property, used with
+the Label2Caption property
+<LI>Configuring a control without using a property, used to configure
+the Label3 constituent control
+<LI>Editing properties on multiple pages, used with the ButtonVisible
+property
+<LI>How to handle invalid property settings
+</UL>
+<P>
+Listing 20.3 shows the listing for the PropPageA1 property page.
+An in-depth explanation of how it works follows.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 20.3:&nbsp;The PropPageA1 Property Page<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to perplexed:
+' Property page example chapter 20
+' Copyright (c) 1997, by Desaware Inc.  All Rights Reserved
+Option Explicit
+
+Private Declare Function GetParent Lib &quot;user32&quot; (ByVal hwnd As Long) As Long
+Private Declare Function EnableWindow Lib &quot;user32&quot; (ByVal hwnd As Long, _
+ByVal fEnable As Long) As Long
+
+Private m_ReadInProgress As Boolean
+Private m_IgnoreSelectionChanged As Boolean
+Private m_SavedChangedState As Boolean
+
+Private Sub PropertyPage_Initialize()
+   Debug.Print &quot;Property page initialized&quot;
+End Sub
+
+Private Sub PropertyPage_Terminate()
+   Debug.Print &quot;Property page terminated&quot;
+End Sub
+
+Private Sub PropertyPage_EditProperty(PropertyName As String)
+   lblProp.Caption = &quot;Editing property: &quot; &amp; PropertyName
+   Select Case PropertyName
+      Case &quot;Label1Caption&quot;
+         txtLabel1Caption.SetFocus
+      Case &quot;Label2Caption&quot;
+         txtLabel2Caption.SetFocus
+      Case &quot;ButtonVisible&quot;
+         chkButtonVisible.SetFocus
+   End Select
+End Sub
+
+' Label2 is immediate update
+Private Sub txtLabel2Caption_Change()
+   If Not m_ReadInProgress Then
+      m_IgnoreSelectionChanged = True
+      m_SavedChangedState = Changed
+      SelectedControls(0).Label2Caption = txtLabel2Caption.Text
+   End If
+End Sub
+
+Private Sub chkButtonVisible_Click()
+   If Not m_ReadInProgress Then
+      Changed = True
+   End If
+End Sub
+
+Private Sub txtLabel1Caption_Change()
+   If Not m_ReadInProgress Then
+      Changed = True
+   End If
+End Sub
+
+Private Sub txtLabel3Caption_Change()
+   If Not m_ReadInProgress Then
+      Changed = True
+   End If
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+   Dim ctl As PropPageCtlA
+   If SelectedControls.Count = 1 Then
+      If LCase$(txtLabel1Caption.Text) = &quot;bad&quot; Then
+         MsgBox &quot;Bad property value on Label1&quot;
+         txtLabel1Caption.SetFocus
+         ' Restore the original value
+         txtLabel1Caption.Text = SelectedControls(0).Label1Caption
+         Changed = True
+         Exit Sub
+      End If
+      SelectedControls(0).Label1Caption = txtLabel1Caption.Text
+      SelectedControls(0).Label2Caption = txtLabel2Caption.Text
+      Set ctl = SelectedControls(0)
+      ' Go early bound to access friend
+      ctl.InternalLabel3.Caption = txtLabel3Caption.Text
+   End If
+   For Each ctl In SelectedControls
+      ctl.ButtonVisible = chkButtonVisible
+   Next
+End Sub
+
+
+
+Private Sub PropertyPage_SelectionChanged()
+   Dim ctl As PropPageCtlA
+       
+   If m_IgnoreSelectionChanged Then
+      ' Triggered by immediate update to property that
+      ' calls PropertyChanged
+      m_IgnoreSelectionChanged = True
+      Changed = m_SavedChangedState
+      Exit Sub
+   End If
+
+   m_ReadInProgress = True
+   
+   SetControlsVisibility   ' handles multiple selection
+   If SelectedControls.Count = 1 Then
+      txtLabel1Caption.Text = SelectedControls(0).Label1Caption
+      ' Initialize the value
+      txtLabel2Caption.Text = SelectedControls(0).Label2Caption
+      Set ctl = SelectedControls(0)
+      ' Go early bound to access friend
+      txtLabel3Caption.Text = ctl.InternalLabel3.Caption
+   End If
+   ' We're late bound here
+   If SelectedControls(0).ButtonVisible Then
+      chkButtonVisible.Value = 1
+   Else
+      chkButtonVisible.Value = 0
+   End If
+   
+   m_ReadInProgress = False
+End Sub
+
+
+Private Sub SetControlsVisibility()
+   Dim ctl As Object
+   Dim EnableCtl As Boolean
+   If SelectedControls.Count = 1 Then EnableCtl = True
+   For Each ctl In PropertyPage.Controls
+      If TypeOf ctl Is Label Or TypeOf ctl Is TextBox Then
+         ' We could change visibility if you prefer
+         ctl.Enabled = EnableCtl
+      End If
+   Next
+End Sub
+
+Private Sub cmdAbout_Click()
+   Dim containerwnd&amp;
+   containerwnd = GetParent(PropertyPage.hwnd)
+   containerwnd = GetParent(containerwnd)
+   if containerwnd Then Call EnableWindow(containerwnd, False)
+   frmAbout.Show vbModal
+   if containerwnd Then Call EnableWindow(containerwnd, True)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The Initialize and Terminate events have debug.print statements
+to allow you to track the creation and destruction of the property
+page.
+<P>
+The first event of real interest is the SelectionChanged event.
+Let's ignore the m_IgnoreSelectionChanged flag for a moment. The
+first thing it does is set the m_ReadInProgress module variable
+to True to indicate that properties are being loaded. The function
+loads the values of properties and displays them in the property
+page's text boxes, which will trigger their Change events (or
+Clicked events, in the case of the checkbox). The default behavior
+for a control's Change event in a property page is to set the
+Changed property to True, which serves to enable the page's Apply
+button. But it is poor practice to enable the Apply button when
+no changes have occurred. At the very least it can be confusing
+to the developer. So the m_ReadInProgress variable is used in
+the text Change event and checkbox Click event to prevent the
+changed property from being set to True when the corresponding
+controls are being loaded with the initial property values.
+<H4>Handling Multiple Selections</H4>
+<P>
+The next thing the SelectionChanged event code does is handle
+the case of multiple selections. For this example, the property
+page is designed to handle multiple selection only for the ButtonVisible
+property. A private function named SetControlVisibility checks
+to see if multiple controls are selected. If so, it hides the
+Label and Text controls that are not used with multiple selections.
+<P>
+Keep in mind that this example demonstrates a very simple approach
+to handling multiple selections. Other approaches include:
+<UL>
+<LI>Repositioning the ButtonVisible checkbox to make the box look
+more balanced
+<LI>Adding a warning display, status display, or list box showing
+which controls are selected
+<LI>Providing a completely different property page appearance
+for multiple selection
+</UL>
+<P>
+In other words, you have enormous flexibility in how you wish
+to handle this situation. An interesting application of this will
+follow in the PropPgT2.vbp example project later in this chapter.
+<P>
+The SelectionChanged event code does not access properties that
+are not used when multiple selections are present. There is no
+harm in doing so in this case, but there is overhead in accessing
+a control's properties, especially from property pages where the
+access is typically late bound. Thus, avoiding unnecessary property
+access improves performance at the cost of a single If&#133;Then
+statement.
+<P>
+The ButtonVisible property is the only one on this page that is
+designed to work with multiple selections. How should you handle
+the situation where different controls may have different values
+for this property? The chkButtonVisible property is loaded based
+on the status of the first control in the SelectedControls collection.
+This is an arbitrary choice. It means that this example will coerce
+all of the controls to use the value of the first control. A more
+sophisticated approach would be to scan all the ButtonVisible
+property values for all of the controls. If they are all the same,
+you would set the checkbox to the appropriate value. However,
+if any of them differ, you could set the checkbox to the grayed
+state, indicating that they differ from each other. You could
+then modify the checkbox control logic to cycle from checked to
+unchecked to grayed. When the ApplyChanges event is triggered,
+you can set the control properties to checked or unchecked, or
+leave them unchanged if the checkbox is grayed. This approach
+is common in many dialog boxes and is left here as an exercise
+for the reader.
+<P>
+The actual mechanics of setting the property into the controls
+is shown in the ApplyChanges event. Simply loop through all of
+the controls in the SelectedControls collection and set the property
+to the desired value.
+<H4>Immediate Update Properties</H4>
+<P>
+The Label1Caption property works in the manner that you are accustomed
+to. You edit the property in the page and, when you are finished,
+you have the opportunity to apply the changes to the control.
+The Label2Caption property, on the other hand, is updated in the
+control immediately as you enter text into the property page (try
+it!). How is this accomplished? It's actually quite simple. The
+Control property is set during the txtLabel2Caption_Change event.
+<P>
+Note that the Changed property is not set to True in this case.
+Nor is there any need to write the property during the ApplyChanges
+event, since the updates happen immediately. The update only applies
+to the first control in the Selected Controls list. What if more
+than one control is selected? That's a trick question, and there
+is no need to worry about it because in this example the Text
+control is hidden if more than one ActiveX control was selected!
+<P>
+The one catch to this approach is that when the Label2Caption
+property is changed, the control's Property Let procedure calls
+the PropertyChanged function. This function causes the property
+page's SelectionChanged event to be triggered, which reloads all
+of the properties and clears the Changed flag. Any pending changes
+to the other properties would be lost. To avoid this, two flags
+are set during the txtLabel2Caption_Change event. One signals
+that the next SelectionChanged event should be ignored. The other
+holds the current value of the Changed property. If the m_IgnoreSelectionChanges
+flag is set during the SelectionChanged event, the property page
+ignores the event and restores the Changed property value.
+<P>
+How can you avoid these immediate update problems? One solution
+is to avoid calling the PropertyChanged function in the control
+when the property is set from the property page (you can use a
+flag in the control to indicate whether the property is being
+set from the page). Another approach is to not mix immediate and
+deferred update properties on the same page. This is probably
+the cleanest solution, and it minimizes the chance that developers
+will confuse one type of property with the other.
+<P>
+This is actually a simple illustration of a whole class of property
+page solutions where the property page can interact instantly
+with the control. There may be cases where you want the control
+to perform an operation or be updated as the developer makes changes,
+instead of waiting for the ApplyChanges event to be triggered.
+Another example of this will follow in the PropPgT2.vbp project
+that follows later in the chapter.
+<H4>Configuration Without Properties</H4>
+<P>
+The Label3Caption property demonstrates yet another technique
+in which a property page can perform a configuration operation
+on a control without going through public properties. 
+<P>
+As you may recall, the PropPageCtlA control exposes a Friend read-only
+property called InternalLabel3, which returns a reference to the
+constituent Label3 control. Accessing this Friend function is
+a little bit tricky. You cannot do so directly through the SelectedControls
+collection, because items in the collection are referenced As
+Object, and Friend functions can only be accessed on an early
+bound interface. Fortunately, obtaining this interface is simple,
+as shown in the following code:
+<BLOCKQUOTE>
+<PRE>
+   Dim ctl As PropPageCtlA
+   Set ctl = SelectedControls(0)
+   txtLabel3Caption.Text = ctl.InternalLabel3.Caption
+</PRE>
+</BLOCKQUOTE>
+<P>
+Once you have the early bound ctl interface, you can access the
+internal Label3 object and its properties as well. The process
+is reversed for writing the property during the ApplyChanges event.
+<P>
+Why would anyone want to use this somewhat awkward approach to
+control configuration? After all, it is easy enough to configure
+a property for access at design time only and to prevent it from
+being shown in the VB property window (using the Tools, Procedure
+Attributes dialog box).
+<P>
+The truth is, in this particular case, this approach is stupid.
+The extra effort has no real benefit. The advantages come into
+play in the following situations:
+<UL>
+<LI>Your control contains additional complex objects that need
+sophisticated editing beyond what is possible using the VB property
+window
+<LI>Your control needs to expose a large number of properties
+that are not used at design time and that would unreasonably clutter
+the VB property window
+<LI>Your property page needs to perform complex operations directly
+on constituent controls or the User Control object
+</UL>
+<P>
+In the present example, exposing a constituent control just to
+configure the control's caption property is silly. But if I wanted
+to create a property page that needed to adjust a number of the
+Label control's properties, it might make sense to take this approach.
+<H4>Handling Invalid Property Values</H4>
+<P>
+The Label1Caption property may seem, at first glance, to demonstrate
+a completely typical method for handling properties in a property
+page. At second glance, you will see that it is, in fact, completely
+typical. So, in order to prevent it from being just a waste of
+space in this example, I took the liberty of using it to demonstrate
+how you can handle invalid entries.
+<P>
+The error logic takes effect when you enter the word &quot;bad&quot;
+into the text box for the Label1Caption property. This logic can
+be found in the ApplyChanges event, which demonstrates the typical
+actions that your code should take in this situation:
+<UL>
+<LI>Bring up a message box explaining the error.
+<LI>Set the focus back to the control that has the error. This
+provides a clear indication to the developer as to which value
+needs to be fixed.
+<LI>Restore the original property value. This is useful in case
+the developer has forgotten what the original value was. Without
+some sort of feedback as to what might be a correct value, you
+may trap your developer in the property page forever (or at least
+until he or she remembers the Cancel button).
+<LI>Set the Changed property to True. This tells Visual Basic
+that it should not close the property page.
+</UL>
+<P>
+There is another technique you can use for validation. Instead
+of testing the property value and validating it within the property
+page, you can enable an error handler and attempt to set the property
+value, relying on the control to raise an error if the property
+value is invalid. On detecting this error, you can set the Changed
+property to True and abort the update operation. The only disadvantage
+to this approach is that if only one property is invalid, some
+or all of the properties that are valid will be set in the control,
+depending on the order in which you attempt to set the properties
+and the logic of your code. (For example, do you stop on first
+error or do you continue and attempt to set all properties?)
+<H4>Bringing Up Additional Dialog Boxes</H4>
+<P>
+The About button on the property page shows that you can, in fact,
+bring up a modal form from within the property page. If you just
+use the Show command with the vbModal option, the form will be
+modal with respect to your property page. However, it is typically
+not modal with respect to the property page container window,
+leading to the rather odd effect of being able to reposition the
+property window under the modal dialog box.
+<P>
+Microsoft's documentation discourages you from showing modal forms
+during property pages. While I am inclined to agree with them
+from the standpoint of usability, it turns out that there is an
+easy way to improve the behavior of the property page container,
+at least when Visual Basic is the container. This is shown in
+the CmdAbout_Click event in the PropPageA1 listing. The routine
+uses API functions to obtain the handle of the window two levels
+up from your property pages (the first level up is the tabbing
+window, the next one is the actual container window). It then
+disables the window, reenabling it only after you close the modal
+form.
+<P>
+You should be aware, however, that this technique is not documented
+or approved by Microsoft, so there is no assurance that it will
+work with every container or that it will even continue to work
+with future versions of Visual Basic. However, if it doesn't work,
+the effects are likely to be harmless.
+<P>
+Whatever you do, do <I>not</I> show modeless forms from a property
+page (or an ActiveX control, or any other ActiveX DLL component
+for that matter). Aside from being poor programming style, the
+real problem is that many containers do not support modeless forms
+that are created by ActiveX DLLs of any kind.
+<H4>Random Thoughts</H4>
+<P>
+The Property Page Wizard is another case of a wizard being rather
+useful, especially once you understand exactly what it is doing.
+The wizard is easy to use, allowing you to create new pages, to
+map properties to pages, and to select and order pages.
+<P>
+But the wizard focuses on the plainest of the standard techniques
+for handling properties. You should be sure to review carefully
+the code that it produces to be sure it serves your purposes,
+especially if you wish to handle multiple control selection correctly.
+<H3><A NAME="ThePropPgTvbpProject">
+The PropPgT2.vbp Project</A></H3>
+<P>
+The PropPgT2 project demonstrates a completely different use for
+property pages, demonstrating how they can be used to create design
+tools and utilities. The project contains a form, a private control,
+and a property page that is used by the control. The only reason
+a private control was used in this example is for convenience-it
+would work just as well with a stand-alone control. Listing 20.4
+shows the code for the PropCtlB control module.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 20.4:&nbsp;The PropCtlB Control<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed
+' Chapter 20 - Property page example
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+Option Explicit
+
+Public Property Get Font() As Font
+   Set Font = UserControl.Font
+End Property
+
+Public Property Let Font(ByVal vNewValue As Font)
+   Set UserControl.Font = vNewValue
+   PropertyChanged &quot;Font&quot;
+End Property
+
+Private Sub UserControl_InitProperties()
+   Set UserControl.Font = Ambient.Font
+End Sub
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   Set UserControl.Font = PropBag.ReadProperty(&quot;Font&quot;, Ambient.Font)
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;Font&quot;, UserControl.Font, Ambient.Font)
+End Sub
+
+Private Sub UserControl_Resize()
+   UserControl.Size Label1.Width, Label1.Height
+End Sub
+
+Friend Function Container() As Object
+   Set Container = UserControl.Extender.Parent
+End Function
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+As you can see, the control contains a single public Font property.
+The control contains a single constituent Label control that displays
+the message: &quot;Aligner-Use Property Page to Align.&quot; The
+Label control has a fixed size, and the control is automatically
+sized to match it. This means that the developer does not have
+the ability to resize the control.
+<P>
+The only really odd function in this control is the Container
+function, which returns a reference to the control's container.
+The container, form frmtest2.frm, has no code. It does hold an
+instance of the PropCtlB control and five randomly positioned
+Label controls.
+<H4>The PropPg2A Property Page</H4>
+<P>
+This property page contains a list box and a command button. Listing
+20.5 shows the code for this property page. As you can see, it
+bears relatively little resemblance to a typical property page.
+For one thing: there are no properties!
+<HR>
+<BLOCKQUOTE>
+<B>Listing 20.5:&nbsp;Property Page PropPg2A<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed
+' Chapter 20 - Alignment property page
+' Copyright (c) 1997, by Desaware Inc. All Rights Reserved
+Option Explicit
+
+Private m_LeftPosition As Long
+
+Private Sub cmdExecute_Click()
+   AdjustLabels
+End Sub
+
+Private Sub PropertyPage_SelectionChanged()
+   ' Prior values may be held!
+   lstLabels.Clear
+   If SelectedControls.Count &gt; 1 Then
+      lstLabels.Visible = False
+      ' Display warning instead
+      lstWarning.Visible = True
+   Else
+      ' This may be overkill (is for VB)
+      lstLabels.Visible = True
+      ' Display warning instead
+      lstWarning.Visible = False
+   End If
+   
+   Set lstLabels.Font = SelectedControls(0).Font
+   
+   LoadListBox
+
+End Sub
+
+
+Private Sub LoadListBox()
+   Dim MyControl As PropCtlB
+   Dim ContainerObj As Object
+   Dim InternalControl As Object
+   Set MyControl = SelectedControls(0)
+   Set ContainerObj = MyControl.Container
+   For Each InternalControl In ContainerObj.Controls
+      If TypeOf InternalControl Is Label Then
+         lstLabels.AddItem InternalControl.Name
+      End If
+   Next
+End Sub
+
+Private Sub AdjustLabels()
+   Dim MyControl As PropCtlB
+   Dim ContainerObj As Object
+   Dim InternalControl As Object
+   Dim lstidx As Long
+   Set MyControl = SelectedControls(0)
+   Set ContainerObj = MyControl.Container
+   m_LeftPosition = 0
+   For Each InternalControl In ContainerObj.Controls
+      If TypeOf InternalControl Is Label Then
+         For lstidx = 0 To lstLabels.ListCount - 1
+            ' We found a selected label with the correct name
+            If InternalControl.Name = lstLabels.List(lstidx) _
+            And lstLabels.Selected(lstidx) Then
+               AdjustThisLabel InternalControl
+            End If
+         Next
+      End If
+   Next
+End Sub
+
+' Note we QI for the Label IDispatch interface during the call
+Private Sub AdjustThisLabel(lbl As Label)
+   If m_LeftPosition = 0 Then
+      m_LeftPosition = lbl.Left
+   Else
+      lbl.Left = m_LeftPosition
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The SelectionChanged event does not load any properties, since
+there aren't any to load. The first thing it does is clear the
+list box, then checks to see if more than one page is selected.
+This page is designed to work only with a single control, so if
+more than one control is selected, it hides the list box and command
+button and shows a label box that contains a descriptive warning
+message. (This Label control is behind the list box at design
+time. If you want to see it, load the project and temporarily
+move the list box aside.)
+<P>
+The list box is then set to use the font from the control. Note
+the subtle point here: the property page does not edit the font,
+it simply uses it. You can switch to the Font property page to
+edit the font, then switch back to this page and see that the
+list box font has been updated by way of the control's Font property.
+This demonstrates a mechanism for property pages to communicate
+with each other.
+<P>
+Finally, the private LoadListBox function is called to load the
+names of all of the Label controls from the control's container
+into the list box. This is illustrated in Figure 20.2.
+<P>
+<A HREF="f20-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f20-2.gif"><B>Figure 20.2 :</B> <I>The PropPg2A property page at runtime</I>.</A>
+<P>
+Hopefully you can spot the one thing that is wrong with the LoadListBox
+function in this code example. That's right-there is no error
+checking. I've taken advantage of the fact that this particular
+control is being tested under Visual Basic to perform operations
+that are sure to succeed. If you want to have any hope of this
+routine working under other containers (or at least failing gracefully),
+you should add error trapping to this example.
+<P>
+The Changed property is never set to True for this property page.
+In fact, the ApplyChanges event is not used at all. This page
+is designed to align the Label controls on the control's container
+to the left margin of the first control on the list. 
+<P>
+To do this, the developer first selects the controls to be aligned
+in the list box. When the Execute button is clicked, the AdjustLabels
+function is called. This routine scans through all of the controls
+present on your control's container. If the control is a Label
+control, and its name is selected in the list box, it is aligned
+to the left position of the first Label control found.
+<P>
+Before concluding, take a look at the PropPg2B property page.
+As you can see, it contains no code. Yet it still appears because
+it was assigned to the control using the UserControl's PropertyPages
+property dialog box.
+<P>
+My point? That you can truly do almost anything in property pages,
+including giving developers powerful tools for configuring both
+your control and, potentially, the environment in which they exist.
+<H2><A NAME="AboutBoxesandOthers"><FONT SIZE=5 COLOR=#FF0000>
+About Boxes and Others</FONT></A></H2>
+<P>
+The PropPgs1.vbp project also demonstrates how to add an About
+Box to your control. This is easily accomplished by adding a method
+that will show a modal form. The method must be assigned the AboutBox
+procedure ID using the Tools, Procedure Attributes dialog box.
+This causes the VB property window to display an About property
+for the control at design time. The procedure will be called any
+time the dialog button for the About property is clicked. The
+procedure may have any name. All that counts is that it have the
+correct procedure ID.
+<P>
+Microsoft provides an AboutBox template that includes a system
+information option. It's a reasonably nice-looking About Box,
+and the system information option is nice, so I see no reason
+not to use it.
+<P>
+As mentioned earlier, with regard to property pages, your control
+should avoid bringing up any other kind of dialog boxes (modal
+forms). You should definitely avoid modeless forms because not
+every container is able to support modeless forms that are shown
+by ActiveX DLLs.
+<P>
+This concludes our coverage of property pages and dialog boxes
+with regard to ActiveX controls. Next, despite my best efforts
+to delay the inevitable, it is finally time to talk about (drum-roll
+please): the Internet.
+<HR>
+
+<CENTER><P><A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch19.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch21.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch21.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

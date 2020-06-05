@@ -1,0 +1,844 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 11</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>Reading and Writing with Java</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+
+<UL>
+<LI><A HREF="#ThejavaioPackage" >The java.io Package</A>
+<LI><A HREF="#TheTwoBigDaddies" >The Two Big Daddies</A>
+<UL>
+<LI><A HREF="#InputStream" >InputStream</A>
+<LI><A HREF="#OutputStream" >OutputStream</A>
+</UL>
+<LI><A HREF="#SoManyStreamsinJava" >So Many Streams in Java</A>
+<UL>
+<LI><A HREF="#TheFileInputStreamandFileOutputStream" >The FileInputStream and FileOutputStream Classes</A>
+<LI><A HREF="#TheByteArrayInputStreamandByteArrayOu" >The ByteArrayInputStream and ByteArrayOutputStream Classes</A>
+<LI><A HREF="#FilterInputStreamFilterOutputStreama" >FilterInputStream, FilterOutputStream, and Their Children</A>
+<LI><A HREF="#TheDataInputStreamandDataOutputStream" >The DataInputStream and DataOutputStream Classes</A>
+<LI><A HREF="#ThePipedInputStreamandPipedOutputStre" >The PipedInputStream and PipedOutputStream Classes</A>
+</UL>
+<LI><A HREF="#DealingwithFiles" >Dealing with Files</A>
+<UL>
+<LI><A HREF="#TheFileClass" >The File Class</A>
+<LI><A HREF="#RandomAccessFiles" >Random Access Files</A>
+</UL>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+Reading and writing with Java is based on the concept of streams.
+Just as a stream of water flows in one direction, starting and
+ending, so does a stream of data. <I>Streams</I> are simply linear
+paths that connect a data producer and a consumer together to
+allow the <I>serial transmission</I> of data (one chunk after
+another). Streams can connect many different things. A stream
+can connect two independent processes together, for example. Or,
+it can connect a class to a file. It can even connect your class
+to a network.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Remember that applets can only make network or file connections back to their originating server. Streams are useful in applets only for transmitting data between the applet source and the applet itself. You will use streams in <A HREF="ch12.htm" >Chapter 12</A>, &quot;Network Programming with Java,&quot; to enable your applets to connect back to the Web server from where they came.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Streams are the most powerful means of data exchange in use today.
+They are perfect for Java's object-oriented nature and its multithreaded
+environment. Multithreading is covered in <A HREF="ch16.htm" >Chapter 16</A>,
+&quot;Multithreading with Java.&quot; If you aren't familiar with
+multithreading, you should just know for now that it is basically
+virtual parallel processing so that your programs can run multiple
+processes simultaneously.
+<P>
+Java uses two types of streams: input and output. These are defined
+abstractly in the <TT>InputStream</TT>
+and <TT>OutputStream</TT> classes.
+All the types of input and output streams descend from these two
+classes, which are implemented in the <TT>java.awt.io</TT>
+package. These two classes and their descendants are designed
+to help you deal with all the circumstances in which you will
+be implementing streams.
+<H2><A NAME="ThejavaioPackage"><B><FONT SIZE=5 COLOR=#FF0000>The
+</FONT></B><TT><B><FONT SIZE=5 COLOR=#FF0000>java.io</FONT></B></TT><B><FONT SIZE=5 COLOR=#FF0000>
+Package</FONT></B></A></H2>
+<P>
+The <TT>java.io</TT> package is a
+group of library classes that enable you to implement and use
+data streams in your Java programs. These classes derive from
+the abstract classes <TT>java.io.InputStream</TT>
+and <TT>java.io.OutputStream</TT>.
+Different subclasses of these abstract classes enable you to use
+different types of streams in multiple situations. <TT>FileInputStream</TT>,
+for example, is a subclass of the <TT>InputStream</TT>
+abstract class.
+<P>
+All classes in the <TT>java.io</TT>
+package generally throw <TT>IOException</TT>s.
+These exceptions deal with input and output errors. One such class
+that is a descendant of the <TT>IOException</TT>
+class is the <TT>EOFException</TT>,
+which is thrown when a read encounters the end of a file. You
+learned about exceptions in the preceding chapter. When implementing
+streams in your Java programs, you need to be sure to deal with
+these exceptions when necessary.
+<H2><A NAME="TheTwoBigDaddies"><B><FONT SIZE=5 COLOR=#FF0000>The
+Two Big Daddies</FONT></B></A></H2>
+<P>
+As you learned earlier, there are two major abstract classes in
+the <TT>java.io</TT> package from
+which all the stream classes descend: <TT>InputStream</TT>
+and <TT>OutputStream</TT>. The most
+important fact about these two classes is that they are all abstractly
+implemented. For this reason, to actually implement a stream,
+you will not use one of these classes, but instead will use their
+subclasses. <TT>InputStream</TT> and
+<TT>OutputStream</TT> are simply templates
+for the process of stream handling.
+<P>
+Each of these two classes is designed to cause a thread under
+which they are running to wait until all the input requested is
+available to be read or written. This comes back to the concept
+of multithreading. The thread in which your stream is implemented
+can be blocked by the <TT>read</TT>
+and <TT>write</TT> method until its
+task is done.
+<H3><A NAME="InputStream"><TT><B><FONT SIZE=4>InputStream</FONT></B></TT></A>
+</H3>
+<P>
+The <TT>InputStream</TT> class abstractly
+implements a number of methods that allow for the consuming of
+bytes of data. These methods follow:
+<BLOCKQUOTE>
+<TT>read<BR>
+skip<BR>
+available<BR>
+close<BR>
+mark<BR>
+reset</TT>
+</BLOCKQUOTE>
+<H4><TT><B>read</B></TT></H4>
+<P>
+The <TT>read</TT> method simply reads
+a byte. The <TT>InputStream</TT> class
+contains several <TT>read</TT> methods:
+<BR>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><TT>abstract int read()</TT>
+</TD><TD WIDTH=409>Returns the next byte in the stream.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=182><TT>int read(byte bytearray[])</TT>
+</TD><TD WIDTH=409>Returns an array of bytes read in from the stream. The integer returned is the number of bytes in the array.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=182><TT>int read(byte bytearray[],</TT>
+</TD><TD WIDTH=409>This returns the number of bytes read.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=182><TT>int offset, int length)</TT>
+</TD><TD WIDTH=409>The bytes read are stored in the <TT>bytearray</TT> returned, which is of size <TT>length</TT>. The <TT>offset</TT> is the offset in the <TT>bytearray</TT> where the bytes are placed.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+As with all the methods in the <TT>io</TT> package, all these methods throw <TT>IOException</TT>s.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>read</TT> function returns
+a value of -1 to signify the end of a stream.
+<H4><TT><B>skip</B></TT></H4>
+<P>
+The <TT>skip</TT> method is used to
+move past a number of bytes in a stream. It takes the following
+form:
+<BLOCKQUOTE>
+<TT>long skip (long NumBytes)</TT>
+</BLOCKQUOTE>
+<P>
+Here, <TT>NumBytes</TT> is the number
+of bytes you want to skip, and the number returned is the actual
+number of bytes that were skipped. This number can be less than
+or equal to the value in <TT>NumBytes</TT>
+if the end of the stream is reached, for example.
+<H4><TT><B>available</B></TT></H4>
+<P>
+The <TT>available</TT> function returns
+the amount of bytes that can be read without waiting. In other
+words, it returns the number of bytes that you can have right
+now, without your process having to wait around for more to be
+generated. The <TT>available</TT>
+function has the following declaration in the <TT>InputStream</TT>
+class:
+<BLOCKQUOTE>
+<TT>abstract int available() throws IOException
+{</TT>
+</BLOCKQUOTE>
+<H4><TT><B>close</B></TT></H4>
+<P>
+The <TT>close</TT> method closes the
+input stream after you are done with it. This method frees the
+resources that a stream is using and allows them to be used in
+other areas. This usually is included in the <TT>finally</TT>
+section of your <TT>try</TT>/<TT>catch</TT>
+block performing I/O tasks (see the preceding chapter).
+<H4><TT><B>mark</B></TT></H4>
+<P>
+The <TT>mark</TT> void is implemented
+in only some of the stream classes. It places a marker at the
+current position in the stream. This marking procedure is meant
+to be used in situations in which you must read a little ahead
+to figure out what a stream contains by using some kind of general
+parser. Look in the library source code for the <TT>InputStream</TT>
+class for a better idea of how Java's designers think you would
+implement this kind of parser.
+<P>
+You can check to see whether the stream you are using allows the
+<TT>mark</TT> method by using the
+<TT>markSupported</TT> function:
+<BLOCKQUOTE>
+<TT>boolean markSupported()</TT>
+</BLOCKQUOTE>
+<P>
+This function returns <TT>true</TT>
+if you can use markers; otherwise, it returns <TT>false</TT>.
+<P>
+The <TT>mark</TT> void accepts an
+integer parameter that sets the maximum number of bytes you will
+read before resetting back to the mark with the <TT>reset</TT>
+method. If you read past that number of bytes, the mark is forgotten.
+<H4><TT><B>reset</B></TT></H4>
+<P>
+The <TT>reset</TT> void returns your
+read position back to the place where you just marked.
+<H3><A NAME="OutputStream"><TT><B><FONT SIZE=4>OutputStream</FONT></B></TT></A>
+</H3>
+<P>
+The <TT>OutputStream</TT> class abstractly
+defines a number of methods that enable you to produce bytes for
+output. These methods are <TT>write</TT>,
+<TT>flush</TT>, and <TT>close</TT>.
+<H4><TT><B>write</B></TT></H4>
+<P>
+The <TT>write</TT> method in the <TT>OutputStream</TT>
+class does what you would expect: It places bytes into an output
+stream. There are three major forms of the <TT>write</TT>
+method:<P>
+
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><TT>abstract void write(int <I>b</I>)</TT>
+</TD><TD WIDTH=318>Writes a byte <I>b</I>. It blocks your process until the byte actually is written.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=272><TT>void write(byte <I>b</I>[])</TT>
+</TD><TD WIDTH=318>Writes an array of bytes. It blocks your process until the bytes actually are written.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=272><TT>void write(byte <I>b</I>[],</TT>
+</TD><TD WIDTH=318>Writes a subarray of the byte array.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=272><TT>int off, int length)</TT>
+</TD><TD WIDTH=318><TT>off</TT> is the offset in the array, and the <TT>length</TT> is the number of bytes written. This method also blocks your process until the bytes actually are written.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Why  is only one of the methods <TT>abstract</TT>
+for both the <TT>read</TT> and <TT>write</TT>
+methods? Well, if you look at the source of the <TT>OutputStream</TT>
+and <TT>InputStream</TT> classes,
+you'll see that the other methods that are not <TT>abstract</TT>
+simply do some manipulation and then call the original <TT>abstract</TT>
+method.
+<H4><TT><B>flush</B></TT></H4>
+<P>
+The <TT>flush</TT> method flushes
+the stream. It pushes out any bytes that are buffered in the stream.
+<H4><TT><B>close</B></TT></H4>
+<P>
+The <TT>close</TT> method closes the
+stream. It releases any of the resources associated with the stream.
+<H2><A NAME="SoManyStreamsinJava"><B><FONT SIZE=5 COLOR=#FF0000>So
+Many Streams in Java</FONT></B></A></H2>
+<P>
+The basic functions are used by the subclasses of the <TT>InputStream</TT>
+and <TT>OutputStream</TT> classes
+to allow the reading and writing of more complicated structures
+than bytes between a variety of sources. This variety of classes
+is designed to take much of the &quot;grunt work&quot; out of
+input and output for you, the programmer.
+<P>
+Table 11.1 lists the multiple streams available, which are described
+in this chapter.<BR>
+<P>
+<CENTER><B>Table 11.1. Java streams.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Stream Type</I></TD><TD WIDTH=119><I>Types Handled</I>
+</TD><TD WIDTH=236><I>Function</I></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>BufferedInputStream</TT>
+</TD><TD WIDTH=119>bytes</TD><TD WIDTH=236>Allows the buffered input of a stream of bytes.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>BufferedOutputStream</TT>
+</TD><TD WIDTH=119>bytes</TD><TD WIDTH=236>Allows the buffered output of a stream of bytes.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>ByteArrayInputStream</TT>
+</TD><TD WIDTH=119>bytes</TD><TD WIDTH=236>A stream in which the source is a byte array.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>ByteArrayOutputStream</TT>
+</TD><TD WIDTH=119>bytes</TD><TD WIDTH=236>A stream for which the destination is a byte array.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>DataInputStream</TT>
+</TD><TD WIDTH=119>all</TD><TD WIDTH=236>Allows the input of a stream of binary data.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>DataOutputStream</TT>
+</TD><TD WIDTH=119>all</TD><TD WIDTH=236>Allows the output of a stream of binary data.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>FileInputStream</TT>
+</TD><TD WIDTH=119>bytes</TD><TD WIDTH=236>File-specific stream input.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>FileOutputStream</TT>
+</TD><TD WIDTH=119>bytes</TD><TD WIDTH=236>File-specific stream output.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>FilterInputStream</TT>
+</TD><TD WIDTH=119>all</TD><TD WIDTH=236>Parent class for implementing filtered input streams.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>FilterOutputStream</TT>
+</TD><TD WIDTH=119>all</TD><TD WIDTH=236>Parent class for implementing filtered output streams.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>InputStream</TT>
+</TD><TD WIDTH=119>bytes</TD><TD WIDTH=236>Generic input stream class.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>LineNumberInputStream</TT>
+</TD><TD WIDTH=119>all</TD><TD WIDTH=236>Implements a stream from which you can find out what line you are on at any time.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>OutputStream</TT>
+</TD><TD WIDTH=119>bytes</TD><TD WIDTH=236>Generic output stream class.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>PipedInputStream</TT>
+</TD><TD WIDTH=119>all</TD><TD WIDTH=236>Allows the creation of an input pipe between one thread and a producer thread.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>PipedOutputStream</TT>
+</TD><TD WIDTH=119>all</TD><TD WIDTH=236>Allows the creation of an output pipe between one thread and a consumer thread.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>PrintStream</TT>
+</TD><TD WIDTH=119>all</TD><TD WIDTH=236>Allows the typical text printing of data.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>PushBackInputStream</TT>
+</TD><TD WIDTH=119>bytes</TD><TD WIDTH=236>Implements an input stream with a 1-byte pushback buffer.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=236><TT>StringBufferInputStream</TT>
+</TD><TD WIDTH=119>strings</TD><TD WIDTH=236>Allows the buffered input of a stream of strings.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Remember that these classes are all implemented in the <TT>java.io</TT> package. To implement any of them, you need to use <TT>import java.io.*</TT> or the specific class you will be using. It is best to import only what you need to conserve resources.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheFileInputStreamandFileOutputStream"><B>The </B><TT><B><FONT SIZE=4>FileInputStream</FONT></B></TT><B><FONT SIZE=4>
+and </FONT></B><TT><B><FONT SIZE=4>FileOutputStream</FONT></B></TT><B><FONT SIZE=4>
+Classes</FONT></B></A></H3>
+<P>
+The <TT>FileInputStream</TT> class
+enables you to load information from a file located in the file
+system. The <TT>FileOutputStream</TT>
+class does just the opposite; it writes bytes to a file in the
+local file system. Suppose that you want to create an input stream
+from a file and then load the bytes one at a time and print them.
+The following code shows how you can use the <TT>FileInputStream</TT>
+to accomplish this:
+<BLOCKQUOTE>
+<TT>int x;<BR>
+<BR>
+try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Declare the file input stream.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;InputStream fis = new FileInputStream(&quot;c:\isnt\it\romantic\abc.txt&quot;);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Read in x from the file.&nbsp;&nbsp;If
+not EOF then print x out.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;while ((x = fis.read())!= -1) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(x);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+} catch (Exception e) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(e.getMessage());<BR>
+}<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+You do not need to open the file; it is done when the <TT>FileInputStream</TT> is constructed.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+And there you go. There is also another function you can use with
+the <TT>FileInputStream</TT> and <TT>FileOutputStream</TT>
+classes: the <TT>getFD</TT><I> </I>function,
+which returns a file descriptor of the stream.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The <TT>FileInputStream</TT> and <TT>FileOutputStream</TT> classes allow only the input and output of bytes.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheByteArrayInputStreamandByteArrayOu"><B>The </B><TT><B><FONT SIZE=4>ByteArrayInputStream</B></FONT></TT><B><FONT SIZE=4>
+and </FONT></B><TT><B><FONT SIZE=4>ByteArrayOutputStream</B></FONT></TT><B><FONT SIZE=4>
+Classes</FONT></B></A></H3>
+<P>
+These two stream types enable you to create streams to and from
+arrays of bytes. The following code block reads bytes from a stream
+and prints them to <TT>System.out</TT>:
+<BLOCKQUOTE>
+<TT>byte b = new byte[100];<BR>
+<BR>
+// Code to place numbers in b here . .<BR>
+<BR>
+try {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Declare the new byte array input stream.
+.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;InputStream BAIS = new ByteArrayInputStream(b);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;while (BAIS.available &gt; 0) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(BAIS.read());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+} catch (Exception e) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(&quot;Something went
+wrong sucka.&quot;);<BR>
+}<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+You also can use <TT>System.err</TT> and <TT>System.in</TT>, in addition to <TT>System.out</TT>. They represent the default error, input, and output, respectively.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Using the <TT>reset</TT> method on the <TT>ByteArrayInput</TT> stream resets the read position to the beginning of the stream in all cases, no matter what you do with the <TT>mark</TT> method.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="FilterInputStreamFilterOutputStreama"><TT><B><FONT SIZE=4>FilterInputStream</B></FONT></TT><B><FONT SIZE=4>,
+</FONT></B><TT><B><FONT SIZE=4>FilterOutputStream</B></FONT></TT><B><FONT SIZE=4>,
+and Their Children</FONT></B></A></H3>
+<P>
+The <TT>FilterInputStream</TT> and
+<TT>FilterOutputStream</TT> classes
+are subclasses of the <TT>InputStream</TT>
+and <TT>OutputStream</TT> classes,
+respectively. They function in the same way as their parents by
+making possible the existence of their children. You can implement
+your own filtered streams, although they will not do much good.
+The real difference is made by their children (this is discussed
+in the next section).
+<H4><B>The </B><TT><B>BufferedInputStream</B></TT><B>
+and </B><TT><B>BufferedOutputStream</B></TT><B>
+Classes</B></H4>
+<P>
+The <TT>BufferedInputStream</TT> and
+<TT>BufferedOutputStream</TT> classes
+extend the idea of the stream to include the capability to buffer
+the input and output stream. In a <I>buffered</I> stream, the
+next chunk of read or written data first is placed into a buffer
+and then is made available. The next read or write, in other words,
+is not done to the other end of the stream but instead to a buffer
+in memory.
+<P>
+Why is using a buffered stream advantageous? Well, there is one
+major benefit: It reduces the overall number of reads and writes
+to the stream by increasing the chunks of data handled at one
+time. Therefore, fewer accesses and connections between the device
+generating the data and the consumer occur.
+<P>
+Two major constructors exist for each of these types:
+<BLOCKQUOTE>
+<TT>BufferedInputStream(InputStream InS)
+<BR>
+BufferedInputStream(InputStream InS, int Size)<BR>
+BufferedOutputStream(OutputStream OutS)<BR>
+BufferedOutputStream(OutputStream OutS, int Size)</TT>
+</BLOCKQUOTE>
+<P>
+In each case, the constructor takes another instance of a stream
+and wraps the new buffered stream around it. So, your old stream
+is now a buffered stream. The following code declares a buffered
+file output stream:
+<BLOCKQUOTE>
+<TT>OutputStream FilOutStr = new FileOutputStream(&quot;/usr/bin/X11/dinky.dat&quot;);
+<BR>
+OutputStream BufOutStr = new BufferedOutputStream(FilOutStr, 1024);</TT>
+</BLOCKQUOTE>
+<P>
+The second parameter in each of the cases specifies the number
+of bytes the buffer will contain.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+There is also another class available that enables you to buffer an input of strings: the <TT>StringBufferInputStream</TT>. You also can use this class to do the same thing you do with bytes in the <TT>BufferedInputStream</TT> except with <TT>String</TT>s.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4><B>The </B><TT><B>PushBackInputStream</B></TT><B>
+Class</B></H4>
+<P>
+The <TT>PushBackInputStream</TT> class
+implements one more method: <TT>unread</TT>.
+This method enables you to implement a 1-byte pushback buffer.
+In other words, it enables you to push a byte back onto the stream.
+It implements the new <TT>unread</TT>
+method along with the other methods available in the <TT>InputStream</TT>
+class.
+<P>
+The <TT>unread</TT> method takes one
+parameter: a character (or byte) that you can push back onto the
+stream.
+<P>
+Why would you want to implement this? Suppose that you are using
+the first character of a stream to specify for what segment of
+your program this stream will be used. Each part of your program
+that might deal with the stream then checks the first character
+and, if it isn't what it is looking for, puts the character back
+on the stream and passes it to the next handler.
+<H4><B>The </B><TT><B>PrintStream</B></TT><B>
+Class</B></H4>
+<P>
+Remember all those times you used the <TT>System.out.print</TT>
+statement? Well, when you did, you were using one of the methods
+of a class that extends the <TT>PrintStream</TT>
+class.
+<P>
+The <TT>PrintStream</TT> class enables
+you to easily handle the output of the normal Java language types,
+such as integer, strings, and so on. You use this class to output
+the normal <TT>print</TT>, <TT>println</TT>,
+and <TT>write</TT> methods you are
+accustomed to in other languages such as C++.
+<P>
+The <TT>print</TT> method of an instance
+of the <TT>PrintStream</TT> is overloaded
+to accept all the general Java language types. Suppose that you
+want to write a <TT>long</TT> integer.
+You can use this code:
+<BLOCKQUOTE>
+<TT>PS.print(ALong);</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>println</TT> method prints
+its parameter and then moves to the next line:
+<BLOCKQUOTE>
+<TT>PS.println(AnInteger);</TT>
+</BLOCKQUOTE>
+<P>
+You also can use the <TT>write</TT>,
+<TT>flush</TT>, and <TT>close</TT>
+methods. The <TT>write</TT> method
+enables you to write bytes to the stream in the same format as
+the original abstract <TT>OutputStream</TT>
+class did.
+<P>
+You also can send an object to be printed. The value printed is
+what results from the object's <TT>toString</TT>
+function.
+<H4><B>The </B><TT><B>LineNumberInputStream</B></TT><B>
+Class</B></H4>
+<P>
+The <TT>LineNumberInputStream</TT>
+class enables you to implement a stream that lets you know what
+line you currently are viewing. You can declare this stream type
+as a wrapper to another stream:
+<BLOCKQUOTE>
+<TT>InputStream LnNoInpStr = new LineNumberInputStream(new
+FileInputStream(&quot;\usr2\1997\girdley\myfile.txt&quot;));</TT>
+</BLOCKQUOTE>
+<P>
+Then, at any point, you can use this code:
+<BLOCKQUOTE>
+<TT>LnNoInpStr.getLineNumber();</TT>
+</BLOCKQUOTE>
+<P>
+This function returns an integer value of what line you are at
+in the file. Also available is <TT>setLineNumber(int
+No)</TT>, which enables you to specify the line number
+of your position. This is useful if you are looking at a file
+with a header and you want to start counting line numbers after
+it, for example.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Java uses two types of character types: the ASCII format and the Unicode format. The ASCII characters are a subset of the Unicode character set. The other major difference is in the byte representation of the two types. The ASCII format is stored in seven bits. The Unicode system stores characters in anywhere from 1 byte (8 bits) to 3 bytes for complete Unicode characters. In Java, all characters are stored in the Unicode format.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheDataInputStreamandDataOutputStream"><B>The </B><TT><B><FONT SIZE=4>DataInputStream</B></FONT></TT><B><FONT SIZE=4>
+and </FONT></B><TT><B><FONT SIZE=4>DataOutputStream</B></FONT></TT><B><FONT SIZE=4>
+Classes</FONT></B></A></H3>
+<P>
+These two classes allow you to read and write data in a binary
+format without having to worry about all the grunt work involved
+in implementing and managing that data. These two classes allow
+you to implement <TT>RandomAccessFileStream</TT>s,
+which is covered next. The files used by these two classes are
+by far the most efficient means of dealing with data in Java.
+You can use the methods of the two classes to read and write Java
+language types easily to and from a binary storage format.
+<P>
+The <TT>DataOutputStream</TT> class
+enables you to use a number of methods: <TT>writeInt</TT>,
+<TT>writeChar</TT>, and so on. There
+is one of these methods for each of the general Java language
+types. See the pattern?
+<P>
+The same is <TT>true</TT> for the
+<TT>DataInputStream</TT> class. A
+number of methods are available, including <TT>readLong</TT>,
+<TT>readChar</TT>, and so on. In both
+classes, you still can read and write individual bytes.
+<P>
+The following code loads the data in a file of integers stored
+in binary format and then outputs it to the standard output:
+<BLOCKQUOTE>
+<TT>InputStream IS = new DataInputStream(
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new FileInputStream(&quot;/usr2/sun/yidata.dat&quot;));
+<BR>
+try {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;while (true) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(IS.readInt());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}<BR>
+finally {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;IS.close();<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Easy enough.
+<H3><A NAME="ThePipedInputStreamandPipedOutputStre"><B>The </B><TT><B><FONT SIZE=4>PipedInputStream</B></FONT></TT><B><FONT SIZE=4>
+and </FONT></B><TT><B><FONT SIZE=4>PipedOutputStream</B></FONT></TT><B><FONT SIZE=4>
+Classes</FONT></B></A></H3>
+<P>
+The <TT>PipedInputStream</TT> and
+<TT>PipedOutputStream</TT> classes
+are useful for creating pipes (a feature that should be familiar
+to UNIX system users) that are used to connect two parallel threads
+(see the next chapter for more information on multithreading).
+To use this class, simply declare a <TT>PipedInputStream</TT>
+in one process and a <TT>PipedOutputStream</TT>
+in the other, and then connect them like this:
+<BLOCKQUOTE>
+<TT>PipedInputStream InStream = new PipedInputStream();
+<BR>
+PipedOutputStream OutStream = new PipedOutputStream(InStream);</TT>
+</BLOCKQUOTE>
+<P>
+Now, when one process outputs, the other process can access the
+data.
+<H2><A NAME="DealingwithFiles"><B><FONT SIZE=5 COLOR=#FF0000>Dealing
+with Files</FONT></B></A></H2>
+<P>
+The <TT>File</TT> and <TT>RandomAccessFile</TT>
+classes enable you to perform comprehensive management and to
+use files and the local file system.
+<H3><A NAME="TheFileClass"><B>The </B><TT><B><FONT SIZE=4>File</B></FONT></TT><B><FONT SIZE=4>
+Class</FONT></B></A></H3>
+<P>
+The <TT>File</TT> class enables you
+to construct an object that contains information about an entry
+in the file system. Three constructors are available:
+<BLOCKQUOTE>
+<TT>File(String thePath)<BR>
+File(String thePath, String theFileName)<BR>
+File(File dir, String Name)</TT>
+</BLOCKQUOTE>
+<P>
+Table 11.2 summarizes the methods available to you.
+<P>
+<CENTER><B>Table 11.2. File class methods.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=295><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public String getName()</TT>
+</TD><TD WIDTH=295>Returns the name of the file.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public String getPath()</TT>
+</TD><TD WIDTH=295>Returns the path of the file.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public String getAbsolutePath()</TT>
+</TD><TD WIDTH=295>Returns the absolute path of the file.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public String getParent()</TT>
+</TD><TD WIDTH=295>Gets the name of the parent directory.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public boolean exists()</TT>
+</TD><TD WIDTH=295>Does the file exist?</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public boolean canWrite()</TT>
+</TD><TD WIDTH=295>Can we write to the file?</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public boolean canRead()</TT>
+</TD><TD WIDTH=295>Can we read the file?</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public boolean isFile()</TT>
+</TD><TD WIDTH=295>Does a normal file exist?</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public boolean isDirectory()</TT>
+</TD><TD WIDTH=295>Does this directory exist?</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public native boolean isAbsolute();</TT>
+</TD><TD WIDTH=295>Is the file name absolute?</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public long lastModified()</TT>
+</TD><TD WIDTH=295>Returns the last modified date. Should only be used as a comparison to a previous change.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public long length()</TT>
+</TD><TD WIDTH=295>Returns the length of the file in bytes.</TD>
+</TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="RandomAccessFiles"><B>Random Access Files</B></A>
+</H3>
+<P>
+The <TT>DataInputStream</TT> and <TT>DataOutputStream</TT>
+classes allow the implementation of random access files, which
+are files that you can read from and write to at any point you
+specify. There are two constructors for the <TT>RandomAccessFile</TT>
+class:
+<BLOCKQUOTE>
+<TT>RandomAccessFile(String FileName, String
+FileMode)<BR>
+RandomAccessFile(File theFile, String FileMode)</TT>
+</BLOCKQUOTE>
+<P>
+The first parameter in each of these constructors specifies the
+file with which you are dealing. The second parameter is <TT>r</TT>,
+<TT>w</TT>, or <TT>rw</TT>,
+which sets the mode of the file to be read, write, or read-write,
+respectively.
+<P>
+Table 11.3 summarizes some of the methods available in the <TT>RandomAccessFile</TT>
+class.
+<P>
+<CENTER><B>Table 11.3. </B><TT><B>RandomAccessFile</B></TT><B>
+class methods.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Description</I></TD><TD WIDTH=295><I>Method</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public final FileDescriptor getFD()</TT>
+</TD><TD WIDTH=295>Returns the opaque file descriptor object.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public final void readFully(byte b[], int off, int len)</TT>
+</TD><TD WIDTH=295>Reads the remaining bytes in a file.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public int skipBytes(int n)</TT>
+</TD><TD WIDTH=295>Skips a number of bytes in a file.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public native long getFilePointer() throws IOException;</TT>
+</TD><TD WIDTH=295>Returns the current location of the file pointer.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public native void seek(long pos) throws IOException;</TT>
+</TD><TD WIDTH=295>Sets the file pointer to the specified absolute  position.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public native long length()throws IOException;</TT>
+</TD><TD WIDTH=295>Returns the length of the file.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public native void close() throws IOException;</TT>
+</TD><TD WIDTH=295>Closes the file.</TD></TR>
+</TABLE></CENTER>
+<P>
+The normal <TT>read</TT> and <TT>write</TT>
+methods also are implemented.
+<P>
+The following code block opens a file for reading and then prints
+a character at byte position 1000 in the file:
+<BLOCKQUOTE>
+<TT>RandomAccessFile RAF = new RandomAccessFile(&quot;HalBialeck.dat&quot;,
+&quot;r&quot;);<BR>
+RAF.seek(1000);<BR>
+System.out.print(RAF.read());</TT>
+</BLOCKQUOTE>
+<H2><A NAME="Summary"><B><FONT SIZE=5 COLOR=#FF0000>Summary</FONT></B></A>
+</H2>
+<P>
+This chapter covered the <TT>java.io</TT>
+package. As you saw, there are two &quot;Big Daddies&quot; in
+this package. You learned about each of the standard methods available
+in each of those classes. Next, you saw how the library classes
+that descend from those two major classes function to allow easy
+implementation of different stream types in Java. You learned
+about the special details of operating on files.
+<P>
+<A HREF="ch12.htm" >Chapter 12</A>, &quot;Network Programming
+with Java,&quot; will cover the techniques of creating applets
+to utilize network resources. <A HREF="ch12.htm" >Chapter 12</A>
+will make a strong use of the information in this chapter to implement
+streams across network connections.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

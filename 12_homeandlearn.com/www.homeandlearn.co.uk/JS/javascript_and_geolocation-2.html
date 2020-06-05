@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.ukJS/javascript_and_geolocation.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 08:06:01 GMT -->
+<HEAD>
+		<TITLE>Javascript and Geolocation</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-3.css">
+		<meta name="description" content="Beginners Javascript tutorials: Getting started with the HTML5 geolocation tag.">
+		<meta itemprop="name" content="Home and Learn">
+		<meta itemprop="description" content="Free Javascript Course">
+		<meta itemprop="image" content="../logo5.jpg">
+		<link rel="publisher" href="https://plus.google.com/104045712242599534737" />
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">Javascript</SPAN> <SPAN class="Logo_Text">Courses</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+<ul>
+<LI><a href="../index-3.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing-2.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2011.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord-2.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007-2.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel-2.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign-2.html">Web Design</a></LI>
+<LI>&gt;<a href="javascript-2.html">Javascript</a>&lt;</LI>
+<LI><a href="../NET/vbNet-2.html">Visual Basic .NET</a></LI>
+<LI><a href="../php/php-2.html">Beginners PHP</a></LI>
+<LI><a href="../csharp/csharp-2.html">C# .NET</a></LI>
+<LI><a href="../java/java-2.html">Java for Beginners</a></LI>
+</ul>
+		
+</NAV> <SECTION ID="Wrapper"> <ARTICLE> <HEADER> 
+<H1 ID="Article">Geolocation</H1>
+</HEADER> <SECTION> 
+<P>One really useful new browser object you can use is Geolocation. Geolocation 
+  returns a Latitude and Longitude that you can use on mapping services like Google 
+  Maps. We'll do that now. (You'll need a modern browser for this, though. If 
+  you're using Internet Explorer then make sure it's at least version 9.)</P>
+    <P align="center"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-3498263538959058";
+/* js_top */
+google_ad_slot = "5820968310";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="../../pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></P>
+<P>Create a new web page for this from <a href="javascript_templates-2.html" target="_blank">your 
+  template</a>. Move the two SCRIPT tags to the BODY section. Add the following 
+  two HTML tags just above the SCRIPT tags:</P>
+<P class="indent_big">&lt;P ID=&quot;error_code&quot;&gt;&lt;/P&gt;</P>
+<P class="indent_big">&lt;DIV ID=&quot;map&quot;&gt;&lt;/DIV&gt;</P>
+<p>Your code should then look like this:</p>
+<P align="center"><img src="images/chapter_8/basic_html-2.gif" alt="Javascript tags in the body section of the HTML page"></P>
+<P>If Geolocation is not supported in the browser we'll display an error message. 
+  If all goes well we can display a Google map showing the user's location.</P>
+<P>For the first line of the Javascript add the code below:</P>
+<P class="indent_big">var getLabel = document.getElementById(&quot;error_code&quot;);</P>
+<P>This just gets a reference to the <b>error_code</b> ID. We'll use this to display 
+  an error if anything goes wrong.</P>
+<P>Geolocation is part of the Navigator objector. To test browser support, add 
+  the following IF &#133; ELSE statement:</P>
+<P class="indent_big">if ( navigator.geolocation ) {</P>
+<P class="indent_bigger">getLabel.innerHTML =&quot;GEOLOCATION SUPPORTED&quot;;</P>
+<P class="indent_big">}<br>
+  else {</P>
+<P class="indent_bigger">getLabel.innerHTML =&quot;GEOLOCATION NOT SUPPORTED&quot;;</P>
+<P class="indent_big">}</P>
+<P>In between the round brackets of IF we're just testing for a value of true 
+  for <b>navigator.geolocation</b>.</P>
+<P>Save your work and load the page into a browser. IF the browser supports the 
+  Geolocation object then you'll see the first message displayed, and you can 
+  continue with this lesson. If you see the second message displayed then you'll 
+  need to either update your current browser or download a new one.</P>
+<P>&nbsp;</P>
+<h3>The Geolocation Object</h3>
+<P>The Geolocation Object has three methods you can use (case sensitive):</P>
+<P align="center"><b>getCurrentPosition<br>
+  watchPosition<br>
+  clearWatch</b></P>
+<p>We'll use the first one, getCurrentPosition. The second one, watchPosition, 
+  is like a timer. It's used if you want to update a user's position. You use 
+  clearWatch to clear the watchPosition timer.</p>
+<p>getCurrentPosition is used like this:<br>
+</p>
+<P class="indent_big">getCurrentPosition( location, error, options )</P>
+<P>Only the first argument between the round brackets is required. The error argument 
+  is for when something goes wrong. If a user's positions can't be found then 
+  you can display an error message. We'll do this shortly. The third argument, 
+  options, is if you want to set the accuracy, a timeout value, or if a cached 
+  location should be used. We won't use any of the options.</P>
+<P>The location argument is usually a function. getCurrentPosition then provides 
+  some position values for you to manipulate. </P>
+<P>So, delete the getLabel code for the IF statement, but leave the one for the 
+  ELSE part. Type the following for IF:</P>
+<P class="indent_big_no_bold">navigator.geolocation.getCurrentPosition( <b>getLongLat</b>, 
+  <b>errorMessage</b> );</P>
+<P>Your code should then look like this:</P>
+<P align="center"><img src="images/chapter_8/get_cur_pos-2.gif" alt="A geolocation function in Javascript"></P>
+<P>Now add the <b>getLongLat</b> function we set up for the first argument of 
+  getCurrentPosition:</P>
+<P class="indent_small">function getLongLat( position ) {</P>
+<P class="indent_big">getLabel.innerHTML = position.coords.latitude + &quot;&lt;BR&gt;&quot;;<br>
+  getLabel.innerHTML = getLabel.innerHTML + position.coords.longitude + &quot;&lt;BR&gt;&quot;;</P>
+<P class="indent_small">}</P>
+<p>Now add the error function:</p>
+<p class="indent_big">function errorMessage( error ) {</p>
+<p class="indent_big">}</p>
+<p>We'll add some code for the error function shortly. But here's what your code 
+  should look like:</p>
+<p align="center"><img src="images/chapter_8/get_cur_pos_funcs2-2.gif" alt="Getting longitude and latitude with geolocation and Javascript"></p>
+<p>Have a look at the getLongLat function, though:</p>
+<p class="indent_big">function getLongLat( position ) {</p>
+<p>When we set up the getCurrentPosition method we didn't add a position argument:</p>
+<p class="indent_big">getCurrentPosition( getLongLat, errorMessage )</p>
+<p>So how come our <b>getLongLat</b> function now has this position argument? 
+  Well, it's because the getCurrentPosition method provides this for you. When 
+  getCurrentPosition method goes off and does its stuff, it returns with a few 
+  properties for you. You can store these properties in a variable between the 
+  round brackets of your function. We've called our variable <b>position</b>. 
+  You could call it something else if you like, though.</p>
+<p>Now have a look at the first line of the getLongLat function:</p>
+<p class="indent_big">getLabel.innerHTML = position.coords.latitude + &quot;&lt;BR&gt;&quot;;</p>
+<p>After the equal sign is our position variable. Then we have this:</p>
+<p align="center"><b>coords.latitude</b></p>
+<p>cords is one of the properties returned by the getCurrentPosition method (the 
+  other one is timestamp). After a dot, you can type one of quite a few other 
+  sub-properties. We used latitude. But here are the other options:</p>
+<p align="center"><b>longitude<br>
+  accuracy<br>
+  altitude<br>
+  altitudeAccuracy<br>
+  heading<br>
+  speed</b></p>
+<p>For the second line of our function, we've used the longitude sub-property 
+  (careful with longitude - it's easy to misspell!):</p>
+<p class="indent_bigger">position.coords.longitude</p>
+<p>Save your work and try it out. When you refresh your browser, you should see 
+  a popup message appear. When you're trying to get somebody's position they will 
+  have the option of saying no. The box will look something like this: (You'll 
+  get different warnings depending on the browser you're using. This one is from 
+  Google Chrome.)</p>
+<p align="center"><img src="images/chapter_8/browser_warning-2.gif" alt="Geolocation warning in Chrome"></p>
+<p>Allow the tracking, though, and a latitude and longitude will appear:</p>
+<p align="center"><img src="images/chapter_8/lat_long_browser-2.gif" alt="latitude and longitude coordinates"></p>
+<p>Before we get to how to use these with Google Maps, let's add the error message 
+  code.</p>
+<p>&nbsp;</p>
+<h3>Geolocation Error Codes</h3>
+<p>The error part of the <b>getCurrentPosition</b> method has a few inbuilt error 
+  codes you can use. They are:</p>
+<p align="center">TIMEOUT<br>
+  POSITION_UNAVAILABLE<br>
+  PERMISSION_DENIED<br>
+  UNKNOWN_ERROR</p>
+<p>You can use the error codes in a switch statement. Add the following to your 
+  errorMessage( error ) function:</p>
+<p class="indent_small">switch( error.code ) {</p>
+<p class="indent_big">case error.TIMEOUT:</p>
+<p class="indent_bigger">getLabel.innerHTML = 'Timeout';<br>
+  break;</p>
+<p class="indent_big">case error.POSITION_UNAVAILABLE:</p>
+<p class="indent_bigger">getLabel.innerHTML = 'Position unavailable';<br>
+  break;</p>
+<p class="indent_big">case error.PERMISSION_DENIED:</p>
+<p class="indent_bigger">getLabel.innerHTML ='Permission denied';<br>
+  break;</p>
+<p class="indent_big">case error.UNKNOWN_ERROR:</p>
+<p class="indent_bigger">getLabel.innerHTML ='Unknown error';<br>
+  break;</p>
+<p class="indent_small">}</p>
+<p>Notice what's in the round brackets of switch:</p>
+<p align="center"><b>error.code</b></p>
+<p>The <b>error</b> part is the property and <b>code</b> part is the value it 
+  will contain. This value equates to one of the inbuilt error codes from above 
+  (the error code are called constants, and they are in capital letters.) Again, 
+  the getCurrentPosition method fetches these values for you.</p>
+<p>To test it out, refresh the page in your browser. Instead of allowing tracking, 
+  this time deny it. You should see the &quot;Permission Denied&quot; error appear. 
+  (Some browsers will now prevent the popup box appearing again, once you click 
+  deny. To get it back, you'll have to close the browser down and reopen it.)</p>
+<p>&nbsp;</p>
+<p>In the next part, you'll see how to link all this information up with a Google 
+  map. </p>
+</SECTION></ARTICLE></SECTION><FOOTER> 
+<P class="course_links"><a href="javascript_timers-2.html">&lt; Javascript Timers</a>|<a href="geolocation_and_google_maps-2.html"> 
+  Geolocation and Google Maps &gt;</a></P>
+		<P><A HREF="javascript-2.html">Back to the Home Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.ukJS/javascript_and_geolocation.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 08:06:01 GMT -->
+</HTML>
+

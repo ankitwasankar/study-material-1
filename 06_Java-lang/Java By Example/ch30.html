@@ -1,0 +1,1174 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 30 -- Exceptions</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;30</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Exceptions</FONT></H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#JavasExceptions">
+
+Java's Exceptions</A>
+
+<LI><A HREF="#ThrowinganException">
+
+Throwing an Exception</A>
+
+<LI><A HREF="#TypesofExceptions">
+
+Types of Exceptions</A>
+
+<LI><A HREF="#DeterminingtheExceptionstoHandle">
+
+Determining the Exceptions to Handle</A>
+
+<UL>
+
+<LI><A HREF="#ExampleCatchingaRuntimeException">
+
+Example: Catching a Runtime Exception</A>
+
+<LI><A HREF="#ExampleHandlingMultipleExceptions">
+
+Example: Handling Multiple Exceptions</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+When you write applets or applications using Java, sooner or later
+
+you're going to run into exceptions. An exception is a special
+
+type of error object that is created when something goes wrong
+
+in a program. After Java creates the exception object, it sends
+
+it to your program, an action called throwing an exception. It's
+
+up to your program to catch the exception. You do this by writing
+
+the exception-handling code. In this chapter, you get the inside
+
+info on these important error-handling objects.
+
+<H2><A NAME="JavasExceptions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Java's Exceptions</FONT></A></H2>
+
+<P>
+
+In <A HREF="ch28.html" >Chapter 28</A>, &quot;Communications,&quot; you got a quick look
+
+at exceptions and how they are handled in a program. Specifically,
+
+you had to be prepared to handle an exception when you created
+
+an <TT>URL</TT> object from a text string. This is because the
+
+text string may not use the proper syntax for an URL, making it
+
+impossible to create the <TT>URL</TT> object. In this case, the
+
+<TT>URL</TT> constructor throws an exception object called <TT>MalformedURLException</TT>.
+
+Listing 30.1 shows the code segment that handles this exception.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 30.1&nbsp;&nbsp;LST30_1.TXT: Handling an Exception.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+try
+
+{
+
+    URL url = new URL(str);
+
+    AppletContext context = getAppletContext();
+
+    context.showDocument(url);
+
+}
+
+
+
+catch (MalformedURLException e)
+
+{
+
+    badURL = true;
+
+    repaint();
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+As you can see from the listing, you place the code that may cause
+
+the exception in a <TT>try</TT> program block, whereas the exception-handling
+
+code goes into a <TT>catch</TT> program block. In this case, the
+
+first line of the <TT>try</TT> block attempts to create an <TT>URL</TT>
+
+object from the string given in the variable <TT>str</TT>. If
+
+the string is not properly formatted for an URL, the <TT>URL</TT>
+
+constructor throws a <TT>MalformedURLException</TT>. When this
+
+happens, Java ignores the rest of the code in the <TT>try</TT>
+
+block and jumps to the <TT>catch</TT> block, where the program
+
+handles the exception. On the other hand, if the <TT>URL</TT>
+
+object gets created okay, Java executes all the code in the <TT>try</TT>
+
+block and skips the <TT>catch</TT> block.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+The <TT>catch</TT> program block does more than direct program execution. It actually catches the exception object thrown by Java. For example, in Listing 30.1, you can see the exception object being caught inside the parentheses following the 
+<TT>catch</TT> keyword. This is very similar to a parameter being received by a method. In this case, the type of the &quot;parameter&quot; is <TT>MalformedURLException</TT> and the name of the parameter is <TT>e</TT>. If you need to, you can access the 
+exception object's methods through the <TT>e</TT> object.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+Java defines many exception objects that may be thrown by the
+
+methods in Java's classes. How do you know which exceptions you
+
+have to handle? First, if you write an applet that calls a method
+
+that may throw an exception, Java insists that you handle the
+
+exception in one way or another. If you fail to do so, your applet
+
+will not compile. Instead, you'll receive an error message indicating
+
+where your program may generate the exception (see Figure 30.1).
+
+<P>
+
+<IMG SRC="f30-1.gif"><B> Figure 30.1 : </B><I>Java's compiler gives you an error message if you <r>fail to handle an exception in your applet.
+
+
+
+</I></A><P>
+
+<P>
+
+Although the compiler's error messages are a clue that something
+
+is amiss, the clever programmer will look up a method in Java's
+
+documentation before using the method. Then, the programmer will
+
+know in advance whether that method requires exception-handling
+
+code. If you're interested in seeing the exceptions that are defined
+
+by a package, find the package's section in Java's online documentation
+
+(see Figure 30.2), where the classes and exceptions are listed.
+
+<P>
+
+<IMG SRC="f30-2.gif"><B> Figure 30.2 : </B><I>Java's online documentation lists the exception objects that may be thrown by methods in a class.
+
+</I></A><P>
+
+<P>
+
+The online documentation also lists all the methods that comprise
+
+a particular package. By looking up the method in the documentation
+
+(see Figure 30.3), you can see what types of arguments the method
+
+expects, the type of value the method returns, and whether the
+
+method may throw an exception. If the method shows that it can
+
+throw an exception, your code must handle the right type of exception
+
+or the program will not compile.
+
+<P>
+
+<IMG SRC="f30-3.gif"><B> Figure 30.3 : </B><I>The online documentation for a method shows the exception the method may throw.
+
+</I></A><P>
+
+<H2><A NAME="ThrowinganException"><FONT SIZE=5 COLOR=#Ff0000>
+
+Throwing an Exception</FONT></A></H2>
+
+<P>
+
+One handy thing about exceptions is that you don't have to handle
+
+them in the same method in which the exception is generated. For
+
+example, in Listing 30.1, the applet tries to create an <TT>URL</TT>
+
+object. If the <TT>URL</TT> creation fails, the <TT>URL</TT> constructor
+
+throws an exception that the <TT>event()</TT> method handles in
+
+its <TT>catch</TT> block. But what if, for some reason, you don't
+
+want to handle the exception in the same method in which you call
+
+the <TT>URL</TT> constructor? You can simply pass the buck, so
+
+to speak, by throwing the exception on up the method hierarchy.
+
+Listing 30.2 shows one way you might do this with the <TT>MalformedURLException</TT>
+
+exception.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 30.2&nbsp;&nbsp;LST30_2.TXT: Throwing an Exception.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public boolean action(Event evt, Object arg)
+
+{
+
+    try
+
+        GetURL();
+
+    catch (MalformedURLException e)
+
+    {
+
+        badURL = true;
+
+        repaint();
+
+    }
+
+    
+
+    return true;
+
+}
+
+
+
+protected void GetURL() throws MalformedURLException
+
+{
+
+    String str = textField.getText();
+
+    URL url = new URL(str);
+
+    AppletContext context = getAppletContext();
+
+    context.showDocument(url);
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+In this listing, the call to the <TT>URL</TT> class's constructor
+
+has been moved to a method called <TT>GetURL()</TT>. However,
+
+<TT>GetURL()</TT> does not directly handle the <TT>MalformedURLException</TT>
+
+exception. Instead, it passes the exception back to the <TT>action()</TT>
+
+method. Java knows that <TT>GetURL()</TT> wants to pass the exception,
+
+because <TT>GetURL()</TT> adds the phrase <TT>throws MalformedURLException</TT>
+
+to its signature. Throwing the exception, however, doesn't relieve
+
+you from handling it eventually. Notice that in Listing 30.2,
+
+the exception still gets handled in the <TT>action()</TT> method.
+
+<P>
+
+In short, you can handle an exception in two ways. The first way
+
+is to write <TT>try</TT> and <TT>catch</TT> program blocks exactly
+
+where you call the function that may generate the exception. The
+
+second way is to declare the method as throwing the exception,
+
+in which case you must write the <TT>try</TT> and <TT>catch</TT>
+
+program blocks in the method that calls the &quot;throwing&quot;
+
+method, as shown in Listing 30.2.
+
+<H2><A NAME="TypesofExceptions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Types of Exceptions</FONT></A></H2>
+
+<P>
+
+Java defines many different exception objects. Some of these you
+
+must always handle in your code if you call a function that may
+
+throw the exception. Others are generated by the system when something
+
+like memory allocation fails, an expression tries to divide by
+
+zero, a null value is used inappropriately, and so on. You can
+
+choose to watch for this second kind of exception or let Java
+
+deal with them.
+
+<P>
+
+Just as with programming before exceptions existed, you should
+
+always be on the lookout for places in your program where an exception
+
+could be generated. These places are usually associated with user
+
+input, which can be infamously unpredictable. However, programmers,
+
+too, have been known to make mistakes in their programs that lead
+
+to exception throwing. Some common exceptions you may want to
+
+watch out for at appropriate places in your applet are listed
+
+in Table 30.1.<BR>
+
+<P>
+
+<CENTER><B>Table 30.1&nbsp;&nbsp;Common Java Exceptions.</B></CENTER>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD WIDTH=295><I><B>Exceptions</B></I></TD><TD WIDTH=295><I><B>Description</B></I>
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>ArithmeticException</TT></TD><TD WIDTH=295>Caused by math errors such as division by zero
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>ArrayIndexOutOfBounds Exception</TT></TD>
+
+<TD WIDTH=295>Caused by bad array indexes </TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>ArrayStoreException</TT></TD><TD WIDTH=295>Caused when a program tries to store the wrong type of data in an array
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>FileNotFoundException</TT></TD><TD WIDTH=295>Caused by an attempt to access a nonexistent file
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>IOException</TT></TD><TD WIDTH=295>Caused by general I/O failures, such as inability to read from a file
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>NullPointerException</TT></TD><TD WIDTH=295>Caused by referencing a null object
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>NumberFormatException</TT></TD><TD WIDTH=295>Caused when a conversion between strings and numbers fails
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>OutOfMemoryException</TT></TD><TD WIDTH=295>Caused when there's not enough memory to allocate a new object
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>SecurityException</TT></TD><TD WIDTH=295>Caused when an applet tries to perform an action not allowed by the browser's security setting
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>StackOverflowException</TT></TD><TD WIDTH=295>Caused when the system runs out of stack space
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>StringIndexOutOfBounds Exception</TT></TD>
+
+<TD WIDTH=295>Caused when a program attempts to access a nonexistent characterposition in a string 
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>TIP</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+You can catch all types of exceptions by setting up your <TT>catch</TT> block for exceptions of type <TT>Exception</TT>, like this: <TT>catch (Exception e)</TT>. Call the exception's <TT>getMessage()</TT> method (inherited from the <TT>Throwable</TT> 
+superclass) to get information about the specific exception that you've intercepted.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="DeterminingtheExceptionstoHandle"><FONT SIZE=5 COLOR=#Ff0000>
+
+Determining the Exceptions to Handle</FONT></A></H2>
+
+<P>
+
+Experienced programmers usually know when their code may generate
+
+an exception of some sort. However, when you first start writing
+
+applets with exception-handling code, you may not be sure what
+
+type of exceptions to watch out for. One way to discover this
+
+information is to see what exceptions get generated as you test
+
+your applet. Listing 30.3, for example, is an applet called ExceptionApplet
+
+that divides two integer numbers obtained from the user and displays
+
+the integer result (dropping any remainder). Because the applet
+
+must deal with user input, the probability of disaster is high.
+
+ExceptionApplet, however, contains no exception-handling code.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 30.3&nbsp;&nbsp;ExceptionApplet.java: An Applet with
+
+No Exception Handling.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class ExceptionApplet extends Applet
+
+{
+
+    TextField textField1, textField2;
+
+    String answerStr;
+
+
+
+    public void init()
+
+    {
+
+        textField1 = new TextField(15);
+
+        add(textField1);
+
+        textField2 = new TextField(15);
+
+        add(textField2);
+
+        answerStr = &quot;Undefined&quot;;
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.PLAIN, 24);
+
+        g.setFont(font);
+
+
+
+int answer = int1 / int2;
+
+        answerStr = String.valueOf(answer);
+
+        repaint();
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+You'll use this applet as the starting point for a more robust
+
+applet. When you run the applet using Appletviewer, you'll see
+
+the window shown in Figure 30.4. Enter a number into each of the
+
+two text boxes and then press Enter. The program then divides
+
+the first number by the second number and displays the result
+
+(see Figure 30.5).
+
+<P>
+
+<IMG SRC="f30-4.gif"><B> Figure 30.4 : </B><I>This is ExceptionApplet running under Appletviewer.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f30-5.gif"><B> Figure 30.5 : </B><I>ExceptionApplet divides the first number by the second.
+
+
+
+</I></A><P>
+
+<P>
+
+As long as the user enters valid numbers into the text boxes,
+
+the program runs perfectly. What happens, though, if the user
+
+presses Enter when either or both of the text boxes are empty?
+
+Java immediately throws a <TT>NumberFormatException</TT> when
+
+the <TT>action()</TT> method attempts to convert the contents
+
+of the text boxes to integer values. You can see this happening
+
+by watching the DOS window from which you ran Appletviewer, as
+
+shown in Figure 30.6. As you can see in the figure, Java has displayed
+
+quite a few lines that trace the exception. The first line (the
+
+one that starts with the word <TT>exception</TT>) tells you the
+
+type of exception you've encountered.
+
+<P>
+
+<IMG SRC="f30-6.gif"><B> Figure 30.6 : </B><I>Here, Java reports a NumberFormat<r>Exception exception.
+
+
+
+</I></A><P>
+
+<H3><A NAME="ExampleCatchingaRuntimeException">
+
+Example: Catching a Runtime Exception</A></H3>
+
+<P>
+
+You now know that the user can cause a <TT>NumberFormatException</TT>
+
+if he or she leaves one or more text boxes blank or enters an
+
+invalid numerical value, like the string <TT>one</TT>. In order
+
+to ensure that your applet will not be caught by surprise, you
+
+now need to write the code that will handle this exception. Follow
+
+these steps to add this new code:
+
+<OL>
+
+<LI>Load ExceptionApplet into your text editor.
+
+<LI>Replace the <TT>action()</TT> method with the new version
+
+shown in Listing 30.4.
+
+<LI>In the class declaration line, change the name of the class
+
+to <TT>ExceptionApplet2</TT>.
+
+<LI>Save the new applet under the name ExceptionApplet2.java.
+
+<LI>Load the EXCEPTIONAPPLET.htmlL file.
+
+<LI>Change all occurrences of <TT>ExceptionApplet</TT> to <TT>ExceptionApplet2</TT>.
+
+<LI>Save the file as EXCEPTIONAPPLET2.htmlL.
+
+</OL>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 30.4&nbsp;&nbsp;LST30_4.TXT: Handling the </B><I>NumberFormatException</I><B>
+
+Exception.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        String str1 = textField1.getText();
+
+        String str2 = textField2.getText();
+
+
+
+        try
+
+        {
+
+            int int1 = Integer.parseInt(str1);
+
+            int int2 = Integer.parseInt(str2);
+
+            int answer = int1 / int2;
+
+            answerStr = String.valueOf(answer);
+
+        }
+
+        catch (NumberFormatException e)
+
+        {
+
+
+
+            answerStr = &quot;Bad number!&quot;;
+
+        }
+
+
+
+        repaint();
+
+        return true;
+
+    }
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+In Listing 30.4, the <TT>action()</TT> method now uses <TT>try</TT>
+
+and <TT>catch</TT> program blocks to handle the <TT>NumberFormatException</TT>
+
+gracefully. Figure 30.7 shows what happens now when the user leaves
+
+the text boxes blank. When the program gets to the first call
+
+to <TT>String.valueOf()</TT>, Java generates the <TT>NumberFormatException</TT>
+
+exception, which causes program execution to jump to the <TT>catch</TT>
+
+block. In the <TT>catch</TT> block, the program sets the display
+
+string to <TT>Bad number!</TT> The call to <TT>repaint()</TT>
+
+ensures that this message to the user gets displayed on the screen.
+
+<P>
+
+<IMG SRC="f30-7.gif"><B> Figure 30.7 : </B><I>ExceptionApplet2 handles the NumberFormat<r>Exception exception gracefully.
+
+
+
+</I></A><P>
+
+<H3><A NAME="ExampleHandlingMultipleExceptions">
+
+Example: Handling Multiple Exceptions</A></H3>
+
+<P>
+
+So, here you are, having a good time entering numbers into ExceptionApplet2's
+
+text boxes and getting the results. Without thinking, you enter
+
+a zero into the second box, Java tries to divide the first number
+
+by the zero, and pow!- you've got yourself an <TT>ArithmeticException</TT>
+
+exception. What to do? You're already using your <TT>catch</TT>
+
+block to grab <TT>NumberFormatException</TT>; now, you've got
+
+yet another exception to deal with.
+
+<P>
+
+The good news is that you're not limited to only a single <TT>catch</TT>
+
+block. You can, in fact, create <TT>catch</TT> blocks for any
+
+exceptions you think the program may generate. To see how this
+
+works with your new applet, follow these steps:
+
+<OL>
+
+<LI>Load ExceptionApplet2 into your text editor.
+
+<LI>Replace the <TT>action()</TT> method with the new version
+
+shown in Listing 30.5.
+
+<LI>In the class declaration line, change the name of the class
+
+to <TT>ExceptionApplet3</TT>.
+
+<LI>Save the new applet under the name ExceptionApplet3.java.
+
+<LI>Load the EXCEPTIONAPPLET.htmlL file.
+
+<LI>Change all occurrences of <TT>ExceptionApplet</TT> to <TT>ExceptionApplet3</TT>.
+
+<LI>Save the file as EXCEPTIONAPPLET3.htmlL.
+
+</OL>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 30.5&nbsp;&nbsp;LST30_5.TXT: Handling Multiple Exceptions.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        String str1 = textField1.getText();
+
+        String str2 = textField2.getText();
+
+
+
+        try
+
+        {
+
+            int int1 = Integer.parseInt(str1);
+
+            int int2 = Integer.parseInt(str2);
+
+            int answer = int1 / int2;
+
+            answerStr = String.valueOf(answer);
+
+        }
+
+        catch (NumberFormatException e)
+
+        {
+
+            answerStr = &quot;Bad number!&quot;;
+
+        }
+
+        catch (ArithmeticException e)
+
+        {
+
+            answerStr = &quot;Division by 0!&quot;;
+
+        }
+
+
+
+        repaint();
+
+        return true;
+
+    }
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+If you examine Listing 30.5, you'll see that the <TT>action()</TT>
+
+method now defines two <TT>catch</TT> program blocks, one each
+
+for the <TT>&nbsp;NumberFormatException&nbsp;</TT> and <TT>&nbsp;ArithmeticException</TT>
+
+exceptions. In this way, the program can watch for both potential
+
+problems from within a single <TT>try</TT> block. If you discovered
+
+another exception that your program may cause, you can add yet
+
+another <TT>catch</TT> block.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+Although handling exceptions is a powerful tool for creating crash-proof programs, you should use them only in situations where you have little control over the cause of the exception, such as when dealing with user input. If your applet causes an 
+exception because of a program bug, you should track down and fix the problem rather than try to catch the exception.</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>TIP</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+There may be times when you want to be sure that a specific block of code gets executed whether or not an exception is generated. You can do this by adding a <TT>finally</TT> program block after the last <TT>catch</TT>. The code in the <TT>finally</TT> 
+block gets executed after the <TT>try</TT> block or <TT>catch</TT> block finishes its thing.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+A good applet doesn't give the user nasty surprises. It's up to
+
+the programmer to check for potential problem spots in programs
+
+and guard against program failure. One tool the programmer can
+
+use is exceptions, which are objects created by Java when a program
+
+encounters a serious error. After Java creates an exception object,
+
+it throws the exception and expects some other part of the program
+
+to catch the exception.
+
+<P>
+
+The <TT>try</TT> and <TT>catch</TT> program blocks enable you
+
+to test for exceptions and respond to them as appropriate. Some
+
+types of exceptions must be handled in your program before the
+
+Java compiler will compile the program. Other exceptions-those
+
+that may be generated at runtime by more unpredictable problems
+
+like referencing a null pointer or dividing by zero-don't have
+
+to be handled in your program. However, a good programmer will
+
+design his or her applet so that common exceptions are handled
+
+where appropriate.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>How do you use a <TT>try</TT> program block?
+
+<LI>How do you use a <TT>catch</TT> program block?
+
+<LI>Do you have to catch all types of exceptions that might be
+
+thrown by Java?
+
+<LI>When a method you call is defined as potentially throwing
+
+an exception, do you have to handle that exception in your program?
+
+<LI>How many exceptions can you associate with a single <TT>try</TT>
+
+block?
+
+<LI>How do you pass an exception up from a called method to the
+
+calling method?
+
+<LI>What are the two main types of exceptions that Java may throw?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Write an applet that creates a button object. Set up exception-handling
+
+code for the <TT>OutOfMemoryException</TT> exception that could
+
+possibly occur when Java tries to allocate resources for the button.
+
+<LI>Write an applet that catches all <TT>Exception</TT> objects
+
+and displays the string returned by the <TT>Exception</TT> object's
+
+<TT>getMessage()</TT> method. (Not all <TT>Exception</TT> objects
+
+return message strings. Test your program by generating a divide-by-zero
+
+error, which will cause Java to throw an <TT>ArithmeticException</TT>
+
+exception. This exception does generate a message string.) You
+
+can find the solution to this exercise in the CHAP30 folder of
+
+this book's CD-ROM. The applet is called ExceptionApplet4. Figure
+
+30.8 shows what the applet looks like while running under Appletviewer.
+
+<BR>
+
+<IMG SRC="f30-8.gif"><B> Figure 30.8 : </B><I>ExceptionApplet4 displays the message string returned by an Exception object's getMessage() method.
+
+</I></A><P>
+
+<LI>Write an applet that enables the user to enter values into
+
+an array. Use two TextField objects, the first being where the
+
+user shouldenter the index at which to place the value, and the
+
+second being the value to add to the array. Set up the applet
+
+so that it responds to <TT>ArrayIndexOutOfBoundsException</TT>
+
+and <TT>NumberFormatException</TT> exceptions. You can find the
+
+solution to this exercise in the CHAP30 folder of this book's
+
+CD-ROM. The applet is called ExceptionApplet5. Figure 30.9 shows
+
+what the applet looks like while running under Appletviewer.
+
+
+
+<P>
+
+<IMG SRC="f30-9.gif"><B> Figure 30.9 : </B><I>This is ExceptionApplet5 running under Appletviewer.
+
+</I></A><P>
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch29.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch31.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

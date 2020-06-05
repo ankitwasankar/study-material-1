@@ -1,0 +1,1165 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 28 -- Communications</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;28</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Communications</FONT></H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#URLObjects">
+
+URL Objects</A>
+
+<UL>
+
+<LI><A HREF="#ExampleCreatinganURLObject">
+
+Example: Creating an URL Object</A>
+
+<LI><A HREF="#URLExceptions">
+
+URL Exceptions</A>
+
+</UL>
+
+<LI><A HREF="#TheAppletContext">
+
+The Applet Context</A>
+
+<UL>
+
+<LI><A HREF="#ExampleUsinganAppletContexttoLinktoanURL">
+
+Example: Using an AppletContext to Link to an URL</A>
+
+<LI><A HREF="#ExampleUsinganAppletContextinanApplet">
+
+Example: Using an AppletContext in an Applet</A>
+
+</UL>
+
+<LI><A HREF="#CreatingaquotFavoriteURLsquotApplet">
+
+Creating a &quot;Favorite URLs&quot; Applet</A>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+Not to state the obvious, but because applets are used on the
+
+Internet, they have the ability to perform a few types of telecommunications
+
+tasks. One of these tasks, connecting to other Web sites, is a
+
+snap to implement. Other tasks, such as accessing data in files,
+
+are difficult to implement because you constantly stumble over
+
+the security restrictions built into applets. Dealing with the
+
+intricacies of Internet security is beyond the scope of this book.
+
+If you're interested in this topic, you should pick up an advanced
+
+Java book. In this chapter, though, you'll get a chance to use
+
+Java to communicate over the Internet by connecting to URLs that
+
+the user supplies.
+
+<H2><A NAME="URLObjects"><FONT SIZE=5 COLOR=#Ff0000>
+
+URL Objects</FONT></A></H2>
+
+<P>
+
+In the previous chapter, you got a quick introduction to <TT>URL</TT>
+
+objects when you obtained the location of graphics and sound files
+
+by calling the <TT>getDocumentBase()</TT> and <TT>getCodeBase()</TT>
+
+methods. You used the <TT>URL</TT> objects returned by these methods
+
+in order to display images and play sounds that were stored on
+
+your computer. In that case, the locations of the files were on
+
+your own system. What you didn't know then is that you can create
+
+an <TT>URL</TT> object directly by calling its constructor. Using
+
+this technique, you can create <TT>URL</TT> objects that represent
+
+other sites on the World Wide Web.
+
+<P>
+
+Although the <TT>URL</TT> class's constructor has several forms,
+
+the easiest to use requires a string argument holding the URL
+
+from which you want to create the object. Using this constructor,
+
+you create the <TT>URL</TT> object like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+URL url = new URL(str);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This constructor's single argument is the complete URL of the
+
+location to which you want to connect. This URL string must be
+
+properly constructed or the <TT>URL</TT> constructor will throw
+
+an exception (generate an error). You'll soon see what to do about
+
+such errors.
+
+<H3><A NAME="ExampleCreatinganURLObject">
+
+Example: Creating an URL Object</A></H3>
+
+<P>
+
+Suppose you want to create an <TT>URL</TT> object for the URL
+
+<TT>http://www.sun.com</TT>, which is where you can find lots
+
+of information about Java. You'd create the <TT>URL</TT> object
+
+like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+URL url = new URL(&quot;http://www.sun.com&quot;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+If the <TT>URL</TT> construction goes okay, you can then use the
+
+<TT>URL</TT> object however you need to in your applet.
+
+<H3><A NAME="URLExceptions">
+
+URL Exceptions</A></H3>
+
+<P>
+
+As I mentioned previously, if the argument for the <TT>URL</TT>
+
+constructor is in error (meaning that it doesn't use valid URL
+
+syntax), the <TT>URL</TT> class throws an exception. Because the
+
+<TT>URL</TT> class is designed to throw an exception when necessary,
+
+Java gives you no choice except to handle that exception properly.
+
+This prevents the applet from accidentally attempting to use a
+
+defective <TT>URL</TT> object. You'll learn all the details about
+
+handling exceptions in <A HREF="ch30.html" >Chapter 30</A>, &quot;Exceptions.&quot; For
+
+now, though, you need to know how to handle the <TT>URL</TT> exception
+
+because your applets will not compile properly until you add the
+
+exception-handling code.
+
+<P>
+
+Basically, when you need to watch out for an exception, you enclose
+
+the code that may generate the error in a <TT>try</TT> program
+
+block. If the code in the block generates an exception, you handle
+
+that exception in a <TT>catch</TT> program block. (It's no coincidence
+
+that when code &quot;throws&quot; an exception, Java expects the
+
+program to &quot;catch&quot; that exception.) When you create
+
+an <TT>URL</TT> object from a string, you must watch out for the
+
+<TT>MalformedURLException</TT> exception, which is one of the
+
+many exceptions defined by Java. To do this, use the <TT>try</TT>
+
+and <TT>catch</TT> program blocks, as shown in Listing 28.1.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 28.1&nbsp;&nbsp;LST28_1.TXT: Handling URL Exceptions.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+try
+
+{
+
+    URL url = new URL(str);
+
+}
+
+catch (MalformedURLException e)
+
+{
+
+    DisplayErrorMessage();
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H2><A NAME="TheAppletContext"><FONT SIZE=5 COLOR=#Ff0000>
+
+The Applet Context</FONT></A></H2>
+
+<P>
+
+Once you have the <TT>URL</TT> object created, you need a way
+
+to pass it on to the browser in which the applet is running. It
+
+is the browser, after all, that will make the Web connection for
+
+you. But, how do you refer to the browser from within your applet?
+
+You call the <TT>getAppletContext()</TT> method, which returns
+
+an <TT>AppletContext</TT> object. This <TT>AppletContext</TT>
+
+object represents the browser in which the applet is running.
+
+You call <TT>getAppletContext()</TT> like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+AppletContext context = getAppletContext();
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Once you have the context, you can link to the URL represented
+
+by the <TT>URL</TT> object you already created. You do this by
+
+calling the <TT>AppletContext</TT> object's <TT>showDocument()</TT>
+
+method, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+context.showDocument(url);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+If all goes well, the above line will connect you to the requested
+
+URL.
+
+<H3><A NAME="ExampleUsinganAppletContexttoLinktoanURL">
+
+Example: Using an AppletContext to Link to an URL</A></H3>
+
+<P>
+
+Suppose that you want to enable the user to enter an URL string
+
+in your applet and then use <TT>URL</TT> and <TT>AppletContext</TT>
+
+objects to link to that URL. Listing 28.2 shows how you might
+
+accomplish this feat of Internet prestidigitation:
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 28.2&nbsp;&nbsp;LST28_2.TXT: Linking to an URL.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+String str = GetURLStringFromUser();
+
+
+
+try
+
+{
+
+    URL url = new URL(str);
+
+    AppletContext context = getAppletContext();
+
+    context.showDocument(url);
+
+}
+
+catch (MalformedURLException e)
+
+{
+
+    DisplayErrorMessage();
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+In Listing 28.2, the program first calls a method that retrieves
+
+a text string from the user. This text string is the URL to which
+
+the user wants to connect. Then, the <TT>try</TT> program block
+
+starts. The first line inside the <TT>try</TT> block attempts
+
+to create an <TT>URL</TT> object from the string the user entered.
+
+Of course, because user's often make mistakes when typing in long
+
+strings of characters, the string the user entered may not be
+
+a syntactically valid URL. In that case, program execution automatically
+
+jumps to the <TT>catch</TT> program block, where your applet displays
+
+an appropriate error message. If the <TT>URL</TT> object gets
+
+created okay, though, the program finishes the code in the <TT>try</TT>
+
+block, getting the <TT>AppletContext</TT> object and making the
+
+link to the URL. In this case, Java completely ignores the <TT>catch</TT>
+
+block.
+
+<H3><A NAME="ExampleUsinganAppletContextinanApplet">
+
+Example: Using an AppletContext in an Applet</A></H3>
+
+<P>
+
+Ready for a full-fledged example? Listing 28.3 is a complete applet
+
+that enables the user to link to an URL. Listing 28.4 is the HTML
+
+document that loads the applet. Because this applet actually interacts
+
+with a browser and the Internet, you must have made your Internet
+
+connection before running the applet. Then, to run the applet,
+
+load its HTML document into a Java-compatible browser such as
+
+Netscape Navigator 2.0. When you do, you'll see a window similar
+
+to that shown in Figure 28.1. In this figure, the user has already
+
+entered the URL he wishes to visit. In Figure 28.2, the browser
+
+has made the requested connection. Figure 28.3 shows the browser
+
+when the user enters an invalid URL string.
+
+<P>
+
+<IMG SRC="f28-1.gif"><B> Figure 28.1 : </B><I>Here, the user is ready to make a connection.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f28-2.gif"><B> Figure 28.2 : </B><I>If the URL is OK, the browser connects.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f28-3.gif"><B> Figure 28.3 : </B><I>If the URL is constructed improperly, the applet displays an error message.
+
+
+
+</I></A><P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+You can load ConnectApplet's HTML file using Appletviewer, if you like. However, you will be unable to make a connection to the requested URL. You can, however, see what happens when you enter a badly constructed URL string.</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 28.3&nbsp;&nbsp;ConnectApplet.java: An Applet That
+
+Connects to User-Requested URLs.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+import java.net.*;
+
+
+
+public class ConnectApplet extends Applet
+
+{
+
+    TextField textField;
+
+    boolean badURL;
+
+
+
+    public void init()
+
+    {
+
+        textField = new TextField(&quot;&quot;, 40);
+
+        Button button = new Button(&quot;Connect&quot;);
+
+
+
+        add(textField);
+
+        add(button);
+
+
+
+        badURL = false;
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.PLAIN, 24);
+
+        g.setFont(font);
+
+
+
+        int height = font.getSize();
+
+
+
+        if (badURL)
+
+            g.drawString(&quot;Bad URL!&quot;, 60, 130);
+
+        else
+
+        {
+
+            g.drawString(&quot;Type the URL to which&quot;, 25, 130);
+
+            g.drawString(&quot;you want to connect,&quot;,
+
+                25, 130+height);
+
+            g.drawString(&quot;and then click the Connect&quot;,
+
+                25, 130+height*2);
+
+            g.drawString(&quot;button.&quot;, 25, 130 + height*3);
+
+        }
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        String str = textField.getText();
+
+
+
+        try
+
+        {
+
+            URL url = new URL(str);
+
+            AppletContext context = getAppletContext();
+
+            context.showDocument(url);
+
+        }
+
+        catch (MalformedURLException e)
+
+        {
+
+            badURL = true;
+
+            repaint();
+
+        }
+
+        
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>net</TT>
+
+package.<BR>
+
+Derive the <TT>ConnectApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's data fields.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create the <TT>TextField</TT> and <TT>Button</TT> controls.
+
+<BR>
+
+        Add the controls to the applet's layout.<BR>
+
+        Initialize the bad URL flag.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Create and set the <TT>Graphics</TT> object's font.<BR>
+
+        Get the font's height.<BR>
+
+        If the applet has a bad URL string...<BR>
+
+            Display an error message.<BR>
+
+        Or, of the URL is OK...<BR>
+
+            Draw the applet's instructions.<BR>
+
+    Override the <TT>action()</TT> method.<BR>
+
+        Get the URL string the user entered.<BR>
+
+        Start the try block.<BR>
+
+            Attempt to create an URL object from the string.<BR>
+
+            Get the <TT>AppletContext</TT> object.<BR>
+
+            Make the connection.<BR>
+
+        Start the catch block.<BR>
+
+            Set the bad URL flag to true.<BR>
+
+            Repaint the applet in order to display the error message.
+
+<BR>
+
+        Tell Java that the applet handled the event message.
+
+</BLOCKQUOTE>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 28.4&nbsp;&nbsp;CONNECTAPPLET.htmlL: ConnectApplet's
+
+HTML Document.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;title&gt;Applet Test Page&lt;/title&gt;
+
+&lt;h1&gt;Applet Test Page&lt;/h1&gt;
+
+&lt;applet
+
+    code=&quot;ConnectApplet.class&quot;
+
+    width=300
+
+    height=250
+
+    name=&quot;ConnectApplet&quot;&gt;
+
+&lt;/applet&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H2><A NAME="CreatingaquotFavoriteURLsquotApplet"><FONT SIZE=5 COLOR=#Ff0000>
+
+Creating a &quot;Favorite URLs&quot; Applet</FONT></A></H2>
+
+<P>
+
+Nothing, of course, says that the string from which you create
+
+an <TT>URL</TT> object must be typed in by the user at runtime.
+
+You can hard-code the URLs you want to use right in the applet's
+
+source code, which not only ensures that the URLs will always
+
+be correct (unless the associated server changes), but also makes
+
+it quick and easy to jump to whatever URL you want. Using this
+
+idea, you can put together an applet that gives you pushbutton
+
+control over your connections, selecting your URLs as easily as
+
+you'd select a radio station.
+
+<P>
+
+The ConnectApplet2 applet, shown in Listing 28.5, is just such
+
+an applet. In its current version, it provides four buttons that
+
+give you instant connection to the Web sites represented by the
+
+buttons. Want to jump to Microsoft's Web page? Give the Microsoft
+
+button a click. Want to check out the latest news at Macmillan
+
+Computer Publishing? Click the Macmillan button. Of course, just
+
+as with the original ConnectApplet, you must have your Internet
+
+connection established before you run the applet. And, you must
+
+run the applet from a Java-compatible browser.
+
+<P>
+
+When you run the applet from Netscape Navigator 2.0, you see the
+
+window shown in Figure 28.4. As you can see, the applet currently
+
+displays four buttons, one each for the Sun, Netscape, Microsoft,
+
+and Macmillan Web sites. Just click a button to jump to the associated
+
+site. (Figure 28.5 shows the browser after the user has clicked
+
+the Macmillan button.) When you're through with that site, use
+
+the browser's Back button to return to the ConnectApplet2 applet.
+
+Then, choose another site.
+
+<P>
+
+<IMG SRC="f28-4.gif"><B> Figure 28.4 : </B><I>ConnectApplet2 running under Netscape Navigator 2.0.
+
+
+
+</I></A><P>
+
+<P>
+
+<IMG SRC="f28-5.gif"><B> Figure 28.5 : </B><I>After clicking the Macmillan button.
+
+
+
+</I></A><P>
+
+<P>
+
+Sure, you can do the same sort of thing with an HTML document
+
+using Web links. But, let's face it, applets are way cooler.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 28.5&nbsp;&nbsp;ConnectApplet2.java: A &quot;Favorite
+
+URLs&quot; Applet.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+import java.net.*;
+
+
+
+public class ConnectApplet2 extends Applet
+
+{
+
+    boolean badURL;
+
+
+
+    public void init()
+
+    {
+
+        GridLayout layout = new GridLayout(2, 2, 10, 10);
+
+        setLayout(layout);
+
+
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.PLAIN, 24);
+
+        setFont(font);
+
+
+
+        Button button = new Button(&quot;Sun&quot;);
+
+        add(button);
+
+        button = new Button(&quot;Netscape&quot;);
+
+        add(button);
+
+        button = new Button(&quot;Microsoft&quot;);
+
+        add(button);
+
+        button = new Button(&quot;Macmillan&quot;);
+
+        add(button);
+
+
+
+        badURL = false;
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        if (badURL)
+
+            g.drawString(&quot;Bad URL!&quot;, 60, 130);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        String str;
+
+
+
+        if (arg == &quot;Sun&quot;)
+
+            str = &quot;http://www.sun.com&quot;;
+
+        else if (arg == &quot;Netscape&quot;)
+
+            str = &quot;http://www.netscape.com&quot;;
+
+        else if (arg == &quot;Microsoft&quot;)
+
+            str = &quot;http://www.microsoft.com&quot;;
+
+        else
+
+            str = &quot;http://www.mcp.com&quot;;
+
+
+
+        try
+
+        {
+
+            URL url = new URL(str);
+
+            AppletContext context = getAppletContext();
+
+            context.showDocument(url);
+
+        }
+
+        catch (MalformedURLException e)
+
+        {
+
+            badURL = true;
+
+            repaint();
+
+        }
+
+        
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>net</TT>
+
+package.<BR>
+
+Derive the <TT>ConnectApplet2</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's data field.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create and set the applet's layout manager.<BR>
+
+        Create and set the applet's font.<BR>
+
+        Add four button controls to the layout.<BR>
+
+        Initialize the bad URL flag.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        If the applet has a bad URL string...<BR>
+
+            Display an error message.<BR>
+
+    Override the <TT>action()</TT> method.<BR>
+
+        Declare a local string variable.<BR>
+
+        Get the <TT>URL</TT> string the user requested.<BR>
+
+        Start the try block.<BR>
+
+            Create an <TT>URL</TT> object from the string.<BR>
+
+            Get the <TT>AppletContext</TT> object.<BR>
+
+            Make the connection.<BR>
+
+        Start the catch block.<BR>
+
+            Set the bad URL flag to true.<BR>
+
+            Repaint the applet in order to display the error message.
+
+<BR>
+
+        Tell Java that the applet handled the event message.
+
+</BLOCKQUOTE>
+
+<P>
+
+In Listing 28.5, notice how, even though the URLs are hard-coded
+
+into the program, the <TT>action()</TT> method still surrounds
+
+the call to the <TT>URL</TT> constructor with the <TT>try</TT>
+
+and <TT>catch</TT> program blocks. This is because Java insists
+
+that the applet handle the exception should the <TT>URL</TT> class
+
+throw it. If you remove the exception handling, the applet won't
+
+compile. Anyway, having a little extra protection never hurts.
+
+Handling the exception is a good way to test whether your hard-coded
+
+URLs are valid. I've never known a programmer yet who didn't need
+
+to be protected from himself!
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+Although a running applet has to deal with many security considerations,
+
+it can usually connect to other Web sites. To do this, the applet
+
+creates an <TT>URL</TT> object representing the site to which
+
+the applet should connect. The applet then instructs the browser
+
+containing the applet to make the connection, by calling the <TT>AppletContext</TT>
+
+object's <TT>showDocument()</TT> method. In spite of the telecommunications
+
+limitations inherent in applets, you can easily create Internet-aware
+
+applets.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>What is the single argument accepted by the version of the
+
+URL constructor you studied in this chapter?
+
+<LI>What is an AppletContext object?
+
+<LI>How do you obtain a AppletContext object?
+
+<LI>How can you be sure you have a valid URL object before trying
+
+to connect to the URL?
+
+<LI>What are the two types of program blocks that handle exceptions?
+
+<LI>How do you connect to the URL represented by an URL object?
+
+<LI>What type of exception is thrown by the <TT>URL</TT> class?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Write an applet that accepts URLs from the user and displays
+
+a message indicating whether the URL is valid or not.
+
+<LI>Modify the ConnectApplet2 applet so that it features at least
+
+eight buttons that'll enable you to jump to your favorite Web
+
+sites. The final applet should look something like Figure 28.6
+
+when it's running under Netscape Navigator. (You can find the
+
+solution for this exercise in the CHAP28 folder of this book's
+
+CD-ROM.)
+
+</OL>
+
+<P>
+
+<IMG SRC="f28-6.gif"><B> Figure 28.6 : </B><I>The more Web-site buttons you add, the more places you can visit with a click of the mouse.
+
+
+
+</I></A><P>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch27.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch29.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

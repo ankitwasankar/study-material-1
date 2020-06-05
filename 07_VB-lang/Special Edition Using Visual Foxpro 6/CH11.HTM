@@ -1,0 +1,506 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 11 - Creating Menus</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch10.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch12.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;11</H1>
+<H1>Creating Menus</H1>
+
+<UL>
+<LI><A HREF="#UsingtheMenuDesigner">
+Using the Menu Designer</A>
+<UL>
+<LI><A HREF="#MenuDesignerLayoutWindow">
+Menu Designer Layout Window</A>
+<LI><A HREF="#Terminology">
+Terminology</A>
+<LI><A HREF="#ThePromptColumn">
+The Prompt Column</A>
+<LI><A HREF="#TheResultColumn">
+The Result Column</A>
+<LI><A HREF="#TheOptionsColumn">
+The Options Column</A>
+<LI><A HREF="#TheMenuSelectionComboBox">
+The Menu Selection Combo Box</A>
+<LI><A HREF="#TheMenuDesignerPushbuttons">
+The Menu Designer Pushbuttons</A>
+<LI><A HREF="#OtherMenuOptionsviatheViewMenu">
+Other Menu Options via the View Menu</A>
+</UL>
+<LI><A HREF="#DesigningShortcutMenus">
+Designing Shortcut Menus</A>
+<LI><A HREF="#GeneratingMenuCodeandRunningMenus">
+Generating Menu Code and Running Menus</A>
+<LI><A HREF="#ExtendingVisualFoxProMenus">
+Extending Visual FoxPro Menus</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="UsingtheMenuDesigner"><FONT SIZE=5 COLOR=#FF0000>
+Using the Menu Designer</FONT></A></H2>
+<P>
+As we've noted throughout this section of the book, the GUI is
+an extremely important part of an application because it is the
+element that your clients will see and work with each day. In
+the past few years, users have grown to expect slick, event-driven
+user interfaces, and fortunately, Visual FoxPro has kept pace
+through its various GUI design tools.
+<P>
+Just a few years ago, most users were satisfied with database
+applications that operated through a series of modal windows and
+hot keys. No more. Today, they want the same type of easy-to-use
+pull-down menus that they use in their other applications, from
+word processors to spreadsheets to Internet browsers. In fact,
+odds are that they'll even have a few expectations about just
+what appears on these menus and in what order.
+<P>
+Visual FoxPro 6 includes an easy-to-use <I>Menu Designer</I>,
+which enables you to center your application around a Windows-standard
+menu system. As you'll see, you can even use the same Menu Designer
+to create impressive right-click shortcut menus.
+<P>
+You can start the Menu Designer in the following ways:
+<UL>
+<LI>Choose File, New, and select the Menu option.
+<LI>Execute the <TT>Create Menu</TT> command from the command
+window. You'll be prompted to choose either a menu or a shortcut.
+Choose menu.
+<LI>From the Project Manager, select the Other tab, select Menus,
+and click on the New button.
+</UL>
+<H3><A NAME="MenuDesignerLayoutWindow">
+Menu Designer Layout Window</A></H3>
+<P>
+No matter how you launch the Menu Designer, you'll see the same
+empty Menu Designer shown in Figure 11.1.
+<P>
+<IMG SRC="f11-1.gif"><B>Figure 11.1 : </B><I>The Menu Designer provides an easy way
+to include standard Windows menus in your applications</I>.</A>
+<P>
+The Menu Designer is rather uncomplicated, especially compared
+to the Form Designer or the Report Designer. It contains a main
+list box area with three columns (Prompt, Result, and Options),
+a combo box indicating current menu level, and four pushbuttons
+(Preview, Insert, Insert Bar, and Delete). Note that when you
+start the Menu Designer, an additional menu, named Menus, appears
+on the Visual FoxPro system menu bar. Also, notice that two additional
+options (General Options and Menu Options) appear under the View
+menu whenever the Menu Designer is the active window.
+<H3><A NAME="Terminology">
+Terminology</A></H3>
+<P>
+Let's take a moment to discuss Visual FoxPro's menu terminology.
+Menus are so easy to create and run in Visual FoxPro that you
+probably won't ever need to recall each of these definitions off
+the top of your head. But they will help you to follow the rest
+of this chapter, as well as the FoxPro documentation and various
+articles and news postings.
+<P>
+<I>Menu bar</I>  refers to the top layer of a menu, the list of
+item names that remain visible throughout most or all of your
+application. If you work on applications that swap menus for different
+forms or reports, or for any other reason, you might find yourself
+referring to more than one menu bar (the primary menu bar versus
+the supervisor menu bar, and so on).
+<P>
+<I>Menu pad</I>  is the next level in the hierarchy. Each of the
+item names in a menu bar represents a menu pad. Clicking on a
+pad can expand the pad to show any number of sub-options or can
+itself initiate some action. For instance, the File option on
+the FoxPro system menu (and most Microsoft product menus) represents
+one pad (the File pad), and the Windows option represents another
+(the Windows pad).
+<P>
+A <I>pop-up menu</I>  is a vertical list of options that appears
+when you click on a menu pad. Clicking on the File pad in most
+applications will cause the File pop-up menu to appear. This pop-up
+usually includes options such as New, Open, and so on.
+<P>
+A <I>menu prompt </I>is a caption that appears on a menu pop-up.
+Clicking on a menu prompt might initiate an action or might lead
+to a <I>submenu</I> of other prompts.
+<H3><A NAME="ThePromptColumn">
+The Prompt Column</A></H3>
+<P>
+Let's return to our Menu Designer. To create a new menu pad, type
+the text you want to appear in the Prompt column. Note that you
+can specify a hot key for this prompt by preceding one of the
+characters in the text with <TT>\&lt;</TT> (see Figure 11.2).
+<P>
+<IMG SRC="f11-2.gif"><B>Figure 11.2 : </B><I>The Customers menu pad here has C indicated
+as its hot key and is set up to run a command</I>.</A>
+<H3><A NAME="TheResultColumn">
+The Result Column</A></H3>
+<P>
+Next, specify a result. A <I>result</I> is what happens when the
+user clicks on the pad you've just specified or executes the hot
+key you have assigned to it. You can specify one of four result
+options: a Submenu, a Command, a Procedure, or a Pad Name.
+<P>
+Each of these options is used for a different purpose. If you
+choose to define a command, a text box appears, and you can type
+a valid Visual FoxPro command or function. Quite often, it will
+be a <TT>DO FORM <I>MyForm</I></TT>
+command (as you saw in Figure 11.2), though it can also be a wait
+window, a user-defined function, or a MessageBox.
+<P>
+You can also enter an entire procedure that will be run when you
+activate the menu item. Choosing Procedure from the combo box
+results in a Create button beside the combo box. Click this button,
+and you can enter an entire procedure (sometimes referred to in
+this context as a code <I>snippet</I>). If a procedure already
+exists for this menu prompt, the Create button appears as an Edit
+button instead (see Figure 11.3).
+<P>
+<IMG SRC="f11-3.gif"><B>Figure 11.3 : </B><I>You can include entire procedures within
+your menu pads</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You might think that rather than entering a procedure right into the menu prompt, you could save it somewhere else and call it using the command option. This approach is often the better course of action, for various reasons. First, if your procedure might be used elsewhere in your application, storing it separately helps you maintain it as a reusable piece of code. Second, Visual FoxPro menus must be generated into code to be able to run (you'll see more details on this issue in the section &quot;Generating Menu Code and Running Menus&quot; later in this chapter). If you store your action as a procedure, you will have to regenerate the menu every time you want to change the action. If you store it as a separate program or function and call it as a command, you don't need to regenerate the menu code. But, as is so often the case with Visual FoxPro, you can use the approach that best meets your particular needs.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The Submenu option creates a new menu off the current pad or prompt.
+When you choose this option, a Create button appears to the right
+of the combo box. When you click this button, a new empty menu
+structure appears, enabling you to define the submenu. As with
+a procedure, the Create button changes to an Edit button after
+the submenu is designed.
+<P>
+The last available action in the Result column is Pad Name (when
+you are editing at the highest menu level) or Bar # (when you
+are editing at a pop-up or submenu level). This feature is very
+helpful for adding native Visual FoxPro behavior to one of your
+own menus. For instance, you can add cut-and-paste functionality
+by calling the Visual FoxPro bar numbers for Cut and Paste (see
+Figure 11.4).
+<P>
+<IMG SRC="f11-4.gif"><B>Figure 11.4 : </B><I>Visual FoxPro 6 makes it easy to add cut-and-paste
+functionality to your menus</I>.</A>
+<P>
+You can add Visual FoxPro functionality to your own menus in two
+ways. The hard way is to memorize bar number references and type
+them in yourself. The easy way is to use the Insert Bar button
+on the right side of the Menu Designer. Insert Bar offers you
+a dialog box with all the available native Visual FoxPro behaviors
+(see Figure 11.5). Select one, click Insert, and the prompt is
+inserted directly into your menu.
+<P>
+<IMG SRC="f11-5.gif"><B>Figure 11.5 : </B><I>You can include VFP's native Copy functionality
+in your own menus, which is much simpler than coding that functionality
+from scratch</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When you select one of the Visual FoxPro menu bars, it inserts not only the bar number, but also the default prompt. There's no law that says you have to stick to this prompt caption. Editing the prompt does not alter the functionality. You could rename the <TT>Copy</TT> prompt to <TT>Copy Text</TT>, for instance.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="TheOptionsColumn">
+The Options Column</A></H3>
+<P>
+The Options column consists of a pushbutton for each item in the
+menu. When you click one of these buttons, the Prompt Options
+dialog box appears (see Figure 11.6). In this dialog box, you
+can take a number of actions, some to provide backward compatibility
+to prior versions of FoxPro, and some to provide easy access to
+advanced functionality.
+<P>
+<IMG SRC="f11-6.gif"><B>Figure 11.6 : </B><I>In the Prompt Options dialog box, you can
+enter status bar messages, developer comments, and skip conditions</I>.</A>
+<P>
+In the Shortcut section, you can specify a keyboard shortcut (a
+hot key or shortcut key combination) for the menu option. In the
+Key Text box, you can indicate what description, if anything,
+should appear on the menu beside the prompt. Note that you can
+leave this box blank if you don't want the hot key assignment
+to show on the menu prompt itself.
+<P>
+The Negotiate section specifies the location of a menu item when
+you're editing an OLE object in your application. If you want
+one or more of your menu options to remain as part of the menu
+during an in-place OLE editing session, select an option in this
+section:<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>Option</B></CENTER></TD><TD WIDTH=288><CENTER><B>Outcome</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>None</TD><TD WIDTH=288>Menu title will not appear.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Left</TD><TD WIDTH=288>Menu title is placed in the left group of menu titles on the menu bar.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Middle</TD><TD WIDTH=288>Menu title is placed in the middle group of menu titles on the menu bar.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Right</TD><TD WIDTH=288>Menu title is placed in the right group of menu titles on the menu bar.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+If you are not using OLE components in your application, ignore
+the Negotiate section.
+<P>
+The Skip For option enables you to specify when the prompt is
+available to the user. Any FoxPro memory variable, property, or
+function call is valid, but keep in mind that the menu is polling
+for the value almost constantly. A complex function call could
+make your application feel quite sluggish to the user because
+it is hogging processor resources.
+<P>
+Also, keep in mind that the variable, property, or function call
+must be in scope to be able to function properly. Otherwise, a
+runtime error is generated when loading the menu, and the Skip
+For expression has no effect afterward (even if the variable comes
+back into scope). If the variable is in scope at the time the
+menu is created but later goes out of scope, a runtime error occurs.
+<P>
+In the Message box, you can specify a message that Visual FoxPro
+will display in the status bar whenever the pad or prompt is highlighted.
+ 
+<P>
+In the Pad Name box, you can specify a particular pad name, different
+from the Visual FoxPro default. Specifying a pad name is entirely
+optional, but it might assist you in referring to the menu option
+in code, if you ever do so.
+<P>
+The Comment edit box is for programmer use only. Nothing entered
+here has any effect on the menu at runtime. Use this area as you
+would use comments in your standard code.
+<H3><A NAME="TheMenuSelectionComboBox">
+The Menu Selection Combo Box</A></H3>
+<P>
+The Menu Selection combo box, in the upper-right corner of the
+Menu Designer, contains a list of the current menu and any higher-level
+menus. You can choose the level of the hierarchy that you want
+to view by selecting from this combo box.
+<H3><A NAME="TheMenuDesignerPushbuttons">
+The Menu Designer Pushbuttons</A></H3>
+<P>
+We have already discussed the Insert Bar pushbutton, but Visual
+FoxPro includes three other pushbutton options to assist your
+development. The Insert button inserts an empty prompt into the
+menu bar or pop-up you are currently editing. The Delete button
+deletes the prompt you currently have selected. Preview enables
+you to view the results of your efforts so far, without leaving
+the Menu Designer. After you click Preview, a box appears specifying
+the menu you are previewing. If you select a menu prompt, the
+box shows the command that would be executed if you were running
+the menu &quot;live&quot; (see Figure 11.7).
+<P>
+<IMG SRC="f11-7.gif"><B>Figure 11.7 : </B><I>You can preview your menu before you save
+it</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Whenever the Menu Designer is the active window, the Visual FoxPro system menu includes a new menu named Menu. This menu provides an alternative approach to accessing the Menu Designer's pushbutton functionality.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="OtherMenuOptionsviatheViewMenu">
+Other Menu Options via the View Menu</A></H3>
+<P>
+Whenever the Menu Designer is active, Visual FoxPro's View menu
+includes two additional items: General Options and Menu Options.
+<P>
+The General Options dialog box (see Figure 11.8) contains several
+useful features. The Procedure box specifies a default procedure
+that will run when a menu pad is selected. If no command is filled
+in for a given pad, the default procedure will be executed.
+<P>
+<IMG SRC="f11-8.gif"><B>Figure 11.8 : </B><I>In the General Options dialog box, you
+can specify the location of the menu pads relative to any existing
+menus</I>.</A>
+<P>
+The Location section indicates whether this menu, when run, should
+replace any already-present menus, be appended after any existing
+menus, or be inserted before or after a particular existing menu
+pad.
+<P>
+The Menu Code check boxes open editing windows that enable you
+to enter startup and cleanup code that executes before loading
+and after unloading the menu, respectively.
+<P>
+The Top-Level Form check box indicates whether this menu can be
+used for a top-level (SDI) form or whether it is restricted to
+the FoxPro frame. <P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The quickest way to get started with menus is to choose Menu, Quick Menu. This command basically creates a copy of the Visual FoxPro menu that you can then modify for your own purposes. It's a great learning tool and is also extremely useful when you plan to include a good deal of native Visual FoxPro functionality within an application.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The Menu Options dialog box (see Figure 11.9) specifies a default
+procedure that will run when a menu option (from a pop-up) is
+selected. If no command is filled in for a prompt, this procedure
+will be executed.
+<P>
+<IMG SRC="f11-9.gif"><B>Figure 11.9 : </B><I>In the Menu Options dialog box, you can
+specify a default procedure for any menu options that have no
+actions specified</I>.</A>
+<H2><A NAME="DesigningShortcutMenus"><FONT SIZE=5 COLOR=#FF0000>
+Designing Shortcut Menus</FONT></A></H2>
+<P>
+Visual FoxPro makes it easy to create shortcut menus that can
+be called from anywhere in your application (usually by right-clicking
+a form control). Shortcut menus are essentially the same as standard
+menus, but they do not have a top menu bar attached to them. Instead,
+their highest level of hierarchy is a horizontal menu pad.
+<P>
+To create a shortcut menu, just type <TT>Create Menu</TT> in the
+command window, and select Shortcut from the resulting dialog
+box. The standard Menu Designer appears. Now, just create the
+menu, and save your file as you would a standard menu. That's
+all there is to this process. 
+<P>
+To run a shortcut menu, include a call to <TT>Do <I>ShortCut</I>.MPR</TT>
+in the <TT>RightClick</TT> of an object or form, or in any method
+from which you want to call the shortcut menu. Figure 11.10 shows
+a shortcut menu in action.
+<P>
+<IMG SRC="f11-10.gif"><B>Figure 11.10: </B><I>Visual FoxPro makes it easy for you to
+create shortcut menus that can be called from virtually any visual
+control in your application</I>.</A>
+<H2><A NAME="GeneratingMenuCodeandRunningMenus"><FONT SIZE=5 COLOR=#FF0000>
+Generating Menu Code and Running Menus</FONT></A></H2>
+<P>
+Unlike most Visual FoxPro components, menus are not object-oriented.
+In fact, to many developers, they seem a bit of a throwback to
+pre-Visual FoxPro days because they still require a code generation
+program that converts the menu entries you've indicated into FoxPro
+code.
+<P>
+Many of us debate the merits and/or drawbacks of this approach
+until we are blue in the face. But, at any rate, Visual FoxPro
+menus are easy to create and even easier to generate. Just select
+Menu, Generate, and specify a filename in the resulting dialog
+box. The new file has a default extension of <TT>.MPR</TT> and
+can be run like any Visual FoxPro program: Just enter <TT>Do <I>MyMenu</I>.MPR</TT>.
+<P>
+Another way of generating menu code is to use the Project Manager.
+Just select Build, and in the resulting dialog check the Rebuild
+All box. The menu code will be generated automatically.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro menus are Windows menus, not FoxPro objects. Why does this distinction matter? For two reasons. First, you cannot define the color of the menu in your Visual FoxPro applications. The user, through the Windows Control Panel, specifies these colors. Second, any timers in your application will not fire while the menu is active.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you've changed one of your menu options and regenerated the code, but the old menu still appears when you run the application, you might have a problem with extraneous files. Check whether an old copy of the <TT>.MPR</TT> or <TT>.MPX</TT> file created by the code generator has been mistakenly copied to another area in your path. As with any program, FoxPro runs the first copy it finds along its available path.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="ExtendingVisualFoxProMenus"><FONT SIZE=5 COLOR=#FF0000>
+Extending Visual FoxPro Menus</FONT></A></H2>
+<P>
+Many programmers feel, mistakenly, that because menus are not
+object-oriented, they are not reusable and extendable components
+of Visual FoxPro. That's not really true. Menus are just reusable
+in a different way.
+<P>
+True, you cannot subclass a new menu from an existing menu. However,
+remember that you can run multiple menus at once, and by adjusting
+the View, General Options, you can control where the menus sit
+in relation to one another. You therefore could design your applications
+to include a separate menu file for each pad and pop-up and include
+code to launch any appropriate menus in each of your application
+startup routines.
+<P>
+Also keep in mind that you can use macro substitution in your
+menu prompts. Just use the ampersand (<TT>&amp;</TT>) followed
+by a variable name in the prompt. The variables must be in scope
+when the menu is created but can be released after that.
+<P>
+Finally, some developers wrap pad names and definitions in custom
+classes, to emulate some features of object orientation. In this
+way, you can, in fact, inherit properties and behavior for a <TT><I>NewPrompt</I></TT>
+object (based on a custom class) from an <TT><I>OldPrompt</I></TT>
+superclass. Custom methods would control the addition and removal
+of specified pads from the menu. This process gets a little complicated,
+but if your environment requires you to generate many applications
+with similar menus, considering this approach might be worthwhile.
+Several custom frameworks, such as <I>The Visual FoxPro CodeBook</I>,
+take just this approach.
+<P>
+Whether you work with such complex designs or stick to the native
+Menu Designer functionality, you'll soon find menus an indispensable
+part of your Visual FoxPro toolbox.
+<HR>
+<CENTER>
+
+<A HREF="ch10.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch12.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

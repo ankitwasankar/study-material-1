@@ -1,0 +1,599 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 15 -- Writing a Simple Applet</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;15</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Writing a Simple Applet</FONT>
+
+</H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#TheSimplestJavaApplet">
+
+The Simplest Java Applet</A>
+
+<LI><A HREF="#TheFiveStagesofanAppletsLifeCycle">
+
+The Five Stages of an Applet's Life Cycle</A>
+
+<LI><A HREF="#ExampleOverridingtheLifeCycleMethods">
+
+Example: Overriding the Life Cycle Methods</A>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+Throughout Part II of this book, you've been writing applets that
+
+demonstrate the various features of the Java language. Along the
+
+way, you learned a few things about how applet works, including
+
+how Java calls the <TT>init()</TT> method when the applet starts,
+
+how the <TT>paint()</TT> method draws the applet's display, and
+
+how Java calls the <TT>action()</TT> method in response to some
+
+action by the user (for example, pressing Enter when typing in
+
+a <TT>TextField</TT> object). In this chapter, you'll extend your
+
+knowledge of applets by looking more closely at the construction
+
+of an applet, as well as discovering some other methods that are
+
+important to Java applets.
+
+<H2><A NAME="TheSimplestJavaApplet"><FONT SIZE=5 COLOR=#Ff0000>
+
+The Simplest Java Applet</FONT></A></H2>
+
+<P>
+
+The Java programming language and libraries enable you to create
+
+applets that are as simple or as complex as you like. In fact,
+
+you can write the simplest Java applet in only a few lines of
+
+code, as shown in Listing 15.1.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 15.1&nbsp;&nbsp;MyApplet.java: The Simplest Java Applet.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.applet.*;
+
+
+
+public class MyApplet extends Applet
+
+{
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+The first line of Listing 15.1 tells the Java compiler that this
+
+applet will be using some or all of the classes defined in the
+
+<TT>applet</TT> package (the asterisk acts as a wildcard, just
+
+as in DOS file names). All of the basic capabilities of an applet
+
+are provided for in these classes, which is why you can create
+
+a usable applet with so few lines of code.
+
+<P>
+
+The second line of code declares a new class called <TT>MyApplet</TT>.
+
+This new class is declared as <TT>public</TT> so that the class
+
+can be accessed when the applet is run in a Web browser or in
+
+the Appletviewer application. If you fail to declare the applet
+
+class as <TT>public</TT>, the code will compile fine, but the
+
+applet will refuse to run. In other words, all applet classes
+
+must be <TT>public</TT>.
+
+<P>
+
+As you can see, you take advantage of object-oriented programming
+
+(OOP) inheritance to declare your applet class by subclassing
+
+Java's <TT>Applet</TT> class. This inheritance works exactly the
+
+same as when you created your own classes in <A HREF="ch14.html" >Chapter 14</A>, &quot;Classes.&quot;
+
+The only difference is that <TT>Applet</TT> is a class that's
+
+included with the Java Developer's Kit (JDK), rather than a class
+
+you created yourself.
+
+<P>
+
+You can actually compile the applet shown in Listing 15.1. When
+
+you do, you'll have the <TT>MyApplet.class</TT> file, which is
+
+the byte-code file that can be executed by the Java system. To
+
+run the applet, just create an HTML document like the one shown
+
+in Listing 15.2. You've already used similar HTML documents with
+
+the many applets you created in part II of this book. However,
+
+if you need a refresher course on using the <TT>&lt;applet&gt;</TT>
+
+tag, turn back to <A HREF="ch2.html" >Chapter 2</A> &quot;Running Java Applets.&quot;
+
+If you were to run the MyApplet applet, however, you wouldn't
+
+see anything much in Appletviewer or in your Web browser.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 15.2&nbsp;&nbsp;MYAPPLET.htmlL: MyApplet's HTML Document.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;title&gt;Applet Test Page&lt;/title&gt;
+
+&lt;h1&gt;Applet Test Page&lt;/h1&gt;
+
+&lt;applet
+
+    code=&quot;MyApplet.class&quot;
+
+    width=250
+
+    height=250
+
+    name=&quot;MyApplet&quot;&gt;
+
+&lt;/applet&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H2><A NAME="TheFiveStagesofanAppletsLifeCycle"><FONT SIZE=5 COLOR=#Ff0000>
+
+The Five Stages of an Applet's Life Cycle</FONT></A></H2>
+
+<P>
+
+Every Java applet you create inherits a set of default behaviors
+
+from the <TT>Applet</TT> class. In most cases, these default behaviors
+
+do nothing, unless you override some of <TT>Applet</TT>'s methods
+
+in order to extend the applet's basic functionality. However,
+
+although a simple applet like <TT>MyApplet</TT> in Listing 15.1
+
+doesn't seem to do much, a lot is going on in the background.
+
+Some of this activity is important to your understanding of applets,
+
+and some of it can stay out of sight and out of mind.
+
+<P>
+
+Part of what goes on in a simple applet is the execution of the
+
+applet's life cycle. There are five parts to this cycle, each
+
+of which has a matching method that you can override to gain access
+
+to that cycle of the applet's life. The five stages of an applet's
+
+life cycle are listed here:
+
+<UL>
+
+<LI><I>Initialization stage</I>. This is the part of an applet's
+
+life cycle in which the applet object is created and loaded. At
+
+this point, it's appropriate to create objects needed by the applet,
+
+as well as initialize values that must be valid when the applet
+
+runs. The initialization stage occurs only once in the applet's
+
+life cycle. You can tap into the initialization stage by overriding
+
+the <TT>Applet</TT> class's <TT>init()</TT> method.
+
+<LI><I>Start stage</I>. This stage occurs when the system starts
+
+running the applet. The start stage can occur right after the
+
+initialization stage or when an applet is restarted. This usually
+
+happens when the user switches back to the applet's page after
+
+viewing a different page in his or her Web browser. Unlike the
+
+initialization stage, the start stage can occur several times
+
+over the life of the applet. To provide your own start code, override
+
+the <TT>Applet</TT> class's <TT>start()</TT> method.
+
+<LI><I>Paint stage</I>. The paint stage occurs whenever the applet's
+
+display must be drawn on the screen. This happens right after
+
+the applet's start stage, as well as whenever the applet's display
+
+must be restored or changed. This can happen when the applet is
+
+exposed from underneath another window or when the program changes
+
+the applet's display in some way and explicitly repaints the applet.
+
+Almost every applet you write will have a <TT>paint()</TT> method,
+
+which is the method you override to provide your applet with its
+
+display.
+
+<LI><I>Stop stage</I>. As you may have guessed, the stop stage
+
+is the counterpart to the start stage. Java executes this stage
+
+of the applet's life cycle when the applet is no longer visible
+
+on the screen, such as when the user switches to a different Web
+
+page. The default behavior for this cycle, however, is to keep
+
+the applet running in the background. If you want to handle the
+
+stop cycle differently, you should override the <TT>Applet</TT>
+
+class's <TT>stop()</TT> method.
+
+<LI><I>Destroy stage</I>. This is the counterpart to the initialization
+
+stage and occurs when the system is about to remove the applet
+
+from memory. Like the initialization cycle, the destroy cycle
+
+occurs only once. If your applet has resources that need to be
+
+cleaned up before the applet exits, this is the place to do it.
+
+You tap into this cycle by overriding the <TT>Applet</TT> class's
+
+<TT>destroy()</TT> method.
+
+</UL>
+
+<P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+To be entirely accurate, the paint stage isn't considered an actual applet life cycle, but because an applet without a display is likely useless (not always, though), I thought I'd include the paint cycle. Truth is, the <TT>paint()</TT> method isn't even 
+defined in the <TT>Applet</TT> class. Rather, <TT>Applet</TT> inherits <TT>paint()</TT> from the <TT>Component</TT> class, a superclass in <TT>Applet</TT>'s long chain of inheritance, which goes from <TT>Applet</TT> to <TT>Panel</TT> to <TT>Container</TT> 
+and finally to <TT>Component</TT>.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="ExampleOverridingtheLifeCycleMethods"><FONT SIZE=5 COLOR=#Ff0000>
+
+Example: Overriding the Life Cycle Methods</FONT></A></H2>
+
+<P>
+
+All this talk about life cycles and overriding methods may have
+
+left you a little confused as to how all this actually applies
+
+to the applets you want to create. In previous chapters, you managed
+
+to create applets without dealing with most of this stuff because
+
+the <TT>Applet</TT> class, from which you derived your own applet
+
+classes, handled the life-cycle methods in the default manner
+
+proscribed by the Java system. If you look at Listing 15.3, you'll
+
+see a small applet that overrides all the methods needed to provide
+
+custom behaviors for all the applet's life-cycle stages.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 15.3&nbsp;&nbsp;MyApplet2.java: Overriding the Applet
+
+Life-Cycle Methods.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.applet.*;
+
+import java.awt.*;
+
+
+
+public class MyApplet2 extends Applet
+
+{
+
+    public void init()
+
+    {
+
+        // Place initialization cycle code here.
+
+    }
+
+
+
+    public void start()
+
+    {
+
+        // Place start cycle code here.
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        // Place paint cycle code here.
+
+    }
+
+
+
+    public void stop()
+
+    {
+
+        // Place stop cycle code here.
+
+    }
+
+public void destroy()
+
+    {
+
+        // Place destroy cycle code here.
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+Notice that in order to override the <TT>paint()</TT> method,
+
+you must import the <TT>java.awt.*</TT> libraries, which contain
+
+information about the <TT>Graphics</TT> class. As you learned
+
+when writing previous applets in this book, the <TT>Graphics</TT>
+
+class enables you to display information and graphics in an applet's
+
+display area (or canvas, as the display area is sometimes called).
+
+<P>
+
+If you look for the previous methods in Java's source code, you'll
+
+discover that the default implementations of <TT>init()</TT>,
+
+<TT>start()</TT>, <TT>paint()</TT>, <TT>stop()</TT>, and <TT>destroy()</TT>
+
+all do nothing at all. If you want your applet to do something
+
+in response to these cycles, you have to provide the code yourself
+
+by overriding the appropriate method.
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+In this chapter, you got a quick look at the basic applet and
+
+the methods you can call at various stages during the applet's
+
+life cycle. Over the rest of the chapters in this book, you'll
+
+use this knowledge to develop applets that can do anything from
+
+display text in various fonts to execute animation sequences with
+
+sound.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>What is the superclass for all applets?
+
+<LI>Why do applet classes need to be declared as <TT>public</TT>?
+
+<LI>What are the five life-cycle stages of an applet?
+
+<LI>How is the paint cycle different from the rest of the life-cycle
+
+stages?
+
+<LI>What's the difference between the initialize and start life-cycle
+
+stages?
+
+<LI>What do the life-cycle methods in the <TT>Applet</TT> superclass
+
+do?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Write a simple do-nothing applet called <TT>TestApplet</TT>.
+
+<LI>Override the <TT>paint()</TT> method in <TT>TestApplet</TT>
+
+so that the applet displays the text string &quot;Hello there!.&quot;
+
+The final applet should look like Figure 15.1. You can find the
+
+solution for these exercises in the CHAP15 folder of this book's
+
+CD-ROM.<BR>
+
+<IMG SRC="f15-1.gif"><B> Figure 15.1 : </B><I>This is TestApplet running under Appletviewer.
+
+
+
+</I></A><P>
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch14.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch16.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

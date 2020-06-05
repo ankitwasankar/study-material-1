@@ -1,0 +1,1259 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 27 -- Images and Sounds</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;27</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Images and Sounds</FONT></H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#ImageTypes">
+
+Image Types</A>
+
+<LI><A HREF="#LoadingandDisplayinganImage">
+
+Loading and Displaying an Image</A>
+
+<UL>
+
+<LI><A HREF="#ExampleUsingtheIgetDocumentBaseIMethod">
+
+Example: Using the <I>getDocumentBase()</I> Method</A>
+
+<LI><A HREF="#ExampleUsingtheIgetCodeBaseIMethod">
+
+Example: Using the <I>getCodeBase()</I> Method</A>
+
+<LI><A HREF="#LoadinganImage">
+
+Loading an Image</A>
+
+<LI><A HREF="#DisplayinganImage">
+
+Displaying an Image</A>
+
+<LI><A HREF="#ExampleDisplayinganImageinanApplet">
+
+Example: Displaying an Image in an Applet</A>
+
+</UL>
+
+<LI><A HREF="#PlayingaSound">
+
+Playing a Sound</A>
+
+<UL>
+
+<LI><A HREF="#ExampleUsingtheIplayIMethod">
+
+Example: Using the <I>play()</I> Method</A>
+
+<LI><A HREF="#ExamplePlayingaSoundinanApplet">
+
+Example: Playing a Sound in an Applet</A>
+
+<LI><A HREF="#ControllingSounds">
+
+Controlling Sounds</A>
+
+<LI><A HREF="#ExampleUsinganAudioClipinanApplet">
+
+Example: Using an AudioClip in an Applet</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+If you've seen a lot of the applets that are floating around,
+
+you've undoubtedly noticed that many of them feature vivid graphics
+
+and even sound effects. When programming in a language such a
+
+C++, displaying graphics and playing sounds can be infamously
+
+difficult, thanks to the fact that these languages provide no
+
+direct support for handling these types of files. Even the Windows
+
+API, as immense as it is, provides little help when it comes to
+
+handling these graphical and aural chores. Java, on the other
+
+hand, was designed to make creating applets as easy as possible.
+
+For that reason, Java's classes handle almost all the difficulties
+
+associated with displaying images (commonly called bitmaps) and
+
+playing sounds. In this chapter, you use Java's power to add images
+
+and sounds to your applets.
+
+<H2><A NAME="ImageTypes"><FONT SIZE=5 COLOR=#Ff0000>
+
+Image Types</FONT></A></H2>
+
+<P>
+
+In the world of computers, there are many types of images, each
+
+of which is associated with a specific file format. These image
+
+types are usually identified by their file extensions, which include
+
+PCX, BMP, GIF, JPEG (or JPG), TIFF (or TIF), TGA, and more. Each
+
+of these file types was created by third-party software companies
+
+for use with their products, but many became popular enough to
+
+grow into standards. The PCX graphics file type, for example,
+
+began as the format for PC Paintbrush files, whereas BMP files
+
+are usually associated with the Windows graphical interface.
+
+<P>
+
+If you were writing your Internet applications using a more conventional
+
+language like C++, you could choose to support whatever image
+
+type was most convenient for your use. This is because you'd have
+
+to write all the file-loading code from scratch, anyway. Java,
+
+on the other hand, comes complete with classes that are capable
+
+of loading image files for you. This convenience comes with a
+
+small price, however, since Java can load only GIF and JPEG image
+
+file formats. In this book, you'll use GIF files, which are more
+
+common, although JPEG files are rapidly gaining a reputation,
+
+especially for high-resolution, true-color images.
+
+<H2><A NAME="LoadingandDisplayinganImage"><FONT SIZE=5 COLOR=#Ff0000>
+
+Loading and Displaying an Image</FONT></A></H2>
+
+<P>
+
+The first step in displaying an image in your applet is to load
+
+the image from disk. To do this, you must create an object of
+
+Java's <TT>Image</TT> class. This is fairly easy to do; however,
+
+in order to do so, you need to create an <TT>URL</TT> object that
+
+holds the location of the graphics file. You could just type the
+
+image's URL directly into your Java source code. If you do this,
+
+however, you have to change and recompile the applet whenever
+
+you move the graphics file to a different directory on your disk.
+
+A better way to create the image's <TT>URL</TT> object is to call
+
+either the <TT>getDocumentBase()</TT> or <TT>getCodeBase()</TT>
+
+method. The former returns the URL of the directory from which
+
+the current HTML file was loaded, whereas the latter returns the
+
+URL of the directory from which the applet was run.
+
+<H3><A NAME="ExampleUsingtheIgetDocumentBaseIMethod">
+
+Example: Using the <I>getDocumentBase()</I> Method</A></H3>
+
+<P>
+
+As I said previously, the <TT>getDocumentBase()</TT> method returns
+
+the URL of the directory from which the HTML document was loaded.
+
+If you're storing your images in the same directory (or a subdirectory
+
+of that directory) as your HTML files, you'd want to use this
+
+method to obtain an URL for an image.
+
+<P>
+
+Suppose you have your HTML documents in a directory called PUBLIC
+
+and the image you want, called IMAGE.gif, is stored in a subdirectory
+
+of PUBLIC called IMAGES. A call to <TT>getDocumentBase()</TT>
+
+will get you the appropriate base URL. That call looks like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+URL url = getDocumentBase();
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+As you'll soon see, once you have the URL, you can load the file
+
+by using the URL along with the relative location of the image,
+
+which in this case would be IMAGES/IMAGE.gif. The full URL to
+
+the file would then be FILE:/C:/PUBLIC/IMAGES/IMAGE.gif. If you
+
+decided to move your public files to a directory called MYHOMEPAGE,
+
+the call to <TT>getDocumentBase()</TT> will give you the URL for
+
+that new directory, without your having to change the applet's
+
+source code. This new URL, once you included the relative location
+
+of the image file, would be FILE:/C:/MYHOMEPAGE/IMAGES/IMAGE.gif.
+
+<H3><A NAME="ExampleUsingtheIgetCodeBaseIMethod">
+
+Example: Using the <I>getCodeBase()</I> Method</A></H3>
+
+<P>
+
+The <TT>getCodeBase()</TT> method works similarly to <TT>getDocumentBase()</TT>,
+
+except that it returns the URL of the directory from which the
+
+applet was loaded. If you're storing your images in the same directory
+
+(or a subdirectory of that directory) as your CLASS files, you'd
+
+want to call <TT>getCodeBase()</TT> to obtain an URL for an image.
+
+<P>
+
+Suppose you have your CLASS files in a directory called CLASSES
+
+and the image you want (still called IMAGE.gif) is stored in a
+
+subdirectory of CLASSES called IMAGES. A call to <TT>getCodeBase()</TT>
+
+will get you the base URL you need to load the image. That call
+
+looks like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+URL url = getCodeBase();
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Again, once you have the URL, you can load the file by using the
+
+URL along with the relative location of the image, which would
+
+still be IMAGES/IMAGE.gif. The full URL to the file would then
+
+be FILE:/C:/CLASSES/IMAGES/IMAGE.gif.
+
+<H3><A NAME="LoadinganImage">
+
+Loading an Image</A></H3>
+
+<P>
+
+Once you have the image's base URL, you're ready to load the image
+
+and create the <TT>Image</TT> object. You can complete both of
+
+these tasks at the same time, by calling your applet's <TT>getImage()</TT>
+
+method, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Image image = getImage(baseURL, relLocation);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>getImage()</TT> method's two arguments are the URL returned
+
+by your call to <TT>getCodeBase()</TT> or <TT>getDocumentBase()</TT>
+
+and the relative location of the image. For example, assuming
+
+that you've stored your CLASS files in the directory C:\CLASSES
+
+and your images in the directory C:\CLASSES\IMAGES, you'd have
+
+a code that looks something like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+URL codeBase = getCodeBase();
+
+Image myImage = getImage(codeBase, &quot;images/myimage.gif&quot;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+After Java has executed the above lines, your image is loaded
+
+into the computer's memory and ready to display.
+
+<H3><A NAME="DisplayinganImage">
+
+Displaying an Image</A></H3>
+
+<P>
+
+Displaying the image is a simple matter of calling the <TT>Graphics</TT>
+
+object's <TT>drawImage()</TT> method, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+g.drawImage(myImage, x, y, width, height, this);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This method's arguments are the image object to display, the X
+
+and Y coordinates at which to display the image, the width and
+
+height of the image, and the applet's <TT>this</TT> reference.
+
+
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>TIP</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+When you want to display an image with its normal width and height, you can call a simpler version of the <TT>drawImage()</TT> method, which leaves out the width and height arguments, like this: <TT>drawImage(image, x, y, this)</TT>. This version of the 
+method actually draws the image faster because it doesn't have to worry about reducing or expanding the image to the given width and height. It just blasts it on to the screen exactly as the image normally appears.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+You may be wondering where you can get the width and the height
+
+of the image. As it turns out (no doubt thanks to careful consideration
+
+by Java's programmers over hundreds of cups of coffee), the <TT>Image</TT>
+
+class has two methods, <TT>getWidth()</TT> and <TT>getHeight()</TT>,
+
+that return the width and height of the image. The complete code
+
+for displaying the image, then, might look like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+int width = image.getWidth(this);
+
+int height = image.getHeight(this);
+
+g.drawImage(image, x, y, width, height, this);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+As you can see, the <TT>getWidth()</TT> and <TT>getHeight()</TT>
+
+methods require a single argument, which is the applet's <TT>this</TT>
+
+reference.
+
+<H3><A NAME="ExampleDisplayinganImageinanApplet">
+
+Example: Displaying an Image in an Applet</A></H3>
+
+<P>
+
+You're now ready to write an applet that can display images. Listing
+
+27.1 is the Java source code for an applet called ImageApplet
+
+that displays a small image using the techniques described previously
+
+in this chapter. When you run the applet with Appletviewer, you
+
+see the window shown in Figure 27.1. Make sure the SNAKE.gif image
+
+is in the same directory as the ImageApplet.class file, since
+
+that's where the program expects to find it.
+
+<P>
+
+<IMG SRC="f27-1.gif"><B> Figure 27.1 : </B><I>This is ImageApplet running under Appletviewer.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 27.1&nbsp;&nbsp;ImageApplet.java: An Applet That Displays
+
+an Image.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+import java.net.*;
+
+
+
+public class ImageApplet extends Applet
+
+{
+
+    Image snake;
+
+
+
+    public void init()
+
+    {
+
+        URL codeBase = getCodeBase();
+
+        snake = getImage(codeBase, &quot;snake.gif&quot;);
+
+        resize(250, 250);
+
+    }
+
+
+
+    
+
+public void paint(Graphics g)
+
+    {
+
+        int width = snake.getWidth(this);
+
+        int height = snake.getHeight(this);
+
+
+
+        g.drawRect(52, 52, width+10, height+10);
+
+        g.drawImage(snake, 57, 57, width, height, this);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the net package.
+
+<BR>
+
+Derive the <TT>ImageApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's image data field.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Retrieve the base URL.<BR>
+
+        Load the image.<BR>
+
+        Size the applet.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Get the image's width and height.<BR>
+
+        Draw a framing rectangle for the image.<BR>
+
+        Draw the image within the rectangle.
+
+</BLOCKQUOTE>
+
+<P>
+
+Notice how the applet imports the classes in the <TT>net</TT>
+
+package, which is where the <TT>URL</TT> class lives. If you fail
+
+to include this line at the top of the program, Java will be unable
+
+to find the <TT>URL</TT> class and the applet will not compile.
+
+
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>TIP</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+By using different values for the <TT>drawImage()</TT> method's width and height arguments, you can display an image at any size you like. For example, to display an image at twice its normal size, just use <TT>2*width</TT> and <TT>2*height</TT> for the 
+width and height arguments. To display the image at half its normal size, use <TT>width/2</TT> and <TT>height/2</TT>. Figure 27.2 shows the snake image displayed at twice its normal size. It doesn't even fit in the window any more!
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+<IMG SRC="f27-2.gif"><B> Figure 27.2 : </B><I>Here's the snake image at twice its size.
+
+
+
+</I></A><P>
+
+<H2><A NAME="PlayingaSound"><FONT SIZE=5 COLOR=#Ff0000>
+
+Playing a Sound</FONT></A></H2>
+
+<P>
+
+Just as there are many types of image files, so too are there
+
+many types of sound files. But, when it comes to applets, the
+
+only type of sound file you need to know about are audio files,
+
+which have the file extension AU. These types of sound files were
+
+popularized on UNIX machines and are the only type of sound file
+
+Java can load and play.
+
+<P>
+
+When you want to play a sound from beginning to end, you only
+
+have to call <TT>getDocumentBase()</TT> or <TT>getCodeBase()</TT>
+
+for the URL and then call <TT>play()</TT> to play the sound. A
+
+call to <TT>play()</TT> looks like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+play(baseURL, relLocation);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>play()</TT> method's two arguments are the URL returned
+
+from a call to <TT>getDocumentBase()</TT> or <TT>getCodeBase()</TT>
+
+and the relative location of the sound file.
+
+<H3><A NAME="ExampleUsingtheIplayIMethod">
+
+Example: Using the <I>play()</I> Method</A></H3>
+
+<P>
+
+Suppose you have your CLASS files in the directory C:/MYHOMEPAGE
+
+and your AU files in the directory C:/MYHOMEPAGE/AUDIO. The following
+
+lines then will load and play an audio file called SOUND.AU:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+URL codeBase = getCodeBase();
+
+play(codeBase, &quot;audio/sound.au&quot;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<H3><A NAME="ExamplePlayingaSoundinanApplet">
+
+Example: Playing a Sound in an Applet</A></H3>
+
+<P>
+
+Now get ready to write an applet that plays a sound file. Listing
+
+27.2 is the applet in question, called SoundApplet. When you run
+
+the applet with Appletviewer, you'll see the window shown in Figure
+
+27.3. Just click the button to hear the sound. Of course, you
+
+need to have a sound card properly installed on your system. You
+
+also must be sure that the SPACEMUSIC.AU sound file is in the
+
+same directory as the applet. (This sound file is included with
+
+the Java Developer's Kit and has been copied to this chapter's
+
+CD-ROM directory for your convenience.)
+
+<P>
+
+<IMG SRC="f27-3.gif"><B> Figure 27.3 : </B><I>Click the button to hear the applet's sound file.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 27.2&nbsp;&nbsp;SoundApplet.java: An Applet That Plays
+
+a Sound File.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+import java.net.*;
+
+
+
+public class SoundApplet extends Applet
+
+{
+
+    Button button;
+
+
+
+    public void init()
+
+    {
+
+        BorderLayout layout = new BorderLayout();
+
+        setLayout(layout);
+
+
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.BOLD, 32);
+
+        setFont(font);
+
+
+
+        button = new Button(&quot;Play Sound&quot;);
+
+        add(&quot;Center&quot;, button);
+
+
+
+        resize(250, 250);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        if (evt.target instanceof Button)
+
+        {
+
+            URL codeBase = getCodeBase();
+
+            play(codeBase, &quot;spacemusic.au&quot;);
+
+        }
+
+
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>net</TT>
+
+package.<BR>
+
+Derive the <TT>SoundApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's button object.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create and set the applet's layout.<BR>
+
+        Create and set the applet's font.<BR>
+
+        Create and add the button.<BR>
+
+        Size the applet.<BR>
+
+    Override the <TT>action()</TT> method.<BR>
+
+        If the user clicks the button...<BR>
+
+            Get the base URL.<BR>
+
+            Play the sound.<BR>
+
+        Tell Java that the event was handled.
+
+</BLOCKQUOTE>
+
+<H3><A NAME="ControllingSounds">
+
+Controlling Sounds</A></H3>
+
+<P>
+
+Although the applet's <TT>play()</TT> method is the easiest way
+
+to load and play sounds, it doesn't give you much control. You
+
+have only one option: play the sound from beginning to end. If
+
+you want a little more control over your sounds, you can create
+
+an <TT>AudioClip</TT> object and use the object's methods to control
+
+the sound. Unfortunately, even the <TT>AudioClip</TT> class doesn't
+
+give you much power, although you can play, stop, and loop the
+
+sound.
+
+<P>
+
+To create the <TT>AudioClip</TT> object, you call the <TT>getAudioClip()</TT>
+
+method, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+AudioClip audioClip = getAudioClip(baseURL, relLocation);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This method's two arguments are the sound file's base URL and
+
+relative location.
+
+<P>
+
+Once you have the <TT>AudioClip</TT> object created and loaded,
+
+you can call its methods to control the sound. There are only
+
+three from which to choose: <TT>play()</TT>, <TT>stop()</TT>,
+
+and <TT>loop()</TT>. The <TT>play()</TT> method plays the sound
+
+once from beginning to end, <TT>stop()</TT> stops the sound whether
+
+or not it has finished playing, and <TT>loop()</TT> causes the
+
+sound to keep repeating until it's stopped.
+
+<H3><A NAME="ExampleUsinganAudioClipinanApplet">
+
+Example: Using an AudioClip in an Applet</A></H3>
+
+<P>
+
+Although using audio clips is a little more complicated than simply
+
+loading and playing a sound using the applet's <TT>play()</TT>
+
+method, it's still a straightforward process. Listing 27.3 is
+
+an applet that creates an <TT>AudioClip</TT> object and enables
+
+the user to send commands to the object using the applet's command
+
+buttons. When you run the applet with Appletviewer, you see the
+
+window shown in Figure 27.4. To play the sound once from beginning
+
+to end, click the Play button. To stop the sound at any time,
+
+click the Stop button. Finally, to play the sound over and over,
+
+click the Loop button.
+
+<P>
+
+<IMG SRC="f27-4.gif"><B> Figure 27.4 : </B><I>This is Appletviewer running SoundApplet2.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 27.3&nbsp;&nbsp;SoundApplet2.java: An Applet That Creates
+
+and Displays an </B><I>AudioClip</I><B> Object.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+import java.net.*;
+
+
+
+public class SoundApplet2 extends Applet
+
+{
+
+    AudioClip soundClip;
+
+
+
+    public void init()
+
+    {
+
+        GridLayout layout = new GridLayout(1, 3, 10, 10);
+
+        setLayout(layout);
+
+
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.BOLD, 24);
+
+        setFont(font);
+
+
+
+        Button button = new Button(&quot;Play&quot;);
+
+        add(button);
+
+        button = new Button(&quot;Stop&quot;);
+
+        add(button);
+
+        button = new Button(&quot;Loop&quot;);
+
+        add(button);
+
+
+
+        URL codeBase = getCodeBase();
+
+        soundClip = getAudioClip(codeBase, &quot;spacemusic.au&quot;);
+
+
+
+        resize(250, 250);
+
+    }
+
+
+
+    
+
+public boolean action(Event evt, Object arg)
+
+    {
+
+        if (arg == &quot;Play&quot;)
+
+            soundClip.play();
+
+        else if (arg == &quot;Stop&quot;)
+
+            soundClip.stop();
+
+        else if (arg == &quot;Loop&quot;)
+
+            soundClip.loop();
+
+
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>net</TT>
+
+package.<BR>
+
+Derive the <TT>SoundApplet2 </TT>class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the class's audio clip object.<BR>
+
+    Override the <TT>init() </TT>method.<BR>
+
+        Create and set the applet's layout.<BR>
+
+        Create and set the applet's font.<BR>
+
+        Create and add the three buttons.<BR>
+
+        Get the base URL and create the audio clip.<BR>
+
+        Size the applet.<BR>
+
+    Override the <TT>5</TT> method.<BR>
+
+        Respond to the appropriate button.<BR>
+
+        Tell Java that the event was handled.
+
+</BLOCKQUOTE>
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+Nothing spices up an applet more than vivid graphics and enjoyable
+
+sound effects. That's why Java's creators went to such lengths
+
+to ensure that you can easily add these important elements to
+
+your applets. Loading and displaying an image is as simple as
+
+obtaining the image's base URL, creating an <TT>Image</TT> object,
+
+and calling <TT>drawImage()</TT> to display the image on the screen.
+
+Sound effects are just as easy-if not easier-to handle. The simplest
+
+way is to call the applet's <TT>play()</TT> method, which will
+
+play the sound from beginning to end. However, if you want a little
+
+extra control over the sound, you can create an <TT>AudioClip</TT>
+
+object, whose method's enable you to play, stop, and loop the
+
+sound.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>What two types of image files can be loaded by a Java applet?
+
+<LI>What two parameters are required by methods such as <TT>getImage()</TT>
+
+and <TT>getAudioClip()</TT>?
+
+<LI>What's the only type of audio file recognized by Java?
+
+<LI>How do you display an image after it's loaded?
+
+<LI>Do image and sound files always have to be stored in the same
+
+directory as the HTML or CLASS file?
+
+<LI>How do you display an image larger or smaller than normal?
+
+<LI>How can you determine the width and height of an image?
+
+<LI>What's the difference between a document and code base URL?
+
+<LI>Why does creating an AudioClip object give you more control
+
+over your sound effects?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Write an applet that displays the SNAKE.gif image at three
+
+times its normal size.
+
+<LI>Write an applet that loops the SPACEMUSIC.AU file as soon
+
+as the applet starts up. The applet should have a Stop button
+
+that enables the user to stop the sound.
+
+<LI>Write an applet that has three buttons for displaying an image
+
+at 50%, 100%, and 200% of its normal size. Use the SNAKE.gif image
+
+that you used earlier in this chapter. When the user clicks a
+
+button, you should display the image at the selected size, reducing
+
+or enlarging the applet's size to accommodate the image. But make
+
+the applet's minimum horizontal size 150 so that the three buttons
+
+always fit across the top. Figures 27.6, 27.7, and 27.8 show the
+
+ImageApplet3 applet displaying the image in its three sizes. (You
+
+can find the solution for this exercise in the CHAP27 folder of
+
+this book's CD-ROM.)
+
+</OL>
+
+<P>
+
+<IMG SRC="f27-5.gif"><B> Figure 27.5 : </B><I>Here's the image at 50%.</I></A><P>
+
+<P>
+
+<IMG SRC="f27-6.gif"><B> Figure 27.6 : </B><I>Here's the image at 100%.</I></A><P>
+
+<P>
+
+<IMG SRC="f27-7.gif"><B> Figure 27.7 : </B><I>And here's the image at 200%.</I></A><P>
+
+
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch26.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch28.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

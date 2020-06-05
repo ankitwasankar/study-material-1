@@ -1,0 +1,620 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 21 -- Debugging Your Applications</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch20.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch20/ch20.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch22.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch22/ch22.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 21 -<BR>
+Debugging Your Applications</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Catching Undeclared Variables with Option Explicit</A>
+	<LI><A HREF="#Heading2">Checking Code Segments with Breakpoints</A>
+	<LI><A HREF="#Heading3">Monitoring Variable Values with Watches</A>
+	<UL>
+		<LI><A HREF="#Heading4">Monitoring Additional Variables with Add Watch</A>
+		<LI><A HREF="#Heading5">Examining Code Line by Line with Step Into and Step Over</A>
+		<LI><A HREF="#Heading6">Stopping at Selected Lines with Run to Cursor</A>
+	</UL>
+	<LI><A HREF="#Heading7">Using Advanced Debugging Tools</A>
+	<LI><A HREF="#Heading8">Using Find and Replace</A>
+	<LI><A HREF="#Heading9">Designing Applications for Debugging</A>
+	<LI><A HREF="#Heading10">Creating an Error Handler</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Catching Undeclared Variables with Option Explicit</H2>
+<P>As you're coding, the Visual Basic IDE captures most statement syntax errors you
+make (see Figure 21.1). Syntax errors are considered spelling or keyword placement
+errors. These errors are normally easy to find and easy to fix.</P>
+<P><A HREF="javascript:popUp('21fig01.gif')"><B>FIGURE 21.1</B></A> <I>The Visual
+Basic IDE catches If statements without the Then keyword as you type. However, it
+catches missing End If keywords only when you compile the code.</I></P>
+<P>If you type like I do, you probably make spelling errors all the time. If you
+don't want VB to stop and display a message for each error, you can tell VB to highlight
+the line and allow you to keep typing. To change this option, choose <B>Options </B>from
+the <B>Tools </B>menu and clear the <B>Auto Syntax Check</B> check box (see Figure
+21.2). Clearing this box doesn't prevent the compiler from finding errors when you
+attempt to run your program--it simply suppresses the normal syntax error messages
+that become highly annoying when you're typing lots of code.</P>
+<P><A HREF="javascript:popUp('21fig02.gif')"><B>FIGURE 21.2</B></A> <I>Disable Auto
+Syntax <U>C</U>heck if you don't want to see messages about your syntax errors while
+you're typing.</I></P>
+<P>When you run your code within the IDE, Visual Basic reports errors such as type
+mismatches and incomplete code blocks (see Figure 21.3). Unless you have Option Explicit
+set, however, Visual Basic allows your code to run with undeclared variables. When
+you enter the keyword Option Explicit in a form or module's general section, all
+variables in your code must be declared explicitly by using one of the following
+keywords: Public, Private, Dim, or Static.</P>
+<P><A HREF="javascript:popUp('21fig03.gif')"><B>FIGURE 21.3</B></A> <I>The IDE reports
+an incomplete Loop block when you compile the code.</I></P>
+<P>Simple typing mistakes can lead to major errors in your code when you don't use
+Option Explicit. In Listing 21.1, you can see a typing error on line 6. The variable
+is declared with the name intMyNum, but line 6 attempts to use intMyN<I>i</I>m instead.
+Because Option Explicit isn't declared, VB automatically creates a new variable called
+intMyNim and automatically initializes that variable to zero. Figure 21.4 shows the
+result. Had this code used Option Explicit, the IDE would have picked up the typing
+error when the code was run.</P>
+<P>
+<H4>LISTING 21.1&#160;&#160;A Bug Caused by a Typing Mistake</H4>
+<PRE><B>01 </B>Private Sub cmdUnWit_Click()</PRE>
+<PRE><B>02 </B>Dim intMyNum As Integer</PRE>
+<PRE><B>03</B></PRE>
+<PRE><B>04 </B>intMyNum = 2 + 2</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>MsgBox CStr(intMyNim)</PRE>
+<PRE><B>07 </B>End Sub</PRE>
+<P><A HREF="javascript:popUp('21fig04.gif')"><B>FIGURE 21.4</B></A> <I>If you had
+used Option Explicit, you would have received an error message indicating that intMyNim
+was not defined.</I></P>
+<P>
+<H2><A NAME="Heading2"></A>Checking Code Segments with Breakpoints</H2>
+<P>You can easily stop your Visual Basic code at any point in its execution and examine
+it with breakpoints. A <I>breakpoint</I> is a place in your code at which you stop
+(break) your code during execution. You can set a breakpoint in four ways:</P>
+
+<UL>
+	<LI>Click the code line on which you want to break and press the F9 key.
+	<P>
+	<LI>Click the Breakpoint icon in the standard toolbar.
+	<P>
+	<LI>Toggle the breakpoint from the <B>Debug</B> menu.
+	<P>
+	<LI>Click in the margin of the Code window.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Clearing breakpoints</STRONG></P>
+	<P>To clear all the breakpoints in your code, choose <U>C</U>lear All Breakpoints
+	from the <U>D</U>ebug menu. You can also clear all breakpoints by pressing Ctrl+Shift+F9.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>When you set a breakpoint, notice that the line on which the break is set turns
+red. For your code to break, run the code. When the code breaks, the line on which
+you set the break turns yellow. Also, an arrow in the left margin of the Code window
+points to the line of code where execution has halted (see Figure 21.5).</P>
+<P><A HREF="javascript:popUp('21fig06.gif')"><B>FIGURE 21.5</B></A> <I>To go to the
+next breakpoint, press the F5 key.</I></P>
+<P>An arrow indicates the currently executing line</P>
+<P>The present breakpoint line</P>
+<P>A stop sign points out a break</P>
+<P>Not all bugs are caused by errors in code syntax; most bugs are caused by an error
+in code logic or faulty design. These types of bugs are hard to find. You use breakpoints
+to narrow down the area of code where you think a bug is occurring. After you determine
+a line of code in which you know your bug occurs, you set a breakpoint and look at
+the erroneous area by using <I>watches</I>.</P>
+<P>
+<H2><A NAME="Heading3"></A>Monitoring Variable Values with Watches</H2>
+<P>Look again at Listing 21.1 and Figure 21.3. This code has a bug, and the reason
+is obvious--a typo. For educational purposes, however, suppose that you have no idea
+why the bug occurred. All you know is that the message box is reporting the wrong
+answer. This is a good opportunity to use breakpoints and watches.</P>
+<P><B>Set a watch to inspect the value of the displayed variable</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Set a breakpoint at the line of code that shows the message box.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Start your program.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Drag the mouse pointer over the variable whose value you want to view
+	and let it stay there for a moment. A small window with the value of the variable
+	appears.
+	<P>
+</DL>
+
+<P>When you watch the variables in question, you can see a discrepancy in values.
+Thus, you find that the code did assign the value properly to the variable intMyNum
+and that the second occurrence of the variable somehow lost the assigned value. Therefore,
+the addition logic is sound. The next step is to compare the spelling of the variables,
+which will lead you to the spelling mistake and the creation of the unwanted variable.</P>
+<P>
+<H3><A NAME="Heading4"></A>Monitoring Additional Variables with Add Watch</H3>
+<P>At times you need to watch more than one variable. To do so, you use the Watch
+window.</P>
+<P><B>Add variables to the Watch window</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Set a breakpoint or two to the variables you want to add. Press F5.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>At each breakpoint, highlight the variable that you want to add.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Right-click and choose <B>Add Watch</B> from the pop-up menu.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Make the proper settings in the Add Watch dialog (see Figure 21.6)
+	and then click <B>OK</B>.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>To display the Watches window (see Figure 21.7), choose <B>Watch Window</B>
+	from the <B>View</B> menu. This window also appears when you add a watch.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('21fig08.gif')"><B>FIGURE 21.6</B></A> <I>The Add Watch
+dialog box is a flexible, powerful tool.</I></P>
+<P><A HREF="javascript:popUp('21fig09.gif')"><B>FIGURE 21.7</B></A> <I>In Break mode,
+make sure that you are at a place in your code where the variables listed in the
+Watch window are in scope.</I></P>
+<P>Keeping track of many interdependent variables that change continuously can be
+very difficult. The Watch window is an effective tool for inspecting values in these
+dynamic situations, particularly in loops or arrays.</P>
+<P>
+<H3><A NAME="Heading5"></A>Examining Code Line by Line with Step Into and Step Over</H3>
+<P>You can step through your code to examine every line of code as it executes and
+in the order that it executes. You can step in two ways: step into and step over.</P>
+<P>When you step into code, you move through your code line by line. If one line
+of code happens to call another procedure--an event procedure or one that's user
+defined--you step into that procedure (see Figure 21.8).</P>
+<P><A HREF="javascript:popUp('21fig10.gif')"><B>FIGURE 21.8</B></A> <I>You can step
+into code by pressing F8 or by choosing Step <U>I</U>nto from the <U>D</U>ebug menu.</I></P>
+<P>If you start your code with a step into, you might be surprised sometimes to see
+nothing happen. This is perfectly logical. If you have no code in the Form_Load()
+event procedure, there's no event to execute. Remember, Windows is an event-driven
+operating system; some event must fire for code to execute. The only real default
+startup code you have is a Form_Initialize(), Form_Load(), or Sub Main() procedure.
+If there's no code behind these events, your program will sit stagnant until an event
+is fired.</P>
+<P>To step into some code, it's better to set a breakpoint where you want to begin
+to step and then run your code as you normally would. When you come to the breakpoint,
+invoke the step into feature to proceed. If you've used step into to enter a procedure
+and want to quickly exit that procedure, you can step out of the procedure by pressing
+Ctrl+Shift+F8 or by choosing <B>Step Out</B> from the <B>Debug</B> menu.</P>
+<P>When you step over code, you also move through your code line by line. When you
+encounter a code line that calls another procedure, however, you don't enter the
+called procedure--instead, you execute that code as if it were solely a single line
+of code (see Figure 21.9).</P>
+<P><A HREF="javascript:popUp('21fig11.gif')"><B>FIGURE 21.9</B></A> <I>If you don't
+want to debug the internal code of an event procedure, such as cmdUnWit_ Click(),
+step over it by pressing Shift+F8.</I></P>
+<P>You might find it faster and easier to perform these debugging techniques by using
+the Debug toolbar (see Figure 21.10).</P>
+<P><A HREF="javascript:popUp('21fig12.gif')"><B>FIGURE 21.10</B></A> <I>The Debug
+toolbar can be a floating window, or you can drag it to the toolbar area to dock
+it.</I></P>
+<P>
+<H3><A NAME="Heading6"></A>Stopping at Selected Lines with Run to Cursor</H3>
+<P>Every time you set a breakpoint, it stays in force until you return to your code
+and clear it or until you clear all the breakpoints by choosing <B>Clear All Breakpoints</B>
+(Ctrl+Shift+F9) from the <B>Debug</B> menu. Too many breakpoints make debugging slow
+and bothersome. You can make things easier by using Run to Cursor to stop your code
+at arbitrary points.</P>
+<P>You click the code line on which you want to halt execution and then press Ctrl+F8
+or choose <B>Run to Cursor</B> from the <B>Debug</B> menu. Then press F5 to run your
+code. The Visual Basic IDE stops execution of your code at the line that you clicked.</P>
+<P>
+<H2><A NAME="Heading7"></A>Using Advanced Debugging Tools</H2>
+<P>In addition to watching your code and moving through it by using the various step
+techniques, you can use the tools shown in Figures 21.11 through 21.14. Visual Basic
+provides these tools to do advanced debugging.</P>
+<P>The Locals window (see Figure 21.11) is an easy way to view all the variables
+now in scope. Simple variables are listed with their values. Objects have a plus
+sign next to them, which you can click to view an object's properties. If a property
+is actually an object, you'll see another plus sign. In this window, you can easily
+see all variables at the same time without having to click each one.</P>
+<P><A HREF="javascript:popUp('21fig13.gif')"><B>FIGURE 21.11</B></A> <I>The Locals
+window shows all the variables now in scope and their values. You access this window
+by choosing Local<U>s</U> Window from the <U>V</U>iew menu.</I></P>
+<P>The Immediate window (see Figure 21.12) can be used to test lines of code without
+having to run your program. To try it out, enter the following in the Immediate window:</P>
+<P>
+<PRE>Print 2 * 3
+</PRE>
+<P>Below the Print statement will be the answer 6.</P>
+<P>The Immediate window works fine for one-line statements. You can't declare new
+variables in the window, but you can use any variable that's now in scope. For instance,
+if you stopped your program in a subroutine that had an intCounter variable defined,
+you could put this line of code in the Immediate window to see its value:</P>
+<P>
+<PRE>Print intCounter
+</PRE>
+<P>You can also modify values in the Immediate window and execute methods on objects.
+Anything that requires a single line of code can be run here.</P>
+<P><A HREF="javascript:popUp('21fig14.gif')"><B>FIGURE 21.12</B></A> <I>The Immediate
+window enables you to type in code and run it by pressing Enter.</I></P>
+<P>The Call Stack dialog is useful if you're using many procedures and events. This
+dialog (see Figure 21.13) shows all currently active procedures, functions, and event
+handlers. The item listed at the top of the dialog is the current procedure, the
+one below it is the one that called it, and so on. This dialog is opened by clicking
+the <B>Call Stack</B> button on the Debug toolbar or by pressing Ctrl+L.</P>
+<P><A HREF="javascript:popUp('21fig15.gif')"><B>FIGURE 21.13</B></A> <I>The Call
+Stack dialog shows you all the active procedures. This is functional only in Break
+mode.</I></P>
+<P>To show the Quick Watch dialog (shown in Figure 21.14), put a break in your code,
+click a variable, or highlight an expression and choose <B>Q_uick Watch</B> from
+the <B>Debug</B> menu .</P>
+<P><A HREF="javascript:popUp('21fig16.gif')"><B>FIGURE 21.14</B></A> <I>You can also
+invoke the Quick Watch dialog by pressing Shift+F9.</I></P>
+<P>
+<H2><A NAME="Heading8"></A>Using Find and Replace</H2>
+<P>If you've used any type of word processor, at some point you've probably done
+a Find and Replace. Find and Replace is a technique by which you search a document
+or portion of a document for a collection of characters and substitute as marked
+that collection with another--find all occurrences of <I>Bob</I> and change them
+to <I>Joe</I>, for example.</P>
+<P>Find and Replace is a useful debugging tool that lets you make changes over a
+large expanse of code with relative ease. For the most part, the code you've seen
+in this book doesn't have a large line count, so finding and fixing something such
+as the misspelled variable encountered earlier isn't a difficult task. However, if
+you have a piece of code that runs more than 10,000 lines (which, by the way, isn't
+unusual for production code), the amount of work that you would have to do throughout
+the code to make a change--x + 2y to x * 2y, for example--would be considerable.
+Find and Replace makes things a bit easier.</P>
+<P>Find and Replace works much as it does in a word processor. You select a set of
+characters that you want to locate and then invoke the process.</P>
+<P><B>Find a set of characters</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Choose <B>Find</B> from the <B>Edit</B> menu (Ctrl+F) to display the
+	Find dialog.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Enter the word or characters you want to find in the <B>Find What</B>
+	combo box.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Click the <B>Find Next</B> button (see Figure 21.15).
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>To display the Replace dialog, click the <B>Replace</B> button (see
+	Figure 21.16).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('21fig17.gif')"><B>FIGURE 21.15</B></A> <I>The Find
+dialog has many logical search features built in.</I></P>
+<P><A HREF="javascript:popUp('21fig18.gif')"><B>FIGURE 21.16</B></A> <I>You can access
+the Replace dialog by choosing R<U>e</U>place from the <U>E</U>dit menu or by pressing
+Ctrl+H.</I></P>
+<P>
+<H2><A NAME="Heading9"></A>Designing Applications for Debugging</H2>
+<P>If you're planning to do much programming, chances are you'll end up writing some
+large programs that have many changes in them. The problem with debugging by using
+breakpoints and watch windows is that they aren't permanent. For instance, if you
+know about a problematic piece of code that causes errors each time you modify it,
+wouldn't it be nice to permanently embed some debugging code nearby so that you could
+quickly diagnose your error? You can make this work in Visual Basic in a number of
+ways, the easiest and most efficient being conditional compilation. <I>Conditional
+compilation</I> is the process through which VB can exclude pieces of code if certain
+conditions aren't met. C/C++ programmers have had this for years with #ifdef and
+related statements. VB made this feature available in a previous version of the product,
+but it hasn't been widely used yet.</P>
+<P>This section shows you how to use conditional compilation to embed permanent debugging
+code in your application. The debugging code will never actually make it to the client,
+however--VB will leave it out.</P>
+<P>Listing 21.2 is a simple piece of code that sums the numbers from 1 to 20 and
+displays the result.</P>
+<P>
+<H4>LISTING 21.2&#160;&#160;Simple Addition Code</H4>
+<PRE><B>01 </B>Private Sub Form_Load()</PRE>
+<PRE><B>02 </B>Dim intCounter As Integer</PRE>
+<PRE><B>03 </B>Dim intSum As Integer</PRE>
+<PRE><B>04 </B>intSum = 0</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>For intCounter = 1 To 20</PRE>
+<PRE><B>07 </B>intSum = intSum + intCounter</PRE>
+<PRE><B>08 </B>Next intCounter</PRE>
+<PRE><B>09 </B>MsgBox &quot;Sum is &quot; &amp; intSum &amp; &quot;.&quot;</PRE>
+<PRE><B>10</B></PRE>
+<PRE><B>11 </B>End Sub</PRE>
+<P>Suppose that you're unsure whether the addition is working right. An easy way
+to test it is to add a Debug.Print statement, as shown on line 8 of Listing 21.3.</P>
+<P>
+<H4>LISTING 21.3&#160;&#160;Simple Addition Code with Output</H4>
+<PRE><B>01 </B>Private Sub Form_Load()</PRE>
+<PRE><B>02 </B>Dim intCounter As Integer</PRE>
+<PRE><B>03 </B>Dim intSum As Integer</PRE>
+<PRE><B>04 </B>intSum = 0</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>For intCounter = 1 To 20</PRE>
+<PRE><B>07 </B>intSum = intSum + intCounter</PRE>
+<PRE><B>08 </B>Debug.Print &quot;Value: &quot; &amp; i &amp; &quot;, New Sum: &quot; &amp; intSum</PRE>
+<PRE><B>09 </B>Next intCounter</PRE>
+<PRE><B>10 </B>MsgBox &quot;Sum is &quot; &amp; intSum &amp; &quot;.&quot;</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>End Sub</PRE>
+<P>The results of the Debug.Print statement will show up in the Immediate window
+when this program runs in the VB environment. Whenever you compile this program for
+distribution, however, those Debug.Print statements won't do anything because there's
+no Immediate window to print to. For this reason, it makes sense to leave them out
+by using conditional compilation. To do this, the Debug.Print statement must be wrapped
+with conditional operators, as shown on lines 9-11 in Listing 21.4.</P>
+<P>
+<H4>LISTING 21.4&#160;&#160;Output Wrapped in Conditional Compilation Tags</H4>
+<PRE><B>01 </B>Private Sub Form_Load()</PRE>
+<PRE><B>02 </B>Dim intCounter As Integer</PRE>
+<PRE><B>03 </B>Dim intSum As Integer</PRE>
+<PRE><B>04 </B>intSum = 0</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>For intCounter = 1 To 20</PRE>
+<PRE><B>07 </B>intSum = intSum + intCounter</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>#If DEBUG_ON Then</PRE>
+<PRE><B>10 </B>Debug.Print &quot;Value: &quot; &amp; intCounter &amp; &quot;, New Sum: &quot; _</PRE>
+<PRE>&amp; intSum</PRE>
+<PRE><B>11 </B>#End If</PRE>
+<PRE><B>12</B></PRE>
+<PRE><B>13 </B>Next intCounter</PRE>
+<PRE><B>14 </B>MsgBox &quot;Sum is &quot; &amp; intSum &amp; &quot;.&quot;</PRE>
+<PRE><B>15</B></PRE>
+<PRE><B>16 </B>End Sub</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Why use conditional compilation?</STRONG></P>
+	<P>The best part about the conditional compilation code is that all the conditional
+	parts are removed before the executable is built. If a condition was True when the
+	code was compiled, the code within the If...Then is left in the resulting VB code.
+	If the condition was False, the wrapped code is completely removed. This way, your
+	code can be smaller and faster, especially because the processor doesn't have to
+	do any work at runtime to evaluate debug flags. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The code between #If and #End If is evaluated only if the #If condition is True.
+If not, the code essentially doesn't exist in the VB environment. You can't do any
+normal debugging tasks on code wrapped in this manner when the condition isn't met.
+For the code to work, you have to add the following line to the form's declarations
+section:</P>
+<P>
+<PRE>#Const DEBUG_ON = True
+</PRE>
+<P>This special definition causes the DEBUG_ON compilation constant to be True. The
+Debug statement will now print out properly.</P>
+<P>
+<H2><A NAME="Heading10"></A>Creating an Error Handler</H2>
+<P>If you've ever used a software package and had it crash on you, you were the victim
+of one of the biggest problems in programming: error handling. Every program needs
+to be responsible for itself and any errors that can occur. In this section, you
+see how to use VB's built-in error-handling capabilities. You also will build a simple
+error handler that can be expanded for your own applications.</P>
+<P><B>See what happens when you don't handle errors</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Start a new project.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>In the Form_Load event handler, add this code:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Dim intTest as Integer
+</PRE>
+	<PRE>intTest = 100 / 0</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Run your project.
+	<P>
+</DL>
+
+<P>Because division by zero is an error, VB stops and generates an error message.
+If your program had been running as an executable, users would receive the same error
+message you did, and the program would immediately exit. This isn't good programming
+style.</P>
+<P>Luckily, you have a few ways to deal with runtime errors through Visual Basic's
+error handling. The first of these is the On Error Resume Next command. This statement,
+used as part of an error handler, causes Visual Basic to skip the error and go on.
+This type of error handler is useful when you don't necessarily need to resolve the
+error. For instance, if an error occurs while you're exiting the program, there isn't
+any point in handling the error, because you're exiting anyway.</P>
+<P>To try out On Error Resume Next, replace your Form_Load code with the following
+code:</P>
+<P>
+<PRE>Dim intTest As Integer
+On Error Resume Next
+intTest = 100 / 0
+Debug.Print &quot;Program is past the error.&quot;
+</PRE>
+<P>Because you now have an error handler, VB can detect the error and skip the line
+that the error occurs in. In the Immediate window, you will see the results of the
+Print statement you created.</P>
+<P>In this case, the error handler will save your program from crashing. However,
+not solving this error here can cause other errors later in the program. Farther
+on, some code that needs the value of the intTest variable might not work, and you
+will end up with an even bigger error, known as a <I>cascading error</I>.</P>
+<P>A cascading error is much like multiple-car pileups that occur on interstate freeways:
+The first car crashes into something, the next car can't stop and runs into the first,
+and so on, until you have a real mess.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Looking at all the errors</STRONG></P>
+	<P>You can find other trappable errors for VB by searching for Trappable Errors in
+	your VB help file. Literally hundreds of errors can happen. Also, each control or
+	library that you add can have its own errors defined. Refer to each library/control's
+	documentation for information about errors that can occur. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>To help prevent these types of nightmares, Visual Basic provides additional error-handling
+features, such as the capability to create a more specific error handler. For instance,
+you want to let users reattempt to open their CD-ROM drive but don't want to continue
+if a division-by-zero error occurs. To do this, replace your Form_Load code with
+the following (minus the line numbers, of course):</P>
+<P>
+<PRE><B>01</B> Private Sub Form_Load()
+<B>02</B>   Dim intTest As Integer
+<B>03</B>   Dim intRet As Integer
+<B>04</B>   On Error GoTo EH
+<B>05</B>   intTest = 5 / 0
+<B>06</B>   Exit Sub
+<B>07</B>
+<B>08</B> EH:
+<B>09</B>   If Err.Number = 11 Then
+<B>10</B>      MsgBox &quot;Division by zero error occurred.&quot;, _
+           vbCritical
+<B>11</B>      End
+<B>12</B>   ElseIf Err.Number = 71 Then
+<B>13</B>      intRet = MsgBox(&quot;That drive is not ready.&quot;, _
+           vbExclamation + vbAbortRetryIgnore)
+<B>14</B>      Select Case intRet
+<B>15</B>      Case vbRetry
+<B>16</B>         Resume
+<B>17</B>      Case vbAbort 
+<B>18</B>         End
+<B>19</B>      Case vbIgnore
+<B>20</B>         Resume Next
+<B>21</B>      End Select
+<B>22</B>   `
+<B>23</B>   ` more conditions follow
+<B>24</B>   `
+<B>25</B>   End If
+</PRE>
+<PRE><B>26</B> End Sub
+</PRE>
+<P>First, the On Error statement now uses the GoTo statement (line 4) to tell VB
+where to go in case of an error. In this case, you want to go to a block of code
+labeled with EH (line 8). Labels are used almost exclusively for error handling and
+are simply text followed by a colon, like the EH: just above the error-handling code.</P>
+<P>This error-handling section (lines 9-25) checks the Number property of the Err
+object. This number determines what the error is. This particular block checks for
+a division-by-zero error, which obviously will occur. When it does, the programmer
+has decided that it is serious enough to require the program to shut down. The End
+statement (line 18) will immediately shut down the program.</P>
+<P>The next error to check for is the Drive Not Ready error, which happens frequently
+when you try to access a CD-ROM or floppy drive without a disk in it. This particular
+case offers users three choices:</P>
+
+<UL>
+	<LI>Abort--Stop the program immediately.
+	<P>
+	<LI>Retry--Try the drive again.
+	<P>
+	<LI>Ignore--Skip the statement and move on.
+</UL>
+
+<P>You can see the code for each value of the MsgBox function in the preceding example.
+After the Drive Not Found error, you typically would have more error-handling blocks
+to handle other types of errors that might occur during the operation of your program.
+You can use Select Case to handle groups of errors in a similar way, because the
+errors are numbered. For instance, all the Drive Not Ready error types should be
+handled in the way used here--that is, allow users to abort, retry, or ignore. Other
+error types, such as division by zero and other critical errors, will normally cause
+the program to fail--maybe not immediately but possibly later.</P>
+<P>The most important thing to remember about error handling is that every procedure
+with significant code in it needs an error handler. You can name all the error-handling
+blocks the same--that is, they can all be labeled EH. This makes it easier for you
+to duplicate code and drop in as you need it.</P>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch20.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch20/ch20.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch22.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch22/ch22.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> <BR>
+</P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

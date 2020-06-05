@@ -1,0 +1,538 @@
+<HTML>
+<HEAD>
+<TITLE>lax05.htm </TITLE>
+<LINK REL="ToC" HREF="httoc.htm">
+<LINK REL="Index" HREF="htindex.htm">
+<LINK REL="Next" HREF="lax06.htm">
+<LINK REL="Previous" HREF="lax04.htm"></HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080">
+<A NAME="I0"></A><P ALIGN=CENTER>
+<A HREF="lax04.htm" TARGET="_self"><IMG SRC="blanprev.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Previous Page"></A>
+<A HREF="httoc.htm" TARGET="_self"><IMG SRC="blantoc.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="TOC"></A>
+<A HREF="lax06.htm" TARGET="_self"><IMG SRC="blannext.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Next Page"></A>
+<A HREF="http://www.mcp.com/sams/" TARGET="_self"><IMG SRC="blanhome.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="See Page"></A>
+<HR ALIGN=CENTER>
+<P>
+<UL>
+<UL>
+<UL>
+<LI>
+<A HREF="#E68E28" ><IMG SRC="task.gif">Building an HTML Form to Work with VBScript</A>
+<LI>
+<A HREF="#E68E29" ><IMG SRC="task.gif">Determining Which HTML Option (Radio Button) Is Clicked</A>
+<LI>
+<A HREF="#E68E30" ><IMG SRC="task.gif">Determining Which HTML Checkbox Is Checked</A>
+<LI>
+<A HREF="#E68E31" ><IMG SRC="task.gif">Determining the Selection from an HTML Select</A>
+<LI>
+<A HREF="#E68E32" ><IMG SRC="task.gif">Confirming a User's Selection</A>
+<UL>
+<LI>
+<A HREF="#E69E32" >Workshop Wrap-Up</A>
+<LI>
+<A HREF="#E69E33" >Next Steps</A>
+<LI>
+<A HREF="#E69E34" >Q&amp;A</A></UL></UL></UL></UL>
+<HR ALIGN=CENTER>
+<A NAME="E66E10"></A>
+<H1 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=6 COLOR="#FF0000"><B>- 5 -</B>
+<BR><B>Interfacing VBScript with an HTML Form</B></FONT></CENTER></H1>
+<BR>
+<P>In this chapter, you
+<BR>
+<UL>
+<LI>Learn about HTML form elements
+<BR>
+<BR>
+<LI>Interact with HTML intrinsic objects
+<BR>
+<BR>
+<LI>Work with HTML checkboxes
+<BR>
+<BR>
+<LI>Set up HTML option (radio) buttons
+<BR>
+<BR>
+<LI>Design HTML select lists
+<BR>
+<BR>
+</UL>
+<P>Tasks in this chapter:
+<BR>
+<UL>
+<LI>Building an HTML form to work with VBScript
+<BR>
+<BR>
+<LI>Determining which HTML option (Radio Button) is clicked
+<BR>
+<BR>
+<LI>Determining which HTML checkbox is checked
+<BR>
+<BR>
+<LI>Determining the selection from an HTML select
+<BR>
+<BR>
+<LI>Confirming a user's selection
+<BR>
+<BR>
+</UL>
+<P>A lot of the VBScript work you undertake is linked in some way to the form because VBScript is ideal for interfacing with user inputs. As you saw in Chapter 2, &quot;Using VBScript with HTML Controls,&quot; you can easily and quickly add VBScript to current HTML pages without major renovation. In this chapter, you'll learn about three HTML form elements that probably cause the most confusion when it comes to adding script to a form. Text boxes are straightforward, but the three elements that afford choice to the user are not.
+<BR>
+<P>The three choice elements in HTML forms are as follows:
+<BR>
+<UL>
+<LI>SELECT isn't strictly a control because it isn't specified with the &lt;INPUT&gt; tag; however, it is used very frequently and is probably the easiest of the three to work with. Select lists are specified as follows:
+<BR>
+<BR>
+</UL>
+<UL>
+<UL>
+<PRE>
+<FONT COLOR="#000080">&lt;SELECT NAME=&quot;MySelect&quot;&gt;
+&lt;OPTION&gt;The First Option
+&lt;OPTION&gt;The Second Option
+&lt;/SELECT&gt;</FONT></PRE></UL></UL>
+<UL>
+<LI>RADIO is the small,  round indented button that designates one of many choices when it's used together with other radio buttons of the same name. A radio button is specified within an INPUT tag as follows:
+<BR>
+<BR>
+</UL>
+<UL>
+<UL>
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;myRadio&quot; VALUE=&quot;OptionValue&quot;&gt;</FONT></PRE></UL></UL>
+<UL>
+<LI>CHECKBOX is the small, square indented box that is either on (checked) or off (unchecked). This gives the user a series of options to select&#151;one, none, some, or all. A checkbox is specified within an INPUT tag as follows:
+<BR>
+<BR>
+</UL>
+<UL>
+<UL>
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;INPUT TYPE=&quot;checkbox&quot; NAME=&quot;myCheck&quot; VALUE=&quot;CheckValue&quot;&gt;</FONT></PRE></UL></UL>
+<P>In this chapter, you create a form from which the user can select a range of options. Specifically, this is part of the order form for the fictitious &quot;Mega Choice Mail Order&quot; Web site, promoting its new product, the &quot;LazeeGeek Computer Users Head Prop,&quot; as shown in Figure 5.1. I think I ate too much cheese last night!
+<BR>
+<P><B><A HREF="05lax01.gif">Figure 5.1. The multichoice order form.</A></B>
+<BR>
+<P>As you see, the users select from a range of optional extras using the checkboxes; they select one size using the radio buttons. Finally, they select the color of their choice from a drop-down list, courtesy of a &lt;SELECT&gt; tag.
+<BR>
+<P>Listing 5.1 shows the complete source code for the Web page (mega1.htm), and you can find it on the CD-ROM that accompanies this book. Each task in this chapter breaks down a specific section of the source code to show you how the code fits together. Note that I created this whole page with Notepad; however, you can use the ActiveX Control Pad's Text Editor or your own favorite HTML editor if you want. The line numbers shown in the following source code are for the purpose of explanation and should not form part of the final document.
+<BR>
+<P>
+<FONT COLOR="#000080"><B>Listing 5.1. mega1.htm.</B></FONT>
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;!-- ***************************************
+     *     LAZEEGEEK HEAD PROP EXAMPLE     *
+     ***************************************
+--&gt;
+&lt;TITLE&gt;
+Mega Choice Mail Order
+&lt;/TITLE&gt;
+1:&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+2:&lt;!--
+3:OPTION EXPLICIT
+4:Sub Button1_OnClick
+5:'====================DECLARE VARIABLES AND CONSTANTS===============
+6:    Dim intColor
+7:    Dim i 
+8:    Dim strOptExtras, strTheSize, strTheColor, strMainMessage 
+9:    Dim intOptQty, intResponse
+10:    Dim blnSize
+11:    Dim CRLF
+12:    CRLF = Chr(10) &amp; Chr(13)
+13:'=====================DETERMINE SIZE SELECTION======================
+14:blnSize = False
+15:For i = 0 to Document.OrderForm.Elements.Count -1 
+16:  If Document.OrderForm.Elements(i).Name = &quot;choice1&quot; Then
+17:    If Document.OrderForm.Elements(i).Checked Then
+18:       blnSize = True
+19:       strTheSize =  &quot;Size: &quot; &amp; Document.OrderForm.Elements(i).Value
+20:        Exit For
+21:    End if
+22:  End if
+23:Next
+24:If Not blnSize Then
+25:  Alert &quot;You must select a size&quot;
+26:  Exit Sub
+27:End If
+28:'======================DETERMINE COLOR SELECTION======================
+29:intColor = Document.OrderForm.Colors.SelectedIndex
+30:strTheColor = &quot;Color: &quot; &amp; Document.OrderForm.Colors.Options(intColor).Text
+31:'======================DETERMINE OPTIONAL EXTRAS======================
+32:strOptExtras = &quot;Options: &quot;
+33:intOptQty = 0
+34:If Document.OrderForm.option1.Checked Then
+35:  strOptExtras = strOptExtras &amp; Document.OrderForm.option1.Value &amp; &quot; &quot;
+36:  intOptQty = intOptQty + 1
+37:End If
+38:If Document.OrderForm.option2.Checked Then
+39:If intOptQty &gt; 0 Then
+40:  strOptExtras = strOptExtras &amp; &quot;and &quot;
+41:End if
+42:  strOptExtras = strOptExtras &amp; Document.OrderForm.option2.Value &amp; &quot; &quot;
+43:  intOptQty = intOptQty + 1
+44:End If
+45:If Document.OrderForm.option3.Checked Then
+46:If intOptQty &gt; 0 Then
+47: strOptExtras = strOptExtras &amp; &quot;and &quot;
+48:End If
+49:  strOptExtras = strOptExtras &amp; Document.OrderForm.option3.Value
+50:  intOptQty = intOptQty + 1
+51:End If
+52:If intOptQty = 0 Then
+53:  strOptExtras = &quot;No Options Required&quot;
+54:End If 
+55:'========================SHOW MESSAGE ==================================
+56:strMainMessage = &quot;Thanks for your order&quot; &amp; CRLF
+57:strMainMessage = strMainMessage &amp; strTheSize &amp; CRLF
+58:strMainMessage = strMainMessage &amp; strTheColor &amp; CRLF
+59:strMainMessage = strMainMessage &amp; strOptExtras &amp; CRLF
+60:strMainMessage = strMainMessage &amp; &quot;Is this correct?&quot;
+61:intResponse = MsgBox(strMainMessage,36,&quot;Order Details&quot;)
+62:End Sub
+63:--&gt;
+64:&lt;/SCRIPT&gt;
+&lt;/HEAD&gt;
+&lt;BODY BGCOLOR=&quot;white&quot;&gt;
+&lt;FONT FACE=&quot;arial&quot; SIZE=2&gt;
+&lt;CENTER&gt;
+&lt;TABLE&gt;
+&lt;TD&gt;
+&lt;H2&gt;Mega Choice Mail Order&lt;/H2&gt;
+&lt;H3&gt;The New &lt;I&gt;LazeeGeek&lt;/I&gt; &amp;reg; &lt;BR&gt;Computer Users Head Prop&lt;/H3&gt;
+&lt;TD&gt;
+&lt;IMG SRC=&quot;headprop.gif&quot;&gt;
+&lt;TR&gt;
+&lt;/TABLE&gt;
+&lt;FORM NAME=&quot;OrderForm&quot;&gt;
+&lt;TABLE CELLPADDING=20 CELLSPACING=20&gt;
+&lt;!--COLUMN ONE ---- OPTIONAL EXTRAS --&gt;
+&lt;TD VALIGN=TOP&gt;
+&lt;B&gt;Optional Extras&lt;/B&gt;&lt;BR&gt;
+Padded Headrest&lt;INPUT TYPE=&quot;checkbox&quot; NAME=&quot;option1&quot; Value=&quot;Padded Headrest&quot;&gt;&lt;BR&gt;
+Cup Holder&lt;INPUT TYPE=&quot;checkbox&quot; NAME=&quot;option2&quot; Value=&quot;Cup Holder&quot;&gt;&lt;BR&gt;
+Shock Absorber&lt;INPUT TYPE=&quot;checkbox&quot; NAME=&quot;option3&quot; Value=&quot;Shock Absorber&quot;&gt;&lt;BR&gt;
+&lt;!--COLUMN TWO ---- SIZE CHOICE --&gt;
+&lt;TD VALIGN=TOP&gt;
+&lt;B&gt;Sizes&lt;/B&gt;&lt;BR&gt;
+12 Inches&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;choice1&quot; Value=&quot;12 Inches&quot;&gt;&lt;BR&gt;
+18 Inches&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;choice1&quot; Value=&quot;18 Inches&quot;&gt;&lt;BR&gt;
+24 Inches&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;choice1&quot; Value=&quot;24 Inches&quot;&gt;&lt;BR&gt;
+&lt;!--COLUMN THREE ---- COLOR &amp; BUTTON --&gt;
+&lt;TD VALIGN=TOP&gt;
+&lt;B&gt;Colors&lt;/B&gt;&lt;BR&gt;
+&lt;SELECT NAME=&quot;Colors&quot;&gt;
+&lt;OPTION&gt;Brushed Aluminium
+&lt;OPTION&gt;Black
+&lt;OPTION&gt;Blue
+&lt;OPTION&gt;Green
+&lt;OPTION&gt;Red
+&lt;/SELECT&gt;&lt;P&gt;
+&lt;INPUT TYPE=&quot;button&quot; NAME=&quot;Button1&quot; VALUE=&quot;Place your order now&quot;&gt;
+&lt;TR&gt;
+&lt;/TABLE&gt;
+&lt;/FORM&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;</FONT></PRE>
+<BR>
+<A NAME="E68E28"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Building an HTML Form to Work with VBScript</B></FONT></CENTER></H3>
+<BR>
+<P>To give you some understanding of how VBScript interacts with forms and form elements, I'll briefly discuss the hierarchy of HTML objects. A document is an object that belongs to the window object (that is, the window object is its parent). Because the window object is implicit, you usually do not need to specify it in the code line. You can have only one document per window; however, a frame is treated as a window.
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>If the document is held within a frame, you must explicitly call the frame first. To learn about frames with VBScript, see Chapter 18, &quot;Interacting with the Browser.&quot;</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>A form object belongs to the document, and a document can have any number of forms. The element objects&#151;such as text boxes and other input controls&#151;are objects that belong to the form, and again, a form can have any number of elements.  To access the value of a form element from your script, you use the following syntax:
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">Document.FormName.ElementName.Value</FONT></PRE>
+<P>When either building or amending an HTML form that you intend to interface using VBScript, the main thing to keep in mind is that you must give your form and its elements a name. Giving them names simplifies matters greatly, although it is not absolutely necessary as I now demonstrate with the following short example:
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+ &lt;HEAD&gt;
+  &lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+   Sub CommandButton1_OnClick
+    strTheInput = Document.Forms(0).Elements(0).Value
+    Alert strTheInput
+   End Sub
+  &lt;/SCRIPT&gt;
+ &lt;/HEAD&gt;
+ &lt;BODY&gt;
+ &lt;FORM&gt;
+  &lt;INPUT TYPE=&quot;text&quot;&gt;
+  &lt;INPUT TYPE=&quot;button&quot; NAME=&quot;CommandButton1&quot; VALUE=&quot;Click Me&quot;&gt;
+ &lt;/FORM&gt;
+ &lt;/BODY&gt;
+&lt;/HTML&gt;</FONT></PRE>
+<P>In this example, neither the form nor the text box have names. VBScript places all forms into an array of forms, starting at number 0; it also places all form elements, such as buttons and text boxes, into an elements array, again starting at number 0.
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>For more details about arrays, see Chapter 10, &quot;Using the Power of Arrays.&quot;</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>To access the contents of this text box, you must know within which form it resides and the text box's ordinal number within the form. In this particular example, knowing the number isn't much of a problem because you have only one form and two elements; the text box is the first, so it is element 0.
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">strTheInput = Document.Forms(0).Elements(0).Value</FONT></PRE>
+<P>You can now see that it is much easier to name all your forms and elements and refer to them by name. In fact, to access values when you send the information to the server, you need names for your elements anyway. 
+<BR>
+<P>Look at the form used in the main example in this chapter, which is shown in the following code segment. Notice that the three radio buttons have the same name so that you can check only one button at any one time, leaving the other two unchecked. When you give the buttons the same name, the browser adds this functionality for you. The form is constructed with everyday HTML objects and requires no further explanation:
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;FORM NAME=&quot;OrderForm&quot;&gt;
+&lt;TABLE CELLPADDING=20 CELLSPACING=20&gt;
+&lt;!--COLUMN ONE ---- OPTIONAL EXTRAS --&gt;
+&lt;TD VALIGN=TOP&gt;
+&lt;B&gt;Optional Extras&lt;/B&gt;&lt;BR&gt;
+Padded Headrest&lt;INPUT TYPE=&quot;checkbox&quot; NAME=&quot;option1&quot; Value=&quot;Padded Headrest&quot;&gt;&lt;BR&gt;
+Cup Holder&lt;INPUT TYPE=&quot;checkbox&quot; NAME=&quot;option2&quot; Value=&quot;Cup Holder&quot;&gt;&lt;BR&gt;
+Shock Absorber&lt;INPUT TYPE=&quot;checkbox&quot; NAME=&quot;option3&quot; Value=&quot;Shock Absorber&quot;&gt;&lt;BR&gt;
+&lt;!--COLUMN TWO ---- SIZE CHOICE --&gt;
+&lt;TD VALIGN=TOP&gt;
+&lt;B&gt;Sizes&lt;/B&gt;&lt;BR&gt;
+12 Inches&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;choice1&quot; Value=&quot;12 Inches&quot;&gt;&lt;BR&gt;
+18 Inches&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;choice1&quot; Value=&quot;18 Inches&quot;&gt;&lt;BR&gt;
+24 Inches&lt;INPUT TYPE=&quot;radio&quot; NAME=&quot;choice1&quot; Value=&quot;24 Inches&quot;&gt;&lt;BR&gt;
+&lt;!--COLUMN THREE ---- COLOR &amp; BUTTON --&gt;
+&lt;TD VALIGN=TOP&gt;
+&lt;B&gt;Colors&lt;/B&gt;&lt;BR&gt;
+&lt;SELECT NAME=&quot;Colors&quot;&gt;
+&lt;OPTION&gt;Brushed Aluminium
+&lt;OPTION&gt;Black
+&lt;OPTION&gt;Blue
+&lt;OPTION&gt;Green
+&lt;OPTION&gt;Red
+&lt;/SELECT&gt;&lt;P&gt;
+&lt;INPUT TYPE=&quot;button&quot; NAME=&quot;Button1&quot; VALUE=&quot;Place your order now&quot;&gt;
+&lt;TR&gt;
+&lt;/TABLE&gt;
+&lt;/FORM&gt;</FONT></PRE>
+<P>Take a look at the scripts required for you to interact with each of the three elements; as you are about to see, each element requires a very different approach. 
+<BR>
+<BR>
+<A NAME="E68E29"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Determining Which HTML Option (Radio Button) Is Clicked</B></FONT></CENTER></H3>
+<BR>
+<P>To give the correct functionality to an HTML button, you must give all the radio buttons in a set the same name. This in itself causes a problem. As you saw previously, the best way to access an element is via its name, but now you have three controls with the same name, so what happens when you use the code?
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">Document.OrderForm.Choice1.Value</FONT></PRE>
+<P>The answer is that an error occurs. How does the scripting engine know exactly which Choice1 you are referring to? In Visual Basic and Visual Basic for Applications and with the ActiveX radio control, this confusion isn't a problem because you can specify an index number to distinguish the control as unique. In fact, it is regular practice to create a group of the same controls with the same name distinguished only by an index number. The HTML radio button has no such indexing feature. What do you do? Take a look at the following code from the example:
+<BR>
+<PRE>
+<FONT COLOR="#000080">13:'=====================DETERMINE SIZE SELECTION======================
+14:blnSize = False
+15:For i = 0 to Document.OrderForm.Elements.Count -1 
+16:  If Document.OrderForm.Elements(i).Name = &quot;choice1&quot; Then
+17:    If Document.OrderForm.Elements(i).Checked Then
+18:       blnSize = True
+19:       strTheSize =  &quot;Size: &quot; &amp; Document.OrderForm.Elements(i).Value
+20:        Exit For
+21:    End if
+22:  End if
+23:Next
+24:If Not blnSize Then
+25:  Alert &quot;You must select a size&quot;
+26:  Exit Sub
+27:End If</FONT></PRE>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>To learn more about For..Next loops and If..Then conditional statements, see Chapter 9, &quot;Making Your Program Flow.&quot;</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>Notice that the code reverts to using the elements array. Line 15 uses the element's Count property.  The Count property holds the total number of elements within a particular form. Because the elements array begins with zero, you subtract one from the total and start the loop at 0. If your form has 10 objects, for example, you reference them as Elements(0) to Elements(9). 
+<BR>
+<P>The na<A NAME="I2"></A>me of the radio button is used in line 16 to check whether the current element object is the one you want. Don't forget that going through all the form elements in this way returns every element, such as checkboxes, buttons, and so on. If the program finds the name choice1, you know you have the right object. Notice that you can use Elements(i) as though it were the object's name and access all the element's properties in the same way. For example, the following two lines are the same:
+<BR>
+<PRE>
+<FONT COLOR="#000080">Document.OrderForm.choice1.Name
+Document.OrderForm.Elements(i).Name </FONT></PRE>
+<P>i represents the ordinal number of the choice1 element.
+<BR>
+<P>When the program locates one of the three radio buttons, you must find out whether it is checked, which line 17 evaluates. If the radio button is checked, line 17 evaluates to True, and lines 18 and 19 are executed. If the button is not checked, the loop continues.
+<BR>
+<P>Line 18 sets a flag to True, which is used in line 24 to determine whether the user selected any size. If he didn't choose a size, a warning message displays, and the script's execution halts. Line 19 copies the value of the checked radio button to a variable that is used later to get confirmation from the user.
+<BR>
+<P>After you find the checked radio button, you know there can be only one, so any further execution of the loop is a waste of time. Line 20 jumps out of the loop using the Exit For statement. 
+<BR>
+<BR>
+<A NAME="E68E30"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Determining Which HTML Checkbox Is Checked</B></FONT></CENTER></H3>
+<BR>
+<P>The method for determining which checkbox is checked is different from the method for finding the checked radio button. First, you must consider that several permutations could be present. The user could have selected one, two, all, or none of the options. The following segment shows the code used for the checkbox inspection:
+<BR>
+<PRE>
+<FONT COLOR="#000080">31:'======================DETERMINE OPTIONAL EXTRAS======================
+32:strOptExtras = &quot;Options: &quot;
+33:intOptQty = 0
+34:If Document.OrderForm.option1.Checked Then
+35:  strOptExtras = strOptExtras &amp; Document.OrderForm.option1.Value &amp; &quot; &quot;
+36:  intOptQty = intOptQty + 1
+37:End If
+38:If Document.OrderForm.option2.Checked Then
+39: If intOptQty &gt; 0 Then
+40:  strOptExtras = strOptExtras &amp; &quot;and &quot;
+41: End if
+42:  strOptExtras = strOptExtras &amp; Document.OrderForm.option2.Value &amp; &quot; &quot;
+43:  intOptQty = intOptQty + 1
+44:End If
+45:If Document.OrderForm.option3.Checked Then
+46: If intOptQty &gt; 0 Then
+47:  strOptExtras = strOptExtras &amp; &quot;and &quot;
+48: End If
+49:  strOptExtras = strOptExtras &amp; Document.OrderForm.option3.Value
+50:  intOptQty = intOptQty + 1
+51:End If
+52:If intOptQty = 0 Then
+53:  strOptExtras = &quot;No Options Required&quot;
+54:End If </FONT></PRE>
+<P>The Checked property of the checkbox object returns True if the checkbox is checked and False otherwise. The first two lines of code, 32 and 33, initialize the variables used in this section. As you see, the parts of this section are similar to each other. A test is performed (lines 34, 38, and 45) to find out whether the checkbox is checked, and if it is, the value of that checkbox is concatenated to the string (lines 35, 42, and 49).
+<BR>
+<P>A counter (intOptQty) determines whether any checkboxes are checked. If none are checked,  the value of the counter remains at zero. At various stages (lines 39 and 46), the counter is tested to determine whether the current checkbox is the first or a subsequent option. If it is a second or third option, the word and is concatenated to the string (lines 40 and 47). The counter is incremented every time a checked checkbox is encountered (lines 36, 43, and 50). 
+<BR>
+<BR>
+<A NAME="E68E31"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Determining the Selection from an HTML Select</B></FONT></CENTER></H3>
+<BR>
+<P>The HTML select object is very straightforward to use and has several useful built-in properties. It also contains a kind of options sub-object, which has its own properties.
+<BR>
+<P>Here are the main properties of the select object: 
+<BR>
+<UL>
+<LI>Length returns an integer value of the number of options declared using the &lt;OPTION&gt; tag within the &lt;SELECT&gt; block:
+<BR>
+<BR>
+</UL>
+<UL>
+<UL>
+<BR>
+<PRE>
+<FONT COLOR="#000080">intNoofOptions = Document.Form1.MySelect.Length</FONT></PRE></UL></UL>
+<UL>
+<LI>SelectedIndex returns an integer value of the index number (zero is the first list item) of the option the user has selected:
+<BR>
+<BR>
+</UL>
+<UL>
+<UL>
+<BR>
+<PRE>
+<FONT COLOR="#000080">intColor = Document.OrderForm.Colors.SelectedIndex</FONT></PRE></UL></UL>
+<P>The Option object is an array of strings that contains a list of options defined with the &lt;OPTION&gt; tag. The first one is always indexed at 0. The Option's Text property returns a string containing the text entered in the HTML file directly after the &lt;OPTION&gt; tag. You can only use it by specifying which option you want to reference: 
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">30:strTheColor = &quot;Color: &quot; &amp; Document.OrderForm.Colors.Options(intColor).Text</FONT></PRE>
+<P>In the example, the selected item is determined using the SelectedIndex property of the select object. This value is then used to return the text of the option:
+<BR>
+<PRE>
+<FONT COLOR="#000080">28:'======================DETERMINE COLOR SELECTION======================
+29:intColor = Document.OrderForm.Colors.SelectedIndex
+30:strTheColor = &quot;Color: &quot; &amp; Document.OrderForm.Colors.Options(intColor).Text</FONT></PRE>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>Unlike the ActiveX drop-down list (combo), the HTML version is read-only, which means you cannot add items or change the text in any way after the HTML file is rendered in the browser. </NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<BR>
+<A NAME="E68E32"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Confirming a User's Selection</B></FONT></CENTER></H3>
+<BR>
+<P>The final part of the script builds the message string from the variables that had values assigned to them in the course of the selection-checking processes described previously.
+<BR>
+<P>When the message string is complete, it is used in a message box of type 36 (Yes and No buttons and a Question Mark icon), as shown in Figure 5.2. In a real form, you would make some further decisions and carry out further processes based on the return value of this message box, which you collect in the intResponse variable.
+<BR>
+<P><B><A HREF="05lax02.gif">Figure 5.2. The message box asking the user to confirm his order.</A></B>
+<BR>
+<BR>
+<A NAME="E69E32"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Workshop Wrap-Up</B></FONT></CENTER></H4>
+<BR>
+<P>In this chapter, you learned several ways that you can write scripts to determine the values selected by the users prior to sending data to the server. You saw how to loop through the form's elements to find particular controls, and you used a control's properties to point to the selected option.
+<BR>
+<P>You worked entirely with HTML intrinsic objects and saw the hierarchy of window, document, form, and element. You saw several examples of the dot notation used to refer to properties of an object.
+<BR>
+<P>In the next chapter, you'll see how to programmatically submit data to the server using VBScript.
+<BR>
+<BR>
+<A NAME="E69E33"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Next Steps</B></FONT></CENTER></H4>
+<BR>
+<P>Now that you've seen how to use HTML form elements with VBScript, you can create interactive documents using your current HTML pages as a base. For further information, see these chapters:
+<BR>
+<UL>
+<LI>To learn more about form data and data verification, see Chapter 6, &quot;Checking Form Data.&quot;
+<BR>
+<BR>
+<LI>Chapter 9, &quot;Making Your Program Flow,&quot; describes For...Next loops and If...Then conditional statements.
+<BR>
+<BR>
+<LI>When you're working with strings, read Chapter 7, &quot;Manipulating Strings.&quot;
+<BR>
+<BR>
+<LI>For more information about LazeeGeek Computer Users Head Props, fill in the form!
+<BR>
+<BR>
+</UL>
+<BR>
+<A NAME="E69E34"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Q&amp;A</B></FONT></CENTER></H4>
+<BR>
+<P><B>Q: Can all the HTML Intrinsic Controls be interfaced with VBScript?</B>
+<BR>
+<P><B>A: </B>Yes. The Active Scripting Object Model (see Appendixes B and D) defines the type and minimum functionality of HTML Controls and Objects used in an Active Scripting environment such as MSIE 3.<I>x</I>. It also specifies the properties, methods, and events that each should have. However, each HTML control is slightly different, so what you can do with one control, you might not be able to do with another.
+<BR>
+<P><B>Q: Why would I want to use HTML Intrinsic Controls when I have all these ActiveX controls that perform much better?</B>
+<BR>
+<P><B>A: </B>There are several reasons why you could choose HTML Intrinsic Controls. Suppose you have a complex form that you have been developing and maintaining for some time. Rather than scrap the whole form, you could enhance what you already have by adding some scripting to it. There's also the consideration of download time, which should be much quicker using HTML Controls, although all the ActiveX form controls should be immediately available to users of Windows 95. Finally, by using ActiveX controls, you are completely blocking users of Netscape Navigator from your form, whereas if you had used HTML Controls, those users would at least be able to use the form (albeit without the scripted functionality).
+<BR>
+<P ALIGN=CENTER>
+<A HREF="lax04.htm" TARGET="_self"><IMG SRC="blanprev.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Previous Page"></A>
+<A HREF="#I0" TARGET="_self"><IMG SRC="blantop.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Page Top"></A>
+<A HREF="httoc.htm" TARGET="_self"><IMG SRC="blantoc.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="TOC"></A>
+<A HREF="lax06.htm" TARGET="_self"><IMG SRC="blannext.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Next Page"></A>
+<A HREF="http://www.mcp.com/sams/" TARGET="_self"><IMG SRC="blanhome.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="See Page"></A>
+</BODY></HTML>

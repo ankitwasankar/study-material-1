@@ -1,0 +1,861 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 16 -- Working with Time and Timers</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch15.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch15/ch15.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch17/ch17.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 16 -<BR>
+Working with Time and Timers</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Understanding Serial Time</A>
+	<LI><A HREF="#Heading2">Understanding the Timer Control</A>
+	<LI><A HREF="#Heading3">Using the Time, Date, and Now Functions</A>
+	<LI><A HREF="#Heading4">Use a Timer to Build a Clock Program</A>
+	<LI><A HREF="#Heading5">Using the Format() Function</A>
+	<LI><A HREF="#Heading6">Calculating Date Differences</A>
+	<LI><A HREF="#Heading7">Using Static Variables with a Timer</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Understanding Serial Time</H2>
+<P>Visual Basic deals with time differently than you might be accustomed: It uses
+the Date data type, which uses the day as the basic unit of time. Thus, an hour is
+1/24 of a day, and a second is 1/86,400 of a day. You would represent a week as 7
+because a week contains seven days. The Date data type displays dates according to
+how your computer's time format is set: by 12-hour or 24-hour format.</P>
+<P>In Julian time, Day 1 is January 1, 0000. Visual Basic, on the other hand, considers
+Day 1 to be December 31, 1899. Thus, Day 2 is January 1, 1900, and June 12, 1968,
+is Day 25001 or simply 25001, the 25001st day from December 31, 1899. The serial
+date 25001.5 translates to noon, June 12, 1968. Dates before December 31, 1899 are
+represented by negative numbers; for instance, July 4, 1776, is -45103--45,103 days
+before December 30, 1899.</P>
+<P>You can assign literal date values to Date variables by enclosing the literal
+within a pair of number signs (#)--for example,</P>
+<P>
+<PRE>Dim MyDate as Date
+MyDate = #May 15, 1998#
+</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Year 2000 compliance</STRONG></P>
+	<P>Although Visual Basic 6 is Year 2000 compliant, realize that programs you write
+	won't automatically be compliant. When using dates in an application, be careful
+	to validate user input to make sure that you're using the appropriate date. Also
+	be sure to test your application thoroughly before deployment. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The Date data type can be converted into any other data type. For example, 2 p.m.
+May 15, 1998, would be 35390.58333 as a Double. Everything to the left of the decimal
+point is the day; everything to the right of it is the time or the portion of the
+day: hours, minutes, seconds, and milliseconds. Notice that decimal values less than
+1 can be used to specify only a time; for example, 0.12345 represents 2:57:46 a.m.</P>
+<P>
+<H2><A NAME="Heading2"></A>Understanding the Timer Control</H2>
+<P>In Visual Basic, the Timer control enables you to track time. Think of a Timer
+as a clock that fires a programmable event at an interval you specify (see Figure
+16.1). The event the Timer fires is called a Timer event, and the event procedure
+that you program is <I>TimerName</I>_Timer(), in which <I>TimerName</I> is the value
+of the Name property of the Timer control.</P>
+<P><A HREF="javascript:popUp('16fig01.gif')"><B>FIGURE 16.1</B></A> <I>The Timer
+control is an invisible control. You don't see it at runtime.</I></P>
+<P>You can set the interval at which the Timer event fires by assigning a value to
+the Timer control's Interval property. The unit of measure for the Interval property
+is a millisecond, so if you want the Timer event to fire every half second, you would
+use the following:</P>
+<P>
+<PRE>Timer1.Interval = 500
+</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Counting long intervals</STRONG></P>
+	<P>The maximum value for Interval is 65,535, which means that the maximum interval
+	you can set is just over 65.5 seconds. To use a longer interval, such as 10 minutes,
+	you must actually count 10 intervals of 60,000 milliseconds. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The Interval can be as small as once every thousandth of a second or as large
+as your program requires. However, the shortest interval is 55ms because the system
+clock ticks only 18 times per second.</P>
+<P>Because all the Timer control does is fire a Timer event, the control doesn't
+have many properties (see Table 16.1).</P>
+<P>
+<H4>TABLE 16.1&#160;&#160;Timer Control Properties</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Property</TD>
+		<TD ALIGN="LEFT">Description</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">Defaults to Timer1 if you have one Timer control, Timer2 if you have two Timer controls,
+			and so on.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Property</TD>
+		<TD ALIGN="LEFT">Description</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Enabled</TD>
+		<TD ALIGN="LEFT">Turns a Timer on and off. The default is True, or on.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">Reports the position of a specific Timer control within a control array.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Interval</TD>
+		<TD ALIGN="LEFT">Determines, in milliseconds, when a Timer event will fire (1 second = 1000).</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Left</TD>
+		<TD ALIGN="LEFT">The position of the left edge of a Timer.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Tag</TD>
+		<TD ALIGN="LEFT">The Tag property is like having a variable built right into the control. It's a catch-all
+			property to which you can assign any necessary data to your program and that you
+			want to persist throughout the life of your program.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Top</TD>
+		<TD ALIGN="LEFT">The position of the top edge of a Timer.</TD>
+	</TR>
+</TABLE>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Timers are invisible</STRONG></P>
+	<P>The Left and Top properties are irrelevant because a Timer isn't shown on the
+	form at runtime. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H2><A NAME="Heading3"></A>Using the Time, Date, and Now Functions</H2>
+<P>Although you can program a Timer to fire a Timer event, the Timer doesn't know
+what time it is at any given point during its operation. For the Timer to report
+the time of day, it must check the computer's system clock and report back the time
+that the system clock passes to it.</P>
+<P>When accessing a computer's system clock, you use the Time function to obtain
+the system time and use the Date function to obtain the system date. If you want
+to find out both the time and date on the system clock, use the Now function.</P>
+<P>To see how these functions work, create a project and add three CommandButtons
+to a form. Name these buttons cmdTime, cmdDate, and cmdNow and add the appropriate
+code from Listing 16.1 to the event procedure for each button. (You can download
+this code from http://www.mcp.com/info.) Figure 16.2 shows the data that each function
+returns.</P>
+<P>
+<H4>LISTING 16.1&#160;&#160;16LIST01--Event Procedures That Use the Time, Date, and
+Now Functions</H4>
+<PRE><B>01 </B>Private Sub cmdTime_Click()</PRE>
+<PRE><B>02 </B>`Get the time and convert it to a string</PRE>
+<PRE><B>03 </B>cmdTime.Caption = CStr(Time)</PRE>
+<PRE><B>04 </B>End Sub</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>Private Sub cmdDate_Click()</PRE>
+<PRE><B>07 </B>`Get the date and convert it to a string</PRE>
+<PRE><B>08 </B>cmdDate.Caption = CStr(Date)</PRE>
+<PRE><B>09 </B>End Sub</PRE>
+<PRE><B>10</B></PRE>
+<PRE><B>11 </B>Private Sub cmdNow_Click()</PRE>
+<PRE><B>12 </B>`Get the date and time. Convert them to a string</PRE>
+<PRE><B>13 </B>cmdNow.Caption = CStr(Now)</PRE>
+<PRE><B>14 </B>End Sub</PRE>
+<P><A HREF="javascript:popUp('16fig02.gif')"><B>FIGURE 16.2</B></A> <I>The Time,
+Date, and Now functions return a variant (Date) data type, which can be converted
+to a string with the CStr() function.</I></P>
+<P>
+<H2><A NAME="Heading4"></A>Use a Timer to Build a Clock Program</H2>
+<P>Let's create a clock program to see how a Timer works. This program shows the
+running time on the client area of the form and the current date in the form's title
+bar. When you minimize the form, the running time appears in the form's caption on
+the taskbar. (Keep in mind that you can customize this program to your specifications.)</P>
+<P><B>Create a clock program</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Start a standard EXE project and size the default form as shown earlier
+	in Figure 16.1 or as you see fit.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Place a Label control and Timer control on the form, as shown in Figure
+	16.1. (In Figure 16.1, the Label takes up the entire form. Also, you can put the
+	Timer anywhere because it isn't visible at runtime.)
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Name the form frmClock and the label lblTimeDisplay. Leave the value
+	of the Timer's Name property as the default, Timer1.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Changing the BorderStyle property</STRONG></P>
+	<P>When you change the BorderStyle property, the values of the button properties
+	can change automatically. Keep this in mind when you design your application so that
+	you choose a BorderStyle that contains the appropriate buttons. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Set the value of the BorderStyle property of the form to 1 - Fixed
+	Single. Set the value of the MinButton property of the form to True.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>From Listing 16.2, add the code between the lines Private Sub Form_Load()
+	and End Sub into the Form_Load() event procedure.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Set the value of the Timer's Interval property to 500 (one-half second).
+	Set the value of the Timer's Enabled property to True.
+	<P>
+	<DT></DT>
+	<DD><B>7. </B>From Listing 16.3, add the code between the lines Private Sub Timer1_Timer()
+	and End Sub into the Timer1_Timer() event procedure.
+	<P>
+	<DT></DT>
+	<DD><B>8. </B>Save and run the code (see Figure 16.3).
+	<P>
+</DL>
+
+<H4>LISTING 16.2&#160;&#160;16LIST02.TXT--The Form_Load() Event Procedure</H4>
+<PRE><B>01 </B>Private Sub Form_Load()</PRE>
+<PRE><B>02 </B>`Set the position and size of the Label control</PRE>
+<PRE><B>03 </B>`to the form's client area.</PRE>
+<PRE><B>04 </B>lblTimeDisplay.Top = ScaleTop</PRE>
+<PRE><B>05 </B>lblTimeDisplay.Left = ScaleLeft</PRE>
+<PRE><B>06 </B>lblTimeDisplay.Width = ScaleWidth</PRE>
+<PRE><B>07 </B>lblTimeDisplay.Height = ScaleHeight</PRE>
+<PRE><B>08 </B>End Sub</PRE>
+<P>
+<H4>LISTING 16.3&#160;&#160;16FIG03.TXT--The Timer1_Timer() Event Procedure</H4>
+<PRE><B>01 </B>Private Sub Timer1_Timer()</PRE>
+<PRE><B>02 </B>`If the form is diplayed as a window, show
+</PRE>
+<PRE><B>03 </B>`the time in the client area and the date</PRE>
+<PRE><B>04 </B>`in the window's title bar.</PRE>
+<PRE><B>05 </B>If frmClock.WindowState = vbNormal Then</PRE>
+<PRE><B>06 </B>lblTimeDisplay.Caption = CStr(Time)</PRE>
+<PRE><B>07 </B>frmClock.Caption = Format(Date, &quot;Long Date&quot;)</PRE>
+<PRE><B>08 </B>Else</PRE>
+<PRE><B>09 </B>`If the form is minimized into the Task Bar,</PRE>
+<PRE><B>10 </B>`set the caption to show the time. This will</PRE>
+<PRE><B>11 </B>`make the time appear in the Task Bar.</PRE>
+<PRE><B>12 </B>frmClock.Caption = CStr(Time)</PRE>
+<PRE><B>13 </B>End If</PRE>
+<PRE><B>14 </B>End Sub</PRE>
+<P><A HREF="javascript:popUp('16fig03.gif')"><B>FIGURE 16.3</B></A> <I>Setting the
+form's MaxButton property to False disables it.</I></P>
+<P>The Clock program uses a few things that you might not have seen before. The Format()
+function sets the string that displays the date to show the complete day, month,
+and year. (You'll find a detailed discussion of the Format() function in the following
+section.) You also set the form's MinButton property to True to enable the minimize
+button on the title bar, thus allowing the form to be minimized to the taskbar.</P>
+<P>Forms have three properties--MinButton, MaxButton, and ControlBox--that affect
+the three buttons on the right side of the title bar. MinButton and MaxButton are
+used to turn on (value set to True) or off (value set to False) the Maximum and Minimum
+buttons on a form. These properties are available only at design time, when the BorderStyle
+of the form is set to 1 - Fixed Single or 2 - Sizable, and when the ControlBox property
+of the form must be set to True.</P>
+<P>The ControlBox property turns on (value set to True) or off (value set to False)
+the control-menu box, located in the left side of the title bar. You can turn on
+the control-menu box only when the form's BorderStyle property is set to 1 - Fixed
+Single, 2 - Sizable, or 3 - Fixed Dialog.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>The WindowState property</STRONG></P>
+	<P>Be careful when you set the WindowState property. You might run into a situation
+	in which you accidentally set the BorderStyle to be Fixed Single and the WindowState
+	to be Maximized. This will result in a nonsizable splash screen type of window that
+	fills the entire screen, which users can't control. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The program also checks the value of the form's WindowState property to determine
+whether the form is minimized. The WindowState property has three values: 0 - Normal
+(vbNormal), 1 - Minimized (vbMinimized), and 2 - Maximized (vbMaximized). You can
+read the value of the WindowState property to determine whether a window is sized
+regular, full screen, or in the taskbar. You can also set the value of the WindowState
+property to make a window full screen, restore it to normal, or minimize it to the
+taskbar.</P>
+<P>
+<H2><A NAME="Heading5"></A>Using the Format() Function</H2>
+<P>The Format() function is a powerful Visual Basic function that allows you to control
+the way strings present themselves. The function is used primarily to display time/date
+values and numbers, although you can use it to give string values a consistent look.</P>
+<P>The Format() function takes the following syntax:</P>
+<P>
+<PRE>MyString$ = Format(<I>Expression</I>[, <I>Format_String</I>[, _
+            FirstDayofWeek[, FirstWeekOfYear]]])
+</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Creating new format settings</STRONG></P>
+	<P>The Format() function has many levels of complexity. You can use its intrinsic
+	settings, or you can make up your own user-defined settings. For more information,
+	refer to the online documentation that comes with Visual Basic. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>In this syntax,</P>
+
+<UL>
+	<LI>MyString$ is the return value.
+	<P>
+	<LI>Format is the name of the function.
+	<P>
+	<LI><I>Expression</I> is any expression that returns a string, date, or numeric value.
+	<P>
+	<LI><I>Format_String</I> is the string template that tells the function how you want
+	the result string to appear.
+	<P>
+	<LI>FirstDayOfWeek is an optional constant that sets the first day of the week. The
+	default is Sunday, but if you want Monday to be considered the first day of the week,
+	you need to reset this argument.
+	<P>
+	<LI>FirstWeekOfYear is an optional constant expression that specifies the first week
+	of the year. By default, the week in which January 1 falls is the first week of the
+	year. However, you can have other settings--the first full week, for example. (If
+	you want more details about these last two arguments, read the online documentation
+	that comes with Visual Basic.)
+</UL>
+
+<P>The key to working with the Format() function is understanding the <I>Format_String</I>
+parameter. This parameter tells the value (as described by the <I>Expression</I>
+parameter) how to appear as a string. Table 16.2 shows you how to use the settings
+that come built into the Format() function to manipulate the appearance of time and
+date strings.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using the Format_String parameter</STRONG></P>
+	<P>You must put the Format_String parameter between quotation marks because the function
+	is looking for the literal string. When learning to use the Format() function, many
+	people forget to do this, in which case the function will fail. For example, the
+	statement MyString$ = Format(.50, Percent) will generate an error, but this line
+	is correct: MyString$ = Format(.50, &quot;Percent&quot;) 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>TABLE 16.2&#160;&#160;Using the Format() Function for the Time and Date</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Format String</TD>
+		<TD ALIGN="LEFT">Example</TD>
+		<TD ALIGN="LEFT">Result</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Long Date&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;Long Date&quot;)</TD>
+		<TD ALIGN="LEFT">Friday, July 24, 1998</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Medium Date&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;Medium Date&quot;)</TD>
+		<TD ALIGN="LEFT">24-Jul-98</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Short Date&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;Short Date&quot;)</TD>
+		<TD ALIGN="LEFT">7/24/98</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Long Time&quot;</TD>
+		<TD ALIGN="LEFT">Format(0.874, &quot;Long Time&quot;)</TD>
+		<TD ALIGN="LEFT">8:58:34 p.m.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Medium Time&quot;</TD>
+		<TD ALIGN="LEFT">Format(0.874, &quot;Medium Time&quot;)</TD>
+		<TD ALIGN="LEFT">08:58 p.m.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Short Time&quot;</TD>
+		<TD ALIGN="LEFT">Format(0.874, &quot;Short Time&quot;)</TD>
+		<TD ALIGN="LEFT">20:58</TD>
+	</TR>
+</TABLE>
+</P>
+<P>Table 16.3 shows how to use the Format() function to manipulate numeric values
+into a desired string display.</P>
+<P>
+<H4>TABLE 16.3&#160;&#160;Using the Format() Function for Numbers</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Format String</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Example</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Result</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;General Number&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;General Number&quot;)</TD>
+		<TD ALIGN="LEFT">36000</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Currency&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;Currency&quot;)</TD>
+		<TD ALIGN="LEFT">$36,000.00</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Fixed&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;Fixed&quot;)</TD>
+		<TD ALIGN="LEFT">36000.00</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Standard&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;Standard&quot;)</TD>
+		<TD ALIGN="LEFT">36,000.00</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Percent&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;Percent&quot;)</TD>
+		<TD ALIGN="LEFT">3600000.00%</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Scientific&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;Scientific&quot;)</TD>
+		<TD ALIGN="LEFT">3.60E+04</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Format String</TD>
+		<TD ALIGN="LEFT">Example</TD>
+		<TD ALIGN="LEFT">Result</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;Yes/No&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;Yes/No&quot;)</TD>
+		<TD ALIGN="LEFT">Yes</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;True/False&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;True/False&quot;)</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;On/Off&quot;</TD>
+		<TD ALIGN="LEFT">Format(36000, &quot;On/Off&quot;)</TD>
+		<TD ALIGN="LEFT">On</TD>
+	</TR>
+</TABLE>
+</P>
+<P>You also can create other format strings to fit your specific needs. For example,
+if you want to make sure user input always includes two decimal places, use the line
+Format(235.6, &quot;###,##0.00&quot;), which would return the value 235.60.</P>
+<P>
+<H2><A NAME="Heading6"></A>Calculating Date Differences</H2>
+<P>Use the DateDiff() function when you need to know the amount of time between two
+dates. The DateDiff() function has the following syntax:</P>
+<P>
+<PRE>MyLong = DateDiff(<I>Interval</I>, <I>Start_Date</I>, <I>End_Date</I>[, _          FirstDayOfWeek[, FirstWeekOfYear]])
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>MyLong is the return value of type Long.
+	<P>
+	<LI>DateDiff is the function name.
+	<P>
+	<LI><I>Interval</I> is a string describing the interval of time by which the date
+	difference will be measured (see Table 16.4).
+	<P>
+	<LI><I>Start_Date</I> is the date from which to start measuring (of data type Date).
+	<P>
+	<LI><I>End_Date</I> is the date from which to end measuring (of data type Date).
+	<P>
+	<LI>FirstDayOfWeek is an optional constant that sets the first day of the week (similar
+	to the constant used in the Format() function).
+	<P>
+	<LI>FirstWeekOfYear is an optional constant expression that specifies the first week
+	of the year (similar to the constant used in the Format() function).
+</UL>
+
+<P>The DateDiff() function works by taking the first date, represented by the parameter
+<I>Start_Date</I>, and subtracting it from the second date, represented by the parameter
+<I>End_Date</I>. After the subtraction takes place, the function returns a number
+of data type Long, which is the difference between the dates. The unit of measure
+by which the difference is reported is dictated by the string value of the <I>Interval</I>
+parameter (see Table 16.4).</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Day and day of year, week, and weekday intervals</STRONG></P>
+	<P>Although the day (&quot;d&quot;) and day of year (&quot;y&quot;) intervals are
+	generally interchangeable, the week (&quot;ww&quot;) and weekday (&quot;w&quot;)
+	intervals can return different results in specific cases. For more information, see
+	the online documentation that comes with Visual Basic. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>TABLE 16.4&#160;&#160;The Different Values for the <I>DateDiff() </I>Interval
+Parameter</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Value</TD>
+		<TD ALIGN="LEFT">Interval</TD>
+		<TD ALIGN="LEFT">Usage</TD>
+		<TD ALIGN="LEFT">Return Value</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;yyyy&quot;</TD>
+		<TD ALIGN="LEFT">Year</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;yyyy&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">10</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;q&quot;</TD>
+		<TD ALIGN="LEFT">Quarter</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;q&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">40</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;m&quot;</TD>
+		<TD ALIGN="LEFT">Month</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;m&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">120</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;y&quot;</TD>
+		<TD ALIGN="LEFT">Day of year</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;y&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">3652</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;d&quot;</TD>
+		<TD ALIGN="LEFT">Day</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;d&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">3652</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;w&quot;</TD>
+		<TD ALIGN="LEFT">Weekday</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;w&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">521</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;ww&quot;</TD>
+		<TD ALIGN="LEFT">Week</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;ww&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">521</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;h&quot;</TD>
+		<TD ALIGN="LEFT">Hour</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;h&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">87648</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;n&quot;</TD>
+		<TD ALIGN="LEFT">Minute</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;n&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">5258880</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&quot;s&quot;</TD>
+		<TD ALIGN="LEFT">Second</TD>
+		<TD ALIGN="LEFT">DateDiff(&quot;s&quot;, &quot;7/4/76&quot;, &quot;7/4/86&quot;)</TD>
+		<TD ALIGN="LEFT">315532800</TD>
+	</TR>
+</TABLE>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using IsDate()</STRONG></P>
+	<P>IsDate() is a VB function that checks a string or date value to see whether it's
+	a valid date. If the string or date looks like a valid date, IsDate() returns True;
+	otherwise, it returns False. For example, IsDate(&quot;September 16, 1998&quot;)
+	and IsDate(#9/16/98#) return True, but IsDate(&quot;Birthday&quot;) returns False.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The project DateDff.vbp (which you can find on the Web site set up for this book)
+illustrates how to use the DateDiff() function to report the age of a person in days
+and in years. It works by having users enter their birthday in a text box, and then
+click the <B>Start Counting</B> button. Within the Click event procedure for that
+button, code verifies that the entry looks like a valid date string by using the
+IsDate() function. If the string is valid, the birthday text is converted to a date
+and assigned to a global date variable, gf_dtBirthday (gf_ is a prefix denoting that
+the variable is global to the form), and the Timer is enabled. If the string isn't
+valid, an error message is shown. After users close the message box, the code sets
+the cursor back to the text box, highlights the problematic text, and exits the event
+procedure.</P>
+<P>Within the Timer1_Timer() event procedure, which fires every half second (Interval
+= 500), the Timer control looks at the system date and time by using the Now function.
+The event procedure uses the DateDiff() function twice--once to measure the difference
+between the instantaneous time and the birthday time (as assigned to the global birthday
+variable) in terms of days and once to measure the difference in dates in terms of
+years. The different return values are assigned to their respective local variables,
+lYourAgeInDays and lYourAgeInYears. Listing 16.4 shows the Click event procedure
+and Timer event procedure from the code; Figure 16.4 shows the program displaying
+calculated values.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Highlighting text in a text box</STRONG></P>
+	<P>The code in lines 13 through 18 highlight the user's input by setting the focus
+	to the text box (line 15), selecting the beginning of the string (line 17), and then
+	selecting the entire string (line 19). This technique makes a nice addition because
+	it helps your users locate the spot where they need to re-enter information. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>LISTING 16.4&#160;&#160;16LIST04.TXT--Source Code That Uses DateDiff()</H4>
+<PRE><B>01 </B>Private Sub cmdStart_Click()</PRE>
+<PRE><B>02</B></PRE>
+<PRE><B>03 </B>`Check to make sure that the string &quot;looks&quot;</PRE>
+<PRE><B>04 </B>`like a date.</PRE>
+<PRE><B>05 </B>If IsDate(txtBDate.Text) Then</PRE>
+<PRE><B>06 </B>`If it is a date, convert the text to a date data</PRE>
+<PRE><B>07 </B>`type and assign it to the global birthday date</PRE>
+<PRE><B>08 </B>`variable</PRE>
+<PRE><B>09 </B>gf_dtBirthday = CDate(txtBDate.Text)</PRE>
+<PRE><B>10 </B>Else</PRE>
+<PRE><B>11 </B>`If it isn't, then report an error</PRE>
+<PRE><B>12 </B>MsgBox &quot;You must enter a proper date!&quot;, _</PRE>
+<PRE>vbCritical, &quot;Data error&quot;</PRE>
+<PRE><B>13 </B>`Set the cursor back to the textbox</PRE>
+<PRE><B>14 </B>txtBDate.SetFocus</PRE>
+<PRE><B>15 </B>`Set the cursor to the beginning of the text box</PRE>
+<PRE><B>16 </B>txtBDate.SelStart = 0</PRE>
+<PRE><B>17 </B>`Highlight the erroneous text</PRE>
+<PRE><B>18 </B>txtBDate.SelLength = Len(txtBDate.Text)</PRE>
+<PRE><B>19 </B>`Leave the sub</PRE>
+<PRE><B>20 </B>Exit Sub</PRE>
+<PRE><B>21 </B>End If</PRE>
+<PRE><B>22</B></PRE>
+<PRE><B>23 </B>`Turn on the timer</PRE>
+<PRE><B>24 </B>Timer1.Enabled = True</PRE>
+<PRE><B>25 </B>End Sub</PRE>
+<PRE><B>26</B></PRE>
+<PRE><B>27 </B>Private Sub Timer1_Timer()</PRE>
+<PRE><B>28 </B>Dim lYourAgeInSecs As Long</PRE>
+<PRE><B>29 </B>Dim lYourAgeInDays As Long</PRE>
+<PRE><B>30 </B>Dim lYourAgeInYears As Long</PRE>
+<PRE><B>31</B></PRE>
+<PRE><B>32 </B>`Calculate the date difference in seconds</PRE>
+<PRE><B>33 </B>lYourAgeInSecs = DateDiff(&quot;s&quot;, gf_dtBirthday, Now)</PRE>
+<PRE><B>34</B></PRE>
+<PRE><B>35 </B>`Calculate the date difference in days</PRE>
+<PRE><B>36 </B>lYourAgeInDays = DateDiff(&quot;d&quot;, gf_dtBirthday, Now)</PRE>
+<PRE><B>37</B></PRE>
+<PRE><B>38 </B>`Calculate the date difference in years</PRE>
+<PRE><B>39 </B>lYourAgeInYears = DateDiff(&quot;yyyy&quot;, gf_dtBirthday, Now)</PRE>
+<PRE><B>40</B></PRE>
+<PRE><B>41 </B>`Report the date differences</PRE>
+<PRE><B>42 </B>lblAgeSecs.Caption = CStr(lYourAgeInSecs)</PRE>
+<PRE><B>43 </B>lblAgeDays.Caption = CStr(lYourAgeInDays)</PRE>
+<PRE><B>44 </B>lblAgeYears.Caption = CStr(lYourAgeInYears)</PRE>
+<PRE><B>45</B> End Sub</PRE>
+<P><A HREF="javascript:popUp('16fig04.gif')"><B>FIGURE 16.4</B></A> <I>Using the
+Format() function makes the days and seconds values easier to read.</I></P>
+<P>
+<H2><A NAME="Heading7"></A>Using Static Variables with a Timer</H2>
+<P>Suppose you need to write a program that attempts to do an activity every half
+second for no more than 10 tries. To do this, you would need to create a variable
+that keeps track of the number of times the Timer control fires the Timer event.
+If you create a counter variable within the Timer event, however, every time the
+Timer event procedure terminates, the variable will go out of scope and reset its
+value to zero.</P>
+<P>Clearly, you can't accomplish what you need to do by using this method. However,
+there are two alternative methods. First, you can set a global variable, and then
+increment and check the value of the variable within the Timer event, as shown in
+Listing 16.5.</P>
+<P>
+<H4>LISTING 16.5&#160;&#160;16List05.TXT--Using a Global Variable to Keep Track of
+Timer <BR>
+Events</H4>
+<PRE><B>01 </B>Sub Timer1_Timer()</PRE>
+<PRE><B>02 </B>If g_TimeLimit% &gt; 10 Then</PRE>
+<PRE><B>03 </B>MsgBox &quot;Attempts exceeded!&quot;</PRE>
+<PRE><B>04 </B>Else</PRE>
+<PRE><B>05 </B>`Attempt to do something</PRE>
+<PRE><B>06 </B>End if</PRE>
+<PRE><B>07</B></PRE>
+<PRE><B>08 </B>g_TimeLimit% = g_TimeLimit% + 1</PRE>
+<PRE><B>09</B></PRE>
+<PRE><B>10 </B>End Sub</PRE>
+<P>Although this code will work, it's not optimal because creating a global variable
+creates a dependency external to the Timer control. If you decided to eliminate the
+Timer from the code for some reason, this global variable would still be hanging
+around with no real purpose and at some point would come back to haunt you.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Be careful with Static variables!</STRONG></P>
+	<P>Using Static variables doesn't mean that you should abandon declaring global variables
+	within the General section of a form or module. Actually, you should be judicious
+	in your use of Static variables. Nothing is more frustrating than finding a bug in
+	your program that might be caused by a misbehaving global value, and then having
+	to search through your code to determine whether a wrongly assigned Static variable
+	is the culprit. If you need to create variables that will be shared among many areas
+	of your code, you should declare them as Public or Private variables in the General
+	section. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>A better strategy for keeping track of the number of times the Timer event procedure
+executes is to declare a counter variable with the Static keyword, as in Listing
+16.6.</P>
+<P>
+<H4>LISTING 16.6&#160;&#160;16LIST06.TXT--Using a Static Variable to Keep Track of
+Timer <BR>
+Events</H4>
+<PRE><B>01 </B>Private Sub Timer1_Timer()</PRE>
+<PRE><B>02 </B>`Make a static variable that will retain value even</PRE>
+<PRE><B>03 </B>`after the event procedure terminates</PRE>
+<PRE><B>04 </B>Static i%</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>`Report the present value of i%</PRE>
+<PRE><B>07 </B>frmMain.Caption = &quot;Present value of i%: &quot; &amp; CStr(i%)</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>`Report the running time</PRE>
+<PRE><B>10 </B>lblTime.Caption = Format(Time, &quot;Long Time&quot;)</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>`Check to see if the counter has exceeded 10 loops</PRE>
+<PRE><B>13 </B>If i% &gt;= 10 Then</PRE>
+<PRE><B>14 </B>`If the counter is exceeded, send a notice</PRE>
+<PRE><B>15 </B>lblLimitNotice.Caption = &quot;Limit Exceeded!&quot;</PRE>
+<PRE><B>16 </B>Else</PRE>
+<PRE><B>17 </B>`If not, keep the reporting label blank</PRE>
+<PRE><B>18 </B>lblLimitNotice.Caption = &quot;&quot;</PRE>
+<PRE><B>19 </B>End If</PRE>
+<PRE><B>20</B></PRE>
+<PRE><B>21 </B>`Increment the counter</PRE>
+<PRE><B>22 </B>i% = i% + 1</PRE>
+<PRE><B>23 </B>End Sub</PRE>
+<P>When you create a Static variable, it keeps its value even after the procedure
+in which it's declared goes out of scope. The advantage of doing this is that the
+variable is <I>encapsulated</I> within the control on which it depends. The value
+of the variable persists, regardless of the state of the procedure in which you created
+it. You can find a program that uses a static variable in the StatVar.vbp project
+at <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/info'" tppabs="http://www.mcp.com/info">http://www.mcp.com/info</A>.</P>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch15.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch15/ch15.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch17/ch17.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

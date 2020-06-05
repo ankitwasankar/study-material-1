@@ -1,0 +1,686 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 27 -- Creating Your Own ActiveX Controls with Visual Basic</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch26.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch26/ch26.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch28.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch28/ch28.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 27 -<BR>
+Creating Your Own ActiveX Controls with Visual Basic</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Creating an ActiveX Control</A>
+	<UL>
+		<LI><A HREF="#Heading2">Understanding the UserControl Object</A>
+		<LI><A HREF="#Heading3">Adding a UserControl to a Form</A>
+	</UL>
+	<LI><A HREF="#Heading4">Adding Functionality to an ActiveX Control</A>
+	<UL>
+		<LI><A HREF="#Heading5">Compiling Custom ActiveX Controls</A>
+		<LI><A HREF="#Heading6">Deploying Custom ActiveX Controls</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Creating an ActiveX Control</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Save some time and effort</STRONG></P>
+	<P>Whenever you need a control, especially in a work environment, you should always
+	check to see first if the control is available as a commercial product. The last
+	resort should be to program or create it yourself. Building your own controls requires
+	a lot of time and effort. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>It used to be that the ability to make custom ActiveX controls was the sole domain
+of C++ programmers. This is no longer true. With Visual Basic 6, you can make full-fledged
+ActiveX controls for use not only in Visual Basic programming but also within other
+programming environments such as C++ and Delphi. If you're involved with Internet
+programming, the ActiveX controls that you make with Visual Basic can bring a new
+level of functionality and interactivity to your Web pages.</P>
+<P><B>Make an ActiveX control with Visual Basic</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project. Select ActiveX Control in the New Project dialog
+	(see Figure 27.1).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('27fig01.gif')"><B>FIGURE 27.1</B></A> <I>You make an
+ActiveX control within a separate project.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>What is a UserControl?</STRONG></P>
+	<P>The UserControl is the name by which Visual Basic refers to the palette on which
+	you apply intrinsic controls to make a custom control. If you use non-intrinsic controls,
+	be sure you secure a license for them. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Name the project CursorReporter and save the project to the file rptcursr.vbp.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Change the name of the UserControl from UserControl1 to CursorReport
+	(see Figure 27.2). (To avoid a name collision, be sure to name the control CursorReport,
+	not CursorReporter.)
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Add a Label control to the UserControl Designer. Set the control's
+	properties to values such as those shown in Table 27.1.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Download the code for this project</STRONG></P>
+	<P>The code for this chapter is in the project rptcursr.vbp, which you can find at
+	<A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/info'" tppabs="http://www.mcp.com/info">http://www.mcp.com/info</A>. Also included with
+	the project is the bitmap necessary to complete this example. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>TABLE 27.1 The Label Control Property Settings</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Property</TD>
+		<TD ALIGN="LEFT">Value</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblMain</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 - Fixed Single</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Property</TD>
+		<TD ALIGN="LEFT">Value</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">BackColor</TD>
+		<TD ALIGN="LEFT">&amp;H0000FFFF</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">(blank)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Height</TD>
+		<TD ALIGN="LEFT">375</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Left</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Top</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Width</TD>
+		<TD ALIGN="LEFT">1215</TD>
+	</TR>
+</TABLE>
+</P>
+<P><A HREF="javascript:popUp('27fig02.gif')"><B>FIGURE 27.2</B></A> <I>The UserControl
+is the base object that has four elements: the User control, Designer, properties,
+and ToolboxPicture.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>5. </B>Select the ToolboxBitmap value of UserControl CursorReport in the Properties
+	window. Click the value's ... button and assign the bitmap cursor.bmp (which you
+	can download from <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/info'" tppabs="http://www.mcp.com/info">http://www.mcp.com/info</A>)
+	to the ToolboxPicture property (see Figure 27.3).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('27fig03.gif')"><B>FIGURE 27.3</B></A> <I>The ToolboxBitmap
+is the image that will represent your control in the Visual Basic toolbox.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>6. </B>Resize the UserControl container so that it's just a little bigger
+	than the perimeter of the Label control (see Figure 27.4).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('27fig04.gif')"><B>FIGURE 27.4</B></A> <I>When you add
+your ActiveX control to an application's form, the control's initial dimensions are
+the size of the UserControl Designer.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>7. </B>Save the project. Make sure that the files are named as follows:
+</DL>
+
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Type</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">File Name</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Project</TD>
+		<TD ALIGN="LEFT">CursorReporter</TD>
+		<TD ALIGN="LEFT">rptcursr.vbp</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">UserControl</TD>
+		<TD ALIGN="LEFT">CursorReport</TD>
+		<TD ALIGN="LEFT">rptcursr.ctl</TD>
+	</TR>
+</TABLE>
+</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Choose <U>C</U>lose from the control menu (the icon on the menu bar).
+	<P>
+</DL>
+
+<P>Your ActiveX control's ToolBoxPicture now appears in the Visual Basic Toolbox
+(see Figure 27.5).</P>
+<P><A HREF="javascript:popUp('27fig06.gif')"><B>FIGURE 27.5</B></A> <I>The CursorReport
+ActiveX control in the Visual Basic ToolBox was made from the cursor.bmp bit-map,
+which is a Windows cursor.</I></P>
+<P>You've just performed the basics of creating an ActiveX control. You add the control
+to a form as you would any other ActiveX control. Granted, the control doesn't do
+much, but you'll find that even when you create controls with more useful functionality,
+you'll use these same steps.</P>
+<P>
+<H3><A NAME="Heading2"></A>Understanding the UserControl Object</H3>
+<P>At the heart of every ActiveX control that you make with Visual Basic is the UserControl
+object. The UserControl object is the base on which you can add other Visual Basic
+ActiveX controls to create a uniquely new control. Controls that you add to a UserControl
+object are called constituent controls. In the example created earlier, the UserControl
+is CursorReport, and the constituent control is the Label control lblMain.</P>
+<P>One more object is important with regard to making ActiveX controls--the AmbientProperties
+object, which is a set of properties that represent the state of the form or other
+container object that's using your ActiveX control. The AmbientProperties object
+is accessed by referencing the UserControl object's Ambient property. For example,
+if you want to set the value of your UserControl's BackColor property to the same
+value as the BackColor property of the container that's using your control, you use
+the following code:</P>
+<P>
+<PRE>UserControl.BackColor = Ambient.BackColor
+</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using the ActiveX Control Interface Wizard</STRONG></P>
+	<P>Visual Basic 6 ships with the ActiveX Control Interface Wizard, which allows you
+	to easily define the properties and methods of constituent controls that you want
+	to expose in your custom control. The wizard also allows you to create properties
+	and methods specific to your custom control. You access the ActiveX Control Interface
+	Wizard by attaching it to the IDE as a Visual Basic add-in. You normally use the
+	ActiveX Control Interface Wizard when you want to create simple ActiveX controls.
+	Generally, the wizard will meet all your needs. Sometimes when you want a specific
+	control that the Wizard can't produce, you would want to custom program your own.
+	You can do this as described previously. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>In this code,</P>
+
+<UL>
+	<LI>UserControl is the keyword reference to the ActiveX control. You must use the
+	keyword whenever you're referring to your project's UserControl control, regardless
+	of the name of the UserControl.
+	<P>
+	<LI>BackColor is the property that refers to the background color of the control.
+	<P>
+	<LI>Ambient is the UserControl property that references the AmbientProperties object.
+	Operationally, to reference properties of the containing form, you use the word Ambient.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using project groups</STRONG></P>
+	<P>Visual Basic allows you to work with multiple projects at one time. The collection
+	of projects can be managed as a project group within a .vbg file. You also can work
+	with multiple projects independent of a project group by opening multiple instances
+	of Visual Basic. For more information about working with project groups, see Chapter
+	5, &quot;Working with Projects in Visual Basic 6.&quot; You can save all open projects
+	in the IDE into a project group file, which has the extension .vbg. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H3><A NAME="Heading3"></A>Adding a UserControl to a Form</H3>
+<P><B>Add the CursorReport ActiveX control to a new project's form</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Return to the project rptcursr.vbp that you made in the preceding steps.
+	Make sure that the UserControl Designer window is closed and the CursortReport icon
+	is enabled in the toolbox.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Choose A<U>d</U>d Project from the <U>F</U>ile menu; don't select <U>N</U>ew
+	Project.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Select a Standard EXE from the Add Project dialog.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Select the CursorReport custom ActiveX control from the toolbox and
+	add it to the main form in the new project (see Figure 27.6).
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Choose Sa<U>v</U>e Project Group from the <U>F</U>ile menu. Save the
+	added project with the default names and save the project group to the file MyGroup.vbp.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Press F5 to run the new project.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('27fig08.gif')"><B>FIGURE 27.6</B></A> <I>Select the
+custom ActiveX control CursorReport from the toolbox.</I></P>
+<P>
+<H2><A NAME="Heading4"></A>Adding Functionality to an ActiveX Control</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Adding Projects to the IDE</STRONG></P>
+	<P>When you add more than one project to the IDE, Visual Basic will automatically
+	try to create a project group for all the projects. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>So far, you've seen how you can adapt an intrinsic control to be a part of your
+custom ActiveX control. Now you can add some functionality to your control to make
+your control useful to other programmers.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>The Application Programming Interface</STRONG></P>
+	<P>API stands for the Application Programming Interface. The Windows API is a collection
+	of hundreds of functions that make up the Windows operating system. For a detailed
+	discussion of the Windows API in relation to Visual Basic, refer to Chapter 23, &quot;Programming
+	Beyond Visual Basic Using the Windows API.&quot; 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>You're going to enhance the control that you started to create in the preceding
+section so that it reports back the location of the mouse pointer anywhere on the
+computer screen. The ActiveX control will also be resizable.</P>
+<P>Normally, applications written in Visual Basic can't determine the location of
+the mouse pointer anywhere other than within the boundaries of forms that are part
+of the given application. To enable your control to report the location of the mouse
+pointer onscreen, you use the Windows API GetCursorPos.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using GetCursorPos</STRONG></P>
+	<P>The ActiveX control that you make in this chapter is an enhancement of the APIStuff
+	project that you saw in Chapter 23. The project APIStuff.vbp in Chapter 23 also uses
+	the API function GetCursorPos. You can download APIStuff.vbp from http://www.mcp.com/
+	info. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>To allow your ActiveX control to determine the location of the cursor onscreen
+at any time, you add a Timer control to the UserControl and program the Timer event
+procedure to call the Windows API function GetCursorPos. GetCursorPos returns the
+location of the cursor anywhere onscreen. After the call to the function, you assign
+a string containing the returned location of the cursor to the Caption property of
+the constituent control lblMain.</P>
+<P><B>Set up your ActiveX control to display the screen location of the mouse pointer</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Return to the project group MyGroup.vbg, which contains the custom
+	ActiveX control CursorReport (rtpcursr.vbp).
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add a Timer control to the custom ActiveX control. Set the value of
+	the Interval property to 100.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P><B>3. </B>Select the custom ActiveX control, CursorReport (which is saved to the
+	file rtpcursr.vbp) in the Project Explorer window.</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Click the View Code icon in the Project Explorer to display the Code
+	window for the ActiveX control (see Figure 27.7).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('27fig10.gif')"><B>FIGURE 27.7</B></A> <I>You view code
+for any control or module by clicking the View Code icon in the Project Explorer.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>5. </B>Add the following code to the General Declarations section of the custom
+	ActiveX control:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Declare Function GetCursorPos _
+   Lib &quot;user32&quot;
+(lpPoint As POINTAPI) As Long
+Private Type POINTAPI
+        x As Long
+        y As Long
+</PRE>
+	<PRE>End Type</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the code in Listing 27.1 to the Timer1_Timer() event procedure.
+	<P>
+</DL>
+
+<H4>LISTING 27.1&#160;&#160;27LIST01.TXT--Code to Report the Location of the Mouse<BR>
+Pointer Anywhere Onscreen</H4>
+<PRE>01 `Return variable for the API function</PRE>
+<PRE>02 Dim l As Long</PRE>
+<PRE>03</PRE>
+<PRE>04 `Variable of the Windows defined type, POINTAPI.</PRE>
+<PRE>05 `This is the structure to which the API function</PRE>
+<PRE>06 `will return the coordinates of the cursor</PRE>
+<PRE>07 Dim pt As POINTAPI</PRE>
+<PRE>08</PRE>
+<PRE>09 `Get the mouse pointer coordindates</PRE>
+<PRE>10 l = GetCursorPos(pt)</PRE>
+<PRE>11</PRE>
+<PRE>12 `Get the x and y elements from the POINTAPI type</PRE>
+<PRE>13 `and create a display string. Assign that string</PRE>
+<PRE>14 `to the constituent label's Caption property.</PRE>
+<PRE>15 lblMain.Caption = CStr(pt.x) &amp; &quot; ,&quot; &amp; CStr(pt.y)</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the following code to the UserControl_Resize() event procedure:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>lblMain.Width = UserControl.Width
+</PRE>
+	<PRE>lblMain.Height = UserControl.Height</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Close the UserControl window.
+	<P>
+	<DT></DT>
+	<DD><B>9. </B>Open the Form Designer window for the main form of the other project
+	in the project group, the one that uses the custom ActiveX control. Notice that the
+	custom ActiveX control now reports back the location of the mouse in the custom ActiveX
+	control (see Figure 27.8).
+	<P>
+	<DT></DT>
+	<DD><B>10. </B>Save all projects within the project group, as well as the project
+	group itself.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('27fig11.gif')"><B>FIGURE 27.8</B></A> <I>Resize the
+Label control within the UserControl's Resize event procedure.</I></P>
+<P>You now have a fully functional ActiveX control that displays the location of
+a cursor anywhere onscreen. It can be added to any program, whether the program is
+written in Visual Basic or Visual C++. The control also can be used in a Web page.
+Before it can be incorporated into these various environments, however, it must be
+compiled into an OCX file.</P>
+<P>
+<H3><A NAME="Heading5"></A>Compiling Custom ActiveX Controls</H3>
+<P>Before you can deploy your custom ActiveX control, you must compile it into an
+OCX file.</P>
+<P><B>OCX filename defaults</B></P>
+<P><B>The OCX filename is, by default, the same name as the project filename.</B></P>
+<P><B>Compile your ActiveX control into an OCX</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Select the project CursorReporter (rptcursr.vbp) in the Project Explorer.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Select Ma<U>k</U>e RPTCURSR.OCX from the <U>F</U>ile menu to display
+	the Make Project dialog.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Click OK in the Make Project dialog (see Figure 27.9).
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Save the project and close the project group.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('27fig13.gif')"><B>FIGURE 27.9</B></A> <I>The Make process
+for an OCX is similar to the Make process for an EXE file. If you click the <U>O</U>ptions
+button, you can set version numbers and other particulars.</I></P>
+<P>After you compile your custom ActiveX control into an OCX, you no longer need
+to use the &quot;two-project&quot; technique to work with the ActiveX control; you
+can simply use the control as you would any other ActiveX control. You can use the
+Package and Deployment Wizard to distribute the OCX to other programmers.</P>
+<P><B>Use the control in your projects</B>
+
+
+<BLOCKQUOTE>
+	<P>
+	<P><B>1. </B>Choose C<U>o</U>mponents from the <U>P</U>rojects menu.
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>In the Components dialog, click <U>B</U>rowse.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>In the Add ActiveX Control dialog, navigate to the folder that contains
+	your ActiveX control.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Select the control by marking it in the Components list (see Figure
+	27.10).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('27fig14.gif')"><B>FIGURE 27.10</B></A> <I>You add a
+custom ActiveX control made in Visual Basic to the IDE as you would any other ActiveX
+control.</I></P>
+<P>
+<H3><A NAME="Heading6"></A>Deploying Custom ActiveX Controls</H3>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Licensing and copyright issues</STRONG></P>
+	<P>If you use commercial controls, all the licensing agreements you made with the
+	control vendor when you bought the control are in force. It's illegal to repackage
+	third-party ActiveX controls as constituent controls and call them your own. Check
+	the documentation that comes with all the ActiveX controls that you plan to use with
+	your custom ActiveX controls to see how the licensing agreements apply. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>After you compile your ActiveX project into an OCX file, you're ready to deploy
+it. To deploy the OCX, you must use the Setup Wizard. As with any other Visual Basic
+project, certain runtime files must ship with the OCX. The OCX also must be registered
+to the user's system. The Package and Deployment Wizard automatically takes care
+of all this in the setup process. If you make a special ActiveX control that uses
+controls other than the standard Visual Basic controls, those controls also must
+be included by the Package and Deployment Wizard and shipped with your special control.</P>
+<P>Practically all Windows programs must be formally installed. Being able to simply
+copy and invoke executable files from a hard disk--although valid under older DOS
+programs--is very rare with Windows programs. Recent architectural developments in
+Windows over the past few years require that a lot of information about a program
+be entered into the Windows Registry. This is particularly true for custom ActiveX
+controls. This information is entered when you run a program's or ActiveX control's
+Setup.exe.</P>
+<P>It's also a good idea to always use the Uninstall version of a setup program when
+you want to remove a program from your system. The Visual Basic Package and Deployment
+Wizard automatically leaves an uninstall option for your program in the Add/Remove
+Program Control Panel applet.</P>
+<P>If you plan to use your ActiveX control in a Web page on the Internet, you'll
+have to do a certain amount of programming in VBScript and HTML. You'll also have
+to embed your OCX files in a .cab file that will reside on the Internet server. The
+Package and Deployment Wizard is a very useful tool for this process.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Custom control runtime files</STRONG></P>
+	<P>Custom ActiveX controls made with Visual Basic require more than the OCX file
+	at runtime. The Package and Deployment Wizard automatically adds these files to your
+	deployment when it comes time to distribute your ActiveX control. However, be advised
+	that the size of these associated files can add up to approximately 2MB. On a desktop
+	application this isn't a big imposition, but for ActiveX controls used over the Internet,
+	this could cause a significant increase in download time. The good news is that the
+	runtime download happens only once, not every time you download an ActiveX control.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Being able to make your own ActiveX controls brings a whole new dimension to the
+scope of your programming. Using Visual Basic to make ActiveX controls makes your
+code truly reusable, with little or no dependence on extraneous source code file.
+Be advised that making an ActiveX control requires a lot of detail work. Many properties,
+methods, and events take a long while to master, even for the more experienced programmers.
+However, if you take it slowly, you will discover some very challenging programming
+opportunities.</P>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch26.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch26/ch26.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch28.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch28/ch28.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> <BR>
+</P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

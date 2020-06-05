@@ -1,0 +1,796 @@
+<HTML>
+<HEAD>
+<TITLE>lax08.htm </TITLE>
+<LINK REL="ToC" HREF="httoc.htm">
+<LINK REL="Index" HREF="htindex.htm">
+<LINK REL="Next" HREF="lax09.htm">
+<LINK REL="Previous" HREF="lax07.htm"></HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080">
+<A NAME="I0"></A><P ALIGN=CENTER>
+<A HREF="lax07.htm" TARGET="_self"><IMG SRC="blanprev.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Previous Page"></A>
+<A HREF="httoc.htm" TARGET="_self"><IMG SRC="blantoc.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="TOC"></A>
+<A HREF="lax09.htm" TARGET="_self"><IMG SRC="blannext.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Next Page"></A>
+<A HREF="http://www.mcp.com/sams/" TARGET="_self"><IMG SRC="blanhome.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="See Page"></A>
+<HR ALIGN=CENTER>
+<P>
+<UL>
+<UL>
+<UL>
+<LI>
+<A HREF="#E68E47" ><IMG SRC="task.gif">Accessing the Client's Date and Time Variables</A>
+<LI>
+<A HREF="#E68E48" ><IMG SRC="task.gif">Welcoming Users in Their Own Time Zones</A>
+<UL>
+<LI>
+<A HREF="#E69E57" >Creating the Welcome Page HTML Template</A>
+<LI>
+<A HREF="#E69E58" >Creating the Time of Day Function</A>
+<LI>
+<A HREF="#E69E59" >Adding the Function Calls to the HTML Page</A></UL>
+<LI>
+<A HREF="#E68E49" ><IMG SRC="task.gif">Rearranging the Date</A>
+<UL>
+<LI>
+<A HREF="#E69E60" >Creating the HTML Template for the Date Rearranger</A>
+<LI>
+<A HREF="#E69E61" >Adding the Date Rearrangement Function</A>
+<LI>
+<A HREF="#E69E62" >Adding the Function Call to the Date Rearrangement Page</A></UL>
+<LI>
+<A HREF="#E68E50" ><IMG SRC="task.gif">Calculating with Dates and Times</A>
+<UL>
+<LI>
+<A HREF="#E69E63" >Creating the Date Calculator HTML Template</A>
+<LI>
+<A HREF="#E69E64" >Adding the Date Calculation Script</A></UL>
+<LI>
+<A HREF="#E68E51" ><IMG SRC="task.gif">Using the Date Last Modified Variable</A>
+<LI>
+<A HREF="#E68E52" ><IMG SRC="task.gif">Automating What's New</A>
+<UL>
+<LI>
+<A HREF="#E69E65" >Creating the What's New Template</A>
+<LI>
+<A HREF="#E69E66" >Adding the Subroutine to Automatically Insert a &quot;New&quot; Graphic</A>
+<LI>
+<A HREF="#E69E67" >Adding the Calls to the Subroutine</A>
+<LI>
+<A HREF="#E69E68" >Workshop Wrap-Up</A>
+<LI>
+<A HREF="#E69E69" >Next Steps</A>
+<LI>
+<A HREF="#E69E70" >Q&amp;A</A></UL></UL></UL></UL>
+<HR ALIGN=CENTER>
+<A NAME="E66E16"></A>
+<H1 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=6 COLOR="#FF0000"><B>- 8 -</B>
+<BR><B>Adding Date and Time Functions</B></FONT></CENTER></H1>
+<BR>
+<P>In this chapter, you
+<BR>
+<UL>
+<LI>Find the time on the client's computer
+<BR>
+<BR>
+<LI>Perform calculations on dates and times
+<BR>
+<BR>
+<LI>Split up the date variable
+<BR>
+<BR>
+<LI>Learn about the built-in VBScript time and date functions
+<BR>
+<BR>
+<LI>Use the LastModified document property
+<BR>
+<BR>
+<LI>Build a Web page that automatically welcomes the user based on the time of day
+<BR>
+<BR>
+<LI>Build a Web page that automatically highlights new items
+<BR>
+<BR>
+</UL>
+<P>Tasks in this chapter:
+<BR>
+<UL>
+<LI>Accessing the client's Date and Time variables
+<BR>
+<BR>
+<LI>Welcoming users in their own time zones
+<BR>
+<BR>
+<LI>Rearranging the date
+<BR>
+<BR>
+<LI>Calculating with dates and times
+<BR>
+<BR>
+<LI>Using the Date Last Modified variable
+<BR>
+<BR>
+<LI>Automating What's New
+<BR>
+<BR>
+</UL>
+<P>Times and dates were invented for client-side processing; the ancient scholars and monks must have had Web browsers in the back of their minds&#151;forward-thinking guys!
+<BR>
+<P>Every client computer contains several variables that tell the computer what time it is and what the date is. In DOS, it's as easy as c:&gt;date. (For those of you too young to remember DOS, it means disk operating system, something we used regularly in the old days.)
+<BR>
+<P>If it's so easy to learn the computer's time and date variables, why did I spend hours writing a program that acquires the domain of the client requesting a Web page (such as .bh for Bahrain), dips into a database to find out how many hours they are ahead or behind GMT, adds this to the time at the server, and then decides whether it is morning, afternoon, or evening where the client is? That kind of program was necessary because until the advent of client-side scripting, you had no way to access the date and time variables on the client computer. HTML just doesn't have a tag for time or date.
+<BR>
+<P>Dates and times are ideal for creating semi-personalized and variable Web pages, and they include some of the variables you can actually obtain from the client machine. (No doubt some lobby group will make a proposal to ban this because it impinges on privacy.) You could even take this concept further and make an almost completely different page based on the time of day. Get your imagination around that one!
+<BR>
+<BR>
+<A NAME="E68E47"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Accessing the Client's Date and Time Variables</B></FONT></CENTER></H3>
+<BR>
+<P>First, take a look at how you access the time and date variables that are held in the client's computer. As with everything in VBScript, the function names are easy and logical. To grab the date and use it in your script, you write the following:
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">myDate = Date()</FONT></PRE>
+<P>To access the client's time, use
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">myLawyer = Time()</FONT></PRE>
+<P>To get both date and time in one variable, use
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">myVariable = Now()</FONT></PRE>
+<P>The functions do not take any variables and therefore the parentheses, which must be there because these are functions, remain empty.
+<BR>
+<P>What do these three variables return? It depends upon your window settings. All three functions are formatted based upon the date, time, and international settings of your window system. The easiest way to see what they return and how to use them is to try them.
+<BR>
+<P>Listing 8.1 contains a quick HTML page that contains three buttons: one for displaying the time, one for the date, and one for both. You can find it on the CD-ROM. 
+<BR>
+<P>
+<FONT COLOR="#000080"><B>Listing 8.1. The datetime.htm code.</B></FONT>
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+ &lt;HEAD&gt;
+  &lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+   Sub DoTime_OnClick
+    Document.Form1.Output.Value = Time()
+   End Sub
+   Sub DoDate_OnClick
+    Document.Form1.Output.Value = Date()
+   End Sub
+   Sub DoNow_OnClick
+    Document.Form1.Output.Value = Now()
+   End Sub
+  &lt;/SCRIPT&gt;
+ &lt;/HEAD&gt;
+&lt;BODY BGCOLOR=&quot;white&quot;&gt;
+&lt;CENTER&gt;
+&lt;FORM NAME=&quot;Form1&quot;&gt;
+&lt;INPUT TYPE=&quot;button&quot; NAME=&quot;DoTime&quot; Value=&quot;Show the current Time&quot;&gt;&lt;P&gt;
+&lt;INPUT TYPE=&quot;button&quot; NAME=&quot;DoDate&quot; Value=&quot;Show the current Date&quot;&gt;&lt;P&gt;
+&lt;INPUT TYPE=&quot;button&quot; NAME=&quot;DoNow&quot; Value=&quot;Show both Date and Time&quot;&gt;&lt;P&gt;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;Output&quot;&gt;
+&lt;/FORM&gt;
+&lt;/CENTER&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;</FONT></PRE>
+<P>Figure 8.1 shows what Listing 8.1 looks like with the browser. 
+<BR>
+<P><B><A HREF="08lax01.gif">Figure 8.1. The date and time example.</A></B>
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>The computer stores the complete date and time as a double-precision number. The whole number part represents the date from 1/1/100 to 31/12/9999. 1/1/1900 is represented by the number 2. The fractional part of the number represents the time. 12:00 noon is .5. </NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<BR>
+<A NAME="E68E48"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Welcoming Users in Their Own Time Zones</B></FONT></CENTER></H3>
+<BR>
+<P>How do you usually welcome someone to a Web site?  &quot;Hello&quot; and &quot;Welcome to my Web site&quot; are very general greetings. They have to be general if you don't know what part of the day the user is in. This is the age of the interactive personalized Web page, right? Shouldn't you say, &quot;Good morning,&quot; &quot;Good afternoon,&quot; and &quot;Good evening?&quot;
+<BR>
+<P>As I said at the beginning of this chapter, it is possible to write a server-side script that roughly determines the time where the user is, but it is not recommended. VBScript gives you more time and date functionality than a Rolex watch, so put away your sundial and look at the sample welcome page in Figure 8.2.
+<BR>
+<P><B><A HREF="08lax02.gif">Figure 8.2. Welcoming your Web page visitor.</A></B>
+<BR>
+<P>How is it done? This welcome page uses the Hour() function within VBScript. Unlike the Now() and Time() functions that in Windows 95 return a 12-hour clock format, Hour() always returns the hour in 24-hour format. You need only to check whether the hour is before 12 (morning), between 12 and 18(afternoon), or after 18 (evening). The result is printed on the Web page using the document's write method.
+<BR>
+<BR>
+<A NAME="E69E57"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Creating the Welcome Page HTML Template</B></FONT></CENTER></H4>
+<BR>
+<P>Using your favorite HTML editor or Notepad, create the following HTML Web page template and save it as timeofday.htm:
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+&lt;HEAD&gt;
+ &lt;TITLE&gt;My Welcome Page&lt;/TITLE&gt;
+ &lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+  &lt;!--TIME OF DAY FUNCTION GOES HERE --&gt;
+ &lt;/SCRIPT&gt;
+&lt;/HEAD&gt;
+&lt;BODY BGCOLOR=&quot;White&quot;&gt;
+&lt;FONT FACE=&quot;arial&quot; SIZE=2&gt;
+&lt;CENTER&gt;
+&lt;H3&gt;
+&lt;!-- CUSTOM HEADING GOES HERE --&gt;
+&lt;BR&gt;
+Welcome to my Home Page
+&lt;/H3&gt;
+&lt;/CENTER&gt;
+&lt;P&gt;
+&lt;BLOCKQUOTE&gt;
+This fine
+&lt;!--CUSTOM TIME OF DAY GOES HERE--&gt;
+I have lots for you to see and experience, etc. etc.
+&lt;/BODY&gt;
+&lt;/HTML&gt;</FONT></PRE>
+<BR>
+<A NAME="E69E58"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Creating the Time of Day Function</B></FONT></CENTER></H4>
+<BR>
+<P>Now edit the file, adding the following function to the &lt;SCRIPT&gt; tags within the &lt;HEAD&gt; section: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">Function TimeOfDay()
+   If Hour(Now()) &lt; 12 Then
+      TimeOfDay = &quot;Morning&quot;
+   End if
+   If Hour(Now()) =&gt;12 AND Hour(Now()) &lt; 18 Then
+      TimeOfDay = &quot;Afternoon&quot;
+   End if
+   If Hour(Now()) =&gt; 18 Then
+      TimeOfDay = &quot;Evening&quot;
+   End if
+End Function</FONT></PRE>
+<P>The TimeOfDay custom function uses the Now() function to pass the current time to the Hour() function. As a result, the Hour() function returns the hour at the time the script runs.
+<BR>
+<P>Comparisons on the hour value determine whether it is morning, afternoon, or evening, according to the definitions mentioned earlier. You could optimize the previous code by copying the hour value into a variable first and then using that variable within the If..Then comparisons.
+<BR>
+<P>Now you need some code within the body of the HTML file that calls the TimeOfDay function when necessary. 
+<BR>
+<BR>
+<A NAME="E69E59"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Adding the Function Calls to the HTML Page</B></FONT></CENTER></H4>
+<BR>
+<P>In the comment section marked Custom heading goes here, type the following short script:
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+Document.Write &quot;Good &quot; &amp; TimeOfDay()
+&lt;/SCRIPT&gt;</FONT></PRE>
+<P>This script contains no function or subdefinition, which means that the script executes as the file is loaded into the browser. In other words, as the browser reaches this section, it executes the script code. 
+<BR>
+<P>This code calls the Write method, passing to it the word &quot;Good&quot; and the result of the TimeOfDay() function&#151;either morning, afternoon, or evening. The Write method prints onto the HTML page at the next available position.
+<BR>
+<P>Having taken care of the heading, you need to add the function call to place the time of day into the paragraph below the headings. Type the following code into the HTML page at the point that says Custom Time of Day Goes Here:
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+Document.Write LCase(TimeOfDay())
+&lt;/SCRIPT&gt;</FONT></PRE>
+<P>Again, this code executes as the file loads. Notice that this time, to make the word fit in with the rest of the paragraph, the script calls the LCase function to convert the result of TimeOfDay to all lowercase characters.
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>For more information about LCase and other string-manipulation functions, see Chapter 7, &quot;Manipulating Strings.&quot;</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>Take a look at some other related functions that you can use to dissect the date. 
+<BR>
+<BR>
+<A NAME="E68E49"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Rearranging the Date</B></FONT></CENTER></H3>
+<BR>
+<P>In Chapter 6, &quot;Checking Form Data,&quot; you saw how to use the IsDate() function to verify that an entry could be translated to a real date. You also saw that this function checks only that the entry is within the limitations of the date format used by the client machine and could be meaningless to you after the date is received at the server. For example, 96.3.1 is a valid date in some countries but could give your database palpitations.
+<BR>
+<P>The solution is to first check that the entry is a valid date and then reformat the date to your liking. VBScript has three built-in functions to help you do this: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">Day()
+Month()
+Year()</FONT></PRE>
+<P>The full syntax is
+<BR>
+<PRE>
+<FONT COLOR="#000080"><I>variable</I> = Day(<I>datevariable</I>)
+<I>variable</I> = Month(<I>datevariable</I>)
+<I>variable</I> = Year(<I>datevariable</I>)</FONT></PRE>
+<P>Regardless of where the user's window format placed the year, month, and day, these three functions return the correct digit. It's a simple task for you to rearrange these digits within a string in the order of your choosing, whether it's the British style of dd/mm/yy, the American style of mm/dd/yy, or any other combination, for that matter.
+<BR>
+<BR>
+<A NAME="E69E60"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Creating the HTML Template for the Date Rearranger</B></FONT></CENTER></H4>
+<BR>
+<P>First, create the HTML template with the following code: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;Date Re-Arrangement&lt;/TITLE&gt;
+&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+&lt;!-- Date rearrangement script goes here --&gt;
+&lt;/SCRIPT&gt;
+&lt;/HEAD&gt;
+&lt;BODY BGCOLOR=&quot;white&quot;&gt;
+&lt;CENTER&gt;
+&lt;FORM NAME=&quot;Form1&quot;&gt;
+Enter a date &amp;nbsp;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;InputDate&quot;&gt;
+&lt;P&gt;
+&lt;INPUT TYPE=&quot;button&quot; NAME=&quot;ChangeDate&quot; VALUE=&quot;Change Date Format&quot;&gt;
+&lt;P&gt;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;OutputDate&quot;&gt;
+&lt;/FORM&gt;
+&lt;/CENTER&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;</FONT></PRE>
+<P>When it's entered, save the file as mixdate.htm. 
+<BR>
+<BR>
+<A NAME="E69E61"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Adding the Date Rearrangement Function</B></FONT></CENTER></H4>
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>Unfortunately, unlike Visual Basic and Visual Basic for Applications, the VBScript language does not have a Format function.</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>In the following code that does all the work, I added line numbers to make it easier to follow the description; however, don't add these line numbers to your script:
+<BR>
+<PRE>
+<FONT COLOR="#000080">1:Function MixDate(StartDate)
+2:  Dim strSeparator
+3:  Dim strTheMonth
+4:  Dim strTheYear
+5:  Dim strTheDay
+6:  Dim strFinalDate
+7:   strSeparator = &quot;/&quot;
+8:   strTheMonth = Month(StartDate)
+9:   strTheYear = Year(StartDate)
+10:   strTheDay = Day(StartDate)
+11:   strFinalDate = strTheDay &amp; strSeparator &amp; _
+12:                  strTheMonth &amp; strSeparator &amp; _
+13:                  strTheYear
+14:   MixDate = strFinalDate
+15: End Function</FONT></PRE>
+<P>Line 1 is the function definition that specifies the name of this custom function and also specifies that it expects to receive a variable when it is called. In this case, the variable is the date value entered by the user.
+<BR>
+<P>Lines 2 through 6 define several variables that are used locally during the execution of the function.
+<BR>
+<P>Line 7 assigns a forward slash (/) character to the strSeparator variable, which separates the day, month, and year in the final format. If you want to receive dates with other types of separators (for example, dashes -), simply edit this line.
+<BR>
+<P>The next three lines&#151;8, 9, and 10&#151;are where the work really starts. The variables you created at the beginning of the function are assigned their respective values by calling the built-in Day(), Month(), and Year() functions, which operate on the date value passed in at the start. 
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>VBScript has similar functions for splitting the time variables&#151;Hour(), Minute(), and Second()&#151;which can be used in exactly the same way as Day(), Month(), and Year().</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>You've now split the date into its three main constituents and defined your own separator for the date. All that remains is sticking the date back together in the order of your choice, using sticky tape, staples, or whatever comes to hand. In this case, lines 11, 12, and 13 concatenate the string into a day, month, year format. You could just as easily edit this to be year, month, day.
+<BR>
+<P>Finally, line 14 copies the reformed date to the return value of the function itself. When the function completes in line 15 and execution is passed back to the code that called it, the reformed date is returned.
+<BR>
+<P>You need to add some code that calls the custom function when it is needed. 
+<BR>
+<BR>
+<A NAME="E69E62"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Adding the Function Call to the Date Rearrangement Page</B></FONT></CENTER></H4>
+<BR>
+<P>For this example, the function call comes from the event handler for the ChangeDate button. Type the following code into the &lt;SCRIPT&gt; tags just above the custom function:
+<BR>
+<PRE>
+<FONT COLOR="#000080"> Sub ChangeDate_OnClick
+  If IsDate(Document.Form1.InputDate.Value) Then
+   Document.Form1.OutputDate.Value = MixDate(Document.Form1.InputDate.Value)
+  Else
+   Alert &quot;Not a valid date format&quot;
+  End If
+ End Sub</FONT></PRE>
+<P>The first job is to check that the value entered into the text box can in fact be treated as a date. If it can't, a warning message displays and nothing happens. 
+<BR>
+<P>If the user entered a valid date in the text box, the value is passed to the MixDate function. The value that is returned from the MixDate function is copied into the OutputDate text box. 
+<BR>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<HR ALIGN=CENTER>
+<BR>
+<NOTE>Remember <I>not</I> to re-validate the rearranged date because it could fail on some client machines!</NOTE>
+<BR>
+<HR ALIGN=CENTER>
+</BLOCKQUOTE></BLOCKQUOTE>
+<P>You can now validate date values and also return them to the server in whatever format you need for further processing. All of this processing is done quickly and efficiently at the client, as shown in Figure 8.3.
+<BR>
+<P><B><A HREF="08lax03.gif">Figure 8.3. The date rearrangement function at work.</A></B>
+<BR>
+<P>As you can see from this sample page, December 12 96 is a valid date, but I doubt it would fit into anyone's date formatting system. 
+<BR>
+<BR>
+<A NAME="E68E50"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Calculating with Dates and Times</B></FONT></CENTER></H3>
+<BR>
+<P>What's 1st July 1996 plus 231 days? Or 47 days prior to the 23rd February 1997? Unless you're a mathematical genius, you probably need to count days on a calendar. Actually, that's what computers are for&#151;and also what the next example is for.
+<BR>
+<P>In this example, you build a date calculator, a fairly straightforward application in which you enter a date and then choose whether you want to add or subtract <I>x</I> number of days, months, or years to or from the original date. Have fun entering your birth date and finding out when you'll turn 10,000 days old.
+<BR>
+<BR>
+<A NAME="E69E63"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Creating the Date Calculator HTML Template</B></FONT></CENTER></H4>
+<BR>
+<P>The form contains a text box in which you enter a date. Under the form is a drop-down selection list containing a choice of the operator to use&#151;either plus or minus. Next to this list is a text box in which you enter the date difference and another selection list containing the time period&#151;days, years, or months.
+<BR>
+<P>The button starts the whole thing and a text box shows the result&#151;simple! Use the following code for your HTML page:
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;Date Calculator&lt;/TITLE&gt;
+&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+&lt;/SCRIPT&gt;
+&lt;/HEAD&gt;
+&lt;BODY BGCOLOR=&quot;white&quot;&gt;
+&lt;FONT FACE=&quot;arial&quot; SIZE=2&gt;
+&lt;CENTER&gt;
+&lt;H2&gt;Date Calculator&lt;/H2&gt;
+&lt;FORM NAME=&quot;Form1&quot;&gt;
+Enter a Date &amp;nbsp;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;InputDate&quot;&gt;
+&lt;P&gt;
+&lt;SELECT NAME=&quot;operation&quot;&gt;
+&lt;OPTION&gt;Add
+&lt;OPTION&gt;Take Away
+&lt;/SELECT&gt;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;Number&quot; SIZE=6&gt;
+&lt;SELECT NAME=&quot;period&quot;&gt;
+&lt;OPTION&gt;Days
+&lt;OPTION&gt;Months
+&lt;OPTION&gt;Years
+&lt;/SELECT&gt;
+&lt;P&gt;
+&lt;INPUT TYPE=&quot;button&quot; Name=&quot;Calculate&quot; VALUE=&quot;Calculate Now&quot;&gt;
+&lt;P&gt;
+Result &amp;nbsp;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;Result&quot;&gt;
+&lt;/FORM&gt;
+&lt;/CENTER&gt;
+&lt;/BODY&gt;
+&lt;HTML&gt;</FONT></PRE>
+<P>After you build your template, save it as datecalc.htm and test it in the browser. Yes, I know that it didn't do anything. It's time to add the calculation script.
+<BR>
+<BR>
+<A NAME="E69E64"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Adding the Date Calculation Script</B></FONT></CENTER></H4>
+<BR>
+<P>Take this one step at a time. First, add the following code under the &lt;SCRIPT&gt; tag:
+<BR>
+<PRE>
+<FONT COLOR="#000080">Sub Calculate_OnClick
+ If Not IsDate(Document.Form1.InputDate.Value) Then
+  Alert &quot;This is not a valid date&quot;
+  Exit Sub
+ End If</FONT></PRE>
+<P>As you know by now, this subroutine is an event handler for the Calculate command button. This first part of the script ensures that the date you entered is a valid date format.  Now, add the second stage:
+<BR>
+<PRE>
+<FONT COLOR="#000080">StartDate = Document.Form1.InputDate.Value
+StartMonth = Month(StartDate)
+StartDay = Day(StartDate)
+StartYear = Year(StartDate)</FONT></PRE>
+<P>You might recognize this section from the date rearrangement example you saw earlier in this chapter; it's pretty much identical. You split the date into its constituent parts. Continue your work by adding the following code: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">If Document.Form1.operation.SelectedIndex = 1 Then
+ Difference = 0 - CInt(Document.Form1.Number.Value)
+Else
+ Difference = CInt(Document.Form1.Number.Value)
+End if</FONT></PRE>
+<P>You might remember this section (or one like it) from an earlier chapter. Here, you learn which of the options the user (or you) chose from the list.  Remember, the first item on the list is always index 0. You know that you placed &quot;Take Away&quot; in the second slot on the list, which is index number 1. If the selectedIndex property is 1, you perform a subtraction. The easiest way to write this section is to always perform an addition. If you really want an addition, use a positive number; if you want to subtract, use a negative number. You change the difference to negative if the user selected Take Away. Now enter the next section: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">Select Case Document.Form1.period.SelectedIndex
+ Case 0
+  EndDate = DateSerial(StartYear, StartMonth, StartDay + Difference)
+ Case 1
+  EndDate = DateSerial(StartYear, StartMonth + Difference, StartDay)
+ Case 2
+  EndDate = DateSerial(StartYear + Difference, StartMonth, StartDay)
+End Select</FONT></PRE>
+<P>This section performs the actual mathematics and also sticks back together the constituent parts of the date. The Select block saves you from typing umpteen different If..Thens. You can learn more about Select..Case in Chapter 9, &quot;Making Your Program Flow.&quot;
+<BR>
+<P>This section uses the second selection list&#151;day, month, or year&#151;as its condition. As you saw in the last section, if the user wants to take a number of days away from the starting date, the difference is negative. DateSerial puts the date back together in its correct form, adjusting months and years accordingly so that you don't end up with the 125th of March. Add the following section to the end of your code:
+<BR>
+<PRE>
+<FONT COLOR="#000080"> Document.Form1.Result.Value = EndDate
+End Sub</FONT></PRE>
+<P>Copy the result into the result text box and end the subroutine. As your final task, check back through your code. Listing 8.2 shows the complete source code. 
+<BR>
+<P>
+<FONT COLOR="#000080"><B>Listing 8.2. The datecalc.htm code.</B></FONT>
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;Date Calculator&lt;/TITLE&gt;
+&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+ Sub Calculate_OnClick
+ If Not IsDate(Document.Form1.InputDate.Value) Then
+  Alert &quot;This is not a valid date&quot;
+  Exit Sub
+ End if
+  StartDate = Document.Form1.InputDate.Value
+  StartMonth = Month(StartDate)
+  StartDay = Day(StartDate)
+  StartYear = Year(StartDate)
+  If Document.Form1.operation.SelectedIndex = 1 Then
+   Difference = 0 - CInt(Document.Form1.Number.Value)
+  Else
+   Difference = CInt(Document.Form1.Number.Value)
+  End if
+  Select Case Document.Form1.period.SelectedIndex
+   Case 0
+    EndDate = DateSerial(StartYear, StartMonth, StartDay + Difference)
+   Case 1
+    EndDate = DateSerial(StartYear, StartMonth + Difference, StartDay)
+   Case 2
+    EndDate = DateSerial(StartYear + Difference, StartMonth, StartDay)
+  End Select
+  Document.Form1.Result.Value = EndDate
+ End Sub
+&lt;/SCRIPT&gt;
+&lt;/HEAD&gt;
+&lt;BODY BGCOLOR=&quot;white&quot;&gt;
+&lt;FONT FACE=&quot;arial&quot; SIZE=2&gt;
+&lt;CENTER&gt;
+&lt;H2&gt;Date Calculator&lt;/H2&gt;
+&lt;FORM NAME=&quot;Form1&quot;&gt;
+Enter a Date &amp;nbsp;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;InputDate&quot;&gt;
+&lt;P&gt;
+&lt;SELECT NAME=&quot;operation&quot;&gt;
+&lt;OPTION&gt;Add
+&lt;OPTION&gt;Take Away
+&lt;/SELECT&gt;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;Number&quot; SIZE=6&gt;
+&lt;SELECT NAME=&quot;period&quot;&gt;
+&lt;OPTION&gt;Days
+&lt;OPTION&gt;Months
+&lt;OPTION&gt;Years
+&lt;/SELECT&gt;
+&lt;P&gt;
+&lt;INPUT TYPE=&quot;button&quot; Name=&quot;Calculate&quot; VALUE=&quot;Calculate Now&quot;&gt;
+&lt;P&gt;
+Result &amp;nbsp;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;Result&quot;&gt;
+&lt;/FORM&gt;
+&lt;/CENTER&gt;
+&lt;/BODY&gt;
+&lt;HTML&gt;</FONT></PRE>
+<P>Save your file and run it with the browser. It should perform as shown in Figure 8.4. 
+<BR>
+<P><B><A HREF="08lax04.gif">Figure 8.4. The date calculator sample.</A></B>
+<BR>
+<BR>
+<A NAME="E68E51"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Using the Date Last Modified Variable</B></FONT></CENTER></H3>
+<BR>
+<P>As you surf around the Net, you often see pages that tell you when the page you are looking at was last modified. You might even have some of these yourself. A last modified date is as useful for you, the webmaster, as it is for the site visitor. But you have to hard code the last modified date into your HTML page, and therefore you have to remember to manually update this HTML coded date when you update the page. If you forget to change the date, its usefulness is lost. So, wouldn't it be nice to have a last modified date that updates itself automatically when you amend the page? Well, now you can do this by simply adding this short piece of VBScript to any HTML page and even adding it to your HTML page template. It requires almost no thought and certainly no maintenance on your part.
+<BR>
+<P>The document object carries with it the date you last modified the document. It's easy to acquire the document's LastModified property and display it to the world:
+<BR>
+<BR>
+<PRE>
+<FONT COLOR="#000080">Document.Write Document.LastModified</FONT></PRE>
+<P>Listing 8.3 shows a sample page that uses the LastModified property. 
+<BR>
+<P>
+<FONT COLOR="#000080"><B>Listing 8.3. The lastmod.htm code.</B></FONT>
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;Last Updated&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+&lt;BODY BGCOLOR=&quot;white&quot;&gt;
+&lt;!--
+YOUR PAGE GOES HERE
+--&gt;
+&lt;FONT FACE=&quot;arial&quot; SIZE=1&gt;
+&lt;B&gt;
+&lt;CENTER&gt;
+&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+&lt;!--
+  Document.Write &quot;This page was last modified on &quot;
+  Document.Write Document.LastModified
+--&gt;
+&lt;/SCRIPT&gt;
+&lt;/CENTER&gt;
+&lt;/B&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;</FONT></PRE>
+<P>Figure 8.5 shows what Listing 8.3 looks like in the browser. 
+<BR>
+<P><B><A HREF="08lax05.gif">Figure 8.5. A maintenance-free &quot;last modified&quot; message.</A></B>
+<BR>
+<P>Place the script at the bottom of your HTML page, and without any further work on your part, this code always shows the day, date, and time that the document was last saved, which is useful for both you and the visitor.
+<BR>
+<BR>
+<A NAME="E68E52"></A>
+<H3 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=5 COLOR="#FF0000"><B><IMG SRC="task.gif">Automating What's New</B></FONT></CENTER></H3>
+<BR>
+<P>The next example is a really neat way of using client-side processing and VBScript. It saves you time and automatically maintains your page. When you add some feature or modify part of your site, you often stick in a &quot;new&quot; graphic to alert users to the fact that something has changed. Unless you regularly maintain the page, this new graphic can remain there long after its &quot;sell-by&quot; date. We've all seen pages that denote something as new when in fact we saw the same thing several months previously. We'd never do that on our own Web sites&#151;would we?
+<BR>
+<P>The following sample application displays the new graphic based on the date at the client machine. All you have to do is supply a sell-by date. After this date is reached, the graphic no longer appears.
+<BR>
+<BR>
+<A NAME="E69E65"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Creating the What's New Template</B></FONT></CENTER></H4>
+<BR>
+<P>First, create the following HTML template document: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;HTML&gt;
+&lt;HEAD&gt;
+ &lt;TITLE&gt;My NEW Welcome Page&lt;/TITLE&gt;
+ &lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+ &lt;/SCRIPT&gt;
+&lt;/HEAD&gt;
+&lt;BODY BGCOLOR=&quot;White&quot;&gt;
+&lt;FONT FACE=&quot;arial&quot; SIZE=3&gt;
+&lt;CENTER&gt;
+&lt;H3&gt;
+Welcome to my Home Page
+&lt;/H3&gt;
+&lt;P&gt;
+&lt;A HREF=&quot;&quot;&gt;My Links Page&lt;/A&gt;&lt;P&gt;
+&lt;A HREF=&quot;&quot;&gt;Photos from my last vacation&lt;/A&gt;&lt;P&gt;
+&lt;A HREF=&quot;&quot;&gt;My Resum&amp;eacute;&lt;/A&gt;
+&lt;/CENTER&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;</FONT></PRE>
+<P>Save the template as whatsnew.htm, and you're ready to attack the scripting. 
+<BR>
+<BR>
+<A NAME="E69E66"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Adding the Subroutine to Automatically Insert a &quot;New&quot; Graphic</B></FONT></CENTER></H4>
+<BR>
+<P>Place the following subroutine inside the &lt;SCRIPT&gt; tags in the &lt;HEAD&gt; section: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">Sub Sellby(LastDate)
+   If DateValue(Now()) &lt; DateValue(LastDate) Then
+     Document.Write &quot;&lt;IMG SRC=&quot; &amp; Chr(34) &amp; &quot;new.gif&quot; &amp; Chr(34) &amp; &quot; ALIGN=MIDDLE&gt;&quot;
+   End If
+End Sub</FONT></PRE>
+<P>The Sellby subroutine takes one variable, a sell-by date&#151;which is basically the date at which you decide the item is no longer new. The DateValue function, which you saw in the previous section, is used here to convert whatever is brought into the subroutine to a date and to place both the value returned by Now() and the LastDate on a level playing field so that you can compare one with the other.
+<BR>
+<P>If the date at the browser is less than (earlier than) the LastDate variable, you are still within the new period, so you want to show the new.gif graphic.
+<BR>
+<P>The Document.Write method writes a line of code to the document defining an image tag. Because the string passed to Document.Write must be enclosed in quotation marks, you cannot use quotes for the image filename. This line builds in the quotes (ASCII code 34) programmatically using the Chr() function. The program actually sees this line as &lt;IMG SRC=&quot;new.gif&quot; ALIGN=MIDDLE&gt;.
+<BR>
+<BR>
+<A NAME="E69E67"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Adding the Calls to the Subroutine</B></FONT></CENTER></H4>
+<BR>
+<P>Now you can display a new graphic based upon the date at the browser, but you need a way to call this routine into action. Before each hyperlink, insert the following code: 
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+  SellBy (&quot;12 Sept 96&quot;)
+&lt;/SCRIPT&gt;</FONT></PRE>
+<P>You don't have to stick to a certain date format; just remember that the format you use must be capable of conversion to a date by DateValue(). Here's the completed hyperlink section, showing several variations of the date format:
+<BR>
+<PRE>
+<FONT COLOR="#000080">&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+  SellBy (&quot;12 Sept 96&quot;)
+&lt;/SCRIPT&gt;
+&lt;A HREF=&quot;&quot;&gt;My Links Page&lt;/A&gt;&lt;P&gt;
+&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+  SellBy (&quot;August 14&quot;)
+&lt;/SCRIPT&gt;
+&lt;A HREF=&quot;&quot;&gt;Photos from my last vacation&lt;/A&gt;&lt;P&gt;
+&lt;SCRIPT LANGUAGE=&quot;vbscript&quot;&gt;
+  SellBy (&quot;10/12/96&quot;)
+&lt;/SCRIPT&gt;
+&lt;A HREF=&quot;&quot;&gt;My Resum&amp;eacute;&lt;/A&gt;</FONT></PRE>
+<P>Figure 8.6 shows what your file looks like when you fire it up in the browser. 
+<BR>
+<P><B><A HREF="08lax06.gif">Figure 8.6. The new graphics added automatically&#151;or not.</A></B>
+<BR>
+<BR>
+<A NAME="E69E68"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Workshop Wrap-Up</B></FONT></CENTER></H4>
+<BR>
+<P>In this chapter, you saw how to use the built-in date and time functionality of VBScript and the browser with the document's LastModified property.
+<BR>
+<P>You discovered how easy it is to grab the client's date and time variables and manipulate them. You also saw how quickly you can include the VBScript built-in functions to perform calculations on the time and date variables and reformat any date or time.
+<BR>
+<BR>
+<A NAME="E69E69"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Next Steps</B></FONT></CENTER></H4>
+<BR>
+<P>Now that you've seen how to use the built-in date and time functionality of VBScript, you can produce all sorts of neat client side applications. See the following chapters to add further client side time and date power:
+<BR>
+<UL>
+<LI>To learn how to check for valid dates, see Chapter 6, &quot;Checking Form Data.&quot;
+<BR>
+<BR>
+<LI>To see another neat way of using date and time functions, read Chapter 19, &quot;Baking Cookies with VBScript.&quot;
+<BR>
+<BR>
+<LI>To learn how to implement a continuous clock on your Web page, see Chapter 23, &quot;Real Life Examples IV.&quot;
+<BR>
+<BR>
+</UL>
+<BR>
+<A NAME="E69E70"></A>
+<H4 ALIGN=CENTER>
+<CENTER>
+<FONT SIZE=4 COLOR="#FF0000"><B>Q&amp;A</B></FONT></CENTER></H4>
+<BR>
+<P><B>Q: Visual Basic has many date and time functions and features that save a lot of time and trouble. Are they going to be included in VBScript at some point?</B>
+<BR>
+<P><B>A: </B> Keep a look out for the next release of VBScript, which could be out by the time you read this. It is rumoured that additional date and time functions will be included in the next release, although most of the Visual Basic date and time functions can be replicated using the methods shown in this chapter.
+<BR>
+<P><B>Q: How do I save the date when a user last visited my site?</B>
+<BR>
+<P><B>A: </B>The only way that you can store data on the client machine is via the cookie file. For more information on cookies, see Chapter 19, &quot;Baking Cookies with VBScript.&quot;
+<BR>
+<P ALIGN=CENTER>
+<A HREF="lax07.htm" TARGET="_self"><IMG SRC="blanprev.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Previous Page"></A>
+<A HREF="#I0" TARGET="_self"><IMG SRC="blantop.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Page Top"></A>
+<A HREF="httoc.htm" TARGET="_self"><IMG SRC="blantoc.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="TOC"></A>
+<A HREF="lax09.htm" TARGET="_self"><IMG SRC="blannext.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="Next Page"></A>
+<A HREF="http://www.mcp.com/sams/" TARGET="_self"><IMG SRC="blanhome.gif" WIDTH = 37 HEIGHT = 37 BORDER = 0 ALT="See Page"></A>
+</BODY></HTML>

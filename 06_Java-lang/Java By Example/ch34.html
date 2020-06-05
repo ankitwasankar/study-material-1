@@ -1,0 +1,877 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 34 -- Using the Compiler</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;34</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Using the Compiler</FONT></H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#WhattheCompilerDoes">
+
+What the Compiler Does</A>
+
+<LI><A HREF="#RunningtheCompiler">
+
+Running the Compiler</A>
+
+<UL>
+
+<LI><A HREF="#SettingtheClassPath">
+
+Setting the Class Path</A>
+
+<LI><A HREF="#SpecifyingtheTargetDirectory">
+
+Specifying the Target Directory</A>
+
+<LI><A HREF="#ExampleSettingtheTargetDirectory">
+
+Example: Setting the Target Directory</A>
+
+<LI><A HREF="#CreatingDebuggingTables">
+
+Creating Debugging Tables</A>
+
+<LI><A HREF="#ExampleAddingDebuggingTablestoanApplet">
+
+Example: Adding Debugging Tables to an Applet</A>
+
+<LI><A HREF="#SuppressingWarnings">
+
+Suppressing Warnings</A>
+
+<LI><A HREF="#OptimizingaProgram">
+
+Optimizing a Program</A>
+
+<LI><A HREF="#SwitchingOnVerboseOutput">
+
+Switching On Verbose Output</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+The one Java tool that you have to use constantly is the compiler,
+
+javac. This is because your Java source-code files are meaningful
+
+only to human readers. Your computer cannot understand them at
+
+all. The compiler's job is to take your program and convert it
+
+from human-readable form to machine-readable form. You've been
+
+using the Java compiler all throughout this book, but in this
+
+chapter, you'll learn some new tricks and tips that'll help you
+
+get the best results from the compiler.
+
+<H2><A NAME="WhattheCompilerDoes"><FONT SIZE=5 COLOR=#Ff0000>
+
+What the Compiler Does</FONT></A></H2>
+
+<P>
+
+In languages such a C, a compiler converts source code (the stuff
+
+you write) to machine language, which your computer can execute
+
+directly. Because every type of computer uses a different form
+
+of machine code, programs that must run on different types of
+
+machines must be compiled specifically for each machine. For example,
+
+a C program compiled on a Windows machine cannot be run on a Macintosh,
+
+and vice versa. To run that Windows program on the Macintosh,
+
+the program would first have to be compiled by a Macintosh compiler
+
+(assuming that the source code was portable, meaning that the
+
+code contained no machine -specific instructions).
+
+<P>
+
+With Java, however, the compiler converts your source code into
+
+byte-code files, which are the same format on every machine. This
+
+means that a Java program compiled on a Windows machine will run
+
+equally as well on a Solaris or Macintosh machine. This feat of
+
+digital magic is possible because the Java byte-code files are
+
+not read directly by the machine. Instead, Java's interpreter
+
+reads the byte-code files and translates them into machine code
+
+for the specific machine on which the Java program is running.
+
+<P>
+
+The interpreter does this translation as the applet or application
+
+is running, meaning that the whole process is transparent to the
+
+user. The interpreter, of course, must be specially written and
+
+compiled for each type of machine that wants to run Java programs.
+
+Figure 34.1 illustrates this concept. From the user's point of
+
+view, though, this simply means that he must have Java installed
+
+on his system. The user doesn't need to know anything about the
+
+interpreter; it works automatically when the user views an applet
+
+in his Web browser.
+
+<P>
+
+<IMG SRC="f34-1.gif"><B> Figure 34.1 : </B><I>Because Java programs are interpreted, they can be run on any machine that has a Java interpreter.
+
+
+
+</I></A><P>
+
+<H2><A NAME="RunningtheCompiler"><FONT SIZE=5 COLOR=#Ff0000>
+
+Running the Compiler</FONT></A></H2>
+
+<P>
+
+As you already know, you can run the Java compiler with a command
+
+line that consists of the compiler's name followed by the name
+
+of the file to compile, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac Applet.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+There are a couple of important things to remember about this
+
+command. First, the Java compiler is case-sensitive when it comes
+
+to comparing source-code file names with the names of the class
+
+contained in the file. For example, if your source-code file is
+
+named shapeapplet.java and the class it defines is <TT>ShapeApplet</TT>,
+
+the Java compiler will complain and not compile the file (Figure
+
+34.2).
+
+<P>
+
+<IMG SRC="f34-2.gif"><B> Figure 34.2 : </B><I>The source-code file name must match the name of the public class defined in the file.
+
+
+
+</I></A><P>
+
+<P>
+
+Second, the compiler requires that you include the source-code
+
+file's extension, which should always be .java. Notice that the
+
+extension is all lowercase. If you fail to include the extension
+
+when running the compiler, or if you fail to save your source-code
+
+file with the proper extension, you will get an &quot;invalid
+
+argument&quot; error (Figure 34.3). I'm not sure why Java's creators
+
+insist upon the file extension being present when you type the
+
+javac command line. Most compilers assume the proper file extension
+
+when the file name is typed without the extension. Not so with
+
+Java. Strange.
+
+<P>
+
+<IMG SRC="f34-3.gif"><B> Figure 34.3 : </B><I>A source code name without the proper .java extension is an invalid argument.
+
+
+
+</I></A><P>
+
+<P>
+
+Like many of the tools included with java, the compiler recognizes
+
+some command options that you can add to the command line. Table
+
+34.1 lists these command options and their meanings.<BR>
+
+<P>
+
+<CENTER><B>Table 34.1&nbsp;&nbsp;Command Options for Javac.</B></CENTER>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD WIDTH=166><I><B>Option</B></I></TD><TD WIDTH=424><I><B>Description</B></I>
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=166><TT>-classpath path</TT></TD><TD WIDTH=424>Determines the path in which the compiler looks for classes.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=166><TT>-d directory</TT></TD><TD WIDTH=424>Determines the directory in which javac stores the output files.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=166><TT>-g</TT></TD><TD WIDTH=424>Tells javac to create debugging information, which is used by debugging tools.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=166><TT>-nowarn</TT></TD><TD WIDTH=424>Tells javac not to display warnings as it compiles a file.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=166><TT>-O</TT></TD><TD WIDTH=424>Tells java to optimize the compiled program.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=166><TT>-verbose</TT></TD><TD WIDTH=424>Tells javac to display status information as it works.
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+To use any of these options, place the options between the <TT>javac</TT>
+
+command and the source file name, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac options filename.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+In the following sections, you'll look at each of the compiler
+
+options in detail. In some cases, you'll even get some hands-on
+
+experience.
+
+<H3><A NAME="SettingtheClassPath">
+
+Setting the Class Path</A></H3>
+
+<P>
+
+In order to compile an applet, the compiler usually needs to draw
+
+upon other already compiled files. These files might be files
+
+that you've created for custom classes or they may be the class
+
+files that make up the class hierarchy of the class you're compiling.
+
+For example, when you derive your applet from Java's <TT>Applet</TT>
+
+class, the compiler needs to know about the <TT>Applet</TT> class
+
+in order to fully compile your applet. Moreover, because Java's
+
+<TT>Applet</TT> class itself is a subclass of yet other Java classes,
+
+the compiler needs to bring in many different class files. Obviously,
+
+before the compiler can access these class files, it has to know
+
+where they are.
+
+<P>
+
+Normally, when you compile a program, the compiler finds classes
+
+using the current setting of your system's CLASSPATH variable,
+
+whose default value is the folder that contains Java's classes.
+
+Java will also look in the active folder (the one you're in when
+
+you type the <TT>javac</TT> command line). However, you can change
+
+the setting of CLASSPATH temporarily for the current compilation
+
+by using the <TT>-classpath</TT> option, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac -classpath path FileName.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+In the above line, <TT>path</TT> is the path you want to include,
+
+each separated by a semicolon. For example, assuming that you
+
+installed Java in a folder called C:\JAVA and that your own classes
+
+are in the C:\CLASSES folder, the following line compiles your
+
+program using the same settings the compiler would use by default:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac -classpath c:\java\lib\classes.zip;c:\classes FileName.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Notice that Java's classes are in a file called CLASSES.ZIP. You
+
+must include this file name in the path in order for the compiler
+
+to find the classes it needs to successfully compile your applet.
+
+<H3><A NAME="SpecifyingtheTargetDirectory">
+
+Specifying the Target Directory</A></H3>
+
+<P>
+
+When you run javac by typing the <TT>javac Applet.java</TT> command
+
+line, the compiler reads the source-code file (or files), converts
+
+it to byte-code form, and stores the resultant .CLASS file in
+
+the directory from which the compiler was run. You can control
+
+this target directory by specifying the <TT>-d</TT> command option,
+
+like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+-d directory
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+In this command, <TT>directory</TT> is the directory in which
+
+you want the output files (.CLASS files) stored.
+
+<H3><A NAME="ExampleSettingtheTargetDirectory">
+
+Example: Setting the Target Directory</A></H3>
+
+<P>
+
+Suppose you have your Java source code files (the ones with the
+
+.java extension) in a folder called C:\CLASSES, as you have for
+
+the applets you've created in this book. Now you want to have
+
+the .CLASS files that are created by the Java compiler placed
+
+in a subdirectory of CLASSES called COMPILED. You'd first create
+
+the subdirectory with the command <TT>md compiled</TT>. Then you'd
+
+issue the following command:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac -d c:\classes\compiled applet.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Following the <TT>javac</TT> command are the <TT>-d</TT> option,
+
+the name of the directory in which to store the output files,
+
+and the Java source-code file to compile.
+
+<P>
+
+The directory name is either a full path or a path relative to
+
+your current directory. For example, if you're current directory
+
+is c:\CLASSES, when you type the above command, you can shorten
+
+the directory name, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac -d compiled applet.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<H3><A NAME="CreatingDebuggingTables">
+
+Creating Debugging Tables</A></H3>
+
+<P>
+
+To get the most out of a debugger, your programs need to be compiled
+
+in a special way, so that debugging information is included in
+
+the compiled byte-code files. The compiler switch that turns this
+
+option on is <TT>-g</TT>, and you use it like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac -g applet.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+As you can see, the only thing extra here is the <TT>-g</TT> option
+
+itself, which requires no additional arguments.
+
+<P>
+
+You may decide that it would be cool to use the <TT>-g</TT> option
+
+all the time, so that your programs are always loaded with debugging
+
+information. Don't do it. This wouldn't be a good idea because
+
+programs with debugging information are not only a bit larger
+
+than programs without the debugging information, but also tend
+
+to run slower. The larger the program is, the more debugging information
+
+the <TT>-g</TT> option adds to the file.
+
+<H3><A NAME="ExampleAddingDebuggingTablestoanApplet">
+
+Example: Adding Debugging Tables to an Applet</A></H3>
+
+<P>
+
+To test the <TT>-g</TT> option, copy the ShapeApplet.java file
+
+from the CHAP34 folder on this book's CD-ROM to your CLASSES directory.
+
+Then, compile the file with the following command:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac ShapeApplet.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Now, check the size of the ShapeApplet.class file. It should be
+
+1,334 bytes.
+
+<P>
+
+Next, compile the applet again, this time using the <TT>-g</TT>
+
+option, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac -g ShapeApplet.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+When you check the file size this time, you'll find it's 1,612
+
+bytes, over 20% larger. The extra size is caused by the additional
+
+debugging information the compiler has stored in the .CLASS file.
+
+<H3><A NAME="SuppressingWarnings">
+
+Suppressing Warnings</A></H3>
+
+<P>
+
+Sometimes, when the Java compiler finds something questionable
+
+in your code, it issues a warning. Warnings represent the kind
+
+of errors that don't prevent a program from compiling properly,
+
+but that may generate a runtime error or just be bad programming
+
+practice. Because warnings are not critical to the compilation
+
+process, Java enables you to turn them off. You might do this,
+
+for example, when you already know about the problems that are
+
+creating the warnings. To turn off the warnings, you use the <TT>-nowarn</TT>
+
+option, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac -nowarn applet.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Like the <TT>-g</TT> option, <TT>-nowarn</TT> requires no additional
+
+arguments.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>TIP</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+You can use more than one command-line option at a time. For example, you can both turn on debugging information and set the target directory with a command like this: javac -g -d c:\classes applet.java.</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H3><A NAME="OptimizingaProgram">
+
+Optimizing a Program</A></H3>
+
+<P>
+
+When a compiler runs, it reads in source code and converts that
+
+source code to some other format, in Java's case, a byte-code
+
+file. As a programmer, though, you know that there are many ways
+
+to accomplish the same task in a program. A compiler doesn't normally
+
+take this sort of thing under consideration when it's working,
+
+though. It generates its output the same way for every source-code
+
+file.
+
+<P>
+
+However, the javac compiler knows how to perform certain types
+
+of optimization on your programs, but it only does so when asked.
+
+(And don't forget to say pretty please). To tell the Java compiler
+
+to optimize your program, you use the <TT>-O</TT> option, like
+
+this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac -O applet.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>-O</TT> option requires no arguments.
+
+<P>
+
+Notice that the letter after the hyphen is an uppercase O. A lowercase
+
+o will not work. Also, be aware that compiling with the optimizing
+
+option may make the resulting .CLASS file incompatible with some
+
+other Java tools. For this reason, optimizing should be done only
+
+when compiling the program for the final time.
+
+<H3><A NAME="SwitchingOnVerboseOutput">
+
+Switching On Verbose Output</A></H3>
+
+<P>
+
+When you run the Java compiler with no command-line option, the
+
+compiler runs and performs its task without displaying any sort
+
+of information on the screen (unless the program contains errors).
+
+With a large program that takes a while to compile, you may want
+
+to know what's going on behind your back, if for no other reason
+
+than to reassure yourself that everything is going okay. You can
+
+make the compiler report to you as it works by using the <TT>-verbose</TT>
+
+option, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+javac -verbose applet.java
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+When you add this command-line option, the compiler will tell
+
+you which files it's loading and compiling. It'll even tell you
+
+how long each step took to complete (Figure 34.4).
+
+<P>
+
+<IMG SRC="f34-4.gif"><B> Figure 34.4 : </B><I>When you use the -verbose option, the compiler reports to you every step of the way.
+
+
+
+</I></A><P>
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+The compiler is one of the most important of the Java tools, because
+
+without it you'd be unable to convert your source-code files into
+
+byte-code files, which are the only kind of files that Java's
+
+interpreter understands. Ordinarily, you can run the compiler
+
+simply by typing the command <TT>javac</TT> followed by the name
+
+of the file you want to compile. However, javac also recognizes
+
+a number of options that you can add to the command line. These
+
+include options to set directories, to optimize the program, to
+
+add debugging information, and to display status information as
+
+the compiler works. In the next chapter, you learn about the compiler's
+
+counter-part, the interpreter, which reads the files created by
+
+the compiler in order to run the program.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>Why do you need to use a compiler?
+
+<LI>What happens if you fail to include the .java extension when
+
+specifying your source-code file to the compiler?
+
+<LI>When you use options with the javac command, where do you
+
+place them in the command line?
+
+<LI>Can you specify more than one command-line option at a time?
+
+<LI>How do you set a different target directory for the compiler's
+
+output files?
+
+<LI>What does the -g command-line option do?
+
+<LI>What does the -nowarn command-line option do?
+
+<LI>How do you get the compiler to show you what it's doing as
+
+it works?
+
+<LI>How do byte-code files enable Java to run the same programs
+
+on different types of computers?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Compile an applet, instructing the compiler to include debugging
+
+information in the byte-code file.
+
+<LI>Compile an applet with the verbose setting, and study the
+
+information the compiler displays on the screen.
+
+<LI>Compile an applet, specifying no warnings, optimization, and
+
+an output directory of C:\CLASSES\MYCLASSES.
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch33.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch35.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

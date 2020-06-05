@@ -1,0 +1,1960 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 14 - OOP with Visual FoxPro</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch13.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch15.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;14</H1>
+<H1>OOP with Visual FoxPro</H1>
+
+<UL>
+<LI><A HREF="#CreatingandUsingClasseswithVisualFoxPro">
+Creating and Using Classes with Visual FoxPro</A>
+<LI><A HREF="#DefiningClasses">
+Defining Classes</A>
+<UL>
+<LI><A HREF="#DEFINECLASSltTTclassnameTTgtASltTTsuperclassTTgt">
+DEFINE CLASS &lt;<TT>classname</TT>&gt;
+AS &lt;<TT>superclass</TT>&gt;
+</A>
+</UL>
+<LI><A HREF="#InstantiatingObjects">
+Instantiating Objects</A>
+<LI><A HREF="#CallingMethods">
+Calling Methods</A>
+<LI><A HREF="#BaseEventsMethodsandProperties">
+Base Events, Methods, and Properties</A>
+<UL>
+<LI><A HREF="#BaseProperties">
+Base Properties</A>
+<LI><A HREF="#BaseEventsandMethods">
+Base Events and Methods</A>
+</UL>
+<LI><A HREF="#TheTTErrorTTMethod">
+The <TT>Error</TT> Method</A>
+<LI><A HREF="#CreatingCompositeClasses">
+Creating Composite Classes</A>
+<LI><A HREF="#AccessingChildMemberVariablesandMethods">
+Accessing Child Member Variables and Methods</A>
+<LI><A HREF="#DifferencesBetweenTTADDOBJECTTTandTTAddObjectTT">
+Differences Between <TT>ADD OBJECT</TT> and <TT>AddObject</TT></A>
+<LI><A HREF="#TTTHISTTRevisited">
+<TT>THIS</TT> Revisited</A>
+<LI><A HREF="#AddingObjectswithTTCreateObjectTT">
+Adding Objects with <TT>CreateObject</TT></A>
+<LI><A HREF="#HowClassesareCreatedinVisualFoxPro">
+How Classes are Created in Visual FoxPro</A>
+<LI><A HREF="#WhyaVisualClassDesigner">
+Why a Visual Class Designer?</A>
+<LI><A HREF="#TheVisualClassDesigner">
+The Visual Class Designer</A>
+<UL>
+<LI><A HREF="#DesignSurfaceDifferences">
+Design Surface Differences</A>
+<LI><A HREF="#MenuDifferences">
+Menu Differences</A>
+<LI><A HREF="#AddingPropertiesandMethods">
+Adding Properties and Methods</A>
+<LI><A HREF="#ATechnicalTipAddingMemberArraystoaVCXClass">
+A Technical Tip-Adding Member Arrays to a VCX Class</A>
+</UL>
+<LI><A HREF="#AccessingClassInformation">
+Accessing Class Information</A>
+<LI><A HREF="#CreatingaClass">
+Creating a Class</A>
+<LI><A HREF="#ModifyingClassesinaTTVCXTTFile">
+Modifying Classes in a <TT>.VCX</TT> File</A>
+<LI><A HREF="#UsingClassesinaTTVCXTTFile">
+Using Classes in a <TT>.VCX</TT> File</A>
+<LI><A HREF="#ATechnicalTipSendingParameterstoanObject">
+A Technical Tip: Sending Parameters to an Object</A>
+<LI><A HREF="#ManagingInstanceswithTTAInstanceTT">
+Managing Instances with <TT>AInstance</TT></A>
+<LI><A HREF="#TTACLASSTT">
+<TT>ACLASS</TT></A>
+<LI><A HREF="#TTAMembersTT">
+<TT>AMembers</TT></A>
+<LI><A HREF="#InspectingObjectswithTTAMembersTT">
+Inspecting Objects with <TT>AMembers</TT></A>
+<LI><A HREF="#TakingtheInspectoroneStepFurther">
+Taking the Inspector one Step Further</A>
+<UL>
+<LI><A HREF="#TheUserInterface">
+The User Interface</A>
+<LI><A HREF="#TheTTInitTTMethod">
+The <TT>Init</TT> Method
+</A>
+<LI><A HREF="#TheTTBuildListTTMethod">
+The <TT>BuildList</TT> Method
+</A>
+<LI><A HREF="#TheTTResizeTTMethod">
+The <TT>Resize</TT> Method
+</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="CreatingandUsingClasseswithVisualFoxPro"><FONT SIZE=5 COLOR=#FF0000>
+Creating and Using Classes with Visual FoxPro</FONT></A></H2>
+<P>
+In <A HREF="ch13.htm" >Chapter 13</A>, &quot;Introduction to Object-Oriented Programming,&quot;
+you briefly learned some of the issues related to creating classes
+in Visual FoxPro. All the work was done in code, which is a good
+way to look at creating classes because it provides a clear view
+of what you can do when you create classes.
+<P>
+The following sections provide a definitive look at the syntax
+of creating and using classes in Visual FoxPro.
+<H2><A NAME="DefiningClasses"><FONT SIZE=5 COLOR=#FF0000>
+Defining Classes</FONT></A></H2>
+<P>
+You define classes using the <TT>DEFINE CLASS</TT>/<TT>ENDDEFINE</TT>
+construct. Here is an example:
+<BLOCKQUOTE>
+<PRE>
+DEFINE CLASS &lt;<I>classname</I>&gt; AS &lt;<I>baseclass</I>&gt;
+    *-- Declaration Code Here
+    PROTECTED &lt;<I>list of member variables</I>&gt;
+
+    PROCEDURE &lt;<I>methodproc</I>&gt; (param1, param2 ....)
+        LOCAL &lt;<I>list of local variables</I>&gt;
+        *-- Procedure Code Here
+    ENDPROC
+
+    FUNCTION &lt;<I>methodfunc</I>&gt; (param1, param2 ....)
+        LOCAL &lt;<I>list of local variables</I>&gt;
+        *-- Function code here
+        RETURN &lt;returnval&gt;
+    ENDFUNC
+ENDDEFINE
+</PRE>
+</BLOCKQUOTE>
+<P>
+In the following sections you read about each portion of the construct
+separately.
+<H3><A NAME="DEFINECLASSltTTclassnameTTgtASltTTsuperclassTTgt">
+DEFINE CLASS &lt;<TT>classname</TT>&gt;
+AS &lt;<TT>superclass</TT>&gt;
+</A></H3>
+<P>
+This line of code tells Visual FoxPro that you are creating a
+class. All code between <TT>DEFINE</TT> and <TT>ENDDEFINE</TT>
+relates to this class. <TT><I>&lt;classname&gt;</I></TT>
+is the name of the class and <TT><I>&lt;superclass&gt;</I></TT>
+is the name of the class upon which the class is based. This can
+be a built-in class provided with Visual FoxPro 6 or one that
+you create or purchase.
+<P>
+The term <I>superclass</I> used here is in line with terminology
+used in most texts that discuss object orientation. Unfortunately,
+Microsoft uses the term <I>parentclass</I> to mean the same thing.
+Don't let the terminology throw you.
+<P>
+By definition, every class created in Visual FoxPro is a subclass
+of another class. At the highest level, classes created in Visual
+FoxPro are subclasses of what Microsoft calls <I>base classes</I>,
+the classes that ship with Visual FoxPro. Visual FoxPro 6 comes
+with the base classes shown in Table 14.1.<BR>
+<P>
+<CENTER><B>Table 14.1&nbsp;&nbsp;Visual FoxPro 6 Base Classes</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>Class Name</B></CENTER></TD><TD WIDTH=192><CENTER><B>Description</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Visual</B></CENTER></TD><TD WIDTH=96><CENTER><B>Form Control Toolbar</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>SubclassOnly</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>ActiveDoc</TT></TD><TD WIDTH=192>An active document object that can be hosted in a host browser such as Internet Explorer.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>CheckBox</TT></TD><TD WIDTH=192>A standard check box control similar to the check box created in FoxPro 2.<I>x</I>.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Column</TT></TD><TD WIDTH=192>A column on a grid control.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>ComboBox</TT></TD><TD WIDTH=192>A combo box similar to the pop-up control in FoxPro 2.<I>x</I>.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>CommandButton</TT></TD><TD WIDTH=192>Equivalent to a pushbutton in FoxPro 2.x<I>.</I>
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>CommandGroup</TT></TD><TD WIDTH=192>A group of command buttons that operate together. Equivalent to a group of pushbuttons in FoxPro 2.x controlled by one variable.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Container</TT></TD><TD WIDTH=192>A generic object designed to hold other objects. This is useful when you are creating a class that has more than one object on it. 
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Control</TT></TD><TD WIDTH=192>The same as the container class with one major difference: When the object in a container  class is instantiated from the class,  you can address all objects within the container. The <TT>Control</TT> class hides all internal objects and only allows communication with the control class.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Cursor</TT></TD><TD WIDTH=192>A cursor definition in a data environment.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Custom</TT></TD><TD WIDTH=192>Primarily used for objects that are not visual but might contain visual objects as members.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Data</TT></TD><TD WIDTH=192>A collection of cursors <TT>Environment </TT>and relations to open or close as a unit.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>EditBox</TT></TD><TD WIDTH=192>The equivalent of a FoxPro 2.6 edit region.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Form</TT></TD><TD WIDTH=192>A single &quot;screen.&quot; This is a container object in that it can (and usually does) contain other objects. The equivalent of a FoxPro 2.x screen.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>FormSet</TT></TD><TD WIDTH=192>A container-type object that has one or more forms as members. This is the equivalent of a FoxPro 2.x screen set.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Grid</TT></TD><TD WIDTH=192>A container-type object that allows display and editing of information in browse-type format.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Header</TT></TD><TD WIDTH=192>The header of a grid column. 
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Hyperlink Object</TT></TD><TD WIDTH=192>Provides button, image, or label object that when clicked, launches a Web browser and  navigates to a hyperlink.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Image</TT></TD><TD WIDTH=192>A picture.</TD>
+<TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Label</TT></TD><TD WIDTH=192>The equivalent of placing text on a screen in FoxPro 2.x.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Line</TT></TD><TD WIDTH=192>A drawn line.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>ListBox</TT></TD><TD WIDTH=192>The equivalent of the FoxPro 2.x scrolling list control.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>OleControl</TT></TD><TD WIDTH=192>A control based on an OLE 2 object.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>OptionButton</TT></TD><TD WIDTH=192>A single radio button-type object.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>OptionGroup</TT></TD><TD WIDTH=192>Multiple radio buttons that operate as a single control. This is the equivalent of a FoxPro 2.x radio button object.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Page</TT></TD><TD WIDTH=192>A single page within a page frame.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>PageFrame</TT></TD><TD WIDTH=192>A tabbed control. Each tab within a tab control is a separate page. The page frame control is a container-type control because it can (and usually does) contain many objects.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>ProjectHook</TT></TD><TD WIDTH=192>Creates instance of  opened project that enables programmatic access to project events.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Relation</TT></TD><TD WIDTH=192>A definition of a relation between two cursors in a data environment.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Separator</TT></TD><TD WIDTH=192>Object that puts blank spaces between controls on a toolbar.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Shape</TT></TD><TD WIDTH=192>A shape (such as a circle or a box).
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Spinner</TT></TD><TD WIDTH=192>The equivalent of the FoxPro 2.x spinner control.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>TextBox</TT></TD><TD WIDTH=192>The equivalent of a FoxPro 2.x &quot;plain&quot; <TT>GET</TT> control.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>Timer</TT></TD><TD WIDTH=192>A visual object that does not display on a form. This control is designed to allow for actions at certain timed intervals.
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><TT>ToolBar</TT></TD><TD WIDTH=192>A toolbar, which is a group of objects that can be docked at the top, bottom, or sides of the  desktop. When not docked, a toolbar looks something like a form. 
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>&nbsp;
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+As Table 14.1 indicates, classes can be categorized in three ways:
+&quot;Visual,&quot; &quot;Form Control Toolbar,&quot; and &quot;Visual
+Class Designer Only.&quot; Classes can be visual or nonvisual.
+A visual class &quot;displays,&quot; whereas a nonvisual class
+does not have a display component attached to it. In addition,
+some classes are not available from the Form Control toolbar.
+Finally, some classes are available only in the Visual Class Designer
+for subclassing, not for use as controls.
+<P>
+The Visual column specifies whether a base class is visual or
+nonvisual. Form Controls Toolbar specifies whether the base class
+is available on that toolbar. Subclass Only specifies those base
+classes that are intended for subclassing and provide little functionality
+on their own (for example, the <TT>Container</TT> class).
+<P>
+Most classes are available in the Form Designer from the Form
+Controls toolbar, but others are not. Some of those unavailable
+classes (such as <TT>Page</TT>, <TT>Header</TT>, and <TT>OptionButton</TT>)
+are unavailable because they are members of other objects. For
+example, <TT>Page</TT> is a member of <TT>PageFrame</TT>, <TT>Header</TT>
+is a member of <TT>Grid</TT>, and <TT>OptionButton</TT> is a member
+of <TT>OptionGroup</TT>. <TT>FormSet</TT> is not a control per
+se but a container of forms; it is created by combining multiple
+forms.
+<P>
+Finally, some classes are specifically designed for subclassing
+and are only available either in code or through the Visual Class
+Designer. You learn about the Visual Class Designer in the section
+&quot;The Visual Class Designer&quot; later in this chapter.
+<P>
+The classes that are controls available within the Form Designer
+are discussed in <A HREF="ch09/ch09.htm" >Chapter 9</A> &quot;Creating Forms.&quot; In addition
+to the base classes included with Visual FoxPro 6, you can base
+classes on your own classes. Finally, the <TT>DEFINE CLASS</TT>/<TT>ENDCLASS</TT>
+structure must live on its own and cannot be nested within a loop
+or a decision structure (such as <TT>IF</TT>/<TT>ENDIF</TT>).
+Think of each class definition construct as its own &quot;procedure&quot;
+and you'll be fine.
+<P>
+<TT><B>*--Declaration Code Here/PROTECTED
+&lt;<I><B>list of member variables</B></I><B>&gt;</B></B></TT><I><B>&nbsp;&nbsp;</B></I>Declaration
+code declares your class member variables. Only the member variables
+listed here are properties of objects instantiated from this class
+(with the exception of member objects, which are discussed later
+in this chapter in the section &quot;Creating Composite Classes&quot;).
+If a member variable is an array, you would declare the array
+in this section of code.
+<P>
+Another important piece in this section is the declaration of
+protected members. A <I>protected member</I> is a member variable
+that is not visible outside the class. In other words, methods
+within the class can access and modify that variable, but the
+variable does not exist as far as the outside world (anything
+that is not a method of the class) is concerned.
+<P>
+You declare member variables protected by using the keyword <TT>PROTECTED</TT>
+and then listing the member variables that you want protected.
+The following example creates a protected member variable called
+<TT>cProtected</TT>:
+<BLOCKQUOTE>
+<PRE>
+PROTECTED cProtected
+</PRE>
+</BLOCKQUOTE>
+<P>
+You must declare a property protected within the declaration section
+of the <TT>DEFINE CLASS</TT> construct.
+<P>
+An example of a member variable that would be declared <TT>PROTECTED?</TT>
+ is a member that saves the state of the environment when the
+object is instantiated. The variable can be used to reset the
+environment when the object is released, but it serves no purpose
+to programs instantiating the object and interacting with it.
+As a matter of fact, you would not want this member variable to
+be changed by the outside world. Hence, you would protect it in
+the declaration section of code.
+<P>
+<TT><B>PROCEDURE &lt;<I><B>methodproc</B></I><B>&gt;
+(param1, param2....)/ENDPROC FUNCTION  &lt;<I>methodfunc</I>&gt;
+(param1, param2....)/ENDFUNC</B></B></TT><I><B>&nbsp;&nbsp;</B></I>This
+line of code defines a method. <TT>&lt;<I><B><TT>methodproc</TT></B></I>&gt;</TT>
+and <TT>&lt;<I><B><TT>methodfunc</TT></B></I>&gt;</TT>
+refer to the name of the method. Note that you can call a method
+a FUNCTION or a <TT><B>FUNCTION</B></TT>-both
+syntaxes are equivalent. I like to use the <TT><B>FUNCTION</B></TT>
+syntax if the method is intended to return a value; otherwise
+I use <TT>PROCEDURE</TT>.
+<P>
+Parameters sent to a method can be accepted with a <TT>PARAMETERS</TT>
+statement (more typically <TT>LPARAMETERS</TT>), or the parameters
+can be accepted in parentheses after the name of the method. For
+example, if a method called <TT>ShowVals</TT> were to accept two
+parameters (<TT>Parm1</TT> and <TT>Parm2</TT>), the code to accept
+these parameters would look like this:
+<BLOCKQUOTE>
+<PRE>
+PROCEDURE ShowVals
+LPARAMETERS Parm1, Parm2
+</PRE>
+</BLOCKQUOTE>
+<P>
+it might also look like this:
+<BLOCKQUOTE>
+<PRE>
+PROCEDURE ShowVals(Parm1, Parm2)
+</PRE>
+</BLOCKQUOTE>
+<P>
+Of the two, I prefer the second syntax because I think it reads
+better. You can choose either one.
+<P>
+Be aware that parameters sent through to methods, whether the
+parameters are called as a procedure (such as <TT>loObject.Method(Parm1)</TT>)
+or a function (such as <TT>lcVar = loObject.Method(Parm1)</TT>),
+are treated like parameters sent through to a user-defined function:
+They are sent through by <TT>VALUE</TT> unless either <TT>SET
+UDFPARMS</TT> has been set to <TT>REFERENCE</TT> (I don't recommend
+changing the setting of <TT>SET UDFPARMS</TT>) or the name of
+the parameter is sent through with the <TT>@</TT> sign.
+<P>
+For example, note the TSTPROC.PRG test procedure presented in
+Listing 14.1. The return values quoted assume the default setting
+of <TT>SET UDFPARMS</TT>.<P>
+
+<HR>
+<B>Listing 14.1&nbsp;&nbsp;</B><TT><B>14CODE01.PRG</B></TT><B>-Test
+Procedure That Illustrates the </B><TT><B>SET
+UDFPARMS </B></TT><B>Command Settings<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+lcText = &quot;Menachem&quot;
+loX = CREATEOBJECT(&quot;test&quot;)
+
+*-- Call testfunc first as a procedure and then as a method
+*-- without specificying by reference.
+
+loX.testfunc(lcText)    &amp;&amp; &quot;Proc&quot; Syntax
+? lcText                &amp;&amp; Shows &quot;Menachem&quot;
+
+=loX.testfunc(lcText)    &amp;&amp; Func Syntax
+? lcText                &amp;&amp; Shows &quot;Menachem&quot;
+
+loX.testfunc(@lcText)    &amp;&amp; &quot;Proc&quot; Syntax
+? lcText                &amp;&amp; Shows 10
+lcText = &quot;Menachem&quot;        &amp;&amp; Reset for next test
+
+=loX.testfunc(@lcText)    &amp;&amp; Func Syntax
+? lcText                &amp;&amp; Shows 10
+lcText = &quot;Menachem&quot;        &amp;&amp; Reset for next test
+
+loX.testproc(lcText)    &amp;&amp; &quot;Proc&quot; Syntax
+? lcText                &amp;&amp; Shows &quot;Menachem&quot;
+
+=loX.testproc(lcText)    &amp;&amp; Func Syntax
+? lcText                &amp;&amp; Shows &quot;Menachem&quot;
+
+loX.testproc(@lcText)    &amp;&amp; &quot;Proc&quot; Syntax
+? lcText                &amp;&amp; Shows 10
+lcText = &quot;Menachem&quot;        &amp;&amp; Reset for next test
+
+=loX.testproc(@lcText)    &amp;&amp; Func Syntax
+? lcText                &amp;&amp; Shows 10
+lcText = &quot;Menachem&quot;        &amp;&amp; Reset for next test
+
+DEFINE CLASS test AS custom
+    FUNCTION testfunc (Parm1)
+        Parm1 = 10
+    ENDFUNC
+
+    PROCEDURE testproc (Parm1)
+        Parm1 = 10
+    ENDPROC
+ENDDEFINE
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Methods can be protected like member variables-that is, they can
+only be called from other methods in the class-by adding the keyword
+<TT>PROTECTED</TT> before <TT>PROCEDURE</TT> or <TT>FUNCTION</TT>
+(<TT>PROTECTED PROCEDURE <I>&lt;methodproc&gt;</I></TT>).
+Methods that are protected do not exist outside the class, and
+an error is generated if an attempt is made to call them.
+<P>
+As a general rule, methods should be protected if they are not
+intended for the &quot;outside world.&quot; This saves you a lot
+of trouble down the road. For example, a method that is intended
+only to be called by other methods in the class would be protected.
+<P>
+If a method has to return a value, a <TT>RETURN</TT> statement
+precedes the <TT>ENDPROC</TT>/<TT>ENDFUNC</TT> statement as shown
+in the following example:
+<BLOCKQUOTE>
+<PRE>
+PROCEDURE ShowDate
+    RETURN date()
+ENDPROC
+
+FUNCTION FuncShowDate
+    RETURN date()
+ENDFUNC
+</PRE>
+</BLOCKQUOTE>
+<P>
+Methods are closed with the <TT>ENDPROC</TT> or <TT>ENDFUNC</TT>
+command; the command you use depends on the command used to start
+the method definition.
+<H2><A NAME="InstantiatingObjects"><FONT SIZE=5 COLOR=#FF0000>
+Instantiating Objects</FONT></A></H2>
+<P>
+Objects are instantiated from their classes with the <TT>CREATEOBJECT</TT>
+function. Here's the syntax:
+<BLOCKQUOTE>
+<PRE>
+loObject = CREATEOBJECT(<I>&lt;classname&gt;</I> [, <I>&lt;Parameter list&gt;</I>])
+</PRE>
+</BLOCKQUOTE>
+<P>
+The <TT>CREATEOBJECT</TT> function returns an object reference
+that is stored in <TT>loObject</TT>. <TT><I>&lt;classname&gt;</I></TT>
+is a string indicating the class to be used for instantiation.
+Parameters follow in the <TT>CREATEOBJECT</TT> function; they
+appear one at a time and are separated by commas. Parameters are
+accepted in the object's <TT>Init </TT>method. (You learn the
+<TT>Init</TT> method and sending parameters later in this chapter
+in the section &quot;A Technical Tip-Sending Parameters to an
+Object.&quot;)
+<P>
+In order to instantiate an object with <TT>CREATEOBJECT</TT>,
+the class definition has to be available when the <TT>CREATEOBJECT</TT>
+function is used. If you have manually coded your classes as opposed
+to using the Visual Class Designer (as shown in <A HREF="ch15.htm" >Chapter 15</A>, &quot;Creating
+Classes with Visual FoxPro&quot;), the program that has the class
+definitions must be available. The program is made available with
+<TT>SET PROCEDURE</TT> or by placing the class definitions in
+a program that is higher in the calling chain.
+<P>
+You can release the procedure file once the object is instantiated
+if you use <TT>SET PROCEDURE</TT>. Visual FoxPro loads all the
+methods into memory when the object is instantiated.
+<P>
+Always remember that an instance is just a memory variable and
+follows almost all of the same rules as regular memory variables.
+Objects can be made local, public, or private and will lose or
+keep scope like any other memory variable.
+<P>
+There is one significant difference between an object (known as
+an <I>instance variable</I>) and other Visual FoxPro variables:
+Variables can be thought of as holding <I>values</I>, whereas
+instance variables do not hold values-they hold references to
+an object, which in turn holds the values.
+<P>
+This has three implications. First, an instance variable is always
+passed to procedures and functions by reference. Second, if an
+instance variable is copied into another variable, all changes
+in the second variable affect the same object. Finally,  an object
+ is not released until all references to it have been released.
+Here is an example:
+<BLOCKQUOTE>
+<PRE>
+loInstance = CREATEOBJECT(&quot;Form&quot;)
+loInstance.Show()                                &amp;&amp; Show the form
+loVar = loInstance                                &amp;&amp; loVar points to the form
+      too, now.
+loInstance.Caption = &quot;Hello&quot;                &amp;&amp; Caption changes
+loVar.Caption = &quot;There&quot;                        &amp;&amp; Caption changes again
+RELEASE loInstance                                &amp;&amp; Form does not disappear
+RELEASE loVar                                        &amp;&amp; Now it disappears
+</PRE>
+</BLOCKQUOTE>
+<H2><A NAME="CallingMethods"><FONT SIZE=5 COLOR=#FF0000>
+Calling Methods</FONT></A></H2>
+<P>
+You always call methods by specifying the name of the instance
+variable, then a period, and then the name of the method. Here
+is an example:
+<BLOCKQUOTE>
+<PRE>
+loClass.MyMethod
+</PRE>
+</BLOCKQUOTE>
+<P>
+Parameters are sent through to a method by listing them in parentheses
+after the method name. Here is an example:
+<BLOCKQUOTE>
+<PRE>
+loClass.MyMethod(Parm1, &quot;StringParm2&quot;)
+</PRE>
+</BLOCKQUOTE>
+<P>
+There is no <TT>DO</TT> syntax for a method. To call a method
+and get a return value, the syntax is almost identical. You specify
+a variable to accept the value:
+<BLOCKQUOTE>
+<PRE>
+lcRetVal = loClass.MyMethod(Parm1, &quot;StringParm2&quot;)
+</PRE>
+</BLOCKQUOTE>
+<P>
+If no parameters are sent through to the method, you can still
+use parentheses after the method name. Here is an example:
+<BLOCKQUOTE>
+<PRE>
+loClass.MyMethod
+</PRE>
+</BLOCKQUOTE>
+<P>
+I use this syntax exclusively because it is much clearer that
+the member you are accessing is a method, not a property.
+<H2><A NAME="BaseEventsMethodsandProperties"><FONT SIZE=5 COLOR=#FF0000>
+Base Events, Methods, and Properties</FONT></A></H2>
+<P>
+As you know from reading <A HREF="ch09/ch09.htm" >Chapter 9</A> different controls have different
+events, methods, and properties. For example, the Label control
+has a <TT>Caption</TT> property, whereas the TextBox control has
+a <TT>Value</TT> property.
+<P>
+Each control shown in the default Form Controls toolbar is a base
+class in Visual FoxPro and can be used as the basis for your own
+classes.
+<P>
+In addition to the classes shown in the Form Controls toolbar,
+there are four classes specifically designed to be used as the
+basis for user-defined classes. They do not show up on the Form
+Controls toolbar nor are they part of other classes (such as an
+<TT>OptionButton</TT>, which is part of an OptionGroup control).
+These classes are <TT>Container</TT>, <TT>Control</TT>, <TT>Custom</TT>,
+and <TT>ToolBar</TT>.
+<P>
+Although each base class supports its own set of events, properties,
+and methods, there is a common set of events, methods, and properties
+that apply to all base classes in Visual FoxPro.
+<H3><A NAME="BaseProperties">
+Base Properties</A></H3>
+<P>
+The following list shows the properties that are common to all
+of Visual FoxPro's base classes.<BLOCKQUOTE>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=162>
+<B>Property</B>
+</TD><TD WIDTH=422>
+<B>Description</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<TT>Class</TT>
+</TD><TD WIDTH=422>
+The name of the object's class
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<TT>BaseClass</TT>
+</TD><TD WIDTH=422>
+The name of the object's base class
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<TT>ClassLibrary</TT>
+</TD><TD WIDTH=422>
+The full path of the class library where this class is defined
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<TT>ParentClass</TT>
+</TD><TD WIDTH=422>
+The name of the class upon which this class is based
+</TD></TR>
+</TABLE></BLOCKQUOTE>
+<P>
+<H3><A NAME="BaseEventsandMethods">
+Base Events and Methods</A></H3>
+<P>
+The following list shows the events and methods that are common
+to all of Visual FoxPro's base classes.<BLOCKQUOTE>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=114>
+<B>Event</B>
+</TD><TD WIDTH=476>
+<B>Description</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=114>
+<TT>Init</TT>
+</TD><TD WIDTH=476>
+Invoked when the object is created. Accepts parameters sent through to the object. Returning <TT>.F.</TT> aborts object instantiation.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=114>
+<TT>Destroy</TT>
+</TD><TD WIDTH=476>
+Invoked when the object is released.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=114>
+<TT>Error</TT>
+</TD><TD WIDTH=476>
+Invoked when an error occurs inside one of the object's methods.
+</TD></TR>
+</TABLE></BLOCKQUOTE>
+<P>
+<P>
+In the next chapter you learn the properties and methods of the
+four special base classes just mentioned.
+<H2><A NAME="TheTTErrorTTMethod"><FONT SIZE=5 COLOR=#FF0000>
+The <TT>Error</TT> Method</FONT></A></H2>
+<P>
+The <TT>Error</TT> method is important and worthy of special note.
+The <TT>Error</TT> method is called in the event an <TT>ON ERROR</TT>-type
+error occurs in a class. The <TT>Error</TT> method takes precedence
+over the setting of <TT>ON ERROR</TT>, which is important because
+this enables you to encapsulate error handling where it belongs-within
+the class itself. You see examples of the <TT>Error</TT> method
+and its uses in the next chapter.
+<H2><A NAME="CreatingCompositeClasses"><FONT SIZE=5 COLOR=#FF0000>
+Creating Composite Classes</FONT></A></H2>
+<P>
+A <I>composite class</I> is a class that has members that are
+themselves instances of other classes. A perfect example of this
+is a class based on a container-type class, such as a form. When
+you think of it, a form itself is a class, yet the objects in
+it are classes, too. Therefore, you have one object that has other
+objects contained in it (hence the name container class).
+<P>
+When you work with code you can add object members in one of two
+ways. The first way uses the <TT>ADD OBJECT</TT> command and is
+called within the declaration section of code. Here is the syntax:
+<BLOCKQUOTE>
+<PRE>
+ADD OBJECT <I>&lt;ObjectName&gt;</I> AS <I>&lt;ClassName&gt;</I> ;
+    [ WITH <I>&lt;membervar&gt;</I> = <I>&lt;value&gt;</I>, <I>&lt;membervar&gt;</I> = <I>&lt;value&gt;</I> ... ]
+</PRE>
+</BLOCKQUOTE>
+<P>
+<TT><I>&lt;ObjectName&gt;</I></TT>
+is the name you want to give to the instance variable being added
+to the class. <TT><I>&lt;ClassName&gt;</I></TT>
+is the class upon which <TT><I>&lt;ObjectName&gt;</I></TT>
+is based. You can specify special settings for member variables
+of the added object by setting them after a <TT>WITH</TT> clause.
+Here is an example:
+<BLOCKQUOTE>
+<PRE>
+DEFINE CLASS Foo AS FORM
+    ADD OBJECT myCommandButton AS CommandButton ;
+        WITH    caption = &quot;Hello&quot;, ;
+                height = 50
+ENDDEFINE
+</PRE>
+</BLOCKQUOTE>
+<P>
+When class <TT>Foo</TT> is instantiated, a member variable called
+<TT>myCommandButton</TT> is added to the form with a height of
+50 pixels and a caption of &quot;Hello.&quot; When the form is
+shown, the command button will be happily waiting for you to click
+it.
+<P>
+The second syntax is the <TT>AddObject</TT> method. This method
+can be called from either inside the class or outside the class.
+This means that you can add objects to container-type objects
+on-the-fly. Here is the <TT>AddObject</TT> method's syntax:
+<BLOCKQUOTE>
+<PRE>
+<I>&lt;object&gt;</I>.AddObject(<I>&lt;Member Name&gt;</I>,<I>&lt;Class Name&gt;</I>[, Parameters])
+</PRE>
+</BLOCKQUOTE>
+<P>
+To mimic the prior example (note that I do not even define a class
+for this one), I could do this:
+<BLOCKQUOTE>
+<PRE>
+loFoo = CREATEOBJECT(&quot;Form&quot;)
+loFoo.AddObject(&quot;myCommandButton&quot;, &quot;CommandButton&quot;)
+loFoo.MyCommandButton.Caption = &quot;Hello&quot;
+loFoo.MyCommandButton.Height = 50
+loFoo.MyCommandButton.Visible = .T.
+loFoo.Show
+</PRE>
+</BLOCKQUOTE>
+<H2><A NAME="AccessingChildMemberVariablesandMethods"><FONT SIZE=5 COLOR=#FF0000>
+Accessing Child Member Variables and Methods</FONT></A></H2>
+<P>
+As far as Visual FoxPro is concerned, using the object names from
+the previous example, <TT>loFoo</TT> is a parent object and <TT>MyCommandButton</TT>
+is a child object. As you just saw, the properties of the child
+object, <TT>MyCommandButton</TT>, can only be accessed by going
+through its parent.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Composite objects can have members that are themselves composite objects. This can lead to a very long &quot;path&quot; to get to a member variable. If you want to cut through the keystrokes, copy a reference-to another memory variable-to the object you're trying to get to and work with it that way. For example, assume you have an object with the following hierarchy and you want to work with the text box for a little while:<p>
+<TT>
+MyForm.MyPageFrame.myContainer.myTextBox</TT>
+<P>
+Just use this code:<P>
+<TT>
+loMyObj = MyForm.MyPageFrame.myContainer.myTextBox</TT>
+<P>
+From here on you can access all the properties and methods of <TT>MyTextBox</TT> through <TT>loMyObj</TT>. This can save you a lot of typing. Remember, though, that you will not be able to get rid of any parent objects of <TT>myTextBox</TT> without first releasing <TT>loMyObj</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="DifferencesBetweenTTADDOBJECTTTandTTAddObjectTT"><FONT SIZE=5 COLOR=#FF0000>
+Differences Between <TT>ADD OBJECT</TT> and <TT>AddObject</TT></FONT></A></H2>
+<P>
+A review of the code examples for <TT>ADD OBJECT</TT> and <TT>AddObject</TT>
+show some differences. First of all, <TT>ADD OBJECT</TT> enables
+you to set properties on the calling line, whereas <TT>AddObject</TT>
+does not. You have to access the member variables individually.
+Secondly, when a visual object is added to a container with <TT>AddObject</TT>,
+the object is hidden by default (its <TT>Visible</TT> property
+is set to <TT>.F.</TT>), which enables you to set the display
+characteristics before showing the control. <TT>AddObject</TT>
+enables you to send parameters to the object's <TT>Init</TT> method,
+whereas <TT>ADD OBJECT</TT> does not. Finally, <TT>ADD OBJECT</TT>
+enables you to turn off the <TT>Init</TT> method when you instantiate
+the member object with the <TT>NOINIT</TT> clause; <TT>AddObject</TT>
+does not have this capability.
+<H2><A NAME="TTTHISTTRevisited"><FONT SIZE=5 COLOR=#FF0000>
+<TT>THIS</TT> Revisited</FONT></A></H2>
+<P>
+In the previous chapter you learned a special keyword called <TT>THIS</TT>.
+Its purpose is to enable a class to refer to itself. There are
+three additional keywords along this line that are applicable
+for composite classes only. Here is a list of these keywords:
+<P>
+<BLOCKQUOTE>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>THISFORM</TT>
+</TD><TD WIDTH=437>
+This keyword is special for members of <TT>Form</TT>-based classes. It refers to the form on which an object lies.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>THISFORMSET</TT>
+</TD><TD WIDTH=437>
+This keyword is special for members of a form that is part of <TT>FormSet</TT>. It refers to the <TT>FormSet</TT> object of which the current object is a member.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>PARENT</TT>
+</TD><TD WIDTH=437>
+This keyword refers to the parent of the current object.
+</TD></TR>
+</TABLE></BLOCKQUOTE>
+<P>
+<P>
+Note that you can move up the hierarchy with <TT>this.parent.parent.parent</TT>
+(you get the idea).
+<H2><A NAME="AddingObjectswithTTCreateObjectTT"><FONT SIZE=5 COLOR=#FF0000>
+Adding Objects with <TT>CreateObject</TT></FONT></A></H2>
+<P>
+Can you add an object to another object with <TT>CreateObject</TT>?
+In effect, can you do this:
+<BLOCKQUOTE>
+<PRE>
+DEFINE CLASS test AS custom
+    oForm = .NULL.
+
+    PROCEDURE INIT
+        this.oForm = CREATEOBJECT(&quot;form&quot;)
+    ENDPROC
+ENDDEFINE
+</PRE>
+</BLOCKQUOTE>
+<P>
+The short answer is yes and no. Sound confusing? Let me explain.
+The code snippet shown here does indeed create an object with
+a member called <TT>oForm</TT> that is an object. However, <TT>oForm</TT>
+is not a child of the object. <TT>oForm</TT> is a member variable
+that is an object. This might sound as if I'm splitting hairs,
+but there are some very important differences.
+<P>
+First, the <TT>PARENT</TT> keyword will not work with <TT>oForm</TT>.
+Second, because the member object is not a child object, you can
+do some interesting things. Take a look at this bit of code:
+<BLOCKQUOTE>
+<PRE>
+DEFINE CLASS foo AS form
+    ADD OBJECT myForm AS Form ;
+        WITH    caption = &quot;Hello&quot;, ;
+                height = 50
+ENDDEFINE
+
+DEFINE CLASS bar AS form
+    PROCEDURE init
+        this.addobject(&quot;myForm&quot;, &quot;Form&quot;)
+    ENDPROC
+ENDDEFINE
+
+DEFINE CLASS foobar AS Form
+    oForm = .NULL.
+
+    PROCEDURE init
+        this.oForm = CREATEOBJECT(&quot;form&quot;)
+    ENDPROC
+ENDDEFINE
+</PRE>
+</BLOCKQUOTE>
+<P>
+Neither class <TT>Foo</TT> nor <TT>Bar</TT> works. If you try
+to instantiate them, you get an error because you cannot add an
+object based on any descendant of the <TT>Form</TT> class to a
+form-based object. The last iteration, class <TT>FooBar</TT>,
+works just fine. You'll see a more practical example of this capability
+in <A HREF="ch17/ch17.htm" >Chapter 17</A>, &quot;Advanced Object-Oriented Programming.&quot;
+<H2><A NAME="HowClassesareCreatedinVisualFoxPro"><FONT SIZE=5 COLOR=#FF0000>
+How Classes are Created in Visual FoxPro</FONT></A></H2>
+<P>
+So far, all the examples you have seen for creating classes in
+Visual FoxPro deal with code. In fact, as shown in Table 14.1
+and further detailed in <A HREF="ch15.htm" >Chapter 15</A>, there are some classes that
+can only be created via a coded program.
+<P>
+For the most part, however, creating classes is much more efficient
+using the Visual Class Designer-the tool provided with Visual
+FoxPro to make the job of creating classes easier.
+<H2><A NAME="WhyaVisualClassDesigner"><FONT SIZE=5 COLOR=#FF0000>
+Why a Visual Class Designer?</FONT></A></H2>
+<P>
+Why do you need a Visual Class Designer when you can easily create
+classes with code? There are three reasons the Visual Class Designer
+is integral to class development. The first reason is that it
+insulates you from the intricacies of code. Although you have
+learned the syntax for creating classes, you should not have to
+remember and type in the constructs and keywords related to the
+structure of a defined class. The Visual Class Designer handles
+this for you.
+<P>
+The second reason is that some classes can get complex rather
+quickly. This is especially true of some visual classes, such
+as forms (where the placement of the objects within the container
+are critical). Creating complex classes is best done visually.
+<P>
+Finally, only classes created with the Visual Class Designer can
+be managed with the Class Browser, a wonderful tool provided with
+the product. The Class Browser is discussed in <A HREF="ch16/ch16.htm" >Chapter 16</A>, &quot;Managing
+Classes with Visual FoxPro.&quot;
+<P>
+All three reasons are valid for using the Visual Class Designer.
+That's why I recommend that you use it whenever you can for developing
+classes.
+<H2><A NAME="TheVisualClassDesigner"><FONT SIZE=5 COLOR=#FF0000>
+The Visual Class Designer</FONT></A></H2>
+<P>
+The Visual Class Designer is a superset of the Form Designer.
+In fact, the Visual Class Designer is so much like a Designer
+that the metafile it uses to store the classes you create is a
+copy of the .<TT>SCX</TT>/<TT>.SCT</TT> file structure. The only
+difference here is that the extension given a class file is <TT>.VCX</TT>
+instead of <TT>.SCX</TT>, and a <TT>.VCX</TT> can hold many classes
+in one file as opposed to just one form (in an <TT>.SCX</TT>).
+<P>
+When you create classes visually, Visual FoxPro 6 gives you access
+to the Controls toolbar, the Properties window, and the visual
+canvas.
+<P>
+Figure 14.1 shows the Visual Class Designer when you are working
+on a command button-based class.
+<P>
+<IMG SRC="f14-1.gif"><B>Figure 14.1 : </B><I>The Visual Class Designer</I>.</A>
+<P>
+All the options on the menu operate in an almost identical manner
+to their counterparts on the Form Designer. Rather than cover
+the Visual Class Designer in detail, I only cover instances where
+it differs from the Form Designer.
+<H3><A NAME="DesignSurfaceDifferences">
+Design Surface Differences</A></H3>
+<P>
+The first difference is the most apparent, but technically is
+not really a difference at all. The object being modified in the
+Form Designer is a form. A form is a container object and therefore
+can have many objects on it. Figure 14.1 only shows a <TT>CommandButton</TT>.
+That's because the class being designed is a subclass of <TT>CommandButton</TT>,
+which does not support adding other objects to it. Therefore,
+all you see is the single object on which you are working. If
+you are working on a <TT>Form</TT> type class in the Visual Class
+Designer, the canvas looks the same as it does in the Form Designer.
+<H3><A NAME="MenuDifferences">
+Menu Differences</A></H3>
+<P>
+Menu options that are specific to forms, such as Create Form Set
+and Remove Form Set are not on the Visual Class Designer's class
+menu. The Visual Class Designer does add one menu option, Class
+Info, and the operation of New Methods and New Properties is slightly
+changed. These changes are discussed first.
+<H3><A NAME="AddingPropertiesandMethods">
+Adding Properties and Methods</A></H3>
+<P>
+The New Property and New Method menu options work as they do in
+the Form Designer, with one important change: There is a new check
+box control on the dialog box that enables you to protect new
+methods and properties. Checking this box means that the property
+or method is protected. To &quot;unprotect&quot; a method or property,
+you need to use the Edit Property or Edit Method option. Note
+that a property or method, once protected, cannot be unprotected
+in a subclass. It must be unprotected on the level at which it
+was added to the class hierarchy.
+<H3><A NAME="ATechnicalTipAddingMemberArraystoaVCXClass">
+A Technical Tip-Adding Member Arrays to a VCX Class</A></H3>
+<P>
+Suppose you want to add a property to a class that is an array.
+This is not a problem in code because you have access to the declaration
+section. However, you do not have access to the declaration code
+with visually designed classes. The trick is to specify the name
+of the array with its default length in the New Properties dialog
+box. For example, to add a property called <TT>aProp</TT> to a
+class, the name of the property you type in would be this:
+<BLOCKQUOTE>
+<PRE>
+aProp[1]
+</PRE>
+</BLOCKQUOTE>
+<P>
+The array subscript tells Visual FoxPro that the property you
+are adding is an array. If you look at the new property in the
+Properties window, you'll notice that the new array is read-only.
+Don't worry about this; it just means that you have to work with
+the array in code. There is no provision for setting values in
+arrays in the Properties window.
+<H2><A NAME="AccessingClassInformation"><FONT SIZE=5 COLOR=#FF0000>
+Accessing Class Information</FONT></A></H2>
+<P>
+The Class Info menu option gives the developer access to information
+about the class being modified with the dialog box shown in Figure
+14.2.
+<P>
+<IMG SRC="f14-2.gif"><B>Figure 14.2 : </B><I>The Class Info dialog box</I>.</A>
+<P>
+The Class tab on this page frame shows some basic information
+about the class. Here is a list of the options:<P>
+<BLOCKQUOTE>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=140>
+Toolbar Icon
+</TD>
+<TD WIDTH=450>
+This modifiable option specifies which icon will show in the Form Controls toolbar when the <TT>.VCX</TT> file is loaded. Clicking the command button to the right of the text box displays a <TT>GETPICT</TT> dialog box that enables you to select a graphics file.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=140>
+Container Icon
+</TD><TD WIDTH=450>
+This is the same idea as Toolbar Icon except that it deals with the icon shown for this class in the Class Browser. The Class Browser is discussed in <A HREF="ch16/ch16.htm" >Chapter 16</A>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=140>
+OLE Public
+</TD>
+<TD WIDTH=450>
+If this option is set, whenever a program containing this class is built using the Project Manager, a custom automation server and a GUID (Globally Unique Identifier) are generated.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=140>
+Scale Units
+</TD>
+<TD WIDTH=450>
+This option determines whether the grid is measured in terms of pixels or foxels.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=140>
+Description
+</TD>
+<TD WIDTH=450>
+This is an EditBox in which the developer can enter a description of the class.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=140>
+Class Name
+</TD>
+<TD WIDTH=450>
+This is the name of the class being modified.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=140>
+Parent Class
+</TD>
+<TD WIDTH=450>
+This is the name of the class upon which this class is based (that is, the immediate superclass).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=140>
+Class Library
+</TD>
+<TD WIDTH=450>
+This is the name of the <TT>.VCX</TT> file in which the class is stored.
+</TD></TR>
+</TABLE></BLOCKQUOTE>
+<P>
+<P>
+The next tab is Members, which it shows the members of the current
+class. Members of the class can be properties, methods, events,
+or objects. Object members occur if the class is a composite (container-type)
+class.
+<P>
+This tab, which is shown in Figure 14.3, has a list of all the
+members of the class and enables the developer to protect any
+or all of them by checking the box in the Protected column. The
+No Init column is only applicable for object members and tells
+Visual FoxPro whether to run the <TT>Init</TT> event for this
+object when it is added at runtime. Checking the box means that
+the <TT>Init</TT> event is skipped.
+<P>
+<IMG SRC="f14-3.gif"><B>Figure 14.3 : </B><I>The Members tab for the Class Info dialog
+box</I>.</A>
+<P>
+Now that you have seen how to use the Visual Class Designer, the
+next step is to look at the syntax involved in getting into the
+Visual Class Designer. Obviously, there are two modes: <TT>CREATE</TT>
+and <TT>MODIFY</TT>.
+<H2><A NAME="CreatingaClass"><FONT SIZE=5 COLOR=#FF0000>
+Creating a Class</FONT></A></H2>
+<P>
+A new class can be created with the <TT>CREATE CLASS</TT> command.
+Issuing <TT>CREATE CLASS</TT> with no additional information presents
+the dialog box shown in Figure 14.4.
+<P>
+<IMG SRC="f14-4.gif"><B>Figure 14.4 : </B><I>The New Class dialog box</I>.</A>
+<P>
+Classes can be based on Visual FoxPro base classes (listed in
+the drop-down list box) or on any class you create. In order to
+base your new class on a class you have created (as opposed to
+one Visual FoxPro supplies for you), click the ellipses (&#133;)
+<TT>CommandButton</TT>. A dialog box will enable you to select
+the class you want to use (shown in Figure 14.5). The left portion
+of the dialog box is a <TT>GETFILE</TT> type display that enables
+you to select a <TT>.VCX</TT> file. Once you select a <TT>.VCX</TT>
+file, the classes it contains shows in the list to the right.
+You can then select a class to open and click the Open CommandButton;
+the Visual Class Designer comes up.
+<P>
+<IMG SRC="f14-5.gif"><B>Figure 14.5 : </B><I>The dialog box in which you can select
+a class</I>.</A>
+<P>
+Note that you can only use a class stored in a <TT>.VCX</TT> file
+as the base class for another VCX-stored class. Figure 14.6 shows
+the New Class dialog box once the parent class has been selected.
+<P>
+<IMG SRC="f14-6.gif"><B>Figure 14.6 : </B><I>The New Class dialog box for the VCX subclass</I>.</A>
+<P>
+Another way to create a class and bypass the dialog box is to
+provide all the information needed to create the class on the
+command line.  Here's the syntax for this:
+<BLOCKQUOTE>
+<PRE>
+CREATE CLASS <I>&lt;ClassName&gt;</I> OF <I>&lt;ClassLibraryName1&gt;</I>    ;
+        AS cBaseClassName [FROM ClassLibraryName2]
+</PRE>
+</BLOCKQUOTE>
+<P>
+<TT><I>ClassName</I></TT> is the
+name of the class to create. <TT><I>ClassLibraryName1</I></TT>
+is the name of the <TT>.VCX</TT> file in which to store the class.
+If the <TT>.VCX</TT> file does not exist, Visual FoxPro creates
+it for you (note that you can create a class library, too, with
+the <TT>CREATE CLASSLIB</TT> command). <TT>cBaseClassName</TT>
+is the name of the class on which to base the new class. This
+can be a Visual FoxPro base class or a class you create. If it's
+a class you have created, you must specify the <TT>.VCX</TT> file
+it is stored in with <TT>ClassLibraryName2</TT>. You need to specify
+the class library name from where the superclass is coming even
+if it comes from the same <TT>.VCX</TT> file where the new class
+is stored.
+<H2><A NAME="ModifyingClassesinaTTVCXTTFile"><FONT SIZE=5 COLOR=#FF0000>
+Modifying Classes in a <TT>.VCX</TT> File</FONT></A></H2>
+<P>
+Classes are loaded for modification into the Visual Class Designer
+with the <TT>MODIFY CLASS</TT> command. Here's the basic syntax:
+<BLOCKQUOTE>
+<PRE>
+MODIFY CLASS <I>&lt;ClassName&gt;</I> OF <I>&lt;ClassLibraryName&gt;</I>
+</PRE>
+</BLOCKQUOTE>
+<P>
+<TT><I>ClassName</I></TT> is the
+name of the class to modify, and <TT><I>ClassLibraryName</I></TT>
+is the name of the <TT>.VCX</TT> file containing the class to
+be modified. If you prefer a more visual method of selecting a
+class to edit, you can issue this without any additional information:
+<BLOCKQUOTE>
+<PRE>
+MODIFY CLASS
+</PRE>
+</BLOCKQUOTE>
+<P>
+Visual FoxPro displays the same dialog box shown in Figure 14.5.
+<H2><A NAME="UsingClassesinaTTVCXTTFile"><FONT SIZE=5 COLOR=#FF0000>
+Using Classes in a <TT>.VCX</TT> File</FONT></A></H2>
+<P>
+Classes created with the Visual Class Designer are stored in a
+<TT>.VCX</TT> file (also called a <I>class library</I>). The structure
+of the table is the same as the structure of the <TT>.SCX</TT>
+file.
+<P>
+In order to instantiate an object from a class stored in a <TT>.VCX</TT>
+file, the class library must be loaded with the <TT>SET CLASSLIB</TT>
+command. Here is the syntax:
+<BLOCKQUOTE>
+<PRE>
+SET CLASSLIB TO <I>&lt;vcxFileName&gt;</I> [IN APPFileName | EXEFilename]
+   [ADDITIVE] [ALIAS AliasName]
+</PRE>
+</BLOCKQUOTE>
+<P>
+After the class library is loaded, any classes in the class library
+can be used for instantiating objects.
+<P>
+Be careful of one thing. As you saw previously in this chapter,
+a class in a <TT>.VCX</TT> file can be a subclass of a class stored
+in another class library. Make sure that all the <TT>.VCX</TT>
+files you need are loaded with <TT>SET CLASSLIB</TT> before you
+instantiate objects. A good strategy is to load all the <TT>.VCX</TT>
+files used in an application at the beginning. This way you are
+sure not to miss a <TT>.VCX</TT> file when you need it. If the
+visual class library is in a Visual FoxPro application or Visual
+FoxPro executable file, you can include the <TT>IN</TT> clause
+to designate the filename. In addition, be sure to use the <TT>ADDITIVE</TT>
+keyword when adding class libraries, or else those already loaded
+will be released.
+<P>
+You can designate an <TT>ALIAS</TT> name for your visual class
+library. You can then use the alias name to reference the specified
+visual class library. This is especially useful if your visual
+class library's filename is long, such as &quot;My Very Own Excellent
+Visual Class Library.&quot; Here is an example:
+<BLOCKQUOTE>
+<PRE>
+SET CLASSLIB TO &quot;My Very Own Excellent Visual Class Library&quot; ;
+   ALIAS Mine
+oMyForm = CREATEOBJ(Mine.SpecialForm)
+</PRE>
+</BLOCKQUOTE>
+<P>
+Use the <TT>RELEASE CLASSLIB</TT> command to release a single
+class library. To release all the class libraries, issue a <TT>SET
+CLASSLIB TO</TT> command without specifying a class library file.
+By the way, if all of this syntax looks familiar, it should. This
+is one thing Microsoft did really well-it kept the syntax for
+similar commands, such as <TT>SET LIBRARY</TT> and <TT>SET PROCEDURE</TT>,
+virtually identical.
+<H2><A NAME="ATechnicalTipSendingParameterstoanObject"><FONT SIZE=5 COLOR=#FF0000>
+A Technical Tip: Sending Parameters to an Object</FONT></A></H2>
+<P>
+When you instantiate an object it may be necessary to send parameters
+through to the object. For example, if you were creating an object
+that displays a message (I know there is a <TT>MessageBox</TT>
+function, but please bear with me), you might want to send parameters
+through that indicate the message text, the form caption, and
+so on.
+<P>
+The syntax for sending parameters through when instantiating an
+object is simple-all you do is add the parameters (separated by
+commas) after the name of the class from which you are instantiating.
+Here is an example:
+<BLOCKQUOTE>
+<PRE>
+loForm = CREATEOBJECT(&quot;MyMsgForm&quot;, &quot;Hello. This is a message.&quot;)
+</PRE>
+</BLOCKQUOTE>
+<P>
+This line of code instantiates an object called <TT>loForm</TT>
+from the <TT>&quot;MyMsgForm&quot;</TT> class and passes through
+the string <TT>&quot;Hello. This is a message.&quot;</TT> as a
+parameter.
+<P>
+The next question is where do you accept the parameters? The answer
+is in the <TT>Init</TT> method. Beware, however, because unlike
+sending parameters through in FoxPro 2.6, parameters in Visual
+FoxPro that are accepted in the <TT>Init</TT> method are released
+when the <TT>Init</TT> method completes. Don't forget that <TT>Init</TT>
+is a procedure and thus causes its parameters to lose scope when
+it returns from where it was called.
+<P>
+How do you keep the parameters around? If the parameters are intended
+to be sent through by value (which is usually the case) you can
+move the parameters' values into the object's custom properties.
+You can't pass a parameter and have it stick around to be modified.
+<H2><A NAME="ManagingInstanceswithTTAInstanceTT"><FONT SIZE=5 COLOR=#FF0000>
+Managing Instances with <TT>AInstance</TT></FONT></A></H2>
+<P>
+Visual FoxPro can give you a list of instances created for a particular
+class with the <TT>AInstance</TT> function. Here is this function's
+syntax:
+<BLOCKQUOTE>
+<PRE>
+lnNumInstances = AInstance(<I>&lt;ArrayName&gt;</I>, <I>&lt;ClassName&gt;</I>)
+</PRE>
+</BLOCKQUOTE>
+<P>
+The <TT>AInstance</TT> function returns a numeric value: the number
+of instances found.
+<P>
+For example, you would issue the following command in order to
+determine how many instances have been created for class <TT>FORM</TT>:
+<BLOCKQUOTE>
+<PRE>
+lnNumInstances = AInstance(laInstances, &quot;Form&quot;)
+</PRE>
+</BLOCKQUOTE>
+<P>
+The variable <TT>lnNumInstances</TT> has the number of instances
+found, and the array <TT>laInstances</TT> has a list of the instance
+variables instantiated from class <TT>Form</TT>.
+<P>
+Note that this function only returns member variables created
+with <TT>CREATEOBJECT</TT> that are not themselves members of
+other objects. For example, if you have an instance of class <TT>Form</TT>
+that is a member of another object, this instance does not show
+up with <TT>AInstance</TT>.
+<P>
+<TT>AInstance</TT> can have many uses.  A more common one is to
+use it to manage multiple instances of a class (a form, for example).
+ The following example illustrates such a use. In this form class'
+<TT>Init</TT> method, the <TT>AInstance</TT> function checks for
+the number of instances of this class. Each instance of the class
+has a custom property called <TT>nInstanceNumber</TT>, which holds
+the instance number of the form. The <TT>Init</TT> method determines
+the instance number for this instance and then adds the instance
+number to the caption of the form. (Note that if this is the first
+instance of the form, the caption remains unmodified.) The <TT>Init</TT>
+method could do more. For instance, many developers adjust the
+<TT>Top</TT> and <TT>Left</TT> properties to cascade the form
+on the desktop. The code is presented in Listing 14.2.<P>
+
+<HR>
+<B>Listing 14.2&nbsp;&nbsp;</B><TT><B>14CODE02</B></TT><B>-The
+</B><TT><B>Multform</B></TT><B>
+Class That Illustrates How to Pass Arguments to a Class's </B><TT><B>Init</B></TT><B>
+Method<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*  Class.............: Multform
+*  Author............: Menachem Bazian, CPA
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        multform (d:\data\docs\books\vfu\code\oop2.vcx)
+*-- ParentClass:  form
+*-- BaseClass:    form
+*
+DEFINE CLASS multform AS form
+
+    DoCreate = .T.
+    Caption = &quot;Form&quot;
+    Name = &quot;multform&quot;
+
+    *-- The Instance Number of this form
+    ninstancenumber = .F.
+
+    PROCEDURE Init
+        *-- This code will determine what instance number
+        *-- this form is and set the header accordingly.
+
+        LOCAL lnNumInstances, lnThisInstance, lcInstance
+
+        lnNumInstances = AInstance(laInstances, this.class)
+        lnThisInstance = 1
+        FOR lnCounter = 1 TO lnNumInstances
+            lcInstance = laInstances[lnCounter]
+            lnThisInstance = MAX(lnThisInstance,&amp;lcInstance..nInstanceNumber + 1)
+        ENDFOR
+
+        this.nInstanceNumber = lnThisInstance
+
+        IF lnThisInstance &gt; 1
+           this.caption = ALLTRIM(this.caption) + &quot;: &quot; + ALLT(STR(lnThisInstance))
+        ENDIF
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: multform
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<H2><A NAME="TTACLASSTT"><FONT SIZE=5 COLOR=#FF0000>
+<TT>ACLASS</TT></FONT></A></H2>
+<P>
+If you have an involved class hierarchy, it can be difficult to
+remember what classes precede the instantiated class in the hierarchy.
+Take, for example, the following class hierarchy:
+<BLOCKQUOTE>
+<PRE>
+DEFINE CLASS myBaseForm AS FORM
+ENDDEFINE
+
+DEFINE CLASS myModalBaseForm AS MyBaseForm
+ENDDEFINE
+
+DEFINE CLASS ModalDialog AS myModalBaseForm
+ENDDEFINE
+</PRE>
+</BLOCKQUOTE>
+<P>
+When an object is instantiated from <TT>ModalDialog</TT>, you
+might wonder what the class hierarchy looks like. <TT>ACLASS</TT>
+answers that question. Assume this:
+<BLOCKQUOTE>
+<PRE>
+loModalDialog = CREATEOBJECT(&quot;ModalDialog&quot;)
+lnNumClasses = ACLASS(laClasses, loModalDialog)
+</PRE>
+</BLOCKQUOTE>
+<P>
+If you assume as much, <TT>laClasses</TT> will have this:
+<BLOCKQUOTE>
+<PRE>
+LACLASSES Pub                 A
+   ( 1) C       &quot;MODALDIALOG&quot;
+   ( 2) C       &quot;MYMODALBASEFORM&quot;
+   ( 3) C       &quot;MYBASEFORM&quot;
+   ( 4) C       &quot;FORM&quot;
+</PRE>
+</BLOCKQUOTE>
+<H2><A NAME="TTAMembersTT"><FONT SIZE=5 COLOR=#FF0000>
+<TT>AMembers</TT></FONT></A></H2>
+<P>
+<TT>AMembers</TT> is another very useful function. This function
+populates an array with the members of an instance. It comes in
+two flavors:
+<BLOCKQUOTE>
+<PRE>
+lnNumMembers = AMembers(<I>&lt;ArrayName&gt;</I>, <I>&lt;InstanceVar&gt;</I>)
+lnNumMembers = AMembers(<I>&lt;ArrayName&gt;</I>, <I>&lt;InstanceVar&gt;</I>, 1)
+</PRE>
+</BLOCKQUOTE>
+<P>
+The first version of this function creates an array with the properties
+of an instance. The array is unidimensional. For example, you
+would state the following to see the properties of the <TT>_Screen</TT>
+object:
+<BLOCKQUOTE>
+<PRE>
+lnNumMembers = AMembers(laMembers, _screen)
+</PRE>
+</BLOCKQUOTE>
+<P>
+This function returns an array with the following information.
+For brevity, only the first few elements are shown here:
+<BLOCKQUOTE>
+<PRE>
+LAMEMBERS  Pub                 A
+          (   1) C       &quot;ACTIVECONTROL&quot;
+          (   2) C       &quot;ACTIVEFORM&quot;
+          (   3) C       &quot;ALWAYSONTOP&quot;
+          (   4) C       &quot;AUTOCENTER&quot;
+          (   5) C       &quot;BACKCOLOR&quot;
+          (   6) C       &quot;BASECLASS&quot;
+          (   7) C       &quot;BORDERSTYLE&quot;
+          (   8) C       &quot;BUFFERMODE&quot;
+          (   9) C       &quot;CAPTION&quot;
+          (  10) C       &quot;CLASS&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The second version creates a two-dimensional array. The first
+column is the name of the member and the second column is the
+type of the member (event, method, object, or property). The following
+example inspects <TT>_Screen</TT>:
+<BLOCKQUOTE>
+<PRE>
+lnNumMembers = AMembers(laMembers, _screen, 1)
+</PRE>
+</BLOCKQUOTE>
+<P>
+The <TT>laMember</TT> array element values are shown in Listing
+14.3.<P>
+
+<HR>
+<B>Listing 14.3&nbsp;&nbsp;</B><TT><B>14CODE03</B></TT><B>-Array
+Elements That Contain the Members of Screen Object<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+LAMEMBERS  Pub      A
+   (  1, 1) C       &quot;ACTIVATE&quot;
+   (  1, 2) C       &quot;Event&quot;
+   (  2, 1) C       &quot;ACTIVECONTROL&quot;
+   (  2, 2) C       &quot;Property&quot;
+   (  3, 1) C       &quot;ACTIVEFORM&quot;
+   (  3, 2) C       &quot;Property&quot;
+   (  4, 1) C       &quot;ADDOBJECT&quot;
+   (  4, 2) C       &quot;Method&quot;
+   (  5, 1) C       &quot;ALWAYSONTOP&quot;
+   (  5, 2) C       &quot;Property&quot;
+   (  6, 1) C       &quot;AUTOCENTER&quot;
+   (  6, 2) C       &quot;Property&quot;
+   (  7, 1) C       &quot;BACKCOLOR&quot;
+   (  7, 2) C       &quot;Property&quot;
+   (  8, 1) C       &quot;BASECLASS&quot;
+   (  8, 2) C       &quot;Property&quot;
+   (  9, 1) C       &quot;BORDERSTYLE&quot;
+   (  9, 2) C       &quot;Property&quot;
+   ( 10, 1) C       &quot;BOX&quot;
+   ( 10, 2) C       &quot;Method&quot;
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Note that the second version of <TT>AMembers</TT> returns a two-dimensional
+array and shows more members of the object than the first version.
+Without the additional <TT>,1</TT> parameter, only properties
+of the object are returned. The <TT>,1</TT> parameter adds methods,
+objects, and events to the list. Each version of this function
+has its uses. To look at an object when you are concerned only
+with its properties, you would use the first version of this function.
+To get more information, you would use the second version.
+<H2><A NAME="InspectingObjectswithTTAMembersTT"><FONT SIZE=5 COLOR=#FF0000>
+Inspecting Objects with <TT>AMembers</TT></FONT></A></H2>
+<P>
+One of the more difficult aspects of working with object-oriented
+code is that a single memory variable can have a great deal of
+data and code attached to it. Take <TT>_Screen</TT>, for example.
+<TT>_Screen</TT> is a system memory variable that is an object
+based on the class <TT>Form</TT>. Changes made to <TT>_Screen</TT>
+are reflected in the main Visual FoxPro window. Thus, you could
+reset the main Visual FoxPro window's title with this line of
+code:
+<BLOCKQUOTE>
+<PRE>
+_Screen.Caption = &quot;Visual FoxPro UNLEASHED With Object Orientation!&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+In order to properly use this nifty little object, it is necessary
+to learn what is attached to the memory variable. <TT>AMembers</TT>
+is a useful way to get this information, as you saw in the previous
+example. The basic problem with this approach, though, is that
+there is so much information returned by <TT>AMembers</TT> that
+it is very difficult to make sense of it all. Clearly it would
+be beneficial to have some manner of presenting the information
+in a more useful format.
+<P>
+There are several ways to accomplish this goal. One simple method
+is to create the array with <TT>AMembers</TT> and to read the
+resultant array into a cursor. Listing 14.4 illustrates the use
+of the <TT>AMembers()</TT> function to create a cursor of the
+members of an object.<P>
+
+<HR>
+<B>Listing 14.4&nbsp;&nbsp;</B><TT><B>14CODE04
+<BR>
+</B></TT>
+<BLOCKQUOTE>
+<PRE>
+*  Program...........: CURSMEMB.PRG
+*  Author............: Menachem Bazian, CPA
+*) Description.......: Creates a cursor of the members of an object
+*  Calling Samples...: =CURSMEMB(oObject)
+*  Parameter List....: toObject - The Object to View
+*  Major change list.:
+
+LPARAMETERS toObject
+
+IF TYPE(&quot;toObject&quot;) # &quot;O&quot;
+    =MessageBox(&quot;Parameter must be an object!&quot;, 16)
+    RETURN
+ENDIF
+
+*-- If we get this far, we can read the object...
+
+LOCAL laMembers[1]
+=AMEMBERS(laMembers, toObject, 1)
+
+CREATE CURSOR _members (cMembName C(25), ;
+                        cMembtype C(25))
+
+INSERT INTO _members FROM ARRAY laMembers
+
+*-- And that's it
+RETURN
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This procedure is called with one parameter: the object to inspect.
+To see the members of the object, simply browse the <TT>_members</TT>
+cursor.
+<H2><A NAME="TakingtheInspectoroneStepFurther"><FONT SIZE=5 COLOR=#FF0000>
+Taking the Inspector one Step Further</FONT></A></H2>
+<P>
+The <TT>Cursmemb.prg</TT> program, presented in Listing 14.4,
+provides a simple view of an object, but it still does not go
+far enough. <TT>Cursmemb.prg</TT> replaces an array view with
+the capability to browse and index a cursor. Although this is
+certainly an advance in how you can look at an object, it would
+be useful to see property values where possible and maybe even
+to get a prettier interface behind the information.
+<P>
+<TT>ObjectInspectorForm</TT> is a class that accomplishes this.
+This form-based class gives you a clean and easily readable form
+that you can use to view the contents of an object. The next section
+gives you a look at the interface; I show you how to call the
+object as well as explain the code behind it.
+<H3><A NAME="TheUserInterface">
+The User Interface</A></H3>
+<P>
+The interface has three controls. The first is the Order option
+group object, which enables you to switch between two display
+orders in the list: alphabetical and grouped. The Alphabetical
+option button shows all the members of the object in alphabetical
+order without regard to the members type. The Grouped option button
+shows all the members of a particular type together in alphabetical
+order. Events show first, then methods, objects, and properties.
+Figures 14.7 and 14.8 show an example of each display order.
+<P>
+<IMG SRC="f14-7.gif"><B>Figure 14.7 : </B><I>The Object Inspector showing members in
+alphabetical order</I>.</A>
+<P>
+<IMG SRC="f14-8.gif"><B>Figure 14.8 : </B><I>Object Inspector showing members in grouped
+order</I>.</A>
+<P>
+The second control is a <TT>ListBox</TT>, which lists all the
+members of the object.
+<P>
+Finally, the third control is the OK <TT>CommandButton</TT>, which
+releases the form.
+<P>
+All the properties in the list are shown with their values, as
+best as they can be determined, within the screen. Here is how
+this is accomplished-first, the class's code is presented in Listing
+14.5.<P>
+
+<HR>
+<B>Listing 14.5&nbsp;&nbsp;</B><TT><B>14CODE05</B></TT><B>-Object
+Inspector Form Class Code Was Exported from the Class Browser
+<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Program: ObjInspector.prg
+* Description: Test Program that creates ObjectInspectorForm objects
+*              object to display the Form showing the__Screen object
+*              properties.
+oObjInspect = CREATE(&quot;Objectinspector&quot;,_Screen)
+oObjInspect.Show()
+RETURN
+*  Class.............: Objectinspectorform
+*  Author............: Menachem Bazian, CPA
+*  Project...........: Visual FoxPro Unleashed!
+*  Copyright.........: (c) Flash Creative Management, Inc. 1998
+*) Description.......:
+*  Notes.............: Exported code from Class Browser.
+
+**************************************************
+*-- Class:        objectinspectorform (d:\data\docs\books\vfu\code\oop2.vcx)
+*-- ParentClass:  form
+*-- BaseClass:    form
+*
+DEFINE CLASS objectinspectorform AS form
+
+    DataSession = 2
+    Height = 309
+    Width = 466
+    DoCreate = .T.
+    AutoCenter = .T.
+    BackColor = RGB(192,192,192)
+    BorderStyle = 3
+    Caption = &quot;&quot;
+    MaxButton = .F.
+    MinButton = .F.
+    ClipControls = .F.
+    WindowType = 1
+    PROTECTED cobjectbmpfile
+    cobjectbmpfile = (home()+&quot;SAMPLES\GRAPHICS\BMPS\FOX\APPS.BMP&quot;)
+    PROTECTED cmethodbmpfile
+    cmethodbmpfile = (home()+&quot;SAMPLES\GRAPHICS\BMPS\FOX\CLASSES.BMP&quot;)
+    PROTECTED cpropertybmpfile
+    cpropertybmpfile = (home()+&quot;SAMPLES\GRAPHICS\BMPS\FOX\INDEXES.BMP&quot;)
+    PROTECTED ceventbmpfile
+    ceventbmpfile = (home()+&quot;SAMPLES\GRAPHICS\BMPS\FOX\AUTOFORM.BMP&quot;)
+    Name = &quot;objectinspectorform&quot;
+
+    ADD OBJECT lstmembers AS listbox WITH ;
+        FontName = &quot;Courier New&quot;, ;
+        Height = 205, ;
+        Left = 12, ;
+        Top = 48, ;
+        Width = 438, ;
+        ItemBackColor = RGB(192,192,192), ;
+        Name = &quot;lstMembers&quot;
+
+    ADD OBJECT cmdok AS commandbutton WITH ;
+        Top = 264, ;
+        Left = 180, ;
+        Height = 37, ;
+        Width = 109, ;
+        Cancel = .T., ;
+        Caption = &quot;OK&quot;, ;
+        Default = .T., ;
+        Name = &quot;cmdOK&quot;
+
+    ADD OBJECT label1 AS label WITH ;
+        AutoSize = .F., ;
+        BackStyle = 0, ;
+        Caption = &quot;Order:&quot;, ;
+        Height = 18, ;
+        Left = 24, ;
+        Top = 15, ;
+        Width = 40, ;
+        Name = &quot;Label1&quot;
+
+    ADD OBJECT opgorder AS optiongroup WITH ;
+        ButtonCount = 2, ;
+        BackStyle = 0, ;
+        Value = 1, ;
+        Height = 25, ;
+        Left = 96, ;
+        Top = 12, ;
+        Width = 217, ;
+        Name = &quot;opgOrder&quot;, ;
+        Option1.BackStyle = 0, ;
+        Option1.Caption = &quot;Alphabetical&quot;, ;
+        Option1.Value = 1, ;
+        Option1.Height = 18, ;
+        Option1.Left = 0, ;
+        Option1.Top = 4, ;
+        Option1.Width = 109, ;
+        Option1.Name = &quot;optAlphabetical&quot;, ;
+        Option2.BackStyle = 0, ;
+        Option2.Caption = &quot;Grouped&quot;, ;
+        Option2.Value = 0, ;
+        Option2.Height = 18, ;
+        Option2.Left = 127, ;
+        Option2.Top = 4, ;
+        Option2.Width = 73, ;
+        Option2.Name = &quot;optGrouped&quot;
+
+    PROCEDURE buildlist
+        LPARAMETERS toObject
+
+        #DEFINE COLUMNLENGTH 25
+
+        WAIT WINDOW NOWAIT &quot;Building members list. Please stand by...&quot;
+
+        this.lockscreen = .t.
+        this.lstMembers.clear()
+
+        SELECT _members
+
+        IF this.opgOrder.value = 1
+            SET ORDER TO TAG Alpha
+        ELSE
+            SET ORDER TO TAG Grouped
+        ENDIF
+
+        GO TOP
+
+        lnCounter = 0
+
+        SCAN
+            lnCounter = lnCounter + 1
+            lcText = PADR(_members.cMembName, COLUMNLENGTH)
+
+            IF _members.cMembType = &quot;Prop&quot;
+                *-- Now we need to get the value of the property
+                lcText = lcText + ALLTRIM(_members.cMembVal)
+            ENDIF
+
+            thisform.lstMembers.additem(&quot; &quot; + lcText)
+
+            lcBmpVar = &quot;this.c&quot; + alltrim(_members.cMembType)+&quot;bmpfile&quot;
+            thisform.lstMembers.picture(lnCounter) = EVAL(lcBmpVar)
+        ENDSCAN
+
+        this.lockscreen = .f.
+        thisform.refresh()
+
+        WAIT CLEAR
+    ENDPROC
+
+    PROCEDURE Resize
+        this.lockscreen = .t.
+
+        this.lstMembers.width = this.width - 24
+        this.cmdOk.left = (this.width-this.cmdOk.width)/2
+        this.cmdOK.top = (this.height - 8 - this.cmdOK.height)
+        this.lstMembers.height = this.cmdOK.top - this.lstMembers.top - 11
+
+        this.lockscreen = .F.
+    ENDPROC
+
+    PROCEDURE Init
+        *  Class.............: OBJECTINSPECTORFORM
+        *  Author............: Menachem Bazian, CPA
+        *  Project...........: Visual FoxPro Unleashed
+        *  Created...........: May 16, 1998 - 07:44:03
+        *  Copyright.........: (c) Flash Creative Management, Inc., 1998
+        *) Description.......: When passed an object, it builds a list of the
+        *)                   : members and displays them nicely.
+        *  Calling Samples...: oForm = CREATEOBJECT(&quot;OBJECTINSPECTORFORM&quot;,
+            oObject)
+        *  Parameter List....: toObject - Object to inspect
+        *  Major change list.:
+
+        LPARAMETERS toObject
+
+        this.caption = &quot;Inspecting object: &quot; + ALLT(toObject.Name)
+
+        IF TYPE(&quot;toObject&quot;) # 'O'
+            =MessagebOx(&quot;You can only pass OBJECT type parameters!&quot;, 16)
+            RETURN .F.
+        ENDIF
+
+        *-- If we get this far, we can inspect the object
+        *-- Let's define some memory variables and do the AMembers()
+
+        LOCAL laMembers[1], lcText, lcName
+        =AMembers(laMembers,toObject,1)
+
+        *-- In order to create the list in proper order, it is useful to have
+        *-- a table to work off of (so we can INDEX). Hence:
+
+        CREATE CURSOR _members (cMembName C(25), cMembtype C(25), cMembVal 
+           C(40))
+        INSERT INTO _members FROM ARRAY laMembers
+
+        INDEX ON cMembName TAG Alpha
+        INDEX ON cMembType + cMembName TAG Grouped
+
+        SCAN FOR _members.cMembType = &quot;Prop&quot;
+
+            *-- Determine the value of the property and place it in the
+            *-- cMembVal field
+
+            lcName = &quot;toObject.&quot;+ALLTRIM(_members.cMembName)
+            DO CASE
+                CASE TYPE(lcName) = 'U'
+                    lcText = &quot;.UNDEFINED.&quot;
+                CASE isnull(EVAL(lcName))
+                    lcText = &quot;.NULL.&quot;
+                CASE TYPE(lcName) = 'L'
+                    lcText = IIF(EVAL(lcName), &quot;.T.&quot;, &quot;.F.&quot;)
+                OTHERWISE
+                    lcText = ALLTRIM(PADR(EVALUATE(lcName),50))
+            ENDCASE
+            REPLACE _members.cMembVal WITH lcText
+        ENDSCAN
+
+        this.buildlist()
+    ENDPROC
+
+    PROCEDURE cmdok.Click
+        release thisform
+    ENDPROC
+
+    PROCEDURE opgorder.Click
+        thisform.buildlist()
+    ENDPROC
+
+ENDDEFINE
+*
+*-- EndDefine: objectinspectorform
+**************************************************
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+You can call the form as follows. (The example shows how you can
+call the <TT>InspectorForm</TT> to inspect the <TT>_Screen</TT>
+object.)
+<BLOCKQUOTE>
+<PRE>
+DO ObjInspector.prg
+</PRE>
+</BLOCKQUOTE>
+<P>
+The key work in this class takes place in the form's <TT>Init</TT>
+method and in a custom method called <TT>BuildList</TT>.
+<H3><A NAME="TheTTInitTTMethod">
+The <TT>Init</TT> Method
+</A></H3>
+<P>
+The <TT>Init</TT> method has several responsibilities. It accepts
+the parameter <TT>toObject</TT> and makes sure that its data type
+is <TT>Object</TT>. If the parameter sent through is not an object,
+an error message is returned. Note that an error condition causes
+<TT>Init</TT> to return <TT>.F.</TT>. When <TT>.F.</TT> is returned
+from <TT>Init</TT>, the object is not instantiated.
+<P>
+The next step is to create a cursor, much like the one in the
+<TT>Cursmemb.prg</TT> program shown earlier in this chapter. The
+differences here are threefold. First of all, an additional field
+called <TT>cMembValue</TT> is added to the cursor. Second, <TT>cMembValue</TT>
+is populated with the actual value of the property. Third, the
+cursor is indexed. I use the indexes in <TT>BuildList</TT> later
+in this chapter.
+<P>
+You fill in the <TT>cMembValue</TT> field by creating a text string
+beginning with <TT>&quot;toObject.&quot;</TT> (remember that <TT>toObject</TT>
+is the object passed through on the parameter line) and then adding
+the name of the object as recorded in the <TT>cMembName</TT> field.
+This gives you the name of the property you are trying to evaluate
+in a format you can use to query the value.
+<P>
+The next step is a little tricky. Sometimes an object might have
+a property that does not have a value. For example, if <TT>_Screen.ActiveForm</TT>
+is queried with no form open, Visual FoxPro returns an error.
+<TT>&quot;U&quot;</TT> for undefined is returned when you check
+the type of the property with the <TT>TYPE</TT> function (<TT>?
+TYPE(&quot;_Screen.ActiveForm&quot;)</TT>, for example)<TT>&quot;&quot;</TT>.
+Therefore, a check has to be made of the data type of the property
+to avoid an error.
+<P>
+A property can also be <TT>NULL</TT>; you trap for that with the
+<TT>ISNULL</TT> function. Finally, a logical value is checked
+for and converted to a string. All other value types can be converted
+to a string with the <TT>PADR</TT> function, as done in the <TT>OTHERWISE</TT>
+clause of the <TT>CASE</TT> statement.
+<H3><A NAME="TheTTBuildListTTMethod">
+The <TT>BuildList</TT> Method
+</A></H3>
+<P>
+<TT>BuildList</TT> is responsible for building the contents of
+the list box based on the cursor. The method is very simple. It
+begins by clearing the list with the <TT>Clear</TT> method; then
+the value of the Order option group is queried and the index order
+is set accordingly. The next step is to loop through the cursor
+records and add the items from the cursor to the list. This is
+accomplished by using the <TT>AddItem</TT> method. Note that the
+value is added to the string passed through to <TT>AddItem</TT>
+for all the <TT>PROPERTY</TT>-type members. Finally, the picture
+property of each row is set based on the type of member stored
+in the row. The four picture filenames and locations are stored
+in the custom form properties <TT>cEventBMPFile</TT>, <TT>cMethodBMPFile</TT>,
+<TT>cObjectBMPFile</TT>, and <TT>cPropertyBMPFile</TT>.
+<P>
+One interesting tip that comes out of the <TT>BuildList</TT> method
+is the use of the <TT>LockScreen</TT> property of the form. When
+<TT>LockScreen</TT> is set to <TT>.T.</TT>, it prevents the form's
+display from changing. This is very important in this case because
+a list box automatically refreshes itself every time <TT>AddItem</TT>
+is issued. This slows the process considerably. By setting <TT>LockScreen</TT>
+to <TT>.T.</TT> for the duration of the list building, you ensure
+maximum performance from Visual FoxPro during this process. A
+final call to the <TT>Refresh</TT> method after <TT>LockScreen</TT>
+is reset redraws everything nicely.
+<H3><A NAME="TheTTResizeTTMethod">
+The <TT>Resize</TT> Method
+</A></H3>
+<P>
+The form's default size might not be large enough to display a
+property and its value if the value is a lengthy string. It would
+be nice to be able to resize the form and have the controls on
+the form automatically adjust to the new size of the form.
+<P>
+The <TT>Resize</TT> method responds to an event (when the user
+changes the size of the form, for example). The method is called
+when the user is done resizing the form. The <TT>Resize</TT> method
+in this case simply recalculates the height and width of the list
+box and makes sure that the command button is still situated at
+the bottom of the form. Setting <TT>LockScreen</TT> to <TT>.T.</TT>
+while the recalculation takes place prevents the controls from
+adjusting one at a time. It looks cleaner this way (and is more
+efficient, too).
+<HR>
+<CENTER>
+
+<A HREF="ch13.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch15.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

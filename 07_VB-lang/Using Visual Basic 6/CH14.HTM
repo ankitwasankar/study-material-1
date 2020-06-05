@@ -1,0 +1,1104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Using Visual Basic 6 -- Ch 14 -- Enhancing Your Programs with Forms and Dialog Boxes</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"><BR>
+Using Visual Basic 6</H1>
+<CENTER>
+<P><A HREF="ch13.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch13/ch13.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch15.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch15/ch15.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1 ALIGN="CENTER">- 14 -<BR>
+Enhancing Your Programs with Forms and Dialog Boxes</H1>
+<H1></H1>
+
+<UL>
+	<LI><A HREF="#Heading1">Creating Message Boxes with the MsgBox() Function and the
+	MsgBox Statement</A>
+	<UL>
+		<LI><A HREF="#Heading2">Adding Icons to Message Boxes</A>
+		<LI><A HREF="#Heading3">Retrieving a Value from the MsgBox() Function</A>
+	</UL>
+	<LI><A HREF="#Heading4">Using Predefined Forms</A>
+	<LI><A HREF="#Heading5">Getting User Input from the CommonDialog Control</A>
+	<UL>
+		<LI><A HREF="#Heading6">Retrieving File Information with the File Dialog</A>
+		<LI><A HREF="#Heading7">Selecting Font Information with the Font Dialog</A>
+		<LI><A HREF="#Heading8">Selecting Colors with the Color Dialog</A>
+		<LI><A HREF="#Heading9">Setting Printer Options with the Print Dialog</A>
+	</UL>
+	<LI><A HREF="#Heading10">Making a Simple MDI Application</A>
+	<UL>
+		<LI><A HREF="#Heading11">The Appearance Property</A>
+		<LI><A HREF="#Heading12">The AutoShowChildren Property</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<H2><A NAME="Heading1"></A>Creating Message Boxes with the MsgBox() Function and
+the MsgBox Statement</H2>
+<P><I>Message boxes </I>are simple forms that display messages and at least one CommandButton
+that's used to acknowledge the message (see Figure 14.1). Optionally, a message box
+can display an icon or use multiple buttons to let users make a decision. You can
+use a message box to display information or to obtain a decision from the user.</P>
+<P><A HREF="javascript:popUp('14fig01.gif')"><B>FIGURE 14.1</B></A> <I>A message
+box is task modal, meaning that the application can't continue until the message
+box is closed.</I></P>
+<P>You can display a message box by using the MsgBox statement or the MsgBox() function.
+The difference between them is that the function displays the message box and returns
+a value, but the statement only displays the message box. Also, there's a slight
+syntactical difference--the use of parentheses and a return value are required for
+the MsgBox() function.</P>
+<P>Using the MsgBox() function is valuable if you need your program's users to make
+a decision and you want to respond to that decision. For example, if you want to
+ask users if they want to proceed with a process, you would use the following statements:</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Visual Basic constants</STRONG></P>
+	<P>Visual Basic has many predefined constants that you can use when programming with
+	message boxes. For instance, you use vbYesNo to display a message box with Yes and
+	No buttons. Using these internal constants is discussed in detail later in the section,
+	&quot;Retrieving a Value from the MsgBox() Function.&quot; 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<PRE>Dim iResponse as Integer
+iResponse = MsgBox(&quot;Do you want to proceed&quot;, vbYesNo, App.Name)
+If iResponse = vbYes then
+    `Place your proceed code here
+End If
+</PRE>
+<P>The syntax for a MsgBox statement is</P>
+<P>
+<PRE>MsgBox strMessage, [Options][, strTitle][, strHelpFile][, _
+       HelpContextID]
+</PRE>
+<P>The following MsgBox statement displays the message box shown in Figure 14.1:</P>
+<P>
+<PRE>Private Sub Command1_Click()
+    MsgBox &quot;I am a Message Box&quot;
+End Sub
+</PRE>
+<P>The syntax for a MsgBox() function is</P>
+<P>
+<PRE>RetInt = MsgBox(strMessage[, Options][, strTitle][, _
+                strHelpFile][, HelpContextID])
+</PRE>
+<P>In both sets of syntax, the following options and keywords are used:</P>
+
+<UL>
+	<LI><I>RetInt</I> is an integer that stores the value of the return from the MsgBox()
+	function.
+	<P>
+	<LI>MsgBox is the statement/function name.
+	<P>
+	<LI><I>StrMessage</I> is a string expression to display in the message area of the
+	message box.
+	<P>
+	<LI><I>Options</I> indicates an optional integer constant(s) that determines what
+	button (or combination of buttons) and icons to display in the message box.
+	<P>
+	<LI><I>StrTitle</I> is an optional string expression to display in the title bar
+	of the message box.
+	<P>
+	<LI><I>strHelpFile</I> is an optional string that is the path of the help file that
+	provides additional information about the message box's topic.
+	<P>
+	<LI><I>HelpContextID</I> is an optional help context ID constant that references
+	a topic in the help file as determined by <I>strHelpFile</I>.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using message boxes for error messages</STRONG></P>
+	<P>If you decide to use a message box to report an error, remember the three fundamental
+	rules for reporting an error: State the error, inform users of what they most likely
+	did to cause the error, and suggest a way to correct the error. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The simple message box is acceptable for many types of messages, but you will
+probably want to dress up your messages a little more as you progress into more complex
+programming. You can specify two optional arguments for the MsgBox statement and
+the MsgBox() function: <I>Options</I> and <I>strTitle</I>. The <I>Options</I> argument
+is an integer that specifies the icon to display in the message box, the CommandButton(s)
+set to display, and which of the CommandButtons is the default. The <I>strTitle</I>
+argument is a text string that specifies a custom text to be shown in the title bar
+of the message box. Figure 14.2 shows a simple message box that has been enhanced
+to show an icon and additional buttons. The following code displays this message
+box:</P>
+<P>
+<PRE>Private Sub Command2_Click()
+    MsgBox &quot;I am a Fancy Message Box&quot;, _
+           vbInformation + vbYesNoCancel, _
+           &quot;Message Box Title&quot;
+End Sub
+</PRE>
+<P><A HREF="javascript:popUp('14fig02.gif')"><B>FIGURE 14.2</B></A> <I>You can add
+icons and additional buttons to a message box.</I></P>
+<P>
+<H3><A NAME="Heading2"></A>Adding Icons to Message Boxes</H3>
+<P>You have a choice of four icons to display in a message box. These icons and their
+purposes are summarized in Table 14.1.</P>
+<P>
+<H4>TABLE 14.2&nbsp;&nbsp;Icons and Icon Constants</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Icon</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Constant</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Purpose</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><IMG SRC="ic70.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch14/ic70.gif" WIDTH="30" HEIGHT="30" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">vbCritical</TD>
+		<TD ALIGN="LEFT">A critical message indicates that a severe error has occurred. Often, a program is
+			shut down after this message.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><IMG SRC="ic71.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch14/ic71.gif" WIDTH="30" HEIGHT="29" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">vbExclamation</TD>
+		<TD ALIGN="LEFT">A warning message indicates that a program error has occurred that requires user
+			correction or might lead to undesirable results.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><IMG SRC="ic72.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch14/ic72.gif" WIDTH="30" HEIGHT="29" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">vbQuestion</TD>
+		<TD ALIGN="LEFT">A query indicates that the program requires additional information from users before
+			processing can continue.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><IMG SRC="ic73.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch14/ic73.gif" WIDTH="30" HEIGHT="27" ALIGN="BOTTOM" BORDER="0"></TD>
+		<TD ALIGN="LEFT">vbInformation</TD>
+		<TD ALIGN="LEFT">An information message informs users of the status of the program. This is most often
+			used to notify users of a task's completion.</TD>
+	</TR>
+</TABLE>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using multiple constants</STRONG></P>
+	<P>When you use the pop-up constants list, you can select a second constant by entering
+	a plus sign (+) after the first constant. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>If you're wondering how you're going to remember the syntax of the MsgBox statement/function
+and the constants to be used for the options, don't worry. The statement completion
+capabilities of Visual Basic's Code Editor help tremendously. When you type the space
+after the MsgBox statement/function name in the code window, a pop-up shows you the
+syntax of the command (see Figure 14.3).</P>
+<P><A HREF="javascript:popUp('14fig03.gif')"><B>FIGURE 14.3</B></A> <I>The statement
+completion feature of Visual Basic lets you select the constants appropriate to your
+needs.</I></P>
+<P>As you type in the function name, after you enter the message to be displayed
+and enter a comma, Visual Basic pops up a list of constants that can be used to add
+an icon to the message box or to specify the button set to be used. You can select
+a constant from the list by pressing Ctrl+Enter or typing it yourself.</P>
+<P>
+<H3><A NAME="Heading3"></A>Retrieving a Value from the MsgBox() Function</H3>
+<P>The MsgBox statement works fine for informing users of problems or prompting them
+to take an action. If you need to obtain a decision from users, however, you must
+return a value by using the MsgBox() function.</P>
+<P>You can use six sets of CommandButtons in the MsgBox() function:</P>
+
+<UL>
+	<LI><B>OK</B>--Displays a single button with the caption OK. This asks users to acknowledge
+	receipt of the message before continuing.
+	<P>
+	<LI><B>OK</B>, <B>Cancel</B>--Displays two buttons in the message box, letting users
+	choose between accepting the message and requesting a cancellation of the operation.
+	<P>
+	<LI><B>Abort</B>, <B>Retry</B>, <B>Ignore</B>--Displays three buttons, usually along
+	with an error message. Users can choose to abort the operation, retry it, or ignore
+	the error and continue with program execution.
+	<P>
+	<LI><B>Yes</B>, <B>No</B>, <B>Cancel</B>--Displays three buttons, typically with
+	a question. Users can answer yes or no to the question or choose to cancel the operation.
+	<P>
+	<LI><B>Yes</B>, <B>No</B>--Displays two buttons for a simple yes-or-no choice.
+	<P>
+	<LI><B>Retry</B>, <B>Cancel</B>--Displays the two buttons that allow users to retry
+	the operation or cancel it. A typical use is to indicate that the printer isn't responding.
+	Users can retry the print job after turning on the printer (for example) or cancel
+	the printout.
+</UL>
+
+<P>To specify the CommandButtons that will appear in the message box, you need to
+specify a value for the <I>Options</I> argument of the MsgBox() function. Table 14.2
+lists the values for each CommandButton set.</P>
+<P>
+<H4>TABLE 14.2&nbsp;&nbsp;Setting the Options Argument of the MsgBox() Function</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Button Set</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Constant</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">OK</TD>
+		<TD ALIGN="LEFT">0</TD>
+		<TD ALIGN="LEFT">vbOKOnly</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">OK, Cancel</TD>
+		<TD ALIGN="LEFT">1</TD>
+		<TD ALIGN="LEFT">vbOKCancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Abort, Retry, Ignore</TD>
+		<TD ALIGN="LEFT">2</TD>
+		<TD ALIGN="LEFT">VBAbortRetryIgnore</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Yes, No, Cancel</TD>
+		<TD ALIGN="LEFT">3</TD>
+		<TD ALIGN="LEFT">vbYesNoCancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Yes, No</TD>
+		<TD ALIGN="LEFT">4</TD>
+		<TD ALIGN="LEFT">vbYesNo</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Retry, Cancel</TD>
+		<TD ALIGN="LEFT">5</TD>
+		<TD ALIGN="LEFT">vbRetryCancel</TD>
+	</TR>
+</TABLE>
+</P>
+<P>The MsgBox() function is designed so that any combination of the icon constant
+and the CommandButton constant creates a unique value. This value is then broken
+down by the function to specify the individual pieces. The code used to create Figure
+14.2 combines an icon constant and CommandButton constant to create an information
+message box with <B>Yes</B>, <B>No</B>, and <B>Cancel</B> buttons.</P>
+<P>
+<H4>Setting a Default Button in a Message Box</H4>
+<P>If you're using more than one CommandButton in the message box, you can also specify
+which button is the default. The <I>default button</I>--which has the focus when
+the message box is displayed--is the one that users will most likely choose or that
+will be clicked if users automatically press Enter.</P>
+<P>To specify which button is the default, you need to add another constant to the
+<I>Options</I> argument of the MsgBox() function:</P>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Default Button</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Constant</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">First</TD>
+		<TD ALIGN="LEFT">0</TD>
+		<TD ALIGN="LEFT">vbDefaultButton1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Second</TD>
+		<TD ALIGN="LEFT">256</TD>
+		<TD ALIGN="LEFT">vbDefaultButton2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Third</TD>
+		<TD ALIGN="LEFT">512</TD>
+		<TD ALIGN="LEFT">vbDefaultButton3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Fourth</TD>
+		<TD ALIGN="LEFT">768</TD>
+		<TD ALIGN="LEFT">vbDefaultButton4</TD>
+	</TR>
+</TABLE>
+
+<H4>Evaluating a Return Value from the MsgBox() Function</H4>
+<P>You can choose from seven buttons, with the selection depending on the button
+set used in the message box. Each button, when clicked, returns a different value
+to your program (see Table 14.3).</P>
+<P>
+<H4>TABLE 14.3&nbsp;&nbsp;Return Values from the MsgBox() Function</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Button</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Return Value</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Constant</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">OK</TD>
+		<TD ALIGN="LEFT">1</TD>
+		<TD ALIGN="LEFT">vbOK</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">2</TD>
+		<TD ALIGN="LEFT">vbCancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Abort</TD>
+		<TD ALIGN="LEFT">3</TD>
+		<TD ALIGN="LEFT">vbAbort</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Retry</TD>
+		<TD ALIGN="LEFT">4</TD>
+		<TD ALIGN="LEFT">vbRetry</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Ignore</TD>
+		<TD ALIGN="LEFT">5</TD>
+		<TD ALIGN="LEFT">vbIgnore</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Yes</TD>
+		<TD ALIGN="LEFT">6</TD>
+		<TD ALIGN="LEFT">vbYes</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">No</TD>
+		<TD ALIGN="LEFT">7</TD>
+		<TD ALIGN="LEFT">vbNo</TD>
+	</TR>
+</TABLE>
+</P>
+<P>After you know which button the user clicked, you can use the information in your
+program. Listing 14.1 shows you code that uses the MsgBox() function to confirm whether
+to delete a file.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Hands-on project</STRONG></P>
+	<P>The code for the MsgBox examples can be found in the project SimplMsg.vbp on the
+	Web site dedicated to this book (<A target="_new" HREF="javascript:if(confirm('http:// www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http:// www.mcp.com/info'" tppabs="http:// www.mcp.com/info">http:// www.mcp.com/info</A>).
+	When you find that URL, enter 078971633x as the ISBN and then click Search to go
+	to the Book Info page for Using Visual Basic 6. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>LISTING 14.1&nbsp;&nbsp;14LIST01.TXT--Deleting a File According to the Return
+from the <BR>
+MsgBox() Function</H4>
+<PRE><B>01</B> Private Sub Command4_Click()</PRE>
+<PRE><B>02</B> Dim strTextFile As String `path of file to delete</PRE>
+<PRE>03 Dim Msg$ `Message box message</PRE>
+<PRE><B>04</B> Dim OpVal% `Option value variable</PRE>
+<PRE><B>05</B> Dim RetVal% `variable for return value</PRE>
+<PRE><B>06</B> Dim TitleMsg$ `Title message variable</PRE>
+<PRE><B>07</B></PRE>
+<PRE><B>08</B> `Set the file to delete</PRE>
+<PRE><B>09</B> strTextFile = &quot;MYDATA.TXT&quot;</PRE>
+<PRE><B>10</B></PRE>
+<PRE><B>11</B> `Create a message for the message box</PRE>
+<PRE><B>12</B> Msg$ = &quot;Do you really want to delete file: `&quot;</PRE>
+<PRE><B>13</B> Msg$ = Msg$ &amp; strTextFile &amp; &quot;`?&quot;</PRE>
+<PRE><B>14</B></PRE>
+<PRE><B>15</B> `Create a custom value for the Option parameter</PRE>
+<PRE><B>16</B> OpVal% = vbExclamation + vbYesNo + vbDefaultButton2</PRE>
+<PRE><B>17</B></PRE>
+<PRE><B>18</B> `Create a title string</PRE>
+<PRE><B>19</B> TitleMsg$ = &quot;Delete Confirmation&quot;</PRE>
+<PRE><B>20</B></PRE>
+<PRE><B>21</B> `Display the message box and get a return value</PRE>
+<PRE><B>22</B> RetVal% = MsgBox(Msg$, OpVal%, TitleMsg$)</PRE>
+<PRE><B>23</B></PRE>
+<PRE><B>24</B> `If the value is Yes, set the commandButton</PRE>
+<PRE><B>25</B> `caption to report that the Kill function has</PRE>
+<PRE><B>26</B> `been selected</PRE>
+<PRE><B>27</B> If RetVal% = vbYes Then</PRE>
+<PRE><B>28</B> Command4.Caption = &quot;Kill &quot; &amp; strTextFile</PRE>
+<PRE><B>29</B> End If</PRE>
+<PRE><B>30</B></PRE>
+<PRE><B>31</B> End Sub</PRE>
+<P>
+<H2><A NAME="Heading4"></A>Using Predefined Forms</H2>
+<P>Visual Basic 6 comes with a number of predefined forms that can save you time
+in your coding activity. Visual Basic has predefined forms for data access, an About
+box, splash screens, and logins, to name a few.</P>
+<P>Choose <B>Add Form</B> from the <B>Project</B> menu to display the dialog that
+contains the various predefined forms that ship with Visual Basic. Select the form
+that you want to use from this dialog (see Figure 14.4).</P>
+<P><A HREF="javascript:popUp('14fig04.gif')"><B>FIGURE 14.4</B></A> <I>You can choose
+from predefined forms or a Form Wizard in the Add Form dialog.</I></P>
+<P>If you need to add an About dialog to your project, click About Dialog in the
+Add Form dialog. (Figure 14.5 shows an About Dialog form.) Not only does Visual Basic
+add the form to your project, it also provides a substantial amount of code that
+covers the fundamental functionality of the form. The About Dialog provides code
+that reports that application's name and version information, as shown in the following
+code:</P>
+<P>
+<PRE>Private Sub Form_Load()
+    Me.Caption = &quot;About &quot; &amp; App.Title
+    lblVersion.Caption = &quot;Version &quot; &amp; App.Major &amp; &quot;.&quot; _
+                         &amp; App.Minor &amp; &quot;.&quot; &amp; App.Revision
+    lblTitle.Caption = App.Title
+End Sub
+</PRE>
+<P>The About dialog also provides all the code, including the external Windows API
+calls, that you need to report the user's system information. (If you want to review
+the system information code, add the About Dialog form to a new project and look
+at the code under the <B>System Info</B> button.)</P>
+
+<P><A HREF="javascript:popUp('14fig05.gif')"><B>FIGURE 14.5</B></A> <I>The About
+dialog that ships with VB6 automatically provides code that reports your program's
+name and version information as well as the user's system information.</I></P>
+
+<P><I></I>
+<H2><A NAME="Heading5"></A>Getting User Input from the CommonDialog Control</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Need the code?</STRONG></P>
+	<P>The code for the CommonDialog control examples is in the project SimpleCD.VBP
+	on the Web site dedicated to this book. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>At some point you'll probably want to write a program in which your users can
+specify filenames, select fonts and colors, and control the printer. Although you
+could create your own dialogs to handle these tasks, you don't need to. Visual Basic
+provides you with the CommonDialog control, with which you can easily display predefined
+dialogs to obtain user information. Although the ease of setup is a great benefit,
+an even bigger bonus is that these dialogs are already familiar to users because
+they are the same dialogs used by Windows itself.</P>
+<P>By using a single CommonDialog control, you have access to the following four
+Windows dialogs:</P>
+
+<UL>
+	<LI><I>File</I> lets users select a file to open or choose a filename in which to
+	save information.
+	<P>
+	<LI><I>Font</I> lets users choose a base font and set any desired font attributes.
+	<P>
+	<LI><I>Color</I> lets users choose from a standard color or create a custom color
+	for use in the program.
+	<P>
+	<LI><I>Print</I> lets users select a printer and set some printer parameters.
+</UL>
+
+<P>To use the CommonDialog control, you first have to add it to your project by selecting
+<B>Microsoft Common Dialog Control 6.0</B> from the Components dialog (choose <B>Components</B>
+from the <B>Project</B> menu). After you add the CommonDialog control to your ToolBox,
+click the control and draw it on the form, like any other control. The CommonDialog
+control appears on your form as an icon; the control itself isn't visible when your
+application is running. However, when the code calls the CommonDialog, the specific
+dialog becomes visible.</P>
+<P>The following sections discuss each type of dialog that can be accessed with the
+CommonDialog control. For each dialog, you must set the control's properties through
+the Properties window or through the CommonDialog control's Property Pages dialog.
+The Property Pages dialog provides you easy access to the specific properties necessary
+for each common dialog type (see Figure 14.6). You access the Property Pages dialog
+by clicking the ellipsis button in the Custom property of the CommonDialog control
+in the Properties window.</P>
+<P><A HREF="javascript:popUp('14fig05a.gif')"><B>FIGURE 14.6</B></A> <I>The CommonDialog
+control is visible at design time and can be configured by using the control's Property
+Pages.</I></P>
+<P>
+<H3><A NAME="Heading6"></A>Retrieving File Information with the File Dialog</H3>
+<P>A key use of the CommonDialog control is to obtain filenames from users in two
+ways: file open and file save. File-open mode lets users specify a file to be retrieved
+and used by your program. File-save mode lets users specify the name of a file to
+be saved (the equivalent of the Save As dialog for many programs). Figure 14.7 shows
+a dialog with the major components indicated.</P>
+<P>The dialogs for the Open and Save functions are similar. To open an existing file,
+you use the ShowOpen method of the CommonDialog control. (This method displays the
+dialog shown in Figure 14.7.) You use this method by specifying the name of the CommonDialog
+control and the method name, as follows:</P>
+<P>
+<PRE>CommonDlg1.ShowOpen
+</PRE>
+<P><A HREF="javascript:popUp('14fig06.gif')"><B>FIGURE 14.7</B></A> <I>The CommonDialog
+accesses the Windows file dialogs.</I></P>
+<P>Running the CommonDialog control for saving a filename is essentially the same
+as for opening a file. In this case, however, the name of the method is ShowSave.
+There are a few subtle differences between the dialogs shown for the Open and Save
+functions, such as the title of the dialog and the captions on the buttons.</P>
+<P>So far, you've learned how to display the File dialogs with all files shown in
+a folder. You might, however, want to specify that only certain file types, such
+as text or document files, be shown. The file types shown in the dialog are specified
+by using the CommonDialog control's Filter property. You set this property in design
+mode from the Property Pages dialog or set it at runtime with an assignment statement,
+as shown here:</P>
+<P>
+<PRE><I>controlname</I>.Filter = &quot;<I>description</I>|<I>filtercond</I>&quot;
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI><I>controlname</I> is the assigned name of the CommonDialog control.
+	<P>
+	<LI>Filter is the name of the property.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Be careful with filter syntax</STRONG></P>
+	<P>Don't include spaces before or after the pipe symbol. If you do, you might not
+	get the file list that you want. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<UL>
+	<LI><I>description</I> is a text description of the file types to be shown. Examples
+	of the description are &quot;Text Files&quot;, &quot;Word Documents&quot;, and &quot;All
+	Files&quot;. The vertical line, | (the <I>pipe symbol)</I> must be present.
+	<P>
+	<LI><I>filtercond</I> is the actual filter for the files. You typically express the
+	filter as an asterisk followed by a period and the extension of the files that you
+	want to display. The filters that correspond to the preceding descriptions are *.txt,
+	*.doc, and *.*, respectively.
+</UL>
+
+<P>If you specify the Filter property with an assignment statement, you must enclose
+the filter in double quotation marks. Omit the quotation marks if you specify the
+filter from the Property Pages dialog.</P>
+<P>You can specify multiple <I>description</I>|<I>filtercond</I> pairs within the
+Filter property. Each pair must be separated from the other pairs by the pipe symbol,
+as shown in the following example:</P>
+<P>
+<PRE>cdlgGetFile.Filter = &quot;Text Documents|*.txt |All Files (*.*)|*.*&quot;
+</PRE>
+<P>The FileType combo box in Figure 14.7 shows the preceding code applied to the
+CommonDialog.</P>
+<P>Finally, when all your filtering is set, you use the CommonDialog control's FileName
+property to retrieve the name of the file that users selected:</P>
+<P>
+<PRE>MyFileName$ = cdlgGetFile.FileName.
+</PRE>
+<P><B>Retrieving a filename from a file</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open a <U>N</U>ew Visual Basic project.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add CommonDialog controls as described earlier.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add a CommondDialog control, CommandButton, and Label to the form.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Align the Label control so that it's above the CommandButton. Place
+	both controls in the upper left corner of the form.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Double-click the CommandButton on the form to expose the Command1_Click
+	event procedure.
+	<P>
+</DL>
+
+<P><B>6. </B>Add the following code to the event procedure (leave out the line numbers):</P>
+<P>
+<PRE><B>01</B> CommonDialog1.Filter = &quot;All Files (*.*)|*.*&quot;
+<B>02</B> CommonDialog1.ShowOpen
+<B>03</B>    If CommonDialog1.FileName &lt;&gt; &quot;&quot; Then
+<B>04</B>        Label1.Caption = CommonDialog1.FileName
+<B>05</B>    Else
+<B>06</B>        Label1.Caption = &quot;No file selected&quot;
+<B>07</B>    End If
+</PRE>
+<P>This code works as follows:</P>
+
+<UL>
+	<LI>Line 1 sets the filter of the CommonDialog to show all the files in a given folder.
+	<P>
+	<LI>Line 2 displays the CommonDialog box in open file mode. At this point, users
+	can select a file and click <B>Open</B> or not choose a file and click <B>Cancel</B>.
+	Regardless of their choice, Visual Basic assigns a value to the CommonDialog's FileName
+	property.
+	<P>
+	<LI>Lines 3-7 check the value of that assignment within an If...Then statement. If
+	users didn't select a file, the value of the FileName property is an empty string.
+	Thus, if the string isn't empty, users must have selected a file (Line 3). The program
+	assigns the value of the FileName property to the Caption property of the Label control
+	(Line 4). If the value of the FileName property is empty, the program tells users
+	that no file has been selected (Line 6).
+</UL>
+
+<H3><A NAME="Heading7"></A>Selecting Font Information with the Font Dialog</H3>
+<P>Setting up the CommonDialog control to show the Font dialog is as easy as setting
+it up for file functions. In fact, you can use the same CommonDialog control to handle
+file, font, color, and printer functions.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using flags with the CommonDialog control</STRONG></P>
+	<P>If you're using the CommonDialog control to select fonts and don't set a value
+	for the Flags property, you will receive an error message stating that no fonts are
+	installed. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The first step in using the CommonDialog control to handle font selection is to
+set a value for the Flags property. This property tells the CommonDialog control
+whether you want to show screen fonts, printer fonts, or both. The Flags property
+can be set to one of three constants:</P>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Font Set</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Constant</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Screen fonts</TD>
+		<TD ALIGN="LEFT">cdlCFScreenFonts</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Printer fonts</TD>
+		<TD ALIGN="LEFT">cdlCFPrinterFonts</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Both sets</TD>
+		<TD ALIGN="LEFT">cdlCFBoth</TD>
+		<TD ALIGN="LEFT">3</TD>
+	</TR>
+</TABLE>
+</P>
+<P>Figure 14.8 shows a Font dialog that contains only screen fonts.</P>
+<P><A HREF="javascript:popUp('14fig07.gif')"><B>FIGURE 14.8</B></A> <I>The Font common
+dialog lets the user select fonts.</I></P>
+<P>You can set the value of the Flags property from the design environment by using
+the Property Pages dialog or from your program by using an assignment statement.
+After you set the Flags property, you can run the Font dialog from your code by using
+the ShowFont method, which has the same syntax as the ShowOpen method described earlier.</P>
+<P>The information about the fonts chosen from the CommonDialog control is contained
+in the control's properties. Table 14.4 shows the control's properties and the font
+attributes that each manipulates.</P>
+<P>
+<H4>TABLE 14.4&nbsp;&nbsp;Control Properties That Store Font Attributes</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Attribute</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">FontName</TD>
+		<TD ALIGN="LEFT">The name of the base font</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">FontSize</TD>
+		<TD ALIGN="LEFT">The height of the font in points</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">FontBold</TD>
+		<TD ALIGN="LEFT">Whether boldface is selected</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">FontItalic</TD>
+		<TD ALIGN="LEFT">Whether italic is selected</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">FontUnderline</TD>
+		<TD ALIGN="LEFT">Whether the font is underlined</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">FontStrikethru</TD>
+		<TD ALIGN="LEFT">Whether the font has a line through it</TD>
+	</TR>
+</TABLE>
+</P>
+<P>The font information can be used to set the font of any control in your program
+or even to set the font for the Printer object. The following code shows how the
+font information would be retrieved and used to change the fonts in the txtSample
+TextBox.</P>
+<P>
+<PRE>`cdlGetFont is the name of a common dialog
+cdlGetFont.ShowFont
+txtSample.FontName = cdlGetFont.FontName
+txtSample.FontSize = cdlGetFont.FontSize
+txtSample.FontBold = cdlGetFont.FontBold
+txtSample.FontItalic = cdlGetFont.FontItalic
+txtSample.FontUnderline = cdlGetFont.FontUnderline
+txtSample.FontStrikethru = cdlGetFont.FontStrikethru
+</PRE>
+<H3><A NAME="Heading8"></A>Selecting Colors with the Color Dialog</H3>
+<P>The CommonDialog control's Color dialog lets users select colors for the foreground
+or background of your forms or controls (see Figure 14.9). Users can choose a standard
+color or create and select a custom color.</P>
+<P><A HREF="javascript:popUp('14fig08.gif')"><B>FIGURE 14.9</B></A> <I>The Color
+common dialog lets your users choose a color to use in the program.</I></P>
+<P>Setting up the CommonDialog control for colors is basically the same as for fonts.
+You set the Flags property to the constant cdlCCRGBInit and then call the ShowColor
+method.</P>
+<P>When users select a color from the dialog, its color value is stored in the control's
+Color property. The following code shows how to change a form's background color
+through the Color dialog:</P>
+<P>
+<PRE>CommonDlg1.Flags = cdlCCRGBInit
+CommonDlg1.ShowColor
+Myform.BackColor = CommonDlg1.Color
+</PRE>
+<H3><A NAME="Heading9"></A>Setting Printer Options with the Print Dialog</H3>
+<P>The CommonDialog control's Print dialog lets users select which printer to use
+for a print job and specify options for the print process. These options include
+specifying all pages, a range of pages, or the selection to print. There's also an
+option to specify the number of copies to be printed, as well as an option to print
+to a file.</P>
+<P>To run the Print dialog, call the CommonDialog control's ShowPrinter method. No
+flags are set before the call.</P>
+<P>In the Print dialog, users can select the printer from the Name list, which contains
+all printers installed in Windows. Below the Name list is the Status line, which
+tells you the current status of the selected printer.</P>
+<P>The Print dialog returns the information from users in the dialog's properties.
+The FromPage and ToPage properties tell you the starting and ending pages of the
+selected printout. The Copies property tells you how many copies users want printed.</P>
+<P>This is provided only as information. The Print dialog doesn't automatically set
+up the desired printout. In the Windows environment, the printer is considered to
+be nothing more than another output device and is treated programmatically the same
+as your computer monitor; there's no intelligence within your monitor that knows
+how to make a form or window. Your program does this and passes that output onto
+the monitor. The same is true with printing. Your program makes the output and then
+passes it onto the printer.</P>
+<P>
+<H2><A NAME="Heading10"></A>Making a Simple MDI Application</H2>
+<P>MDI is an acronym for Multiple Document Interface. An MDI application is one in
+which all windows of the application are enclosed in one containing window. Examples
+of an MDI application are Microsoft Word and Microsoft Excel (see Figure 14.10).</P>
+<P><A HREF="javascript:popUp('14fig09.gif')"><B>FIGURE 14.10</B></A> <I>Microsoft
+Excel is an example of an MDI application.</I></P>
+<P>Visual Basic has defined an MDI object named the MDIForm. A given VB application
+can contain <I>only</I> one MDIForm object but can have a multitude of other forms,
+some of which can be children of the MDIForm object and some of which can be independent,
+standalone windows. The child windows of an MDIForm don't contain their own menu.
+Instead, the child windows are controlled by the menu of their parent MDI form. If
+you add a menu to an MDI child form, at runtime it won't be visible within the MDI
+child form. The active child's menu appears on the parent window in place of the
+parent's menu.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Form and component naming</STRONG></P>
+	<P>The forms and other components of the sample application have suggested names,
+	but feel free to experiment and tailor the program to your needs. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Make a simple MDI application</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open a new project and name it SimplMDI.VBP.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Rename the project's default form to frmChild. Save the form file with
+	the name frmChild.vbp.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>From the <B>Project</B> menu, choose <B>Add MDI Form</B> to add an
+	MDI form to your project. Rename the MDI form as mdiMain. Save the form file with
+	the filename mdiMain.frm.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Set frmChild's MDIChild property to True to make the form a child of
+	mdiMain.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Press Ctrl+E or click to open the Menu Editor.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Create a menu for the mdiMain form, as shown in Figure 14.11. Set the
+	values of the Name and Caption properties of the menu and menu items, as shown in
+	Table 14.5. Make sure that you select the WindowList CheckBox (on the middle right
+	of the Menu Editor) for mnuWindow.
+	<P>
+</DL>
+
+<P><B>FIGURE 14.11</B> <I>You make menus for an MDI application by using the Visual
+Basic Menu Editor.</I></P>
+<P>
+<H4>TABLE 14.5&nbsp;&nbsp;Object Captions and Names for the SimplMDI Menu</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Caption</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Indent</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;File</TD>
+		<TD ALIGN="LEFT">mnuFile</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;Add</TD>
+		<TD ALIGN="LEFT">itmAdd</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">E&amp;xit</TD>
+		<TD ALIGN="LEFT">itmExit</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;Window</TD>
+		<TD ALIGN="LEFT">mnuWindow</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;Cascade</TD>
+		<TD ALIGN="LEFT">itmCascade</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">&amp;Tile</TD>
+		<TD ALIGN="LEFT">itmTile</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+</TABLE>
+</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>From the <B>Project</B> menu, choose <B>SimplMDI Properties</B>. On
+	the <B>General</B> page of the Project Properties dialog, select <B>mdiMain</B> from
+	the <B>Startup Object</B> drop-down list (see Figure 14.12).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('14fig12.gif')"><B>FIGURE 14.12</B></A> <I>Choose the
+MDI form to be the startup form.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>8. </B>Between the lines Private Sub itmAdd_Click() and End Sub, add the code
+	in Listing 14.2 (lines 2-9).
+	<P>
+</DL>
+
+<H4>LISTING 14.2 &nbsp;&nbsp;14LIST02.TXT--The itmAdd_Click() Event Procedure</H4>
+<PRE><B>01</B> Private Sub itmAdd_Click()</PRE>
+<PRE><B>02</B> Dim NewForm As New frmChild ` Declare another new form</PRE>
+<PRE><B>03</B> Dim FormNum%</PRE>
+<PRE><B>04</B> `Add it to the new form</PRE>
+<PRE><B>05</B> Load NewForm</PRE>
+<PRE><B>06</B> `Get a number for the new form, less the MDI parent</PRE>
+<PRE><B>07</B> FormNum% = Forms.Count - 1</PRE>
+<PRE><B>08</B> `Set its caption</PRE>
+<PRE><B>09</B> NewForm.Caption = &quot;I am MDI child: &quot; + CStr(FormNum%)</PRE>
+<PRE><B>10</B> End Sub</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Between the lines Private Sub itmExit_Click() and End Sub, add the
+	following code:
+	<P>
+</DL>
+
+<PRE>Un Load Me
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Between the lines Private Sub itmCascade_Click() and End Sub, add
+	the following code line:
+	<P>
+</DL>
+
+<PRE>Arrange vbCascade
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Between the lines Private Sub itmTile_Click() and End Sub, add the
+	following code line:
+	<P>
+</DL>
+
+<PRE>Arrange vbTileHorizontal
+</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>12. </B>Compile and run the code.
+	<P>
+</DL>
+
+<P>The code for SimplMDI works this way: First you create a standard VB project and
+do some renaming. Then you add an MDI form to the project. You go back to the default
+form created when you originally made the project. You make it a child of the mdiMain
+MDI form by changing its MDIChild property to True. Then you open the Menu Editor
+and make a menu for the mdiMain form. You check the WindowsList check box for mnuWindow
+to enable the menu to list all open windows of an MDI form object. After the menu
+is created, you change the startup form. Then you add the event handlers for the
+menu items. Finally, you compile and run (see Figure 14.13).</P>
+<P><A HREF="javascript:popUp('14fig13.gif')"><B>FIGURE 14.13</B></A> <I>The project
+SimplMDI shows you child forms within a MDI form.</I></P>
+<P>The itmAdd_Click() event procedure dynamically creates a new form by using the
+New operator. The new form's caption has a number, FormNum%--added to the end of
+the string assigned to it--to indicate the order in which the child form was created.
+FormNum% is determined by polling the application to report all its forms using the
+Forms.Count property. After all the forms are determined, 1 is subtracted to account
+for the uniqueness of the application-only MDIForm object. Therefore, within the
+scope of this application, the resulting number must be the number of child forms
+the MDIForm object contains.</P>
+<P>The application uses the MDIForm object's Arrange method in the itmCascade_Click()
+and itmTile_Click() event handlers. The Arrange method automatically positions child
+windows within an MDI window. The Arrange method takes an argument, <I>arrangement</I>,
+which can be set to one of the values in Table 14.6.</P>
+<P>
+<H4>TABLE 14.6&nbsp;&nbsp;Windows Arrange Settings</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Constant</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbCascade</TD>
+		<TD ALIGN="LEFT">0</TD>
+		<TD ALIGN="LEFT">Cascades all nonminimized MDI child forms</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbTileHorizontal</TD>
+		<TD ALIGN="LEFT">1</TD>
+		<TD ALIGN="LEFT">Tiles all nonminimized MDI child forms horizontally</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbTileVertical</TD>
+		<TD ALIGN="LEFT">2</TD>
+		<TD ALIGN="LEFT">Tiles all nonminimized MDI child forms vertically</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">vbArrangeIcons</TD>
+		<TD ALIGN="LEFT">3</TD>
+		<TD ALIGN="LEFT">Arranges icons for minimized MDI</TD>
+	</TR>
+</TABLE>
+
+<H3><A NAME="Heading11"></A>The Appearance Property</H3>
+<P>Users respond positively to forms with a three-dimensional (3D) style. Visual
+Basic allows you to make 3D forms by changing the Appearance property of an MDI form
+to 1 - 3D.</P>
+<P>
+<H3><A NAME="Heading12"></A>The AutoShowChildren Property</H3>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using the Show method</STRONG></P>
+	<P>If you have a form that loads data into itself, set the AutoShowChildren property
+	to False and use the Show method. First, load the data into the form. Second, make
+	sure that all the data loaded correctly. Last, show the form. If your form depends
+	on the integrity of data, this process offers you the highest degree of reliability.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>By default, the AutoShowChildren property is set to False. For this reason, unless
+you remember to use the Show method in your code to display the form after you load
+it, users will have to go through some sort of process to make the form visible.
+This can be a potential headache for you if you forget to use the Show method to
+display a newly loaded form. When you set AutoShowChildren to True, an MDI child
+form becomes visible when displayed through the Load statement. Doing this saves
+you programming time while also making your code more reliable.</P>
+<P>MDI applications have become a very popular way to give a uniform appearance to
+applications. It wasn't too long ago that Visual Basic was an SDI (single-document
+interface) application in which all windows of the Visual Basic IDE existed independent
+of one another. Although making the VB IDE to be SDI is a configuration option, many
+developers find the MDI configuration an easier alternative and more in line with
+the rest of the Visual Studio initiative. Also, with more and more applications taking
+on the look and feel of Web browsers, making your program an MDI application might
+serve you well for applications that require more than one window.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch13.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch13/ch13.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch15.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch15/ch15.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

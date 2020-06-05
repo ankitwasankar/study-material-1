@@ -1,0 +1,764 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 4 -- The Component Object Model: Interfaces, Automation, and Binding
+</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;4</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>The Component Object Model: Interfaces,
+Automation, and Binding</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#CharacteristicsofCOMObjects">
+Characteristics of COM Objects</A>
+<UL>
+<LI><A HREF="#InsideCOM">
+Inside COM</A>
+</UL>
+<LI><A HREF="#TheSundayCOMics">
+The Sunday COMics</A>
+<UL>
+<LI><A HREF="#InterfaceNamesandtheNatureoftheContract">
+Interface Names and the Nature of the Contract</A>
+</UL>
+<LI><A HREF="#AutomationDispatchInterfacesandBinding">
+Automation (Dispatch) Interfaces and Binding</A>
+<UL>
+<LI><A HREF="#PerformanceImpactsofBinding">
+Performance Impacts of Binding</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+When I read the VB5 documentation, I realized that VB has encapsulated
+ActiveX functionality so well I could probably get away with writing
+the entire book without mentioning COM at all, more or less the
+way Microsoft did. The problem was, every now and then they would
+use a term such as <I>automation interface</I> or <I>QueryInterface</I>
+without really explaining it, leaving the reader who is ignorant
+about COM with no clue as to whether the term is important or
+not and what the manual is actually trying to say. It seems to
+me that if you really want to write top-quality ActiveX components,
+you need to understand about interfaces, type libraries, dispatch
+IDs, early versus late binding, process spaces, and all of those
+other concepts that are mostly (but not entirely) handled by Visual
+Basic. In other words, you need to understand at least the fundamentals
+of the component object model. The challenge is to introduce these
+concepts so clearly that even a beginning programmer can understand
+them. Can I succeed where so many others have, how shall I put
+it, crashed and burned? That is for you to judge.
+<H2><A NAME="CharacteristicsofCOMObjects"><FONT SIZE=5 COLOR=#FF0000>
+Characteristics of COM Objects</FONT></A></H2>
+<P>
+In <A HREF="ch2.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch2.htm" >Chapter 2</A>we introduced the idea of COM, where a COM object
+(sometimes called a Windows object) has the following characteristics:
+<UL>
+<LI>A COM object may contain data. 
+<LI>It has one or more sets of functions called interfaces that
+can be called to operate on the data or perform other operations,
+such as display and data persistence. 
+<LI>The functions for the object are contained in an application
+or <I>dynamic link library</I>. These are typically the only functions
+that can directly access the data in the object.
+<LI>COM objects may be identified by a GUID, which is an identifier
+that uniquely identifies a particular type of object across all
+time and space.
+<LI>The GUID may be used by the system to associate a particular
+instance of an object with the application or .DLL that contains
+the functions for that object (that implements the object).
+</UL>
+<P>
+So far so good.
+<P>
+You've also seen that classes provide the fundamental mechanism
+for Visual Basic programmers to create their own objects and that
+because VBA is based on COM, these class objects are also COM
+objects. The properties and methods of an object become the interface
+for that object-the set of functions that are exposed by the object.
+<P>
+At this point, those C++ programmers who truly understand COM
+fire up their e-mail and send me a nasty message along the lines
+of, &quot;Dan, how dare you say that the properties and methods
+of the object become the interface for the object-you're supposed
+to be explaining COM and have just succeeded in misdirecting those
+of your readers who are learning this for the first time and confusing
+most of the rest. Your explanation is just plain wrong.&quot;
+<P>
+Mea Culpa. They are right.
+<P>
+You see, conceptually the properties and methods of an object
+can be thought of as an interface to the object. But when we talk
+about COM objects and ActiveX, the term <I>interface</I> has a
+very specific meaning. Well, actually meanings. And that's the
+subject of the rest of this chapter. The good news is this: once
+you understand what interfaces are from the COM perspective, you
+will be well on your way to becoming an expert on ActiveX technology,
+because these concepts form the basis for virtually everything
+you will be doing.
+<H3><A NAME="InsideCOM">
+Inside COM</A></H3>
+<P>
+You already know that a COM object will be called on to expose
+a set of functions. In <A HREF="ch2.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch2.htm" >Chapter 2</A>we talked about a COM object
+being able to expose a set of functions that would allow it to
+draw itself into a device context. Not every COM object has a
+visual interface, so clearly not every COM object needs to contain
+the particular set of functions used for drawing. In other words,
+not every COM object has an interface for viewing the object.
+<P>
+We also talked about a COM object being able to expose a set of
+functions that would allow it to save itself into a file, or into
+a stream or storage using OLE structured storage. But again, not
+every object needs to persist in its state, so not every COM object
+will support that set of functions. Not every COM object has an
+interface for saving and loading itself to and from streams and
+storages.
+<P>
+Put these two paragraphs together and you can logically see one
+of the key features of COM: that a COM object can support more
+than one interface! A COM object may, if it so chooses, implement
+an interface named IViewObject2 that allows it to draw itself
+into a device context. (Allow me to duck the subject of interface
+names for a short while. Suffice it to say that a particular interface
+can always be identified by a GUID, but that we use human readable
+names for convenience.) An object may, if it so chooses, implement
+an interface named IStream that allows itself to save its data
+into a stream. The author of the object may choose to have his
+or her object implement as many interfaces as desired. If an interface
+is implemented, all of the functions that define that interface
+must be implemented.
+<P>
+I realize this may seem confusing, but allow me to go on just
+a bit further before we backtrack and tackle this subject again
+in a slightly different way.
+<P>
+Every object must implement at least one interface. This is a
+special interface named IUnknown. This interface consists of three
+functions:
+<UL>
+<LI>AddRef
+<LI>Release
+<LI>QueryInterface
+</UL>
+<P>
+Every COM object has an internal reference counter that keeps
+track of how many times it is being referenced. The AddRef function
+in the IUnknown Interface increments the reference counter. The
+Release function decrements it. If you release an object and the
+reference count becomes zero, the system knows it can delete the
+object.
+<P>
+We're going to talk more about reference counting later in this
+book. But for now, here is a short code fragment that illustrates
+what Visual Basic is doing with these functions behind the scenes.
+<BLOCKQUOTE>
+<PRE>
+Dim ob As Object           ' Defines variable ob. No object exists
+Dim ob2 As Object          ' Defines variable ob2. No object exists
+Set ob = new myobject      ' Creates object myobject. Calls AddRef for
+                           ' the object. Reference count is now 1
+Set ob2 = ob               ' Sets ob2 to reference the object. Calls
+                           ' AddRef for the object. Reference count is
+                           ' now 2
+Set ob2 = nothing          ' Sets ob2 to nothing. Calls Release for the
+                           ' object. Reference count is now 1
+Set ob = nothing           ' Sets ob to nothing. Calls Release for the
+                           ' object. Reference count is now 0
+                           ' Object is freed and it's termination
+                           ' function is called.
+</PRE>
+</BLOCKQUOTE>
+<P>
+Now that you've seen reference counting, forget about it for the
+time being. It's a big subject that will be covered in Chapter
+13, &quot;Object Lifetime.&quot;
+<P>
+What we're interested in now is the third function of the IUnknown
+Interface, the function QueryInterface. QueryInterface has one
+purpose. It allows you to ask an object if it supports a particular
+interface and, if it does, to obtain a pointer to the code containing
+the functions for that interface. But what is a pointer to a function?
+<P>
+The code for an interface must exist somewhere in memory. This
+means each function has an actual memory address associated with
+it. A variable that holds a memory address is called a pointer.
+Now you may think that Visual Basic does not support pointers,
+but that is not quite true. You may not be able to define pointer
+variables, but an object variable is really nothing more than
+a pointer variable. It's just a specialized kind of pointer variable
+that can only point to OLE interfaces, the code for a group of
+functions that implements an interface.
+<P>
+So when you set an object variable to an object, what you have
+really done, behind the scenes, is obtain a pointer to an interface
+for the object and assign it to an object variable, which is really
+a pointer variable.
+<P>
+You will never explicitly call QueryInterface (or AddRef or Release)
+in your Visual Basic programs. But you will do so implicitly all
+the time.
+<P>
+You will never explicitly create an interface of this type in
+Visual Basic. But you will be creating a special kind of interface
+called an automation interface.
+<P>
+Now all of this may still be a bit confusing. I know I wrestled
+with it for quite awhile. I've found that sometimes the best way
+to learn a concept is to stop fighting it and relax. In that spirit,
+let's strip away the technical jargon, turn the page, and allow
+me to invite you to enjoy the Sunday COMics.
+<H2><A NAME="TheSundayCOMics"><FONT SIZE=5 COLOR=#FF0000>
+The Sunday COMics</FONT></A></H2>
+<P>
+<A HREF="comic1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/comic1.gif">TheSundayCOMics--Page 1</A>
+<P>
+<A HREF="comic2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/comic2.gif">TheSundayCOMics--Page 2</A>
+<P>
+<A HREF="comic3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/comic3.gif">TheSundayCOMics--Page 3</A>
+<P>
+<A HREF="comic4.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/comic4.gif">TheSundayCOMics--Page 4</A>
+<P>
+<A HREF="comic5.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/comic5.gif">TheSundayCOMics--Page 5</A>
+<P>
+<A HREF="comic6.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/comic6.gif">TheSundayCOMics--Page 6</A>
+<P>
+<A HREF="comic7.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/comic7.gif">TheSundayCOMics--Page 7</A>
+<P>
+<A HREF="comic8.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/comic8.gif">TheSundayCOMics--Page 8</A>
+<P>
+<A HREF="comic9.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/comic9.gif">TheSundayCOMics--Page 9</A>
+           
+<H3><A NAME="InterfaceNamesandtheNatureoftheContract">
+Interface Names and the Nature of the Contract</A></H3>
+<P>
+As a Visual Basic programmer, you're going to be creating automation
+interfaces, the <I>dispatch</I> <I>interfaces</I> described earlier.
+You will be deeply concerned with the functions and methods for
+the interface that are in the dispatch table. But before going
+into the subject of automation, let's take a more detailed look
+at the nature of non-dispatch interfaces (standard COM interfaces).
+This is important because, as you will see, many of the principles
+apply to automation interfaces as well.
+<P>
+Every COM object exposes at least one interface called <I>IUnknown</I>.
+But what does IUnknown mean? Interfaces, by convention, are given
+a name that begins with the letter I, which obviously stands for
+Interface. But this name is simply a human convention for naming
+the interface. Windows actually identifies interfaces by their
+GUID. The GUID for the IUnknown Interface is:
+<BLOCKQUOTE>
+<PRE>
+{00000000-0000-0000-C000-000000000046}.
+</PRE>
+</BLOCKQUOTE>
+<P>
+GUIDs, as you recall, are globally unique. So once a GUID is assigned
+to an interface, you can absolutely rely on the fact that when
+you request an interface with a particular GUID you will receive
+the same one, regardless of the object you are working with. OLE
+(or ActiveX) defines a large number of standard interfaces. They
+are used to implement everything from data exchange to object
+embedding. In fact, any time Microsoft wants to extend the functionality
+of ActiveX, all they need to do is define a new interface. The
+list of interfaces available on a system can be found in the system
+registry under the HKEY_CLASSES_ROOT\Interface key as shown in
+Figure 4.1.
+<P>
+<A HREF="f4-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f4-1.gif"><B>Figure 4.1 :</B> <I>Finding standard interfaces in the registry</I>.</A>
+<P>
+We've established that once you define an interface it can be
+uniquely identified throughout the universe through the use of
+its GUID. But there is one more critical requirement towards making
+COM work: <B>You see, an interface represents a contract.</B>
+<P>
+A contract is an agreement. What does it mean when we say that
+an object supports an interface? It means that the object implements
+all of the functions for that interface in a standard way. When
+we say that every object implements IUnknown, what we are really
+saying is that when you obtain the IUnknown Interface for an object,
+you will be able to call three functions: AddRef, Release, and
+QueryInterface. Those functions will always take the same parameters
+and return the same values regardless of whether the object is
+a picture, an animation, or a sound object. The functions will
+always appear in the same order in the declaration for the interface.
+The functions will always perform exactly the same operations.
+<P>
+However, the way those functions perform their task-the actual
+implementation in code-is not dictated by COM. An interface is
+a contract and a specification, but it does not dictate implementation.
+<P>
+The ramifications of this are significant. It means that objects
+can be implemented using different languages, even different types
+of processors. As long as the object exposes interfaces (which
+consist of pointers to functions) in a standard way and the functions
+for those interfaces can read the parameters and return values
+as specified by the COM standard, the object will work. This is
+why objects created with Visual Basic 5.0 can be accessed by C++
+programmers or by Access programmers. The language and implementation
+does not matter. Only the interface and the COM standard matter.
+<P>
+Thus when a word processor wants to display an object, it can
+request the IViewObject2 Interface using the QueryInterface function.
+If the object supports that interface, the word processor can
+display the object. The word processor does not need to know what
+type of object it is, only that it supports the requested interface.
+This also implies that if an object claims to support an interface,
+it must support it fully and correctly. Failure to do so will
+lead to problems ranging from functional errors all the way up
+to system exceptions.
+<P>
+The interface contract specifies the following:
+<UL>
+<LI>GUID-The ID that uniquely identifies the interface
+<LI>The order of functions in the interface
+<LI>The parameters to each function
+<LI>The return values of each function
+<LI>The operation that the function performs
+</UL>
+<P>
+It does not specify:
+<UL>
+<LI>How to implement the function
+<LI>The language in which the function should be implemented
+</UL>
+<P>
+But what happens if you need to change an interface?
+<P>
+You don't.
+<P>
+You see, if you remove a function or change its parameters, every
+application that is currently using that interface will fail to
+work with objects defined under the newer definition. If you add
+a function, then applications designed for the newer definition
+will fail to work with objects defined under the older definition.
+Either way, you have major problems.
+<P>
+The solution is to create a new interface with a different name.
+That's why we have interfaces such as IViewObject2. It is similar
+to IViewObject, except that it contains a new function. This solves
+the problem in both directions. Newer applications and objects
+can take advantage of the newer interface if they wish, with absolute
+confidence that the original interface will continue to work the
+same way it always has.
+<P>
+What happens if you have an object that implements an interface
+and you've discovered a way to recode it to improve performance?
+<P>
+Go right ahead. The interface contract does not dictate implementation.
+As long as you don't change the function definitions, the order
+in the interface, or the way that they work, you can change the
+code as much as you wish. What's more, any performance improvements
+you make to the code that implements the object will be instantly
+propagated to every application that uses the object!
+<H2><A NAME="AutomationDispatchInterfacesandBinding"><FONT SIZE=5 COLOR=#FF0000>
+Automation (Dispatch) Interfaces and Binding</FONT></A></H2>
+<P>
+The IDispatch Interface consists of the following functions:
+<UL>
+<LI>GetTypeInfoCount-Used to determine if type information is
+available for this interface
+<LI>GetTypeInfo-Used to retrieve type information for the interface
+<LI>GetIDsOfNames-Used to find the dispatch ID for a method or
+property
+<LI>Invoke-Used to execute a method or set or retrieve a property
+value
+</UL>
+<P>
+Now, of course you'll never actually call these functions from
+Visual Basic. The intent here is to get a feel for what is going
+on behind the scenes so you'll understand better how your own
+components work.
+<P>
+Of these functions, the latter two are the most important. The
+GetTypeInfoCount and GetTypeInfo functions are used to browse
+a list of the methods and properties for this interface. Type
+information includes not just the function names, but detailed
+information about the parameters, parameter types, and return
+values as well. A dispatch interface is not required to provide
+type information, but you need not worry about this, as your Visual
+Basic objects automatically implement these functions.
+<P>
+Each dispatch interface can provide any number of functions. There
+are three types of functions to consider:
+<OL>
+<LI>Calling a function (often referred to as calling or invoking
+a method).
+<LI>Setting a property
+<LI>Retrieving a property
+</OL>
+<P>
+These are the only ways to operate on an object using a dispatch
+interface. Each method or property supported by the interface
+has a dispatch ID-a number that identifies that method or property.
+Thus, while each method has its own dispatch ID, the function
+to set a property and the function to retrieve that same property
+will share the same dispatch ID.
+<P>
+This has a curious impact on your Visual Basic objects you may
+not be aware of. I've been asked whether there is any performance
+difference between exposing a variable in a class as a public
+variable or via Property Set and Property Get statements. The
+answer is, it doesn't matter. Allowing you to define a variable
+as public is a convenience provided by the Visual Basic language.
+Internally, access to that variable is provided in either case
+by separate property set, property get functions. This is the
+only mechanism a dispatch table provides for accessing properties
+in an object.
+<P>
+The GetIDsOfNames function of the IDispatch Interface allows you
+to obtain the dispatch ID for a method or property given its name.
+GetIDsOfNames is also able to retrieve identifiers for the method
+or property arguments. So, by calling GetIDsOfNames, you can retrieve
+the dispatch ID and parameter types for any method or property
+name.
+<P>
+Microsoft defines a number of standard dispatch IDs, all of them
+with negative values. For example: The dispatch ID for the Hwnd
+property of an ActiveX control is -515. The use of standard dispatch
+IDs makes it possible for ActiveX containers to handle certain
+methods or properties in a consistent manner, regardless of the
+object in question.
+<P>
+The Invoke function of the IDispatch Interface is the one that
+does the work. It takes the dispatch ID that is specified, an
+array of variants and structures containing parameter information,
+and actually calls the function.
+<P>
+You may be wondering at this point if this isn't a great deal
+of effort to go through to call a function. Consider the simple
+task of invoking a method called MyMethod for an object. Using
+the IDispatch Interface, the program must go through the following
+steps:
+<OL>
+<LI>Use GetIDsOfNames to find the dispatch ID for the word MyMethod
+<LI>Prepare an array of variants containing parameters to the
+method
+<LI>Call the Invoke function to execute the method.
+</OL>
+<P>
+Well, actually it is a great deal of effort. But it has one great
+advantage. The application using the object does not need detailed
+information about the interface before using the object. It can
+find out what it needs to know at runtime after the object already
+exists. This is called <I>late</I> <I>binding</I>. 
+<P>
+Late binding occurs in Visual Basic when you dimension an object
+variable to be <I>As Object</I>. An object variable can hold any
+type of object. Since the variable can reference any object and
+must support whatever methods or properties that object may implement,
+it clearly can have no way of knowing until runtime what those
+methods and properties may be. Without late binding and the IDispatch
+Interface, the As Object type of variable would not be possible.
+<P>
+But what if you know ahead of time the type of object that a variable
+will reference? Isn't there a way to get around the performance
+hit entailed by using IDispatch? 
+<P>
+Actually, there is. The trick is this: When an IDispatch Interface
+is implemented, somewhere there must exist a table of function
+pointers for the methods and properties supported by the interface.
+If a program using that object could figure out ahead of time
+the locations of the functions and necessary parameters, all it
+would need at runtime is a pointer to that table and it could
+call the functions directly. But how can you provide a pointer
+to that table at runtime? Easy-that's what a standard COM interface
+does! An interface that does double duty as both an IDispatch
+Interface and a standard interface is called a <I>dual interface</I>.
+<P>
+It gives applications a choice. When an application uses the direct
+interface for an object, it is called <I>early binding</I>. Figure
+4.2 shows how this works internally.
+<P>
+<A HREF="f4-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f4-2.gif"><B>Figure 4.2 :</B> <I>Inside a Visual Basic object</I>.</A>
+<P>
+When Visual Basic needs to access the methods or properties of
+an object, it starts with a reference to the object's IUnknown
+Interface. If the variable is dimensioned As Object, Visual Basic
+will use the QueryInterface function to obtain a reference to
+the object's IDispatch Interface (which, in this example, would
+actually be the same value, but it does not have to be). It can
+then call the Invoke function to execute the MyFunc method or
+access the MyProp property, which is implemented by two functions:
+one to set the property, the other to get it.
+<P>
+If the variable is dimensioned As MyClass, early binding is used.
+Visual Basic can use QueryInterface to obtain a reference to the
+MyClass interface-an ActiveX automation dual interface. This interface
+contains both the IUnknown and IDispatch interfaces within it.
+Visual Basic can call the MyFunc method or access the MyProp property
+functions directly through this interface without calling the
+Invoke function.
+<P>
+In Visual Basic you can implement early binding by adding a reference
+to an object via the references dialog box, then declaring a variable
+using the specific object type instead of As Object. This can
+substantially reduce the time it takes to access methods and properties
+in the object.
+<P>
+Have you ever wondered why most Visual Basic variables can be
+assigned directly, but object variables must be assigned using
+the Set command? It's because a completely different operation
+is occurring.
+<P>
+If you assign one variable to another, for example:
+<BLOCKQUOTE>
+<PRE>
+Dim A As string, B As string
+A = B
+</PRE>
+</BLOCKQUOTE>
+<P>
+Visual Basic simply copies the value of one variable to another.
+VB reads the actual data of variable B and sets a copy of that
+data into variable A. 
+<P>
+But if you are assigning objects:
+<BLOCKQUOTE>
+<PRE>
+Dim A As Myclass, B As New Myclass
+Set A = B
+</PRE>
+</BLOCKQUOTE>
+<P>
+Visual Basic actually does the following:
+<UL>
+<LI>B contains a pointer to the standard Myclass Interface for
+a newly created object.
+<LI>VB performs a QueryInterface on this interface to obtain another
+pointer to the standard Myclass Interface. This also increments
+the reference count for the object.
+<LI>The pointer is loaded into variable A.
+</UL>
+<P>
+What happens with the following code?
+<BLOCKQUOTE>
+<PRE>
+Dim A As Object, B As New Myclass
+Set A = B
+</PRE>
+</BLOCKQUOTE>
+<UL>
+<LI>B contains a pointer to the standard Myclass Interface of
+a newly created object.
+<LI>VB performs a QueryInterface on this interface to obtain another
+pointer to the IDispatch Interface for the object. This also increments
+the reference count for the object.
+<LI>The pointer is loaded into variable A.
+</UL>
+<P>
+And what if the object types don't match?
+<BLOCKQUOTE>
+<PRE>
+Dim A As OtherClass, B As New Myclass
+Set A = B
+</PRE>
+</BLOCKQUOTE>
+<UL>
+<LI>B contains a pointer to the standard Myclass Interface of
+a newly created object.
+<LI>VB performs a QueryInterface on this interface to obtain another
+pointer to the OtherClass Interface for the object. However, this
+operation fails because Myclass does not support the OtherClass
+Interface.
+<LI>Visual Basic reports a <I>type</I> <I>mismatch</I> error.
+</UL>
+<P>
+You'll read more about this in <A HREF="ch13.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch13.htm" >Chapter 13</A>.
+<H3><A NAME="PerformanceImpactsofBinding">
+Performance Impacts of Binding</A></H3>
+<P>
+How much of a difference does the binding type make when accessing
+an object's methods and properties? The Binding sample program
+in the <A HREF="ch4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch4.htm" >Chapter 4</A>samples directory on your CD-ROM demonstrates
+this. The main form contains a list box and a button control.
+The listing below shows the code for the program. The project
+contains a single class with two functions. One of the functions
+simply returns an integer-a very fast operation. The other function
+performs a longer set of string operations, simulating a more
+complex function.
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: A Guide to the Perplexed
+' Binding example
+' Copyright (c) 1997 by Desaware Inc.
+
+Option Explicit
+
+' A very fast operation
+Public Function FastOperation() As Integer
+   FastOperation = 1
+End Function
+
+' A somewhat slower operation
+Public Function SlowOperation() As Integer
+   Dim x&amp;
+   Dim s$
+   For x = 1 To 50
+      s$ = s$ &amp; &quot;X&quot;
+   Next x
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+The form creates a single instance of the Class1 object. Two object
+variables are set to reference this object during the Form_Load
+event. The EarlyBound variable is defined to the Class1 type.
+Because Visual Basic knows about the Class1 class at compile time,
+it is able to use the direct interface to the object and is thus
+early bound. The LateBound variable is defined to be As Object.
+Visual Basic does not know at compile time what type of object
+will be referenced by this variable, because you can set it at
+runtime to reference any type of object. This means Visual Basic
+must use the automation interface for all property and method
+access through this variable. Thus, it is late bound.
+<P>
+The measurement operation is very straightforward. The current
+time is recorded, then the FastOperation and SlowOperation functions
+for the object are called. This is done for both the EarlyBound
+and LateBound variables. The calls are performed multiple times
+to make it possible to measure the average duration of a call,
+given the rather poor granularity of the system timer. Even so,
+the early-bound fast operation is so fast it cannot be measured
+accurately with the number of repetitions defined in this example.
+Try varying the repeats<I> </I>constant to adjust the accuracy
+for your system.
+<BLOCKQUOTE>
+<PRE>
+' ActiveX: A Guide to the Perplexed
+' Binding example
+' Copyright (c) 1997 by Desaware Inc.
+
+Option Explicit
+
+Private Declare Function GetTickCount&amp; Lib &quot;kernel32&quot; ()
+
+' Mark the time
+Dim CurrentTime As Long
+
+Dim EarlyBound As Class1
+Dim LateBound As Object
+
+Const repeats = 50000
+
+' An actual object to work with
+Dim TheObject As New Class1
+
+Private Sub cmdTest_Click()
+   Dim ctr&amp;
+   Dim res&amp;
+   Dim EarlyFast As Long
+   Dim EarlySlow As Long
+   Dim LateFast As Long
+   Dim LateSlow As Long
+   
+   Screen.MousePointer = vbHourglass
+   CurrentTime = GetTickCount()
+   For ctr = 1 To repeats
+      res = EarlyBound.FastOperation
+   Next ctr
+   EarlyFast = (GetTickCount() - CurrentTime)
+   ' Now slow operation
+   CurrentTime = GetTickCount()
+   For ctr = 1 To repeats
+      res = EarlyBound.SlowOperation
+   Next ctr
+   EarlySlow = (GetTickCount() - CurrentTime)
+   
+   ' Late bound early
+   CurrentTime = GetTickCount()
+   For ctr = 1 To repeats
+      res = LateBound.FastOperation
+   Next ctr
+   LateFast = (GetTickCount() - CurrentTime)
+   ' Now slow operation
+   CurrentTime = GetTickCount()
+   For ctr = 1 To repeats
+      res = LateBound.SlowOperation
+   Next ctr
+   LateSlow = (GetTickCount() - CurrentTime)
+   
+   Screen.MousePointer = vbNormal
+
+   lstResults.AddItem &quot;Early Binding&quot;
+   lstResults.AddItem &quot;  Fast: &quot; &amp; GetTime(EarlyFast)
+   lstResults.AddItem &quot;  Slow: &quot; &amp; GetTime(EarlySlow)
+   lstResults.AddItem &quot;Late Binding&quot;
+   lstResults.AddItem &quot;  Fast: &quot; &amp; GetTime(LateFast)
+   lstResults.AddItem &quot;  Slow: &quot; &amp; GetTime(LateSlow)
+   lstResults.AddItem &quot;Binding overhead:&quot;
+   lstResults.AddItem &quot;  Fast: &quot; &amp; Format$((LateFast - EarlyFast) / LateFast,_
+   &quot;Percent&quot;)
+   lstResults.AddItem &quot;  Slow: &quot; &amp; Format$((LateSlow - EarlySlow) / LateSlow,_
+   &quot;Percent&quot;)
+
+End Sub
+
+Private Sub Form_Load()
+   Set EarlyBound = TheObject
+   Set LateBound = TheObject
+End Sub
+
+
+' Get a formatted string for the time in microseconds
+Public Function GetTime(timeval As Long) As String
+   ' timeval is the difference in milliseconds
+   GetTime = Format$(CDbl(timeval) / repeats * 1000#, &quot;0.###&quot;)
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+You'll probably want to run the executable version of the program;
+it is compiled into native code and is quite fast. You can run
+it in the VB environment, but be prepared to wait for a while.
+Figure 4.3 shows the program in action and some typical results.
+As you can see, for the short function, the binding overhead introduces
+a substantial delay-essentially 100% of the time spent for a late-bound
+fast operation. For slower functions, the binding overhead is
+correspondingly lower.
+<P>
+<A HREF="f4-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f4-3.gif"><B>Figure 4.3 :</B> <I>The binding program in action</I>.</A>
+<P>
+Now you might think that the slower function is the more representative
+of the two when it comes to accessing object methods, but this
+is not really the case. Not only are many object methods short,
+but object properties tend to be very simple and short as well.
+Thus the advantages of using early binding are significant in
+many cases.
+<P>
+<FONT SIZE=5 COLOR=#000000 FACE="Times">The Sunday COMics</FONT>
+<P>
+You may be wondering, why not always use early binding? Well,
+for one thing, there are situations where you may want a single
+variable to handle many types of objects. There are other situations
+where you may obtain an object from another server or program
+where the type definitions are not available ahead of time, or
+where an object wishes to change the properties and methods that
+it exposes. Some objects created using other tools have type libraries
+available but do not support dual interfaces. In these cases,
+Visual Basic can perform a limited type of early binding called
+<I>Dispid binding</I>. It pre-calculates the dispatch IDs for
+the functions and parameters at design time, and at runtime uses
+those values to call the functions, using the Invoke method on
+the IDispatch Interface.
+<P>
+One last comment about the IDispatch Interface. An object can
+have more than one. This has always been true under COM, but now
+it is true under Visual Basic as well, and this is a very exciting
+prospect indeed. You can implement multiple interfaces for an
+object using the Implements statement. <A HREF="ch5.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch5.htm" >Chapter 5</A>will delve further
+into the subjects of early versus late binding and the use of
+multiple interfaces with Visual Basic-created ActiveX objects.
+<HR>
+
+<CENTER><P><A HREF="ch3.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch3.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch5.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch5.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

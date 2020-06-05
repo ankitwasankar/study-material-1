@@ -1,0 +1,2155 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 10</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>The Order Entry System: Exception
+Handling and Browser Interaction</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+
+<UL>
+<LI><A HREF="#ErrorandExceptionHandling" >Error and Exception Handling</A>
+<LI><A HREF="#ImplementingExceptionandErrorHandlin" >Implementing Exception and Error Handling</A>
+<UL>
+<LI><A HREF="#Usingtryandcatch" >Using try and catch</A>
+<LI><A HREF="#Usingfinally" >Using finally</A>
+<LI><A HREF="#ThrowingExceptions" >Throwing Exceptions</A>
+<LI><A HREF="#UsingThrows" >Using Throws</A>
+<LI><A HREF="#DeclaringYourOwnExceptions" >Declaring Your Own Exceptions</A>
+</UL>
+<LI><A HREF="#UsingExceptionsintheOrderEntrySyst" >Using Exceptions in the Order Entry System</A>
+<LI><A HREF="#InteractingwiththeBrowser" >Interacting with the Browser</A>
+<LI><A HREF="#LookingattheFinalListingoftheOrde" >Looking at the Final Listing of the Order Entry System</A>
+<LI><A HREF="#WhatsWrongwiththeOrderEntrySystem" >What's Wrong with the Order Entry System?</A>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+Many languages do not have built-in capabilities to allow you
+to detect and deal with errors and mishaps efficiently. Luckily,
+Java gives you ways to handle these problems simply and effectively.
+<P>
+This chapter explores the process of handling exceptions and errors.
+In other words, you'll plan on a certain progression through your
+code, but you also will implement code that will cover situations
+when things don't go your way. One such instance of when things
+don't go right generates an exception called <TT>ClassNotFoundException</TT>.
+This, of course, is generated when the runtime looks for a class
+and cannot find it.
+<P>
+Different types of mishaps are defined in the Java libraries,
+each in separate classes. Each of these separate classes describes
+what kind of mishap occurs. You also can define your own <TT>Exception</TT>
+classes to customize how you are going to deal with something
+that goes awry in your program.
+<P>
+Handling exceptions and errors accomplishes several things. First,
+you want to minimize data loss. Also, you want to alert the user
+that something has gone wrong and try to specify exactly what
+went wrong as much as possible. You want get out of the program
+as cleanly as possible and minimize the effect this process may
+have on other applications or processes.
+<P>
+This chapter covers in-depth these concepts and the command structures
+to implement them.
+<P>
+This chapter also explores how you can get your applets to communicate
+and interact with the browser displaying them. You can instruct
+the browser to load and display a different URL, for example.
+The process of interacting with the browser also is covered in
+depth in this chapter.
+<P>
+Finally, you will finish up the Order Entry System in this chapter.
+You will add the capability to interact with the browser. You
+also will learn the ways you can get the information in the applet
+back to your server. A complete final listing is included at the
+end of this chapter.
+<H2><A NAME="ErrorandExceptionHandling"><B><FONT SIZE=5 COLOR=#FF0000>Error
+and Exception Handling</FONT></B></A></H2>
+<P>
+Why should you use exceptions and error handling? The following
+code structure should look familiar to you if you have ever tried
+to &quot;home-brew&quot; some code to deal with what now are called
+exceptions:
+<BLOCKQUOTE>
+<TT>int errcode = goGetaFile();<BR>
+if (err != ALLOK) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// deal with things. .<BR>
+} else {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// we're cool . .<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+What's wrong with this? Well, a number of things. First, you have
+to recode the method used to deal with a certain type of mishap
+over and over. But suppose that you implement a function to handle
+this. So, for every different error type, you'll need to create
+a different function to handle the error. Second, you cannot always
+return an error code from a function. What if you want to handle
+errors that might result from a function that returns an integer?
+How would you set which value specifies an error? What if you
+have nested procedures or method calls? How are you going to deal
+with saving the data saved in higher level classes? The answer
+is that you can't. There must be a better way, and there is.
+<P>
+<I>Error </I>and <I>exception </I>classes, as defined in Java,
+enable you to safely and easily deal with situations in which
+you want to handle errors and abnormal occurrences. Suppose that
+your program calls a nonexistent method in another class, or an
+image cannot be loaded; these are different types of exceptions.
+An example of a Java error is the <TT>OutofMemoryError</TT>,
+which is an error resulting from a lack of necessary free memory
+space.
+<P>
+The goal of this whole process is to remove the kind of home-brewed
+code demonstrated earlier in this section. It should enable you
+to develop an easy way to identify when mishaps occur and then
+specify another handler function to deal with them. When an exception
+or error occurs, your code throws an instance of the class that
+defines it. It then is caught by another segment of code designed
+to deal with the mishap.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+If you have any Ada or C++ programming experience, the exception-handling format discussed later in this chapter should be pretty familiar to you. Java is designed to extend and simplify exception and error handling. Ada has five exception classes, for example, whereas Java has more than three times that. C++ has only two types of exception classes. You also will notice that Java divides exceptions that normally are grouped into one category in other languages into two groups: exceptions and errors.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Both errors and exceptions are implemented in library classes
+that descend from the class <TT>Java.lang.Throwable</TT>.
+Figure 10.1 shows the inheritance path of the <TT>Exception</TT>
+and <TT>Error</TT> classes in the
+<TT>java.lang</TT> package.
+<P>
+<A HREF="f10-1.gif" ><B>Figure 10.1:</B> <I>The inheritance of the Exception and Error classes. Noice that both are descendants of the Throwable class.</I></A>
+<P>
+Different types of exceptions and errors are extensions of these
+two classes. The available Java exceptions follow:
+<BLOCKQUOTE>
+<TT>ArithmeticException<BR>
+ArrayIndexOutOfBoundsException<BR>
+ArrayStoreException<BR>
+ClassCastException<BR>
+ClassNotFoundException<BR>
+CloneNotSupportedException<BR>
+IllegalAccessException<BR>
+IllegalArgumentException<BR>
+IllegalMonitorStateException<BR>
+IllegalThreadStateException<BR>
+IndexOutOfBoundsException<BR>
+InstantiationException<BR>
+InterruptedException<BR>
+NegativeArraySizeException<BR>
+NoSuchMethodException<BR>
+NullPointerException<BR>
+NumberFormatException<BR>
+RuntimeException<BR>
+SecurityException<BR>
+StringIndexOutOfBoundsException</TT>
+</BLOCKQUOTE>
+<P>
+The available Java <TT>Error</TT>
+classes follow:
+<BLOCKQUOTE>
+<TT>AbstractMethodError<BR>
+ClassCircularityError<BR>
+ClassFormatError<BR>
+IllegalAccessError<BR>
+IncompatibleClassChangeError<BR>
+InstantiationError<BR>
+InternalError<BR>
+LinkageError<BR>
+NoClassDefFoundError<BR>
+NoSuchFieldError<BR>
+NoSuchMethodError<BR>
+OutOfMemoryError<BR>
+StackOverflowError<BR>
+UnknownError<BR>
+UnsatisfiedLinkError<BR>
+VerifyError<BR>
+VirtualMachineError</TT>
+</BLOCKQUOTE>
+<P>
+Why the difference between exceptions and errors? The organizational
+difference is needed because of the ways the different types need
+to be handled. Errors and the classes that derive from the <TT>Error</TT>
+class result from errors inside the system, such as lack of memory
+or some other error beyond your control. The idea in these instances
+is just to keep your program from crashing hard and simply to
+exit cleanly or figure a way around the problem. For this reason,
+your programming will not have to deal with these thrown <TT>Errors</TT>,
+because they usually are implemented by other classes that make
+sure those kind of errors don't occur and are handled nicely (instead
+of, for example, locking up the machine or crashing the operating
+system). In other words, you don't need to worry about handling
+<TT>OutofMemoryError</TT>s, <TT>StackOverflowError</TT>s
+and so on; they generally already are handled for you.
+<P>
+You can concentrate on handling the different types of exceptions
+that can rear their ugly heads during your programs. Runtime exceptions
+normally result from your own coding mistakes. For this reason,
+you should plan on incorporating this process of exception handling
+in order to cover for your own mistakes. This makes for much more
+effective and robust code.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Error handling and exception handling are implemented by the same process. They are both thrown and caught. Situations in which you will need to handle errors are very rare. Runtime exceptions are your main concern, because they are usually your fault. A number of other exceptions are available, such as <TT>ClassNotFoundException</TT> or <TT>IOException</TT>, which you may want to use only as a means to prompt the user that something in his installation or setup of your program is wrong. If you notice when you try to load an applet that is specified by your HTML document but isn't there, a <TT>ClassNotFoundException</TT> is reported by Netscape.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="ImplementingExceptionandErrorHandlin"><B><FONT SIZE=5 COLOR=#FF0000>Implementing
+Exception and Error Handling</FONT></B></A></H2>
+<P>
+What if you could just say, in an easily understood format, &quot;Hey,
+I want you to try and do this stuff here and if anything goes
+wrong with any of the code, I want you to execute this code here
+to handle it.&quot; Well, that is exactly what happens in the
+case of handling exceptions and errors.
+<P>
+Four words are reserved in Java to enact the handling of <TT>Throwable</TT>
+objects. Remember that exceptions and errors are both descendants
+of the <TT>Throwable</TT> class. These
+four words are <TT>try</TT>, <TT>catch</TT>,
+<TT>finally</TT>, and <TT>throw</TT>.
+<H3><A NAME="Usingtryandcatch"><B><FONT SIZE=4>Using
+</FONT></B><TT><B><FONT SIZE=4>try</B></FONT></TT><B><FONT SIZE=4>
+and </FONT></B><TT><B><FONT SIZE=4>catch</B></FONT></TT></A>
+</H3>
+<P>
+To implement exception handling around one specific block of code,
+the words <TT>try</TT> and <TT>catch</TT>
+are positioned in the following structure:
+<BLOCKQUOTE>
+<TT>try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Some code that might throw an exception.
+.<BR>
+}<BR>
+catch (SomeException EX)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Do something appropriate in response
+. .<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+So what's going on in this segment? Well, the statement says,
+&quot;OK, I want you to <TT>try</TT>
+this code here and if anything in there throws an exception, the
+<TT>catch</TT> statements coming up
+are going to figure out what to do.&quot; If you are accessing
+something using the URL for that location, for example, you can
+use this code:
+<BLOCKQUOTE>
+<TT>try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Doing something with a URL . .<BR>
+}<BR>
+catch (MalformedURLException EX) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Do something appropriate to deal with
+the problem . .<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+You also can catch multiple exceptions by using a <TT>try</TT>
+statement:
+<BLOCKQUOTE>
+<TT>try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Doing something&nbsp;&nbsp;. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<BR>
+<BR>
+}<BR>
+catch (MalformedURLException EX) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Do something appropriate to deal with
+the problem . .<BR>
+}<BR>
+catch (Exception E) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Do something appropriate to deal an
+exception in general . .<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+If some method or statement executed in the <TT>try</TT>
+block throws an exception, it is caught by the <TT>catch</TT>
+statement, which accepts the appropriate exception type and then
+executes the code inside its block.
+<H3><A NAME="Usingfinally"><B><FONT SIZE=4>Using
+</FONT></B><TT><B><FONT SIZE=4>finally</B></FONT></TT></A>
+</H3>
+<P>
+Suppose that you want some code to be executed no matter what
+happens in the <TT>try</TT> statement.
+You can use the <TT>finally</TT> clause
+after your <TT>try</TT>/<TT>catch</TT>
+block:
+<BLOCKQUOTE>
+<TT>try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Some code that might throw an exception
+. .<BR>
+}<BR>
+catch (SomeException SE) {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// What to do if some exception is thrown.
+. .<BR>
+<BR>
+} finally {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// I want you to do this no matter what,
+if things go wrong or right.<BR>
+<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+What happens? The code in the <TT>try</TT>
+block is executed. If some exception is thrown, the <TT>catch</TT>
+statement deals with it. Whether things go right or wrong, the
+code in the <TT>finally</TT> block
+executes.
+<P>
+This code is useful, for example, if you are modifying a file
+on disk and you want the file to revert back to its old state
+without keeping any changes, regardless of what happens. The <TT>finally</TT>
+block includes the code (or a call to a method) to close the file
+and then copies the backup you designated as the main file.
+<P>
+The code also is useful if you are in the process of transmitting
+data across a network, for example. Even if everything goes right
+or something goes wrong, you want to alert the other computer
+that it should not be expecting any more data from you. The following
+code represents this process:
+<BLOCKQUOTE>
+<TT>try {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Transmit data . .<BR>
+<BR>
+}<BR>
+catch (Error E) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(&quot;Error &quot; +
+E + &quot; resulted.&quot;)<BR>
+}<BR>
+catch (Exception E) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(&quot;Exception &quot;
++ E + &quot; resulted.&quot;);<BR>
+}<BR>
+finally&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Tell the other computer the transmission
+is over . .<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+It is important to know that as soon as code in the <TT>try</TT>
+block generates any class descendant from <TT>Throwable</TT>,
+the execution of the code stops. If the thrown class is handled
+in the following <TT>catch</TT>, it
+is handled there. Otherwise, it propagates up the class line.
+To reiterate, when something is thrown by code in a <TT>try</TT>
+block, the execution of that code is halted immediately.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+When catching exceptions or errors, when you specify one type of exception or error, that <TT>catch</TT> statement will catch that class along with every descendant class. For example, you might use the following code:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>catch (Throwable T) {</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+This will deal with everything that throws any instance of the <TT>Throwable</TT> class, along with <I>every</I> descendant of the <TT>Throwable</TT> class (remember the <TT>Throwable</TT> inheritance hierarchy in Figure 10.1).
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Suppose that you use this code:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>catch (Exception E) {</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+This catches instances of the <TT>Exception</TT> class, along with every descendant of that class.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="ThrowingExceptions"><B><FONT SIZE=4>Throwing
+Exceptions</FONT></B></A></H3>
+<P>
+It is apparent that other classes and their methods throw exceptions,
+so you also want your own code and classes to be able to throw
+them. To throw an exception called <TT>EX</TT>,
+for example, you simply insert the following:
+<BLOCKQUOTE>
+<TT>throw EX;</TT>
+</BLOCKQUOTE>
+<P>
+If you place this statement in a <TT>try</TT>
+block, you can catch the exception you just threw in the <TT>catch</TT>
+block following it:
+<BLOCKQUOTE>
+<TT>AnException EX = new AnException();<BR>
+try {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Something bad happens. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;throw FX;<BR>
+<BR>
+}<BR>
+catch (AnException AnotherFX) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Do something about it . .<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Why would you want to do this? Suppose that you want to do something
+if a certain function returns a value of 0. You use that function
+in the <TT>try</TT> block, and then,
+if the value returned is 0, you throw the <TT>ZeroValueException</TT>.
+Then you can catch it in the <TT>catch</TT>
+block and deal with it accordingly.
+<H3><A NAME="UsingThrows"><B><FONT SIZE=4>Using
+Throws</FONT></B></A></H3>
+<P>
+Suppose that you want to have your own class or a method throw
+exceptions. You would define your class as the following:
+<BLOCKQUOTE>
+<TT>public class ThrowSomething throws SomeException
+{</TT>
+</BLOCKQUOTE>
+<P>
+By adding the throws to the class or method definition, you alert
+other classes or methods that use it that they should expect the
+possibility of having to catch some kind of exception from your
+class's execution. You also can specify that you want to alert
+everyone else that you might want to throw more than one type
+of exception. To do this, simply separate multiple exception types
+in the declaration with commas. The following class might throw
+a <TT>SomeException</TT> class or
+an <TT>AnotherException</TT> class:
+<BLOCKQUOTE>
+<TT>public class ThrowTwoSomethings throws
+SomeException, AnotherException {<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Class declarations can get pretty heavy-duty in Java. The following is a valid declaration:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>public class CrazeeDeclaration throws SomeException, AnException extends Applet implements Runnable {</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+This declares a class, <TT>CrazeeDeclaration</TT>, which can throw some exception types, is an extension of the <TT>Applet</TT> class, and implements <TT>Runnable</TT> (a declaration dealing with threads, which is covered in <A HREF="ch16.htm" >Chapter 16</A>, &quot;Multithreading with Java&quot;).
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Don't set all your classes and methods to throw errors and <TT>RuntimeException</TT>s, or any of their descendants. All the <TT>RuntimeException</TT>s or any of the <TT>Error</TT> class and their descendants are handled already without your intervention. You simply don't have to worry about them.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+To specify when to throw an exception, insert the throw clause
+inside a class that throws an exception type. The following class
+demonstrates this:
+<BLOCKQUOTE>
+<TT>public class SomeSuckerClass throws SomeException
+{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Do some stuff . .<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// More stuff . .<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// If something went wrong . .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;If (CurrentValue == BadValue) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SomeException
+SE = new SomeException ();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw(SE);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+What happens? The code is acted on, and then if some bad thing
+happens that you want to throw an exception for, you create a
+new instance of your extension of the <TT>Exception</TT>
+class and then throw it. At that point, the code execution stops,
+the exception is thrown, and it travels up the hierarchy until
+it is handled. The execution does <I>not</I> come back to your
+code, so you should expect that when you throw an exception or
+an error class, you aren't coming back to execute the next line
+of code.
+<P>
+So, to sum things up, you simply alert the world that you are
+going to throw an exception through the <TT>throw</TT>
+clause. Then you create an instance of an exception and you throw
+it.
+<P>
+At times, you will want to throw your own exceptions. On these
+occasions, you declare your own extension of the <TT>Exception</TT>
+class. Notice that this was used previously when you threw an
+instance of <TT>AnException</TT>.
+The details of creating your own exception classes are covered
+in the next section.
+<H3><A NAME="DeclaringYourOwnExceptions"><B><FONT SIZE=4>Declaring
+Your Own Exceptions</FONT></B></A></H3>
+<P>
+Why do you want to declare your own instances of the <TT>Exception</TT>
+class? Well, there are a couple of reasons. First, if you have
+an exception that isn't handled adequately by any of the standard
+library exceptions, you can declare your own. Second, it enhances
+readability. But be sure not to go overboard in creating exceptions,
+because they easily clutter your code.
+<P>
+To create your own exception, simply extend the exception type
+or any of its descendants. Then create constructors for your class:
+<BLOCKQUOTE>
+<TT>public class MyVeryOwnException extends
+Exception {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The constructor.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;MyVeryOwnException () {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;MyVeryOwnException (String message) {
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super(message);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Why the second constructor? It is typical practice for the descendants of the <TT>Throwable</TT> class to allow a message to be included in the class. To include a message when you declare an instance of a <TT>Throwable</TT> class (or one of its descendants), simply send a message as a parameter when you declare the class. The following code declares a <TT>MalFormedURLException</TT> and sets the message:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>MalFormedURLException MFURLE = new MalFormedURLException(&quot;We're getting killed here!&quot;);</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+To retrieve the message, you can use this code:</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>AString = MFURLE.getMessage();</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+This places the message contained in the <TT>MFURLE</TT> class into the string <TT>AString</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="UsingExceptionsintheOrderEntrySyst"><B><FONT SIZE=5 COLOR=#FF0000>Using
+Exceptions in the Order Entry System</FONT></B></A></H2>
+<P>
+The first place you'll use exceptions is in the <TT>UpdateValues</TT>
+method. You might remember that the <TT>UpdateValues</TT>
+method is called whenever a change is made to the User Interface
+values. It recomputes the new price per item, the subtotal, and
+the total displayed by the applet. Listing 10.1 shows the <TT>updateValues</TT>
+method of the Order Entry System without the exception handling
+you will be adding.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 10.1. The </B><TT><B>UpdateValues</B></TT><B>
+void code listing.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;/* This void
+will change all of the values to match any changes<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in the input settings. First,
+it declares a number of variables<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; local to the method.&nbsp;&nbsp;Then,
+it sets a modifier variable and a<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base price variable depending
+on which items are selected in the<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; choice box, the list, and
+the slider.&nbsp;&nbsp;Then, it inserts those<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; values onto the applet panel.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;*/<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private void updateValues() {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The index of the selected size.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int
+WhichChoice = SizeChoice.getSelectedIndex();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The amount of items desired.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;int AmountSelected = OrderAmountSlider.getValue();
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The index of the selected product.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;int WhichProduct = ProductList.getSelectedIndex();
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;/* The initial base price and modifier.&nbsp;&nbsp;Remember,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the modifier is the amount
+the base price is multiplied<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by to get the price per item.
+<BR>
+*/<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;double CurrentBasePrice = 0.0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;double CurrentModifier = 0.0;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;/* This switch statement compares the
+index of the product<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; list, held in WhichProduct,
+and sets the inital<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BasePrice accordingly.<BR>
+*/<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;switch (WhichProduct) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+0:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdOneBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 1:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdTwoBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 2:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdThreeBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 3:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdFourBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;/* This switch statement compares the
+WhichChoice variable<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (which is the selected index
+in the sizeChoice choice<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; box) to the different indexes.&nbsp;&nbsp;And
+then sets the modifier<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accordingly.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;*/<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;switch (WhichChoice) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+3:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierSmall;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 2:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierMedium;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 1:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierLarge;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+case 0:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierJumbo;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Insert the
+number on the slider to the applet.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountLabel.setText(Integer.toString(AmountSelected)+
+&quot; &quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Compute the
+price per item and insert it onto the applet panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double PricePerItem
+= (CurrentBasePrice*CurrentModifier);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PricePerItemLabel.setText(Double.toString(PricePerItem)+
+&quot; &quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The subtotal
+is the number ordered times the price per item.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double SubTotal
+= (CurrentBasePrice*CurrentModifier*AmountSelected);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Insert the
+subtotal onto the applet panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SubTotalLabel.setText(Double.toString(SubTotal)+
+&quot; &quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* Since the total
+is the same as the subtotal<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (cause
+we only have one item to be ordered<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at
+a time), we can simply use the value in<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the
+subtotal.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TotalLabel.setText(SubTotalLabel.getText());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+If you examine the Order Entry System so far, you'll have a hard
+time finding instances that just scream <I>Use exception handling
+here!</I> So, you'll create one that will make for a simple example.
+<P>
+One thing that you might want to look for is that the <TT>AmountSelected</TT>
+is not 0. If it is 0, you don't really need to update the values.
+You can implement your own version of exception and have the <TT>updateValues</TT>
+method throw it to signify that the value is 0.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Using exceptions in this case is a bad idea since they are completely unnecessary. You should use exceptions in much more important areas such as dealing with input and output or network connections.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The first step is to define your own <TT>Exception</TT>
+class. You'll simply extend the <TT>Exception</TT>
+class in general:
+<BLOCKQUOTE>
+<TT>Exception ZeroValueException = new Exception
+(&quot;Zero Value Encountered.&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+You will place this in the <TT>updateValues</TT>
+method itself. Then you'll say that the <TT>updateValues</TT>
+method possibly will throw an instance of your new exception.
+This will be done by changing the class-method declaration for
+the <TT>updateValues</TT> method.
+The new declaration for the method follows:
+<BLOCKQUOTE>
+<TT>public void updateValues throws Exception
+{</TT>
+</BLOCKQUOTE>
+<P>
+So, the next step is that if you come across a 0 value for the
+<TT>AmountSelected</TT>, you will
+throw the <TT>ZeroValueException</TT>
+you created before by saying this:
+<BLOCKQUOTE>
+<TT>if (AmountSelected == 0) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;throw(ZeroValueException);<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+This throws your exception and jumps out of the method right there
+before anything is computed.
+<P>
+Finally, you'll need to have code to handle the exception you
+are throwing. To do this, you'll add a <TT>try</TT>/<TT>catch</TT>
+block around the calling of the <TT>updateValues</TT>
+method in the <TT>action</TT> and
+<TT>handleEvent</TT> methods of the
+Order Entry System applet. To do this, you'll use this code:
+<BLOCKQUOTE>
+<TT>try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;updateValues();<BR>
+}<BR>
+catch (Exception E) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out(E.getMessage());<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+This simply tries the <TT>updateValues</TT>()
+method and then catches any instances of descendants of the <TT>Exception</TT>
+class that are thrown.
+<P>
+This (unproductive) addition to the Order Entry System is included
+in Listing 10.2. The code changes are shown in <FONT FACE="AGaramond Bold">bold</FONT>
+type.
+<H2><A NAME="InteractingwiththeBrowser"><B><FONT SIZE=5 COLOR=#FF0000>Interacting
+with the Browser</FONT></B></A></H2>
+<P>
+It would be a waste to simply have your applets be static and
+encapsulated programs inside a browser. Java is designed to allow
+your applets to communicate with the browser and with each other.
+<P>
+Suppose that you want to get information in one applet and display
+it to another applet to be displayed. Or, you might want to tell
+the browser to display another Web page or load and play an audio
+clip. The next section tells you how to do these things.
+<P>
+The <TT>AppletContext</TT> interface
+is an interface designed to let applets communicate with the browser.
+Table 10.1 summarizes the methods available to you as part of
+the <TT>AppletContext</TT> interface.
+<P>
+<CENTER><B>Table 10.1. Methods available in the AppletContext
+interface.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=295><I>Function</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>Applet getApplet(<I>String name</I>);</TT>
+</TD><TD WIDTH=295>Gets an applet named <TT><I>name</I></TT>. If it can't find it, <TT>null</TT> is returned.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>AudioClip getAudioClip(URL <I>url</I>);</TT>
+</TD><TD WIDTH=295>Gets an audio clip at <TT>URL <I>url</I></TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>Enumeration getApplet();</TT>
+</TD><TD WIDTH=295>Lists the applets available in the current context. In other words, the list of those currently displayed.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>Image getImage(URL <I>url</I>);</TT>
+</TD><TD WIDTH=295>Gets an image at <TT>URL <I>url</I></TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>public void showDocument (URL <I>url</I>, <I>String target</I>);</TT>
+</TD><TD WIDTH=295>Shows a new document in a target window&nbsp;&nbsp;or frame. This may be ignored. Accepts the target strings: <TT>_self:show</TT> in current frame, <TT>parent:show</TT> in parent frame, <TT>top:show</TT> in&nbsp;&nbsp;top-most frame, <TT>blank:show</TT> in new unnamed top-level window, and <TT><I>&lt;other&gt;</FONT></I>:show</TT> in&nbsp;&nbsp;new top-level window named <TT><I>&lt;other&gt;</I></TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>void showDocument(URL <I>url</I>);</TT>
+</TD><TD WIDTH=295>Tells the browser to show a document at <TT>URL <I>url</I></TT>. Note: This may be ignored.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>void showStatus(<I>String status</I>);</TT>
+</TD><TD WIDTH=295>Sets the status string shown.</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+These methods are all implemented by the different browsers that
+can display Java applets. Notice that some of the interface methods
+can be ignored by the browser at their discretion. You should
+plan your applets accordingly. To find out how specific browsers
+treat the optional methods is a trial and error process. The extent
+to which these methods are implemented by each browser is dependent
+upon the manufacturer's preference.
+<P>
+So how do you implement these methods? Suppose that you want your
+applet to get an image at a specific URL. You can use this code
+to load an image and then store it in the <TT>Image</TT>
+class:
+<BLOCKQUOTE>
+<TT>Image NetImage = getImage(url);<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+For more information on the <TT>URL</TT> class, <A HREF="ch12.htm" >see Chapter 12</A>, &quot;Network Programming with Java.&quot;
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+If you want to tell the browser to load another document contained
+at URL
+<BLOCKQUOTE>
+<TT><A TARGET="resource window" HREF="http://mega.dinky.com/~girdleyj/a.html">http://mega.dinky.com/~girdleyj/a.html</A></TT>
+</BLOCKQUOTE>
+<P>
+you can use this code:
+<BLOCKQUOTE>
+<TT>URL aURL = new URL(&quot;http://mega.dinky.com/~girdleyj/a.html&quot;);
+<BR>
+getAppletcontext().showdocument(aurl);</TT>
+</BLOCKQUOTE>
+<P>
+This constructs a new instance of the <TT>URL</TT>
+class and then sets it. The next line then tells the browser to
+show that document at the URL specified.
+<P>
+Another version of the <TT>showDocument</TT>
+method is available. As summarized before, it takes this form:
+<BLOCKQUOTE>
+<TT>getAppletContext().showDocument (URL
+aURL, String Target);</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>URL</TT> specified tells the
+browser which document to load. <TT>Target</TT>
+tells the browser where to put it. You can tell the browser to
+display the document and those constants in many places (refer
+to Table 10.1). The most powerful of these constants are those
+that allow you to tell the browser to create a new frame, which
+can be a frame inside of a viewer or a new window itself.
+<P>
+Suppose that you want to tell the browser to display a document
+in the current frame. You can use this code:
+<BLOCKQUOTE>
+<TT>getAppletContext().showDocument (aURL,
+&quot;_self&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+If you want to create a new browser window named Billy, you can
+use this code:
+<BLOCKQUOTE>
+<TT>getAppletContext().showDocument (aURL,
+&quot;Billy&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+And it's just that easy. Figure 10.2 shows the output from the
+Netscape 3.0 when displaying an applet that instructs the browser
+to display a new window with another HTML file. In this case,
+the new window simply displays a junk text file.<BR>
+<P>
+<A HREF="f10-2.gif" ><B>Figure 10.2. : </B><I>The output from telling the browser to open a new windows using the show Document command</I></A>
+<P>
+You'll use this feature to call up a new browser window that displays
+a help file in HTML format. You'll add this later in the chapter
+when you update the Order Entry System.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Why do some of the interface methods require that you first specify the <TT>getAppletContext()</TT> method before you can use them? Well, if you look at the actual implementation of the <TT>Applet</TT> class, you will notice that sometimes you can simply just use these functions from the <TT>AppletContext</TT> interface without specifying the interface itself, because they are declared again by the <TT>Applet</TT> class. To use the <TT>showDocument</TT> method in general, for example, you can use this code: 
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>getAppletContext().showDocument(. . . );</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+If you are unable to get a method to work that you know is in the interface, you might want to try this code to call it directly instead of going through the applet itself.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Using Parameters in Applets</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=558>
+<BLOCKQUOTE>
+The <TT>java.awt.Applet</TT> class specifies a method called <TT>getParameter</TT>, which allows you to get parameters specified in the HTML document containing your applet. The parameters are referenced by name.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<A HREF="ch5.htm" >See Chapter 5</A>, &quot;Writing a Java Applet: The Order Entry System,&quot; to learn how to specify parameters for your applets.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+The <TT>getParameter</TT> function returns a string that is the value sent in. Suppose that you have the following applet declaration:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>&lt;APPLET CODEBASE = &quot;http://Madeup.com/&quot; CODE = &quot;YourMama.class&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WIDTH = 100 </FONT><FONT SIZE=2>&Acirc;</FONT>HEIGHT = 50&gt;
+<BR>
+&lt;PARAM NAME = Pone value=&quot;1&quot;&gt;<BR>
+&lt;PARAM NAME = Asd value = &quot;Jack Dempsey&quot;&gt;<BR>
+&lt;/APPLET&gt;</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+To retrieve the value stored in parameter <TT>Pone</TT>, you can use this code:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>String InPone = getParameter (&quot;Pone&quot;);</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Notice that the parameter is always a string. If you want to send in values, you must convert the string to an integer. You can do this by using the <TT>Integer</TT> class, which is a wrapper for the integer type that provides different utility functions to deal with integers. One such method is the <TT>ParseInt</TT> function, which enables you to parse a string and return an integer. If you want to get the value stored in the <TT>Pone</TT> parameter, for example, you can use this code:
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>AnInt = Integer.parseInt(InPone);</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+This places the number in the <TT>InPone</TT> variable into the <TT>AnInt</TT> integer. Easy. This feature is useful, for example, if you are making an applet in which you want to allow users implementing it to have different choices for the colors, borders, and so on for your applet without creating a new version for each combination of choices.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="LookingattheFinalListingoftheOrde"><B><FONT SIZE=5 COLOR=#FF0000>Looking
+at the Final Listing of the Order Entry System</FONT></B></A>
+</H2>
+<P>
+This chapter set a couple of goals for improving the Order Entry
+System with the concepts presented here. First, you'll set things
+so that an &quot;about&quot; document describing the Order Entry
+System appears in a new window after the Order button is clicked,
+as shown in Figure 10.3.
+<P>
+<A HREF="f10-3.gif" ><B>Figure 10.3.</B> : <I>The final appearance of the Order Entry System with separate windows function added.</I></A>
+<P>
+You will use the <TT>showDocument</TT>
+method in the <TT>AppletContext</TT>
+interface. The <TT>showDocument</TT>
+method accepts an instance of the class <TT>URL</TT>
+and then displays it in a target you specify. First, you'll want
+to create your own instance of the <TT>URL</TT>
+class that points to the about.html file. Use this code:
+<BLOCKQUOTE>
+<TT>try {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;URL HelpURL = new URL (getDocumentBase(),
+&quot;about.html&quot;);<BR>
+} catch (Exception e) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(e.getMessage());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<P>
+Why the <TT>try</TT> statement? Well,
+the constructor for the <TT>URL</TT>
+class might throw an exception, so you have to deal with it. If
+there is a problem, you need to catch the exception and deal with
+it appropriately.
+<P>
+Next, you need to tell the browser to display that document at
+that URL:
+<BLOCKQUOTE>
+<TT>getAppletContext().showDocument(HelpURL);</TT>
+</BLOCKQUOTE>
+<P>
+And that's it. The new browser window loads with the about.html
+document displayed.
+<P>
+You also will want to implement the (frivolous) exception handling
+that was described previously in the final version.
+<P>
+Listing 10.2 shows the final version of the Order Entry System,
+with the changes made in this chapter displayed in <FONT FACE="AGaramond Bold">bold</FONT>
+type.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 10.2. The Order Entry System Revisited.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.applet.*;<BR>
+import java.net.*;<BR>
+<BR>
+public class OrderEntrySystem extends Applet {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;OrderEntryFrameType OESFrame;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Button Order = new Button(&quot;Click
+to Order&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Image ProductImage;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void init()&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(Order);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public boolean handleEvent(Event InEvent)
+{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Load
+the logo image. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Image
+LogoInApplet = getImage(getDocumentBase(), &quot;OESLogo.gif&quot;);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (InEvent.target
+== Order) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Order.disable();
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Try to create a new URL . .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;URL
+HelpURL = new URL (getDocumentBase(), &quot;about.html&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Show the applet in a new window. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getAppletContext().showDocument(HelpURL,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;About
+the Order Entry System&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+catch (Exception e) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(e.getMessage());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Display the new window . .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OESFrame
+= new OrderEntryFrameType(&quot;Order Entry System&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OESFrame.resize(430,500);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OESFrame.setup(LogoInApplet);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OESFrame.show();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return super.handleEvent(InEvent);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}<BR>
+<BR>
+class OrderEntryFrameType extends Frame {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;OrderEntryFrameType (String InTitle) {
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Call the Frame
+constructor . .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super(InTitle);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the background
+color for the Applet frame. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setBackground(Color.white);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;WarningDialog WDialog = new WarningDialog(this,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&quot;You have not entered a name. &quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Panel Pan = new Panel();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setup(Image LogoInApplet)
+{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the initial
+grid bag layout for the frame.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagLayout
+PrimaryLayout = new GridBagLayout();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setLayout(PrimaryLayout);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Declare the
+constraints for the Logo.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+LogoConstraints = new GridBagConstraints();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Construct the
+new canvas. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LogoCanvas Logo
+= new LogoCanvas(LogoInApplet);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LogoConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the constraints
+for the logoinApplet.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(Logo,
+LogoConstraints);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the logo
+canvas to the applet face.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(Logo);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Declare the
+constraints for the Logo.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+HBarConstraints = new GridBagConstraints();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Construct the
+new canvas. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HorizBar ProdBar
+= new HorizBar(&quot;Product&quot;, 425);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Say that we
+want the logo to be the last thing on the line.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HBarConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the constraints
+for the logoinApplet.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(ProdBar,
+HBarConstraints);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the logo
+canvas to the applet face.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(ProdBar);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Declare and
+initialize the product panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel ProductPanel
+= new Panel();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the layout
+for the product panel and set the constraints for<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// the components
+inside of the product panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagLayout
+ProductPanelLayout = new GridBagLayout();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+InProductPanelConstraints =<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+new GridBagConstraints();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanel.setLayout(ProductPanelLayout);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Here we will
+set the list panel, which will hold the<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// list choice
+method and insertion.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel ListPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ListPanel.setLayout(new
+BorderLayout());<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Label ProductLabel
+= new Label(&quot;Products&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ListPanel.add(&quot;North&quot;,
+ProductLabel);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create the
+list, 4 items visible, no multiple<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// selections.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList =
+new List(4, false);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// AddItems to
+the List.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Oscar&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Lionhead&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Jack
+Dempsey&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList.addItem(&quot;Angelfish&quot;);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the List
+to the list panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ListPanel.add(&quot;Center&quot;,ProductList);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the imbedded
+panel to the product panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints.anchor
+= GridBagConstraints.NORTH;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanelLayout.setConstraints(ListPanel,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanel.add(ListPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Another panel
+which will be imbedded in the product panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel SizePanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizePanel.setLayout(new
+BorderLayout());<BR>
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add a label
+to the choice of sizes.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizePanel.add(&quot;North&quot;,
+new Label(&quot;Size:&quot;));<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create the
+Choice box.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice = new
+Choice();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// AddItems to
+the List.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Jumbo&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Large&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Medium&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.addItem(&quot;Small&quot;);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the Choice
+to the Applet panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizePanel.add(&quot;Center&quot;,SizeChoice);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the imbedded
+panel to the product panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanelLayout.setConstraints(SizePanel,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanel.add(SizePanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Another
+panel that will be imbedded in<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the
+product panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel AmountPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountPanel.setLayout(new
+BorderLayout());<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add a label
+to the slider.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountPanel.add(&quot;North&quot;,
+new Label(&quot;Amount:&quot;));<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Another
+imbedded panel that will contain<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the
+slider and the output label.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel SliderPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SliderPanel.setLayout(new
+FlowLayout());<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Insert the
+label that says how many are to be ordered<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// of the item.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SliderPanel.add(AmountLabel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create a vertical
+slider, initial value of 0,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// minimum value
+of 0, maximum value of 144.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OrderAmountSlider
+= new<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scrollbar(Scrollbar.HORIZONTAL,
+0, 0, 0, 144);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Insert the
+slider to the Applet panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SliderPanel.add(OrderAmountSlider);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountPanel.add(&quot;Center&quot;,
+SliderPanel);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the imbedded
+panel to the product panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanelLayout.setConstraints(AmountPanel,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanel.add(AmountPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The last panel
+that will be imbedded in the product panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel TotalPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TotalPanel.setLayout(new
+BorderLayout());<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the subtotal
+label and a label saying that it is the subtotal.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TotalPanel.add(&quot;North&quot;,
+new Label(&quot;Total: &quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TotalPanel.add(&quot;South&quot;,TotalLabel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanelLayout.setConstraints(TotalPanel,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanel.add(TotalPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the imbedded
+panel to the product panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanelLayout.setConstraints(TotalPanel,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InProductPanelConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanel.add(TotalPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Set the
+constraints for the product panel,<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;which
+will contain product choices, size, etc.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+ProductPanelConstraints = new GridBagConstraints();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The product
+panel will take up the rest of the space on this line.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductPanelConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the constraints
+for the product panel's insertion.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(ProductPanel,
+ProductPanelConstraints);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the product
+panel to the frame.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(ProductPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Construct the
+new canvas. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HorizBar InfoBar
+= new HorizBar(&quot;Your Information&quot;, 425);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Say that we
+want the logo to be the last thing on the line.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HBarConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the constraints
+for the logoinApplet.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(InfoBar,
+HBarConstraints);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the logo
+canvas to the applet face.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(InfoBar);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The second
+panel to be imbedded in the frame is the info panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// This panel
+gets the information about the user.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagLayout
+InfoPanelLayout = new GridBagLayout();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel InfoPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+InfoPanelConstraints = new GridBagConstraints();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelConstraints.gridwidth
+= GridBagConstraints.RELATIVE;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanel.setLayout(InfoPanelLayout);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+InInfoConstraints = new GridBagConstraints();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints.anchor
+= GridBagConstraints.WEST;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Label InfoLabel
+= new Label(&quot;Your information: &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(InfoLabel,
+InInfoConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanel.add(InfoLabel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The name entry
+field area.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel NameFieldPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NameFieldPanel.setLayout(new
+BorderLayout());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NameFieldPanel.add(&quot;West&quot;,new
+Label(&quot;Name:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NameFieldPanel.add(&quot;East&quot;,NameEntryField);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints.anchor
+= GridBagConstraints.EAST;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(NameFieldPanel,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanel.add(NameFieldPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The Street
+entry area implementation.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel StreetFieldPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StreetFieldPanel.setLayout(new
+BorderLayout());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StreetFieldPanel.add(&quot;West&quot;,new
+Label(&quot;Street:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StreetFieldPanel.add(&quot;East&quot;,StreetEntryField);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(StreetFieldPanel,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InInfoConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanel.add(StreetFieldPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel CityFieldPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CityFieldPanel.setLayout
+= new BorderLayout());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CityFieldPanel.add(&quot;West&quot;,new
+Label(&quot;City:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CityFieldPanel.add(&quot;East&quot;,CityEntryField);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(CityFieldPanel,
+InInfoConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanel.add(CityFieldPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The zip entry
+field implementation.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel ZipFieldPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZipFieldPanel.setLayout(new
+BorderLayout());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZipFieldPanel.add(&quot;West&quot;,new
+Label(&quot;Zip:&quot;));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZipFieldPanel.add(&quot;East&quot;,ZipEntryField);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanelLayout.setConstraints(ZipFieldPanel,
+InInfoConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InfoPanel.add(ZipFieldPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(InfoPanel,
+InfoPanelConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the info
+panel to the frame layout.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(InfoPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel CommentPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagLayout
+CommentPanelLayout = new GridBagLayout();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+CommentPanelConstraints =<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new
+GridBagConstraints();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CommentPanelConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CommentPanel.setLayout(CommentPanelLayout);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+InCommentConstraints = new GridBagConstraints();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The comment
+label.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InCommentConstraints.anchor
+= GridBagConstraints.WEST;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InCommentConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Label CommentLabel
+= new Label(&quot;Comments: &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CommentPanelLayout.setConstraints(CommentLabel,
+InCommentConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CommentPanel.add(CommentLabel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the comment
+box.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InCommentConstraints.anchor
+= GridBagConstraints.CENTER;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InCommentConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CommentPanelLayout.setConstraints(CommentTextArea,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InCommentConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CommentPanel.add(CommentTextArea);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(CommentPanel,
+CommentPanelConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the info
+panel to the frame layout.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(CommentPanel);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add and create
+the repeat customer checkbox.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panel ContactPanel
+= new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanel.setLayout(new
+BorderLayout());<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add a label
+to the ContactMethodGroup.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanel.add(&quot;North&quot;,new
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Label(&quot;How
+would you like to be contacted? &quot;));<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Declare the
+checkbox group, and allocate space.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CheckboxGroup
+ContactMethodGroup;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactMethodGroup
+= new CheckboxGroup();<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Create some
+checkboxes to put in the group.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Checkbox EmailBox
+= new Checkbox(&quot;Email&quot;,ContactMethodGroup,true);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Checkbox PhoneBox
+= new<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Checkbox(&quot;Phone&quot;,ContactMethodGroup,false);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Checkbox MailBox
+= new<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Checkbox(&quot;US
+Mail&quot;,ContactMethodGroup,false);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the checkboxes
+into the applet panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanel.add(&quot;West&quot;,EmailBox);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanel.add(&quot;Center&quot;,PhoneBox);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanel.add(&quot;East&quot;,MailBox);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Sets the constraints
+for the contact panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+ContactPanelConstraints =<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+new GridBagConstraints();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanelConstraints.gridwidth
+= 2;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ContactPanelConstraints.weightx
+= 2.0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(ContactPanel,
+ContactPanelConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(ContactPanel);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Insert the
+different checkboxes into the panel.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+CustCheckBoxConstraints =&nbsp;&nbsp;new GridBagConstraints();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CustCheckBoxConstraints.weightx
+=1.0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CustCheckBoxConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Checkbox RepeatCustCheckBox
+= new Checkbox(&quot;Repeat Customer?&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(RepeatCustCheckBox,
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CustCheckBoxConstraints);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(RepeatCustCheckBox);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Construct the
+new canvas. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HorizBar ButtonBar
+= new HorizBar(&quot;Commands&quot;, 425);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the constraints
+for the logoin applet.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(ButtonBar,
+HBarConstraints);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add the logo
+canvas to the applet face.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(ButtonBar);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+ButtonConstraints = new GridBagConstraints();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ButtonConstraints.gridx
+= GridBagConstraints.RELATIVE;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Spreads the
+buttons out across the window.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ButtonConstraints.weightx
+= 1.0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ButtonConstraints.weighty
+= 1.0;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Declare, set,
+and add the &quot;Submit&quot; button.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SubmitButton =
+new Button(&quot;Submit&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(SubmitButton,
+ButtonConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(SubmitButton);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Declare, set,
+and add the &quot;Clear&quot; button.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ClearButton =
+new Button(&quot;Clear&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(ClearButton,
+ButtonConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(ClearButton);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the constraints
+and insert the quit button.&nbsp;&nbsp;This button<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// due to the
+REMAINDER setting will be the last on the line.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GridBagConstraints
+LastButtonConstraints = new GridBagConstraints();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LastButtonConstraints.gridwidth
+= GridBagConstraints.REMAINDER;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;QuitButton = new
+Button(&quot;Quit&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrimaryLayout.setConstraints(QuitButton,
+LastButtonConstraints);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(QuitButton);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Method that
+resets all of the internal values.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resetValues();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The subtotal and total variables.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private double SubTotalOne = 0.0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private double Total = 0.0;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The price multipliers for each different
+product size.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private double multiplierSmall = 0.5;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private double multiplierMedium = 1.0;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private double multiplierLarge = 1.5;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private double multiplierJumbo = 2.25;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The local constant base prices.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;static double ProdOneBaseValue = 1.0;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;static double ProdTwoBaseValue = 1.33;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;static double ProdThreeBaseValue = 1.75;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;static double ProdFourBaseValue = 8.75;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Declare all of the variables we'll
+use.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Button SubmitButton;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Button ClearButton;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Button QuitButton;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Checkbox RepeatCustCheckBox;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Checkbox MailBox;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Checkbox EmailBox;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Checkbox PhoneBox;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private List ProductList;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Choice SizeChoice;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Scrollbar OrderAmountSlider;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The labels that will be variable and
+change when<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// the other selections are changed.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Label SubTotalLabel = new Label(&quot;$0.0
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Label TotalLabel = new Label(&quot;$0.0
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Label AmountLabel = new Label(&quot;0
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Label PricePerItemLabel = new
+Label(&quot;$0.0 &quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The entry field for the user to enter
+his name.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private TextField NameEntryField = new
+TextField(25);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private TextField ZipEntryField = new
+TextField(6);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private TextField StreetEntryField = new
+TextField(25);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private TextField CityEntryField = new
+TextField(25);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// The comment entry area.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private TextArea CommentTextArea = new
+TextArea(4, 25);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Our own exception . .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Exception ZeroValueException;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private void updateValues() throws Exception
+{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int WhichChoice
+= SizeChoice.getSelectedIndex();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int AmountSelected
+= OrderAmountSlider.getValue();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int WhichProduct
+= ProductList.getSelectedIndex();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double CurrentBasePrice
+= 0.0;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double CurrentModifier
+= 0.0;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (AmountSelected ==
+0) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw(ZeroValueException);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;switch (WhichProduct)
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+0:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdOneBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+1:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdTwoBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+2:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdThreeBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+3:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentBasePrice
+= ProdFourBaseValue;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;switch (WhichChoice)
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+3:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierSmall;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+2:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierMedium;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+1:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierLarge;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case
+0:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CurrentModifier
+= multiplierJumbo;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountLabel.setText(Integer.toString(AmountSelected)+
+&quot; &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double PricePerItem
+= (CurrentBasePrice*CurrentModifier);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PricePerItemLabel.setText(Double.toString(PricePerItem)+
+&quot; &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double SubTotal
+= (CurrentBasePrice*CurrentModifier*AmountSelected);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SubTotalLabel.setText(Double.toString(SubTotal)+
+&quot; &quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TotalLabel.setText(SubTotalLabel.getText());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// This method will be called when the
+user presses the &quot;Clear&quot; button and<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// also when the applet is initialized
+in the init() method.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void resetValues() {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Reset all of
+these labels to zero.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SubTotalLabel.setText(&quot;$0.0
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TotalLabel.setText(&quot;$0.0
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AmountLabel.setText(&quot;0
+&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PricePerItemLabel.setText(&quot;$0.0
+&quot;);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Clear all of
+the lists and choices.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProductList.select(0);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SizeChoice.select(0);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OrderAmountSlider.setValue(0);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Clear all of
+the text fields.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NameEntryField.setText(&quot;&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StreetEntryField.setText(&quot;&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CityEntryField.setText(&quot;&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZipEntryField.setText(&quot;&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public boolean handleEvent(Event InEvent)
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (InEvent.id
+== Event.SCROLL_LINE_UP ||<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InEvent.id
+== Event.SCROLL_LINE_DOWN)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;updateValues();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;catch
+(Exception e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (InEvent.target
+== ProductList) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;updateValues();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+catch (Exception e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (InEvent.target
+== ClearButton) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resetValues();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (InEvent.target
+== QuitButton)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Quit the applet.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.dispose();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (InEvent.target
+== SubmitButton) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Submit
+the order.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return super.handleEvent(InEvent);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public boolean action (Event InEvent,
+Object SomeObject) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (InEvent.target
+== SizeChoice) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;updateValues();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+catch (Exception e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (InEvent.target
+== NameEntryField) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Is the field empty?&nbsp;&nbsp;If so, you could add a<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+pop-up dialog box to alert the user that he<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+has not entered his name.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WDialog.show();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return
+true;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+else<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return false;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+}<BR>
+<BR>
+class WarningDialog extends Dialog {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Button OkButton = new Button(&quot;OK&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Label ALabel;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;WarningDialog(Frame HostFrame, String
+Message)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super(HostFrame,
+&quot;Warning!&quot;, false);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALabel = new Label(Message);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resize(180,100);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setLayout(new
+FlowLayout());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(ALabel);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(OkButton);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public boolean action (Event InEvent,
+Object Param)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (InEvent.target
+== OkButton)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hide();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}<BR>
+<BR>
+<BR>
+class LogoCanvas extends Canvas {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private Image LogoImage;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;LogoCanvas (Image LogoInCanvas) {<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Get the
+image and place it in LogoImage. .<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LogoImage
+= LogoInCanvas;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Resize
+the canvas to fit the Logo exactly.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resize (425, 87);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics g)&nbsp;&nbsp;{
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw the logo
+on the canvas.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawImage(LogoImage,0,0,this);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}<BR>
+<BR>
+<BR>
+class HorizBar extends Canvas {<BR>
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private String LineString;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;private int Width;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;HorizBar(String InString, int InWidth)
+{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the size
+of the canvas.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resize(InWidth,
+25);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the local
+variables equal to parameters so that<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// we can use
+the values in the paint method.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Width = InWidth;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LineString = InString;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public void paint(Graphics g)&nbsp;&nbsp;{
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Set the font
+and font metrics class.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Font f = new Font(&quot;TimesRoman&quot;,
+Font.BOLD, 16);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FontMetrics FM
+= getFontMetrics(f);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.setFont(f);
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw a line
+from x = 0 to x = 15.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawLine(0,
+20, 15, 20);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw the string.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawString(LineString,
+20, 20);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Draw the rest
+of the line.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;g.drawLine(FM.stringWidth(LineString)
++ 25, 20, Width, 20);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<H2><A NAME="WhatsWrongwiththeOrderEntrySystem"><B><FONT SIZE=5 COLOR=#FF0000>What's
+Wrong with the Order Entry System?</FONT></B></A></H2>
+<P>
+The big problem remaining with the Order Entry System now is getting
+the information back to you. All the ways to do this involve opening
+a connection back to your server and then transferring the data
+in one of many ways. One of these ways involves opening an SMTP
+connection and then mailing the information back to you. Another
+means is through creating a script on your server to process the
+information. And finally, you can write a program that listens
+on a specific port waiting for you to make a connection and transfer
+the data. The process of constructing these and other network
+connections is covered in <A HREF="ch12.htm" >Chapter 12</A>.
+<P>
+The Order Entry System has been developed to mimic the use of
+similar applets in the real world. To make it a good example and
+to include as many of Java's features as possible, however, it
+is not a completely realistic applet. It did give you a good feel
+for what Java can do and how it is done, though.
+<H2><A NAME="Summary"><B><FONT SIZE=5 COLOR=#FF0000>Summary</FONT></B></A>
+</H2>
+<P>
+This chapter covered quite a bit of ground. First, you learned
+about the concepts of error and exception handling in Java. Then
+you learned about the implementation of these concepts into your
+own programs and examined many of the different Java reserved
+words such as <TT>finally</TT>, <TT>throws</TT>,
+<TT>try</TT>, and <TT>catch</TT>.
+You also learned how to declare your own exceptions and utilize
+them and how to use the <TT>AppletContext</TT>
+interface to interact with the browser displaying your applet.
+This skill will prove useful in your own applet programming.
+<P>
+You made many changes in the Order Entry System and implemented
+them. I also included a listing of the final version of the Order
+Entry System. <A HREF="ch11.htm" >Chapter 11</A>, &quot;Reading
+and Writing with Java,&quot; will cover the details of inputting
+and outputting data with Java.
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

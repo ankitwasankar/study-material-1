@@ -1,0 +1,1661 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 23 -- Windows and Menu Bars</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;23</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Windows and Menu Bars</FONT></H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#DisplayingaWindow">
+
+Displaying a Window</A>
+
+<UL>
+
+<LI><A HREF="#ExampleDisplayingaWindowinanApplet">
+
+Example: Displaying a Window in an Applet</A>
+
+<LI><A HREF="#ExampleCreatingaWindowClass">
+
+Example: Creating a Window Class</A>
+
+<LI><A HREF="#ExampleAddingComponentstoaWindow">
+
+Example: Adding Components to a Window</A>
+
+</UL>
+
+<LI><A HREF="#UsingMenuBars">
+
+Using Menu Bars</A>
+
+<UL>
+
+<LI><A HREF="#CreatingandSettingaMenuBarObject">
+
+Creating and Setting a MenuBar Object</A>
+
+<LI><A HREF="#AddingMenustoaMenuBar">
+
+Adding Menus to a Menu Bar</A>
+
+<LI><A HREF="#AddingMenuItemstoMenus">
+
+Adding Menu Items to Menus</A>
+
+<LI><A HREF="#ExampleUsingaMenuBarinaFrameWindow">
+
+Example: Using a Menu Bar in a Frame Window</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+So far in this book, when you created and displayed an applet,
+
+you had a single window on the screen. This window was either
+
+Appletviewer or the browser you were using to display the applet.
+
+However, applets can create additional windows. Although you probably
+
+won't use this feature a lot, it's nice to know it's around in
+
+case you need it. Moreover, when you create a window in Java,
+
+you can add a full-featured menu bar that can contain commands,
+
+checked options, and separator objects. In this chapter, you learn
+
+to display windows and their menu bars, as well as how to respond
+
+to menu commands.
+
+<H2><A NAME="DisplayingaWindow"><FONT SIZE=5 COLOR=#Ff0000>
+
+Displaying a Window</FONT></A></H2>
+
+<P>
+
+Java's libraries include a class called <TT>Frame</TT> that represents
+
+a frame window that you can create and display from within an
+
+application. To create a frame window, you call the <TT>Frame</TT>
+
+class's constructor, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Frame frame = new Frame(&quot;Frame Window&quot;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This constructor's single argument is the window's title, which
+
+will appear in the window's title bar.
+
+<P>
+
+When you have the window created, you can display it by calling
+
+the window's <TT>show(&nbsp;)</TT> method. To remove the window
+
+from the screen, you call the <TT>hide(&nbsp;)</TT> method. You
+
+can even size the window by calling <TT>resize(&nbsp;)</TT> or
+
+position the window by calling <TT>move(&nbsp;)</TT>.
+
+<H3><A NAME="ExampleDisplayingaWindowinanApplet">
+
+Example: Displaying a Window in an Applet</A></H3>
+
+<P>
+
+To demonstrate the basics of using the <TT>Frame</TT> class, Listing
+
+23.1 is the source code for an applet that can display a frame
+
+window. When you click the applet's button, the applet displays
+
+a frame window. When you click the button a second time, the applet
+
+removes the window from the screen. Figure 23.1 shows the applet
+
+and its frame window. Notice that, when the button is clicked,
+
+the button's label switches between &quot;Show Window&quot; and
+
+&quot;Hide Window.&quot;
+
+<P>
+
+<IMG SRC="f23-1.gif"><B> Figure 23.1 : </B><I>Your Java applets can display additional windows.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 23.1&nbsp;&nbsp;FrameApplet.java: Displaying a Frame
+
+Window.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class FrameApplet extends Applet
+
+{
+
+    Frame frame;
+
+    Button button;
+
+
+
+    public void init()
+
+    {
+
+          frame = new Frame(&quot;Frame Window&quot;);
+
+          button = new Button(&quot;Show Window&quot;);
+
+          add(button);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        boolean visible = frame.isShowing();
+
+        if (visible)
+
+        {
+
+            frame.hide();
+
+            button.setLabel(&quot;Show Window&quot;);
+
+        }
+
+        else
+
+        {
+
+            frame.show();
+
+            frame.resize(200, 100);
+
+            button.setLabel(&quot;Hide Window&quot;);
+
+        }
+
+
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>FrameApplet</TT> class from Java's <TT>Applet </TT>class.
+
+<BR>
+
+    Declare the frame-window and button objects.<BR>
+
+    Override the<TT> init(&nbsp;) </TT>method.<BR>
+
+        Create the frame window.<BR>
+
+        Create the button component.<BR>
+
+        Add the button to the applet.<BR>
+
+    Override the <TT>action(&nbsp;)</TT> method.<BR>
+
+        Determine whether the window is visible.<BR>
+
+        If the window is visible...<BR>
+
+            Hide the window.<BR>
+
+            Change the button's label to &quot;Show Window.&quot;
+
+<BR>
+
+        Else if the window is hidden...<BR>
+
+            Show the window.<BR>
+
+            Set the window's size.<BR>
+
+            Change the button's label to &quot;Hide Window.&quot;
+
+<BR>
+
+        Tell Java that the message was handled okay.
+
+</BLOCKQUOTE>
+
+<H3><A NAME="ExampleCreatingaWindowClass">
+
+Example: Creating a Window Class</A></H3>
+
+<P>
+
+When you decide that your applet needs to display a frame window,
+
+you're usually better off creating a special class for the window.
+
+That way, you have complete control over how the window is constructed
+
+and displayed. To create a custom window class, you simply derive
+
+your window class from Java's <TT>Frame</TT> class. Listing 23.2
+
+is a rewritten version of FrameApplet, called FrameApplet2, that
+
+gives the frame window its own class. This new frame window also
+
+takes advantage of having its own class by overriding the <TT>paint(&nbsp;)</TT>
+
+method in order to display text in the window. Figure 23.2 shows
+
+FrameApplet2 running under Appletviewer.
+
+<P>
+
+<IMG SRC="f23-2.gif"><B> Figure 23.2 : </B><I>This is FrameApplet2 running under Appletviewer.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 23.2&nbsp;&nbsp;FrameApplet2.java: Creating a Frame-Window
+
+Class.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class FrameApplet2 extends Applet
+
+{
+
+    CustomFrame frame;
+
+  Button button;
+
+
+
+    public void init()
+
+    {
+
+          frame = new CustomFrame(&quot;Custom Frame Window&quot;);
+
+          button = new Button(&quot;Show Window&quot;);
+
+          add(button);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        boolean visible = frame.isShowing();
+
+        if (visible)
+
+        {
+
+            frame.hide();
+
+            button.setLabel(&quot;Show Window&quot;);
+
+        }
+
+        else
+
+        {
+
+            frame.show();
+
+            button.setLabel(&quot;Hide Window&quot;);
+
+        }
+
+
+
+        return true;
+
+    }
+
+}
+
+
+
+class CustomFrame extends Frame
+
+{
+
+    CustomFrame(String title)
+
+    {
+
+        super(title);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        resize(200, 100);
+
+        g.drawString(&quot;This is a custom window.&quot;, 30, 30);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>FrameApplet2 </TT>class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the custom frame-window and button objects.<BR>
+
+    Override the <TT>init(&nbsp;)</TT> method.<BR>
+
+        Create the custom frame window.<BR>
+
+        Create the button component.<BR>
+
+        Add the button to the applet.<BR>
+
+    Override the <TT>action(&nbsp;)</TT> method.<BR>
+
+        Determine whether the window is visible.<BR>
+
+        If the window is visible...<BR>
+
+            Hide the window.<BR>
+
+            Change the button's label to &quot;Show Window.&quot;
+
+<BR>
+
+        Else if the window is hidden...<BR>
+
+            Show the window.<BR>
+
+            Change the button's label to &quot;Hide Window.&quot;
+
+<BR>
+
+        Tell Java that the message was handled okay.<BR>
+
+Derive the <TT>CustomFrame</TT> class from Java's <TT>Frame</TT>
+
+class.<BR>
+
+        Define the class's constructor.<BR>
+
+            Pass the title string on to the <TT>Frame </TT>class.
+
+<BR>
+
+        Override the window's <TT>paint(&nbsp;)</TT> method.<BR>
+
+            Resize the window.<BR>
+
+            Display a message in the window.<BR>
+
+</BLOCKQUOTE>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+When you compile FrameApplet2, notice that, although both the FrameApplet2 and CustomFrame classes are defined in the same file, the Java compiler creates two class files called FrameApplet2.class and CustomFrame.class.</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H3><A NAME="ExampleAddingComponentstoaWindow">
+
+Example: Adding Components to a Window</A></H3>
+
+<P>
+
+Frame windows are just like any other window you see when you
+
+create an applet. That is, you can add components organized into
+
+a variety of layouts and respond to the user's selections of these
+
+components. In fact, adding layouts and components to a frame
+
+window is not unlike doing the same thing with your applet's main
+
+window, which you did in the previous chapter. First you create
+
+and set the layout manager, and then you add the components as
+
+appropriate for the layout manager you've chosen.
+
+<P>
+
+Listing 23.3 is an applet called FrameApplet3 that not only creates
+
+a custom frame window, but also creates a simple layout for the
+
+window. This layout contains only a single button; however, you
+
+can create as sophisticated a layout as you like. Feel free to
+
+experiment further with this applet. Figure 23.3 shows FrameApplet3
+
+running under Appletviewer, after the user has displayed the frame
+
+window. As you can see in the figure, the window has a single
+
+button labeled &quot;Close Window.&quot; When you click this button,
+
+the frame window's <TT>action(&nbsp;)</TT> method responds by
+
+calling the <TT>dispose(&nbsp;)</TT> method, which not only removes
+
+the window from the screen, but also destroys the window in memory.
+
+<P>
+
+<IMG SRC="f23-3.gif"><B> Figure 23.3 : </B><I>This is FrameApplet3 running under Appletviewer.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 23.3&nbsp;&nbsp;FrameApplet3.java: Adding Components
+
+to a Window.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class FrameApplet3 extends Applet
+
+{
+
+    CustomFrame frame;
+
+    Button button;
+
+
+
+    public void init()
+
+    {
+
+          frame = new CustomFrame(&quot;Custom Frame Window&quot;);
+
+
+
+          button = new Button(&quot;Show Window&quot;);
+
+          add(button);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        boolean visible = frame.isShowing();
+
+        if (visible)
+
+        {
+
+            frame.hide();
+
+            button.setLabel(&quot;Show Window&quot;);
+
+        }
+
+        else
+
+        {
+
+            frame.show();
+
+            button.setLabel(&quot;Hide Window&quot;);
+
+        }
+
+
+
+        return true;
+
+    }
+
+}
+
+
+
+class CustomFrame extends Frame
+
+{
+
+    Button button;
+
+
+
+    
+
+CustomFrame(String title)
+
+    {
+
+        super(title);
+
+
+
+        FlowLayout layout = new FlowLayout();
+
+        setLayout(layout);
+
+
+
+        button = new Button(&quot;Close Window&quot;);
+
+        add(button);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        resize(200, 100);
+
+        g.drawString(&quot;This is a custom window.&quot;, 30, 50);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        if (arg == &quot;Close Window&quot;)
+
+            dispose();
+
+
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+Table 23.1 shows some useful methods you can use to manipulate
+
+a frame window. Some of these methods are defined in the <TT>Frame</TT>
+
+class, whereas others are inherited from the class's superclasses,
+
+such as <TT>Window</TT> and <TT>Container</TT>.<BR>
+
+<P>
+
+<CENTER><B>Table 23.1&nbsp;&nbsp;Useful Frame-Window Methods.</B></CENTER>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD WIDTH=295><I><B>Methods</B></I></TD><TD WIDTH=295><I><B>Description</B></I>
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void add(&nbsp;)</TT></TD><TD WIDTH=295>Adds components to the window.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void dispose(&nbsp;)</TT></TD><TD WIDTH=295>Deletes the window from memory.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>int getCursorType(&nbsp;)</TT></TD><TD WIDTH=295>Returns the window's cursor type.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>Image getIconImage(&nbsp;)</TT></TD><TD WIDTH=295>Returns the window's icon object.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>LayoutManager getLayout(&nbsp;)</TT></TD>
+
+<TD WIDTH=295>Returns the window's layout manager.</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>MenuBar getMenuBar(&nbsp;)</TT></TD><TD WIDTH=295>Returns the window's menu bar object.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>String getTitle(&nbsp;)</TT></TD><TD WIDTH=295>Returns the window's title.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void hide(&nbsp;)</TT></TD><TD WIDTH=295>Removes the window from the screen.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>Boolean isResizable(&nbsp;)</TT></TD><TD WIDTH=295>Returns <TT>true</TT> if the window is resizable.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void remove(&nbsp;)</TT></TD><TD WIDTH=295>Removes components from the window.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void removeAll(&nbsp;)</TT></TD><TD WIDTH=295>Removes all components from the window.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void setCursor(int cursorType)</TT></TD>
+
+<TD WIDTH=295>Sets the window's cursor type.</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void setIconImage(Image image)</TT></TD>
+
+<TD WIDTH=295>Sets the window's icon object.</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void setLayout(&nbsp;)</TT></TD><TD WIDTH=295>Sets the window's layout manager.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void setMenuBar(MenuBar mb)</TT></TD><TD WIDTH=295>Sets the window's menu bar.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void setResizable(boolean </TT></TD><TD WIDTH=295>Sets the window's resizable <TT>resizable)</TT>attribute.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void setTitle(String title)</TT></TD><TD WIDTH=295>Sets the window's title.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=295><TT>void show(&nbsp;)</TT></TD><TD WIDTH=295>Displays the window on the screen.
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="UsingMenuBars"><FONT SIZE=5 COLOR=#Ff0000>
+
+Using Menu Bars</FONT></A></H2>
+
+<P>
+
+Most Windows applications have menu bars, which enable the user
+
+to more easily locate and select the various commands and options
+
+supported by the program. The frame windows you create from within
+
+your applets can also have menu bars. To create a menu bar in
+
+a window, you must follow a series of steps:
+
+<OL>
+
+<LI>Create an object of the <TT>MenuBar</TT> class.
+
+<LI>Call the window's <TT>setMenuBar(&nbsp;)</TT> method to give
+
+the menu bar to the window.
+
+<LI>Create objects of the <TT>Menu</TT> class for each menu you
+
+want in the menu bar.
+
+<LI>Call the <TT>MenuBar</TT> object's <TT>add(&nbsp;)</TT> method
+
+to add each menu object to the menu bar.
+
+<LI>Create objects of the <TT>MenuItem</TT> or <TT>CheckboxMenuItem</TT>
+
+classes for each item you want to appear in the menus.
+
+<LI>Call the menus' <TT>add(&nbsp;)</TT> methods in order to add
+
+each item to its appropriate menu.
+
+</OL>
+
+<P>
+
+Each of the above steps is covered in the sections that follow.
+
+<H3><A NAME="CreatingandSettingaMenuBarObject">
+
+Creating and Setting a MenuBar Object</A></H3>
+
+<P>
+
+The first step in adding a menu bar to a frame window is to create
+
+the <TT>MenuBar</TT> object that'll hold all the menus and commands.
+
+The menu bar in a window is the horizontal area near the top that
+
+contains the names of each of the menus in the menu bar. To create
+
+the <TT>MenuBar</TT> object, call the <TT>MenuBar</TT> class's
+
+constructor, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+MenuBar menuBar = new MenuBar(&nbsp;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+As you can see, the <TT>MenuBar(&nbsp;)</TT> constructor requires
+
+no arguments.
+
+<P>
+
+After you've created the <TT>MenuBar</TT> object, you have to
+
+tell Java to associate the menu bar with the frame window. You
+
+do this by calling the window's <TT>setMenuBar(&nbsp;)</TT> method:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+setMenuBar(menuBar);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+At this point, you have an empty menu bar associated with the
+
+window. In the next steps, you add menus to the menu bar.
+
+<H3><A NAME="AddingMenustoaMenuBar">
+
+Adding Menus to a Menu Bar</A></H3>
+
+<P>
+
+A menu bar is the horizontal area near the top of a window that
+
+contains the names of the menus contained in the menu bar. After
+
+creating and setting the <TT>MenuBar</TT> object, you have the
+
+menu bar, but it contains no menus. To add these menus, you first
+
+create objects of the <TT>Menu</TT> class for each menu you want
+
+in the menu bar, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Menu fileMenu = new Menu(&quot;File&quot;);
+
+Menu editMenu = new Menu(&quot;Edit&quot;);
+
+Menu optionMenu = new Menu(&quot;Options&quot;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>Menu</TT> class's constructor takes a single argument,
+
+which is the string that'll appear as the menu's name on the menu
+
+bar. The example lines above create three menus for the menu bar.
+
+<P>
+
+After creating the <TT>Menu</TT> objects, you have to add them
+
+to the menu bar, which you do by calling the <TT>MenuBar</TT>
+
+object's <TT>add(&nbsp;)</TT> method, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+menuBar.add(fileMenu);
+
+menuBar.add(editMenu);
+
+menuBar.add(optionMenu);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+After Java executes the above three lines, you have a menu bar
+
+with three menus, as shown in Figure 23.4. Note, however, that
+
+at this point the menus contain no commands. If you were to click
+
+on the menu names, no pop-up menus would appear.
+
+<P>
+
+<IMG SRC="f23-4.gif"><B> Figure 23.4 : </B><I>This window's menu bar contains three empty menus.
+
+
+
+</I></A><P>
+
+<H3><A NAME="AddingMenuItemstoMenus">
+
+Adding Menu Items to Menus</A></H3>
+
+<P>
+
+You may have empty menus at this point, but you're about to remedy
+
+that problem. To add items to your menus, you first create objects
+
+of the <TT>MenuItem</TT> or <TT>CheckboxMenuItem</TT> classes
+
+for each menu item you need. To add items to the Options menus
+
+you made previously, you might use Java code something like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+MenuItem option1 = new MenuItem(&quot;Option 1&quot;);
+
+MenuItem option2 = new MenuItem(&quot;Option 2&quot;);
+
+MenuItem option3 = new MenuItem(&quot;Option 3&quot;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>MenuItem</TT> constructor takes as its single argument
+
+the string that'll be displayed in the menu for this item.
+
+<P>
+
+If you're thinking that, after you create the menu items, you
+
+must call the appropriate <TT>Menu</TT> object's <TT>add(&nbsp;)</TT>
+
+method, you're be exactly right. Those lines might look like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+optionMenu.add(option1);
+
+optionMenu.add(option2);
+
+optionMenu.add(option3);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Now, when you display the frame window sporting the menu bar you've
+
+just created, you'll see that the Options menu contains a number
+
+of selections from which the user can choose, as shown in Figure
+
+23.5.
+
+<P>
+
+<IMG SRC="f23-5.gif"><B> Figure 23.5 : </B><I>Now the Options menu contains menu items.
+
+
+
+</I></A><P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>TIP</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+Sometimes, you may have several groups of related commands that you'd like to place under a single menu. You can separate these command groups by using menu separators, which appear as horizontal lines in a pop-up menu. To create a menu separator, just 
+create a regular <TT>MenuItem</TT> object with a string of &quot;&#173;&quot;. That is, the string should contain a single hyphen.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<H3><A NAME="ExampleUsingaMenuBarinaFrameWindow">
+
+Example: Using a Menu Bar in a Frame Window</A></H3>
+
+<P>
+
+Now that you have this menu bar business mastered, it's time to
+
+put what you've learned to work. Listing 23.4 is an applet called
+
+MenuBarApplet. This applet displays a single button, which, when
+
+selected, displays a frame window with a menu bar. This menu bar
+
+contains a single menu with three items. The first two items are
+
+regular <TT>MenuItem</TT> objects. The third item is <TT>CheckboxMenuItem</TT>,
+
+which is a menu item that can display a check mark. Figure 23.6
+
+shows MenuBarApplet with its frame window displayed and the Test
+
+menu visible. (Notice the menu separator above the checked item.)
+
+<P>
+
+<IMG SRC="f23-6.gif"><B> Figure 23.6 : </B><I>This is MenuBarApplet's frame window and menu bar.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 23.4&nbsp;&nbsp;MenuBarApplet.java: An Applet That
+
+Uses a Menu Bar.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class MenuBarApplet extends Applet
+
+{
+
+    MenuBarFrame frame;
+
+    Button button;
+
+
+
+    public void init()
+
+    {
+
+          frame = new MenuBarFrame(&quot;MenuBar Window&quot;);
+
+
+
+          button = new Button(&quot;Show Window&quot;);
+
+          add(button);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        boolean visible = frame.isShowing();
+
+        if (visible)
+
+        {
+
+            frame.hide();
+
+            button.setLabel(&quot;Show Window&quot;);
+
+        }
+
+        else
+
+        {
+
+            frame.show();
+
+            button.setLabel(&quot;Hide Window&quot;);
+
+        }
+
+
+
+        return true;
+
+    }
+
+}
+
+
+
+class MenuBarFrame extends Frame
+
+{
+
+    MenuBar menuBar;
+
+    String str;
+
+
+
+    MenuBarFrame(String title)
+
+    {
+
+        super(title);
+
+        menuBar = new MenuBar();
+
+        setMenuBar(menuBar);
+
+
+
+        Menu menu = new Menu(&quot;Test&quot;);
+
+        menuBar.add(menu);
+
+
+
+        MenuItem item = new MenuItem(&quot;Command 1&quot;);
+
+        menu.add(item);
+
+        item = new MenuItem(&quot;Command 2&quot;);
+
+        menu.add(item);
+
+
+
+        item = new MenuItem(&quot;-&quot;);
+
+        menu.add(item);
+
+
+
+        CheckboxMenuItem checkItem =
+
+            new CheckboxMenuItem(&quot;Check&quot;);
+
+        menu.add(checkItem);
+
+
+
+        str = &quot;&quot;;
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.BOLD, 20);
+
+        
+
+setFont(font);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        resize(300, 250);
+
+        g.drawString(str, 20, 100);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        if (evt.target instanceof MenuItem)
+
+        {
+
+            if (arg == &quot;Command 1&quot;)
+
+                str = &quot;You selected Command 1&quot;;
+
+            else if (arg == &quot;Command 2&quot;)
+
+                str = &quot;You selected Command 2&quot;;
+
+            else if (arg == &quot;Check&quot;)
+
+                str = &quot;You selected the Check item&quot;;
+
+
+
+            repaint();
+
+            return true;
+
+        }
+
+        else
+
+            return false;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>MenuBarApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the custom frame-window and button objects.<BR>
+
+    Override the <TT>init(&nbsp;)</TT> method.<BR>
+
+        Create the custom frame window.<BR>
+
+        Create and add the button component.<BR>
+
+    Override the <TT>action(&nbsp;)</TT> method.<BR>
+
+        Determine whether the window is visible.<BR>
+
+        If the window is visible...<BR>
+
+            Hide the window.<BR>
+
+            Change the button's label to &quot;Show Window.&quot;
+
+<BR>
+
+        Else if the window is hidden...<BR>
+
+            Show the window.<BR>
+
+            Change the button's label to &quot;Hide Window.&quot;
+
+<BR>
+
+        Tell Java that the message was handled okay.<BR>
+
+Derive the <TT>MenuBarFrame</TT> class from Java's <TT>Frame</TT>
+
+class.<BR>
+
+    Declare the class's menu bar and string objects.<BR>
+
+    Define the class's constructor.<BR>
+
+        Pass the title string on to the <TT>Frame</TT> class.
+
+<BR>
+
+        Create and set the menu bar.<BR>
+
+        Create and add the <TT>Test</TT> menu.<BR>
+
+        Create and add two regular menu items.<BR>
+
+        Create and add a menu separator.<BR>
+
+        Create and add a checkmark menu item.<BR>
+
+        Initialize the class's display string and font.<BR>
+
+    Override the window's <TT>paint(&nbsp;) </TT>method.<BR>
+
+            Resize the window.<BR>
+
+            Show the display string in the window.<BR>
+
+    Override the <TT>action(&nbsp;)</TT> method.<BR>
+
+        if a menu item was selected...<BR>
+
+            Respond to the selected menu.<BR>
+
+            Repaint the window, so the new string is displayed.
+
+<BR>
+
+            Return true if the message was handled.<BR>
+
+        Or else return false so Java knows the event is unhandled.
+
+<BR>
+
+</BLOCKQUOTE>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+To determine the state (checked or unchecked) of a <TT>CheckboxMenuItem</TT> object, you can call its <TT>getState(&nbsp;)</TT> method. This method returns <TT>true</TT> if the item is checked and <TT>false</TT> if the item is unchecked. In addition, you 
+can set the item's state by calling its <TT>setState(&nbsp;)</TT> method.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+As you can see from MenuBarApplet's source code, you respond to
+
+menu-item selections in the same way you respond to other events
+
+in applets. This time, however, you have overridden two <TT>action(&nbsp;)</TT>
+
+methods. The first is in the <TT>MenuBarApplet</TT> class and
+
+handles the applet's single button. The second overridden <TT>action(&nbsp;)</TT>
+
+method, which is the one that handles the menu items, is in the
+
+<TT>MenuBarFrame</TT> class.
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+Although it's an ability you may not frequently take advantage
+
+of, Java applets can display windows. The <TT>Frame</TT> class
+
+makes this possible, by providing the functionality for frame
+
+windows, which can be sized, moved, used to display components,
+
+and much more. A frame window can, in fact, even have a full-featured
+
+menu bar, just like the menu bars you see in many Windows applications.
+
+Creating a menu bar, however, requires knowing how to create and
+
+manipulate <TT>MenuBar</TT>, <TT>Menu</TT>, <TT>MenuItem</TT>,
+
+and <TT>CheckboxMenuItem</TT> objects. Luckily, you learned about
+
+those classes in this chapter, so you're all ready to amaze the
+
+world with your Java frame windows.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>How do you create a frame window?
+
+<LI>How do you display a frame window after you create it?
+
+<LI>How can you determine whether a frame window is currently
+
+visible?
+
+<LI>What's the difference between <TT>MenuItem</TT> and <TT>CheckboxMenuItem</TT>
+
+objects?
+
+<LI>Which Java class must you extend to create a custom frame-window
+
+class?
+
+<LI>How do you ensure that a custom frame-window class has properly
+
+initialized its superclass?
+
+<LI>How do you draw text or graphics in a frame window?
+
+<LI>What are the six steps that must be completed in order to
+
+add a menu bar to a frame window?
+
+<LI>How do you add components, such as controls, to a frame window?
+
+<LI>How do you respond to selected menu items?
+
+<LI>How do you create a menu separator object?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Write an applet that displays a frame window as soon as the
+
+applet runs.
+
+<LI>Write an applet that displays a frame window containing a
+
+2x2 grid of buttons.
+
+<LI>Modify the applet you wrote in exercise 2 so that the frame
+
+window contains a menu bar with two menus. Each menu should have
+
+a single menu item.
+
+<LI>Modify the MenuBarApplet so that the menu bar has an additional
+
+menu called View. This menu should contain a single checkmarked
+
+option called Window that determines whether a second frame window
+
+is visible on the screen. When the user selects the Window command,
+
+the command should be checkmarked and the second window should
+
+appear. When the user clicks this command a second time, the second
+
+window should disappear and the command should be unchecked. Figure
+
+23.7 shows the resultant applet in action. (You can find the solution
+
+to this exercise in the CHAP23 folder of this book's CD-ROM.)
+
+<BR>
+
+<IMG SRC="f23-7.gif"><B> Figure 23.7 : </B><I>This is MenuFrameApplet running under Appletviewer.
+
+
+
+</I></A><P>
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch22.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch24.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

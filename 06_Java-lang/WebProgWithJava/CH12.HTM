@@ -1,0 +1,1734 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 12</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>Network Programming with Java</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+
+<UL>
+<LI><A HREF="#TheProtocolZoo" >The Protocol Zoo</A>
+<UL>
+<LI><A HREF="#IP" >IP</A>
+<LI><A HREF="#UDP" >UDP</A>
+<LI><A HREF="#TCP" >TCP</A>
+<LI><A HREF="#DNS" >DNS</A>
+</UL>
+<LI><A HREF="#WorldWideWeb" >World Wide Web</A>
+<LI><A HREF="#SocketsinJava" >Sockets in Java</A>
+<UL>
+<LI><A HREF="#StreamSocketClasses" >Stream Socket Classes</A>
+<LI><A HREF="#DatagramSockets" >Datagram Sockets</A>
+<LI><A HREF="#AChatApplet" >A Chat Applet</A>
+</UL>
+<LI><A HREF="#TheWWWinJava" >The WWW in Java</A>
+<UL>
+<LI><A HREF="#TheURLClass" >The URL Class</A>
+<LI><A HREF="#TheURLConnectionClass" >The URLConnection Class</A>
+<LI><A HREF="#MIMETypesandContentHandlers" >MIME Types and Content Handlers</A>
+<LI><A HREF="#TheGETmethod" >The GET method</A>
+<LI><A HREF="#ThePOSTMethod" >The POST Method</A>
+</UL>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+Because you're reading this book, you probably don't need to be
+told what the Internet is. On the other hand, it's easy to use
+the World Wide Web and various high-level features of the Internet
+and never think about the amazing kinds of hardware and protocol
+standards that are humming away efficiently behind the scenes.
+You could fill a library with all the books and papers that have
+been written about how the Internet works, but luckily you don't
+have to. Java programs typically access network resources at a
+very high level of abstraction, and the gory details are largely
+hidden from view.
+<P>
+The <TT>java.net</TT> package contains
+the classes that make network programming so easy in Java. These
+classes are described in <A HREF="ch3.htm" >Chapter 3</A>, &quot;An
+Introduction to Java Classes,&quot; and in the Java API. The examples
+in this chapter make heavy use of them.
+<H2><A NAME="TheProtocolZoo"><B><FONT SIZE=5 COLOR=#FF0000>The
+Protocol Zoo</FONT></B></A></H2>
+<P>
+The Internet started out around 1969 as a kind of science fair
+project by the U.S. military, and it was known as the ARPANET.
+That network no longer exists, but various protocols that were
+invented for it are still in use. These protocols allow a collection
+of physical networks to link up over gateways and become a sort
+of internetwork, or Internet. These physical networks generally
+are Ethernet LANs, dial-up lines, and so on. The <I>Internet</I>
+is a logical network cobbled together out of various physical
+networks that cooperate so they appear to the user as one large
+network.
+<P>
+This vague definition leaves undefined the word <I>cooperate</I>,
+which is where things get slightly complicated. The various protocols
+that implement this cooperation have acronymic titles such as
+IP (<I>Internet Protocol</I>), TCP (<I>Transfer Control Protocol</I>),
+UDP (<I>User Datagram Protocol</I>), ICMP (<I>Internet Control
+Message Protocol</I>), ARP (<I>Address Resolution Protocol</I>),
+and so on. You certainly can tell it's a defense department project!
+<P>
+As a user of the Internet, you need only a basic understanding
+of what IP, TCP, and UDP can do for you, as well as a nodding
+acquaintance with DNS domain names. The other low-level protocols
+are of interest mainly to network administrators, hackers, and
+generally anybody with just too much time on their hands.
+<H3><A NAME="IP"><B>IP</B></A></H3>
+<P>
+The Internet is the Frankenstein monster of <I>packet-switching</I>
+networks. Packet switching means that data is sent down a wire
+(or other medium) in little packets (or datagrams) with a destination
+address and control fields slapped on the front. It's sort of
+like the postal system; you have to address your letters correctly.
+You've probably seen IP addresses hanging around on the Internet,
+looking like <TT>123.45.67.89</TT>
+or something similar (this is called <I>dotted quad notation</I>).
+These addresses are 32-bit numbers that identify a particular
+network device on the Internet (your Ethernet card, for example),
+via a mapping known as <I>Address Resolution Protocol</I> (ARP).
+The <I>Internet Protocol</I> (IP) defines the basics of how datagrams
+are addressed and routed, as well as who receives or forwards
+them.
+<P>
+Whatever you might think of the post office, it at least tries
+to get your letter delivered reliably. The IP protocol makes no
+such guarantee. Nor can it; the underlying hardware is intentionally
+made to be occasionally unreliable in the interests of speed and
+economy of design. Packets can be dropped (intentionally!) without
+notice; they may arrive out of sequence or with their data garbled.
+<P>
+Techno-geeks sum this up by saying that IP lives on the <I>network
+layer</I>. In a conceptual tower of ISO networking layers, this
+is the second floor; it assumes only that there is a way of sending
+packets down the wire to a specific destination. It's up to the
+higher layers to provide as little or as much error control and
+recovery as necessary.
+<H3><A NAME="UDP"><B>UDP</B></A></H3>
+<P>
+The next level up from the network layer is called the <I>transport
+layer</I>. This layer defines end-to-end communications in two
+flavors: UDP and TCP. An endpoint for communication is defined
+by a <I>socket</I>, which is the conjunction of an IP address
+and a port number. A <I>port number</I> is a positive integer
+that identifies a logical &quot;port&quot; on your machine. These
+ports are not physical entities; they simply distinguish data
+arriving over a single physical connection so that it can be delivered
+to any of hundreds of different &quot;sockets&quot; owned by the
+various applications on the machine. This provides for a virtually
+limitless number of end-to-end connections through a single network
+interface.
+<P>
+The <I>User Datagram Protocol</I> (UDP) lets you send datagrams
+of your own to another host and port number. Essentially, you
+are just using IP, but with the addition of port numbers and with
+the various details of IP headers and such hidden from view. Just
+as with IP, there is no guarantee of delivery, error detection,
+or sequencing of datagrams.
+<P>
+If you want to use UDP from Java, the <TT>java.net.DatagramSocket</TT>
+and <TT>java.net.DatagramPacket</TT>
+classes are what you need. Examples of their use follow.
+<H3><A NAME="TCP"><B>TCP</B></A></H3>
+<P>
+The <I>Transfer Control Protocol</I> (TCP) slaps a reliable and
+sequenced connection on top of the unreliable, unsequenced functionality
+of IP. This is why you often will see the whole setup referred
+to as <I>TCP/IP</I>. A <I>TCP socket</I> is again the conjunction
+of an IP address with a port number. The data you send over a
+TCP socket is divvied up into datagrams and stamped with sequence
+numbers and error-detection codes. At the receiving end, the packets
+are checked for errors and then lined up in sequence order. <I>Protocol</I>
+Packets are resent as necessary, so that the whole stream of bytes
+arrives intact at the receiving end. It's kind of like registered
+mail.
+<P>
+Because of the reliable and sequenced nature of TCP sockets, they
+often are called <I>stream sockets</I>; you can read and write
+data in continuous streams of bytes without worrying about packets,
+headers, and so on. Because streams figure so prominently in the
+<TT>java.io</TT> classes, it's logical
+to suppose that TCP sockets are a natural in Java-and they are!
+Stream socket functionality in Java is provided by the classes
+<TT>java.net.ServerSocket</TT> and
+<TT>java.net.Socket</TT>.
+<H3><A NAME="DNS"><B>DNS</B></A></H3>
+<P>
+Not really a protocol, but more like an entire subsystem of the
+Internet, the Domain Name Service (DNS) makes it easier on the
+carbon unit peripherals (humans!) when it comes to remembering
+IP addresses. DNS is a collection of programs and protocols that
+allow a central authority to assign symbolic names to Internet
+hosts based on a hierarchy of domains and subdomains. It's a huge,
+distributed database of nicknames-one for every Internet host
+registered in a domain. Suppose that you work at Widgets Galore
+Company, and your machine has the nickname <TT>wallaby</TT>.
+Your DNS name will look like this:
+<BLOCKQUOTE>
+<TT>wallaby.WidgetsGalore.com</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>.com</TT> ending signifies
+a commercial institution. Reading from right to left, you move
+from the general to the specific in your DNS hierarchy: not just
+any commercial interest, but one called <TT>WidgetsGalore</TT>.
+Not any machine at Widgets Galore, but the one known as <TT>wallaby</TT>.
+The left-most word is always the local host name for the machine
+in question. The remaining words specify the domain of that machine.
+There may be other machines in the world named <TT>wallaby</TT>,
+but not in your domain.
+<P>
+The name servers and resolver libraries on the various hosts in
+your domain know how to answer queries about wallaby; they return
+the actual IP address of your machine-a 32-bit number. From the
+user's point of view, this all happens more or less automatically,
+which lets us poor humans forget about memorizing 32-bit IP addresses
+and get on with memorizing important stuff, like 20-bit phone
+numbers.
+<P>
+In Java, IP addresses are encapsulated in the class <TT>java.net.InetAddress</TT>,
+whether they are given as symbolic DNS names or 32-bit numbers
+in dotted quad form.
+<H2><A NAME="WorldWideWeb"><B><FONT SIZE=5 COLOR=#FF0000>World
+Wide Web</FONT></B></A></H2>
+<P>
+For many people, the World Wide Web <I>is</I> the Internet. It
+certainly is the most painless and fun way to be a virtual tourist,
+zooming around looking at pictures of people you've never met
+and places you'd like to visit. It's also full of ways to search
+for information on any topic whatsoever. Most importantly for
+Java enthusiasts, the WWW is the natural habitat for Java applets.
+<P>
+Applets are embedded in Web pages using the <TT>APPLET</TT>
+tag. When you tell your Web browser to load a certain Web page,
+it opens a socket connection to a Web server specified in the
+URL of the page. (A URL is a <I>Uniform Resource Locator</I>-the
+address of a resource on the Web. For a general discussion of
+URLs, see <TT>java.net.URL</TT> in
+<A HREF="ch3.htm" >Chapter 3</A>.) The Web server then writes
+the contents of the page over the socket connection. Your browser
+decodes the contents and then displays them according to their
+type. If your browser understands applets, it reads the <TT>APPLET</TT>
+tag to figure out what additional data it must request from the
+Web server. This data consists of the Java class files defining
+your applet, which your browser then must load and execute. A
+Java-compatible Web browser knows how to be a Java virtual machine.
+<P>
+The language of the Web is HyperText Transfer Protocol (HTTP).
+The browser sends HTTP requests, such as <TT>GET</TT>
+and <TT>POST</TT>, to the server,
+and the server responds with an HTTP header and body. The header
+defines (among other things) the content type and content encoding
+of the body. There are many standard types and encodings, which
+are known as MIME types. The MIME type for standard Web pages
+is <TT>text/html</TT>, which also
+is known as HyperText Markup Language (HTML). I'm not going to
+talk much about HTML because you know all about that anyway.
+<P>
+Java allows for flexible interaction with Web servers, including
+the <TT>GET</TT> and <TT>POST</TT>
+methods of HTTP. But the Web is more than hypertext alone; a URL
+can specify any one of a number of different protocols to be used
+for fetching a resource. These include FTP, Gopher, NNTP (Usenet
+news), and so on. Better yet, you can teach Java about these or
+any protocol because the way in which <TT>java.net.URL</TT>
+objects interpret their contents is fully extensible, via the
+classes <TT>java.net.URLStreamHandler</TT>
+and <TT>java.net.ContentHandler</TT>
+(and other related classes).
+<H2><A NAME="SocketsinJava"><B><FONT SIZE=5 COLOR=#FF0000>Sockets
+in Java</FONT></B></A></H2>
+<P>
+To open a socket in Java, you specify an IP address and a port
+number. IP addresses in Java are represented by the class <TT>java.net.InetAddress</TT>,
+which doesn't care whether you want to specify the dotted quad
+or the DNS name of a host. You can get an <TT>InetAddress</TT>
+for the fictional machine <TT>wallaby.WidgetsGalore.com</TT>,
+for example, by using the static method <TT>getByName()</TT>:
+<BLOCKQUOTE>
+<TT>InetAddress wally = InetAddress.getByName(&quot;wallaby.WidgetsGalore.com&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+On the other hand, you could give the string in dotted quad form:
+<BLOCKQUOTE>
+<TT>InetAddress wally = InetAddress.getByName(&quot;123.45.67.89&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+It really doesn't matter. To get the address of the local host
+(the machine you're running on), you can pass the <TT>null</TT>
+reference to <TT>getByName()</TT>,
+or you can use <TT>InetAddress.getLocalHost()</TT>.
+These methods throw an <TT>UnknownHostException</TT>
+if (you guessed it!) the host is not known to DNS. An <TT>InetAddress</TT>
+object has a constant value; you can't change it, so just throw
+it away when you're done with it.
+<P>
+An <TT>InetAddress</TT> alone does
+not make a socket. You must have a port number. In a typically
+asymmetric client/server application, only the server side needs
+to worry about which port number it uses, because only the server
+side needs to be found at a well-known socket location. So, you
+can specify a port number or use the magic port number 0, which
+means, give me any available port. If you ask for a port that
+is already in use, you trigger an exception. Users generally should
+avoid using ports 1 through 1024 because these are reserved for
+system-based services.
+<H3><A NAME="StreamSocketClasses"><B>Stream Socket Classes</B></A>
+</H3>
+<P>
+The handiest sockets for use in Java are TCP stream sockets. For
+this reason, they receive prime consideration in Java's naming
+scheme, and they simply are called <TT>java.net.Socket</TT>.
+A <TT>Socket</TT>'s whole <I>raison
+d'etre</I> is to be connected to another <TT>Socket</TT>,
+so think about how this happens. In order to get a connection
+happening between two machines, one of them has to ask first,
+or initiate the connection. This machine is playing the role of
+client, and the one who answers is a server (these distinctions
+are a bit arbitrary-after the connection is established, it is
+symmetrical).
+<H4><TT><B>ServerSocket</B></TT></H4>
+<P>
+If the client asks for a connection, somebody had better be listening
+on the server end. This somebody is a <TT>java.net.ServerSocket</TT>-an
+object that creates a passive socket on your local host and then
+sits and listens to a specific port. Listing 12.1 is a fragment
+containing a very minimal server class, which accepts connections
+and then does nothing with them. The <TT>main()</TT>
+method calls the <TT>handle_connection()</TT>
+method to do any actual work with the socket.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.1. A minimal server.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>public class SillyServer<BR>
+{<BR>
+&nbsp;&nbsp;// A bare-bones example: exception handling omitted!
+<BR>
+<BR>
+&nbsp;&nbsp;public static void main( String args[] )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ServerSocket serv;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;serv = new ServerSocket( 8081 );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;while ( true )&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Socket s;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s = serv.accept();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Wait for a connection<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handle_connection( s );&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Got one, now do something!<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s.close();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+This code fragment just listens forever on port number 8081 until
+a connection is requested and then calls the method <TT>handle_connection()</TT>
+to deal with the new connection (the name <TT>handle_connection()</TT>
+is arbitrary here; it serves to describe a place to put your application-specific
+code). The <TT>accept()</TT> method
+blocks forever until a connection is received, at which point
+it returns a new <TT>Socket</TT> object
+representing the connection; you should close the <TT>Socket</TT>
+when you're done with it. After accepting a connection, the server
+socket returns to its listening state, and you can <TT>accept()</TT>
+further connections on the same <TT>ServerSocket</TT>
+as often as you want.
+<P>
+The infinite looping behavior in this server program is typical.
+After all, you want servers to hang around and service any number
+of requests. In case another request for a connection arrives
+before you have a chance to accept it, it is kept waiting in a
+queue of pending connections. You can specify the length of this
+queue by an optional second argument to the <TT>ServerSocket</TT>
+constructor. It typically defaults to five. When the queue is
+full of unserviced connections, further connections are refused.
+In practice, though, handling requests in a single thread is not
+a good idea unless each connection can be handled very quickly.
+Most real-life server programs should start a new thread for each
+connection accepted.
+<P>
+A connected <TT>Socket</TT> always
+knows the address and port of the remote socket it's connected
+to; these are made available by the <TT>Socket</TT>
+methods <TT>getInetAddress()</TT>
+and <TT>getPort()</TT>. This allows
+your server to reject certain connections out of hand; just close
+the <TT>Socket</TT> if you don't like
+the client's address.
+<H4><TT><B>Socket</B></TT></H4>
+<P>
+On the client's end, you need to ask the server for a connection.
+This is done with a <TT>java.net.Socket</TT>
+object, which you construct yourself, as shown in Listing 12.2.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.2. A minimal client.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.io.*;<BR>
+import java.net.*;<BR>
+public class SillyClient<BR>
+{<BR>
+&nbsp;&nbsp;Socket sock;<BR>
+&nbsp;&nbsp;DataInputStream in;<BR>
+&nbsp;&nbsp;DataOutputStream out;<BR>
+<BR>
+&nbsp;&nbsp;public SillyClient( String server, int port ) throws
+IOException<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Create a socket connected to the server:
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;sock = new Socket( server, port );<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Okay, now attach some streams to it.
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;in = new DataInputStream( sock.getInputStream()
+);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;out = new DataOutputStream( sock.getOutputStream()
+);<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice how the client needs to know the exact port number of the
+server's socket as well as the IP address. You can specify the
+address as a <TT>String</TT> or as
+an <TT>InetAddress</TT> instance.
+If the <TT>Socket</TT> constructor
+succeeds (throws no exception), you're connected! Also, you never
+specify which local port is to be used. For the client end, it
+simply doesn't matter beforehand which port you are using. After
+connecting, you can find out the local port number by calling
+<TT>getLocalPort()</TT>.
+<P>
+These are supposed to be stream sockets, so there had better be
+a way to get a stream attached to them. The methods <TT>getInputStream()</TT>
+and <TT>getOutputStream()</TT> do
+just that. They return an object of class <TT>InputStream</TT>
+or <TT>OutputStream</TT>, which allows
+you to read or write using the given socket. A socket can have
+a stream of either type or both attached to it; sockets provide
+a two-way flow of information. When you're done with the stream,
+it's good programming practice to <TT>close()</TT>
+it before you close the associated socket. If you use a form of
+<TT>BufferedOutputStream</TT>, you
+might want to explicitly <TT>flush()</TT>
+it on occasion; it certainly never hurts to do so.
+<P>
+For security reasons, applets usually are allowed to connect only
+to sockets that live at the same IP address as their own class
+files. This prevents various antisocial behaviors, but it also
+puts a real crimp in what you can do from a typical Web browser
+environment. An applet can find out the <TT>InetAddress</TT>
+of its home machine by examining its <TT>getCodeBase()</TT>
+URL. But keep your applets portable-don't hard code the IP address!
+<P>
+These restrictions don't apply to stand-alone programs (unless
+your <TT>SecurityManager</TT> is quite
+paranoid).
+<H4><B>A Basic Client/Server Applet</B></H4>
+<P>
+You'll now do a simple client/server transaction. The server will
+be a stand-alone program, listening on a specific port on the
+machine <TT>wallaby.WidgetsGalore.com</TT>,
+and the client will be an applet. The client calls up the server,
+and the server prints a short sales report back to the client.
+Then the transaction is complete. For this, you just need to flesh
+out the <TT>SillyServer</TT> class
+used earlier-call it <TT>SimpleServer</TT>,
+as shown in Listing 12.3.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.3. A simple server program.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.io.*;<BR>
+import java.net.*;<BR>
+public class SimpleServer<BR>
+{<BR>
+&nbsp;&nbsp;static final int DEFAULT_PORT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+8081;<BR>
+<BR>
+&nbsp;&nbsp;static void handle_connection( Socket s ) throws IOException
+<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;PrintStream out = new PrintStream(s.getOutputStream());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream in = new DataInputStream(new
+FileInputStream( &quot;sales.txt&quot; ));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;String line;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.err.println( &quot;Connection from
+&quot; + s.getInetAddress() );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;while ( (line = in.readLine()) != null
+)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.println( line );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;in.close();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;out.close();<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public static void main( String args[] )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;int port;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ServerSocket serv;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if (args.length == 1)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port = new Integer(args[0]).intValue();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;else<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port = DEFAULT_PORT;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serv = new ServerSocket( port
+);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;} catch ( IOException e ) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.err.println( &quot;I/O
+exception: &quot; + e );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.err.println( &quot;listening on
+port &quot; + port );<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;while ( true )&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Socket s = null;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s = serv.accept();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Wait for a connection<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handle_connection(
+s );&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Got
+one, now do something!<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} catch ( IOException e )
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.err.println(
+&quot;I/O exception: &quot; + e );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} finally&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (s!=null) try
+{ s.close(); } catch (IOException e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice that the server program still does everything sequentially
+in a single thread. You can get away with this only because the
+entire transaction lasts just a fraction of a second.
+<P>
+The corresponding applet, <TT>SimpleClient</TT>,
+has a button named load, which you click to open a socket and
+copy the data to a <TT>TextArea</TT>.
+Listing 12.4 shows the important parts of the applet code.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.4. A simple client applet.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>public class SimpleClient extends Applet
+<BR>
+{<BR>
+&nbsp;&nbsp;String server;<BR>
+&nbsp;&nbsp;int port;<BR>
+&nbsp;&nbsp;Label title = new Label( &quot;A Simple Client Applet&quot;,
+Label.CENTER );<BR>
+&nbsp;&nbsp;TextArea text = new TextArea();<BR>
+&nbsp;&nbsp;Button load = new Button( &quot;Load Sales Report&quot;
+);<BR>
+<BR>
+&nbsp;&nbsp;public void init()<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Initialize the applet ...<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void loadSales()<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Socket s = null;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s = new Socket( server, port
+);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream in = new DataInputStream(s.getInputStream());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String line;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while ( ( line = in.readLine()
+) != null )<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text.appendText(
+line + &quot;\n&quot; );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in.close();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;catch (IOException e)&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showStatus( &quot;I/O Exception:
+&quot; + e );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;finally&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (s!=null) try { s.close();
+} catch (IOException e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public boolean action(Event e, Object o)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if ( e.target == load )&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loadSales();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return false;<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Now, on the server end, you must provide a file <TT>sales.txt</TT>,
+with any text you want in it. After the client-side user clicks
+the Load Sales Report button, the contents of that file are transferred
+over the socket and printed in the <TT>TextArea</TT>.
+Because applets often are disallowed from opening local files,
+this is a useful alternative.
+<P>
+In a more complicated application, you need to define a protocol
+for client/server interaction over the stream socket. The basics
+of how you connect and use the socket always remain the same,
+however. It is worth pointing out that for large client/server
+and distributed applications, packages are available to ease the
+task. One such package is called <I>Remote Method Invocation</I>
+(RMI), which provides a transparent way to call on the methods
+of a remote Java object. Later, I'll discuss another approach
+that is used in <TT>ChatApplet.java</TT>.
+<H3><A NAME="DatagramSockets"><B>Datagram Sockets</B></A></H3>
+<P>
+Stream sockets provide a reliable connection to a fixed destination
+socket, but you pay for this convenience. A slight overhead is
+involved in checking for errors and correctly sequencing the packets.
+Moreover, for some applications, using stream sockets for every
+transmission would be prohibitively complex. Consider the example
+of a chat applet, which would be a member of a network of similar
+applets. These applets are to send messages typed by the user
+to all the members of the network. Using stream sockets, this
+requires each applet to open a socket for every other applet in
+the network, so in a network of N machines, there will be roughly
+N <FONT FACE="Symbol">&#165;</FONT> N sockets open, occupying
+just as many ports. This is quite wasteful and, in any case, the
+nature of a chat network is discrete; messages are dispatched
+in small quantities of text. For this purpose, datagrams are ideal.
+A datagram or UDP socket occupies one port but can send datagrams
+to any remote UDP socket. The datagram is sent immediately, and
+the sending thread does not block waiting for its delivery, regardless
+of whether anyone actually receives the packet. Short of using
+some kind of IP multicasting or broadcasting protocol, this is
+the most efficient way to reach a large number of peers with discrete
+update-type information.
+<P>
+Although user datagrams are not checked for data errors, you can
+choose to implement your own checksums. You also might want to
+have a mechanism for verifying that a datagram has arrived.
+<H4><TT><B>DatagramSocket</B></TT>
+</H4>
+<P>
+The <TT>java.net.DatagramSocket</TT>
+class represents a UDP socket on the local host. You can create
+it on a specific port:
+<BLOCKQUOTE>
+<TT>DatagramSocket ds = new DatagramSocket(
+9876 );</TT>
+</BLOCKQUOTE>
+<P>
+or on any available port:
+<BLOCKQUOTE>
+<TT>DatagramSocket ds = new DatagramSocket();</TT>
+</BLOCKQUOTE>
+<P>
+After the socket is created, you can send and receive datagram
+packets using the <TT>send()</TT>
+and the <TT>receive()</TT> methods.
+The packets themselves are represented by <TT>java.net.DatagramPacket</TT>
+objects, which you can construct from an array of bytes and addressing
+information. The <TT>send()</TT> method
+requires the <TT>DatagramPacket</TT>
+to be fully constructed; it must be filled in with a correct data
+buffer, data length, remote <TT>InetAddress</TT>,
+and remote port. The <TT>receive()</TT>
+method requires only a data buffer and a maximum length to receive.
+The <TT>receive()</TT> method blocks
+until a datagram arrives and then fills in the buffer of the specified
+datagram. The actual length of the data received then is available
+via <TT>getLength()</TT>. For example,
+you can receive string data like this:
+<BLOCKQUOTE>
+<TT>DatagramSocket sock = new DatagramSocket();
+<BR>
+byte b[] = new byte[1000];<BR>
+DatagramPacket p = new DatagramPacket( b, 1000 );<BR>
+sock.receive( p );      // wait for a packet<BR>
+byte data[] = p.getData();<BR>
+int len = p.getLength();<BR>
+String s = new String( data, 0, 0, len );</TT>
+</BLOCKQUOTE>
+<P>
+Similarly, data to be sent is constructed from an array of bytes.
+Suppose that you want to send a string. You can use this code:
+<BLOCKQUOTE>
+<TT>String message;<BR>
+InetAddress remoteaddr;<BR>
+int remoteport;<BR>
+DatagramSocket sock = new DatagramSocket();<BR>
+<BR>
+// Set the message, remoteaddr and remoteport ...<BR>
+<BR>
+byte b[] = new byte[ message.length() ];<BR>
+message.getBytes( 0, m.length(), b, 0 );<BR>
+DatagramPacket p = new DatagramPacket(b, m.length(), remoteaddr,
+remoteport);<BR>
+try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;sock.send( p );<BR>
+} catch (IOException e)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;// Uh-oh! Do something.<BR>
+}</TT>
+</BLOCKQUOTE>
+<H4><B>A Basic Datagram Application</B></H4>
+<P>
+This section looks at a very basic use of datagrams: the two-way
+chat program <TT>DatagramChat.java</TT>,
+as shown in Figure 12.1. The user is expected to enter the remote
+host name and port number, so this program is not really very
+user-friendly. However, this does avoid the complication of having
+a central hookup server, which otherwise would be necessary in
+order to let the chat windows find each other's sockets.
+<P>
+<A HREF="f12-1.gif" ><B>Figure 12.1 : </B><I>A datagram chat applet.</I></A>
+<P>
+After the user types a message in the input <TT>TextField</TT>
+and then clicks Send, the message is sent in a <TT>DatagramPacket</TT>,
+along with a leading byte with the value <TT>PRINT</TT>
+or <TT>ECHO</TT> (in this case, <TT>PRINT</TT>).
+Listing 12.5 shows the code that the <TT>DatagramChat</TT>
+class uses to send a message datagram.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.5. Sending a datagram in class </B><TT><B>DatagramChat</B></TT><B>.
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>void sendMessage()<BR>
+{<BR>
+&nbsp;&nbsp;if ( remoteaddr==null )&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;status.setText( &quot;You must specify
+a remote host and port!&quot; );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return;<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;String m = input.getText().trim();<BR>
+&nbsp;&nbsp;if (m.length() &lt; 1) return;<BR>
+<BR>
+&nbsp;&nbsp;byte b[] = new byte[ m.length()+1 ];<BR>
+&nbsp;&nbsp;b[0] = PRINT;<BR>
+&nbsp;&nbsp;m.getBytes( 0, m.length(), b, 1 );<BR>
+&nbsp;&nbsp;DatagramPacket p = new DatagramPacket(b, m.length()+1,
+remoteaddr, remoteport);<BR>
+<BR>
+&nbsp;&nbsp;try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;sock.send( p );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;status.setText( &quot;Message sent to
+&quot; + remoteaddr );<BR>
+&nbsp;&nbsp;}&nbsp;catch (IOException e)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;status.setText( &quot;Message send failed:
+&quot; + e.getMessage() );<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The same window must be able to receive messages from the remote
+peer. To accomplish this, it implements the <TT>Runnable</TT>
+interface and has its <TT>run()</TT>
+method execute in a separate <TT>Thread</TT>.
+All the <TT>run()</TT> method does
+is wait for messages and then respond-an infinite loop. The response
+to a message is to print it in a <TT>TextArea</TT>,
+and (if it is marked <TT>PRINT</TT>)
+send back the same message, now marked <TT>ECHO</TT>.
+Messages marked <TT>ECHO</TT> also
+are printed to the <TT>TextArea</TT>,
+but they are not returned to the sender. This means that the chat
+window supports remote echoing; if you don't see the message in
+the <TT>TextArea</TT>, chances are
+the remote user doesn't see it either. Listing 12.6 shows the
+<TT>run()</TT> method of the <TT>DatagramChat</TT>
+class.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.6. The </B><TT><B>run()</B></TT><B>
+method of </B><TT><B>DatagramChat</FONT><FONT SIZE=1>.
+</FONT><BR>
+</B></TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>public void run()<BR>
+{<BR>
+&nbsp;&nbsp;byte b[] = new byte[MTU];<BR>
+<BR>
+&nbsp;&nbsp;while ( sock != null )&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DatagramPacket p = new DatagramPacket(
+b, MTU );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sock.receive( p );<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte data[] = p.getData();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int len = p.getLength();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte op = data[0];<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String s = new String( data,
+0, 1, len-1 );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print( s );<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ( op==PRINT )&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Echo the packet
+back to the sender<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data[0] = ECHO;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DatagramPacket
+q&nbsp;&nbsp;= new DatagramPacket(data, len, p.getAddress(), 
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><FONT FACE="Wingdings">&Acirc;</FONT><TT>p.getPort());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sock.send(q);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;} catch (IOException e) {}<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The troublesome thing about this program is that it is hard to
+run as an applet (it is provided as <TT>DatagramChatApplet.java</TT>).
+The Web browser usually will not permit you to receive datagrams
+in an applet (although my applet viewer lets me do this if I load
+the applet locally). Of course, it's possible to run this as a
+stand-alone application (<TT>java DatagramChat</TT>),
+but that defeats much of the purpose of having applets at all.
+<P>
+For this reason, chat applets in Java will have to use a stream
+socket connection to a server program running on their <I>home
+server</I>-the Web server where the applet's class files reside.
+This star-like configuration loads down the server and eats up
+several port numbers. Not only that-it requires a carefully designed
+protocol to make sure that client and server can accomplish essentially
+asynchronous tasks in a sequential conversation and still recover
+from unexpected conditions. Worse, it makes the response time
+unacceptably slow if chat groups of a few dozen applets or more
+exist. Nevertheless, any applet that wants to communicate with
+other applets using sockets has to live with these restrictions.
+The next section discusses one way to achieve this.
+<H3><A NAME="AChatApplet"><B>A Chat Applet</B></A></H3>
+<P>
+The program <TT>ChatApplet.java</TT>
+on the book's accompanying CD-ROM is a more realistic attempt
+at a chat applet (see Figure 12.2). It uses a stream socket to
+talk to a central server program (<TT>ChatServer.java</TT>),
+located on the same machine as the applet's code. The server program
+coordinates connections to several clients, grouping them into
+chat pools (different channels or <I>rooms</I>). The <TT>trans</TT>
+package provides a uniform way for client and server to communicate
+requests and commands to each other. The server's port number
+defaults to 8081, but any port number can be given as the single
+command-line argument. The applet itself is just a panel containing
+a <TT>ChatWindow</TT>, in which you
+can set the server name, port number, and initial screen name
+by parameters in the <TT>APPLET</TT>
+tag (<TT>server</TT>, <TT>port</TT>,
+and <TT>name</TT>). It won't be necessary
+to specify the server, because the applet figures out its home
+server by using the <TT>getCodeBase()</TT>
+method (don't forget to have the server running, though). The
+<TT>ChatApplet</TT> class contains
+a single instance of class <TT>ChatWindow</TT>,
+which does all the work. The <TT>ChatWindow</TT>
+class can also run as a stand-alone program.
+<P>
+<A HREF="f12-2.gif" ><B>Figure 12.2 : </B><I>The ChatApplet.java applet.</I></A>
+<P>
+The server program has most of the smarts about which chat pools
+are defined and who is in them. The client applets just act as
+a user interface to the server, which updates the pools at will.
+Ideally, the smarts would be distributed somewhat more democratically
+in a web of interconnected applets, but due to security restrictions
+(discussed earlier), you are forced into the star configuration.
+This limits the usefulness of the applet, because large numbers
+of clients will bring the server to a crawl, and because the system
+is not fault-tolerant.
+<P>
+A detailed discussion of the mechanics of these programs is really
+beyond the scope of this chapter, but this section will go over
+the basic idea of how the client/server transactions are performed.
+<H4><B>The </B><TT><B>trans</B></TT><B>
+Package</B></H4>
+<P>
+The <TT>trans</TT> package used by
+<TT>ChatApplet.java</TT> and <TT>ChatServer.java</TT>
+provides an artificial kind of remote procedure call functionality.
+Transactions are sent back and forth over a stream socket in a
+semi-asynchronous way. The transactions are instances of a subclass
+of the abstract class <TT>Transaction</TT>.
+The socket is encapsulated in an object of type <TT>TChannel</TT>.
+This is a smart channel for initiating and responding to transactions.
+Either side can be the client (or initiator) of a transaction
+(depending only on the transaction type itself), so there is no
+essential asymmetry built in.
+<P>
+Each <TT>Transaction</TT> object exists
+only to be converted to and from its <I>properties</I>, which
+are pairs of name/value strings written in a <TT>TProps</TT>
+object, which is essentially a jazzed-up <TT>Hashtable</TT>
+with better <TT>read</TT> and <TT>write</TT>
+methods than the <TT>java.util.Properties</TT>
+class has. The exact class of the transaction determines its type,
+so the inheritance mechanism is used here basically as a way to
+discriminate among the different types of transactions while treating
+them on an equal footing as objects characterized by their properties.
+The properties are accessed via the <TT>getProperty()</TT>
+and <TT>setProperty()</TT> methods.
+On creation, the constructor sets the properties to reflect the
+transaction parameters. The transaction is sent by passing it
+to the <TT>initiate()</TT> method
+of an opened <TT>TChannel</TT> object.
+The <TT>ChatServer</TT>, for example,
+greets the client and asks for its screen name by initiating a
+transaction of class <TT>Hello</TT>,
+as Listing 12.7 shows.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.7. How the </B><TT><B>ChatServer</B></TT><B>
+says hello.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>class ClientManager extends TChannel
+<BR>
+{<BR>
+&nbsp;&nbsp;//&nbsp;...<BR>
+}<BR>
+<BR>
+class HandleClient extends Thread<BR>
+{<BR>
+&nbsp;&nbsp;ClientManager cm;<BR>
+<BR>
+&nbsp;&nbsp;//&nbsp;...<BR>
+<BR>
+&nbsp;&nbsp;try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Hello h = new Hello();&nbsp;&nbsp;&nbsp;//
+a Hello object has no initial props<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;cm.initiate(h);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+start the transaction<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;cm.name = h.name;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+this gets the result: a screen name<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// ...<BR>
+&nbsp;&nbsp;} catch ( IOException e ) {}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Initiating a transaction means that the following items are written
+to the stream socket:
+<UL>
+<LI>An opcode byte (indicating <TT>REQ</TT>
+(request) or <TT>ACK</TT> (acknowledge)
+<LI>A serial number (this serves to match replies to previous
+requests)
+<LI>The name of the transaction class (here, it is <TT>Hello</TT>)
+<LI>The properties of the transaction (a <TT>TProps</TT>
+object, written out)
+</UL>
+<P>
+The best way to write primitive Java types over a stream socket
+is to use a <TT>DataOutputStream</TT>
+attached to the socket (<A HREF="ch3.htm" >see Chapter 3</A> for
+a full discussion of data I/O). The opcode is written using <TT>writeByte()</TT>,
+the serial number with <TT>writeInt()</TT>,
+and the various strings with <TT>writeUTF()</TT>.
+The receiving socket then can read the data using a <TT>DataInputStream</TT>,
+in a parallel fashion.
+<P>
+The most important methods in a <TT>Transaction</TT>
+class are its <TT>build()</TT> and
+<TT>decode()</TT> methods. The <TT>build()</TT>
+method is run on the receiving end, and it accepts a single <TT>TProps</TT>
+object as an argument. These properties are the ones that were
+written on the socket at the initiating end, and the <TT>build()</TT>
+method's job is to take some action based on the values of these
+properties. The <TT>build()</TT> method
+can use <TT>setProperty()</TT> to
+set some return properties as well (on entry to <TT>build()</TT>,
+the receiver-side transaction's properties are guaranteed to be
+empty).
+<P>
+When the <TT>build()</TT> method finishes,
+the result properties are written back (even if they remain empty),
+with an opcode of <TT>ACK</TT> (acknowledge).
+It then is the job of the <TT>decode()</TT>
+method to make sense of these return properties on the initiating
+end. The result of a <TT>Hello</TT>
+transaction is a screen name, for example. This means that the
+<TT>build()</TT> and the <TT>decode()</TT>
+method each take half the responsibility for the encoding and
+decoding, whereas the constructor need not do anything at all.
+Listing 12.8 shows the complete code of the <TT>Hello</TT>
+class (here, <TT>ChatTransaction</TT>
+extends <TT>Transaction</TT>).
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.8. The </B><TT><B>Hello Transaction</B></TT><B>
+class.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.net.*;<BR>
+import trans.TProps;<BR>
+<BR>
+// A Hello transaction requests that the client identify itself.
+<BR>
+<BR>
+public class Hello extends ChatTransaction<BR>
+{<BR>
+&nbsp;&nbsp;static String NAME = &quot;name&quot;;<BR>
+<BR>
+&nbsp;&nbsp;String name;<BR>
+<BR>
+&nbsp;&nbsp;public Hello() {}<BR>
+<BR>
+&nbsp;&nbsp;protected void build( TProps p )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;setProperty( NAME, getWindow().screenname
+);<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;protected void decode()<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;name = getProperty( NAME );<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+Even though the constructor is empty here, you still must declare
+it, if only to make it public. The <TT>trans</TT>
+package requires that all <TT>Transaction</TT>s
+be public classes with a public constructor that takes no arguments
+(a <I>null constructor</I>). This is because the receiving <TT>TChannel</TT>
+actually instantiates a new transaction of the correct type by
+using the class descriptor's <TT>newInstance()</TT>
+method:
+<BLOCKQUOTE>
+<TT>//&nbsp;This code instantiates a Transaction
+of class named in the String tClass:<BR>
+<BR>
+try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Class c = Class.forName( tClass );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;t = (Transaction)c.newInstance();<BR>
+}&nbsp;catch (Exception ex)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;throw new TransactionException();<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Transactions appear synchronous to the initiating thread; the
+<TT>initiate()</TT> method does not
+return until the transaction's return properties have been read
+and decoded. The same <TT>TChannel</TT>
+can act as both initiator and receiver simultaneously, however,
+and each received transaction has its <TT>build()</TT>
+method executed in a separate thread. If this <TT>build()</TT>
+method decides to <TT>initiate()</TT>
+another transaction back to the sender, you have a subtransaction,
+and that's okay, too. In this way, entire conversations of transactions
+and subtransactions can be carried out more or less transparently.
+The instigating thread doesn't see any of the subtransactions,
+because it is blocked, waiting on the outcome of the entire process.
+This multithreading requires that some care be taken in determining
+which methods should be synchronized and which should not, in
+order to avoid deadlock.
+<P>
+The downside of the approach is that there currently is no way
+to provide a time-out period for transactions to complete. Also,
+in the event of an error, there is no defined way to restore the
+<TT>TChannel</TT> to a sane state.
+It also would be nice to have a form of <TT>initiate()</TT>
+that returns immediately, executing the transaction in another
+thread and optionally notifying the caller by executing an agreed-upon
+method call when the transaction is completed (this is best done
+by defining an interface-for example, <TT>TransactionObserver</TT>).
+Performing these improvements would be fairly straightforward
+(after reading about multithreaded programs), so consider it an
+exercise!
+<H2><A NAME="TheWWWinJava"><B><FONT SIZE=5 COLOR=#FF0000>The WWW
+in Java</FONT></B></A></H2>
+<P>
+The main reason behind the phenomenal rise of Java is its potential
+to become the <I>lingua franca</I> of interactive applications
+on the Internet. The exponential growth of the World Wide Web
+(WWW) has started a drive to redistribute the burden of computation,
+which has until now rested almost completely on the Web server.
+The CGI scripts so common today require no cleverness on the client
+end, but this simplicity comes at a price. The variety and semantics
+of CGI interaction are limited by the HTML form syntax and the
+strictures of HTTP, and a single server is forced to think on
+behalf of a potentially limitless number of clients. Java, on
+the other hand, is a real programming language that loads once
+and executes at the client end. This makes an enormous difference
+in terms of efficiency, both from the client's point of view (faster
+execution) and from the point of view of the network (lower bandwidth).
+So, although Java will soon be powering telephones and stereos,
+it is on the Web that Java finds its first natural home.
+<P>
+In this section, you'll see how Java programs can interact with
+Web servers and also with existing CGI programs. Java can convert
+URLs (Web addresses) into usable program objects. On a lower level,
+Java can read the raw contents of a URL. Java applets can also
+request certain actions of their host browser, such as displaying
+a status line or loading a new document.
+<H3><A NAME="TheURLClass"><B>The </B><TT><B><FONT SIZE=4>URL</FONT></B></TT><B><FONT SIZE=4>
+Class</FONT></B></A></H3>
+<P>
+A <I>URL</I> refers to a specific resource on the Web: an HTML
+file, image, animation, or whatever the case may be. URLs look
+like this:
+<BLOCKQUOTE>
+<TT>http://www.WidgetsGalore.com/~MrWidget/sales.html</TT>
+</BLOCKQUOTE>
+<P>
+URLs specify a protocol (<TT>http</TT>),
+a server (<TT>www.WidgetsGalore.com</TT>),
+and a path to the resource in question. In Java, URLs are encapsulated
+in a constant object of class <TT>java.net.URL</TT>,
+which is described in <A HREF="ch3.htm" >Chapter 3</A>.
+<P>
+An applet can use a URL to load a new browser page, as shown in
+this code:
+<BLOCKQUOTE>
+<TT>class MyApplet extends Applet<BR>
+{<BR>
+&nbsp;&nbsp;// Other stuff ...<BR>
+<BR>
+&nbsp;&nbsp;public void showNewPage( URL u )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;getAppletContext().showDocument( u );
+<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+If you use framesets in your document, there is also an optional
+second argument to specify the target frame or window.
+<P>
+Java URL objects have a <TT>getContent()</TT>
+method for converting the contents of the URL into a Java object,
+assuming that such a conversion is defined. A URL can reference
+an image, and then <TT>getContent() </TT>returns
+an <TT>Object</TT> whose runtime class
+is some subclass of <TT>Image</TT>,
+for example. The content type of most Web pages is <TT>text/html</TT>,
+which has no defined conversion. You can use the URL object to
+open an <TT>InputStream</TT> to read
+the contents of the URL, however:
+<BLOCKQUOTE>
+<TT>URL url = new URL(&quot;http://www.WidgetsGalore.com/~MrWidget/home.html&quot;);
+<BR>
+DataInputStream in = new DataInputStream(url.openStream());<BR>
+String line;<BR>
+while ( ( line = in.readLine() ) != null )<BR>
+&nbsp;&nbsp;System.out.println( line );<BR>
+in.close();</TT>
+</BLOCKQUOTE>
+<P>
+When it is defined, the <TT>getContent()</TT>
+conversion is performed by a <TT>ContentHandler</TT>
+object. The following sections tell you how to define custom <TT>ContentHandler</TT>s
+for your own types of objects.
+<H3><A NAME="TheURLConnectionClass"><B>The </B><TT><B><FONT SIZE=4>URLConnection</FONT></B></TT><B><FONT SIZE=4>
+Class</FONT></B></A></H3>
+<P>
+The <TT>URL</TT> class may get a lot
+of credit, but the <TT>URLConnection</TT>
+class really does most of the work. A <TT>URLConnection</TT>
+object manages an interaction with a Web server at a given URL.
+When you call on a <TT>URL</TT>'s
+<TT>getContent()</TT> method, the
+<TT>URL</TT> object creates a <TT>URLConnection</TT>
+to do the dirty work. You can retrieve the <TT>URLConnection</TT>
+associated with a <TT>URL</TT> by
+calling the <TT>openConnection()</TT>
+method of the <TT>URL</TT>. This can
+give you access to the values of the HTTP header fields, which
+tell you such things as the last modification date. It lets you
+specify details of the interaction, such as retrieval conditional
+on the last modification time (use <TT>setIfModifiedSince()</TT>
+or set the <TT>If-Modified-Since</TT>
+header field using <TT>setRequestProperty()</TT>).
+<P>
+A <TT>URLConnection</TT> object remains
+unconnected until its <TT>connect()</TT>
+method is called, which happens when some operation such as <TT>getContent()</TT>
+requires that a connection be made. Before it is connected, you
+are free to modify the fields that control the transaction. After
+it is connected, this is an error. URLConnections that use the
+HTTP protocol can perform the HTTP <TT>GET</TT>
+and <TT>POST</TT> methods because
+they  are smart enough to wait for you to access their I/O streams
+before connecting to the Web server and issuing a <TT>GET</TT>
+or a <TT>POST</TT> request; basically,
+the <TT>POST</TT> method is used only
+if you actually write some output. You'll see how to do this soon.
+<P>
+The built-in functionality of <TT>URLConnection</TT>s
+is centered on the HTTP protocol, but a <TT>URL</TT>
+object can use any protocol name that has an associated <TT>URLStreamHandler</TT>.
+A <TT>URLStreamHandler</TT> object
+must implement the abstract method <TT>openConnection()</TT>,
+which returns a <TT>URLConnection</TT>
+object given a URL. The URL knows where to get the stream handler
+for a given protocol by consulting the <TT>URLStreamHandlerFactory</TT>.
+You can define your own protocols by writing a class implementing
+the <TT>URLStreamHandlerFactory</TT>
+interface and then setting it to be the stream-handler factory
+using the static method <TT>URL.setStreamHandlerFactory()</TT>.
+In practice, though, you're almost always better off using HTTP
+and defining new content handlers corresponding to custom MIME
+types. The exception is if you're trying to write a reusable set
+of classes to perform FTP or some other such protocol that already
+exists.<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Don't assume that your Java implementation supports a protocol type just because it is common; my implementation doesn't understand <TT>ftp</TT> or <TT>news</TT> (moreover, the <TT>file</TT> protocol completely ignores the server field and loads a local file regardless). This isn't all that surprising; for example, a <TT>URLStreamHandler</TT> for the <TT>news</TT> protocol would have to produce a <TT>URLConnection</TT> object that knows how to talk to a news server and serve up a new Java object corresponding to each news URL. This functionality is too specific to be part of a standard API.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="MIMETypesandContentHandlers"><B>MIME Types and Content
+Handlers</B></A></H3>
+<P>
+How does a resource sitting on a Web server get converted into
+a usable Java object? First, when the Web server returns the contents
+of the corresponding URL, it includes header fields indicating
+the MIME type and encoding of the content to follow. For a GIF
+image, the MIME type is identified by the string <TT>image/gif</TT>.
+For HTML, it is <TT>text/html</TT>.
+When a <TT>URL</TT> or <TT>URLConnection</TT>
+performs its <TT>getContent()</TT>
+method to create a new object from a URL, it needs to find a content
+handler for whatever MIME type the server returns. The <TT>java.net</TT>
+package automatically parses the MIME type from the appropriate
+HTTP header field and then passes it to a <TT>ContentHandlerFactory</TT>,
+which returns the required handler or <TT>null</TT>
+(or throws a runtime exception). If you want to know the MIME
+type explicitly, the <TT>getContentType()</TT>
+method is available in the class <TT>URLConnection</TT>.
+<P>
+A content handler is an object of class <TT>java.net.ContentHandler</TT>,
+with a method <TT>getContent()</TT>,
+which takes a <TT>URLConnection</TT>
+and returns an <TT>Object</TT>. A
+different content-handler class exists for each recognized MIME
+type, because they each must do different things with the data
+from the URL.
+<P>
+The correspondence between MIME types and <TT>ContentHandler</TT>s
+is established by the <TT>ContentHandlerFactory</TT>.
+A Java program has one <TT>ContentHandlerFactory</TT>:
+an object implementing the interface <TT>java.net.ContentHandlerFactory</TT>,
+which has been installed as the <TT>ContentHandlerFactory</TT>,
+as shown in this code:
+<BLOCKQUOTE>
+<TT>URLConnection.setContentHandlerFactory(
+chf );</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>ContentHandlerFactory</TT>
+interface specifies one method; the <TT>createContentHandler()</TT>
+method accepts a MIME type name string and returns a <TT>ContentHandler</TT>
+object for that MIME type, or <TT>null</TT>
+if one is not known. You never call on a <TT>ContentHandler</TT>
+or <TT>ContentHandlerFactory</TT>
+directly; they are there to be used by the higher level classes
+<TT>URL</TT> and <TT>URLConnection</TT>,
+and to be subclassed by programmers who want to add new MIME-type
+capabilities to Java.
+<P>
+Now look at a functioning but simple example. Consider a Java
+class called <TT>Colleague</TT>:
+<BLOCKQUOTE>
+<TT>class Colleague<BR>
+{<BR>
+&nbsp;&nbsp;String name;<BR>
+&nbsp;&nbsp;String phone;<BR>
+&nbsp;&nbsp;String fax;<BR>
+&nbsp;&nbsp;Date birthday;<BR>
+&nbsp;&nbsp;Date nextMeeting;<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+To prepare for loading <TT>Colleague</TT>
+objects from a URL using HTTP, you perform the following steps:
+<UL>
+<LI>Define a new MIME type to the HTTP server.
+<LI>Implement a <TT>ContentHandler</TT>
+class for the type.
+<LI>Install a custom <TT>ContentHandlerFactory</TT>
+that understands the new type.
+</UL>
+<H4><B>Defining a New MIME Type</B></H4>
+<P>
+You can call the new MIME type anything, as long as it doesn't
+mess up other MIME types on the same server. Call it <TT>application/java-Colleague</TT>
+to avoid trouble. To tell the Web server about the new MIME type,
+you have to add a local configuration directive. For NCSA <TT>httpd</TT>,
+one of the most common servers, you put the following line in
+an <TT>.htaccess</TT> file in the
+same directories as your <TT>Colleague</TT>
+URLs:
+<BLOCKQUOTE>
+<TT>AddType application/java-Colleague .coll</TT>
+</BLOCKQUOTE>
+<P>
+The server then recognizes any URLs with the <TT>.coll</TT>
+file name extension as belonging to the MIME type <TT>application/java-Colleague</TT>
+and reports them as such. This won't work if your site disallows
+per-directory access configuration for <TT>httpd</TT>.
+Talk to your system administrator if you're not sure; she may
+prefer to define the new type for you in a global configuration
+file. Also, other servers provide this functionality in different
+ways.
+<H4><B>Writing a Custom </B><TT><B>ContentHandler</B></TT>
+</H4>
+<P>
+Listing 12.9 shows a very simple <TT>ContentHandler</TT>
+for the class <TT>Colleague</TT>.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.9. A Custom </B><TT><B>ContentHandler</B></TT><B>
+class.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>class ColleagueHandler extends ContentHandler
+<BR>
+{<BR>
+&nbsp;&nbsp;// Read from the URL and create a Colleague:<BR>
+<BR>
+&nbsp;&nbsp;public Object getContent( URLConnection c ) throws
+IOException<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream in = new DataInputStream(
+c.getInputStream() );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Colleague coll = new Colleague();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;String s;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;coll.name = in.readLine();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;coll.phone = in.readLine();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;coll.fax = in.readLine();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coll.birthday = new Date(
+in.readLine() );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coll.nextMeeting = new Date(
+in.readLine() );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;catch (Exception e)&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new IOException( e.getMessage()
+);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return coll;<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+This class knows how to read from a <TT>URLConnection</TT>
+and construct a new <TT>Colleague</TT>
+object. It defines the format; there are five lines in a <TT>.coll</TT>
+file, representing the name, phone, fax, birthday, and next meeting
+date of that given colleague. For a real application, you should
+use tagged fields (for example, <TT>Birthday:
+Jun 5 1972</TT>). This makes it easier to define new versions
+of your format without invalidating old URLs.
+<H4><B>Using a Custom </B><TT><B>ContentHandlerFactory</B></TT>
+</H4>
+<P>
+Writing a content handler factory class is easy, but it's a good
+idea to make it flexible (because you only get to install it once!).
+You might want to make a class like the one shown in Listing 12.10,
+which lets your program add new MIME types at will.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.10. A custom </B><TT><B>ContentHandlerFactory</B></TT><B>.
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>class MyContentHandlerFactory implements
+ContentHandlerFactory<BR>
+{<BR>
+&nbsp;&nbsp;Hashtable handlers = new Hashtable();<BR>
+<BR>
+&nbsp;&nbsp;void addMimeType( String mimetype, ContentHandler
+handler )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;handlers.put( mimetype, handler );<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public ContentHandler createContentHandler( String
+mimetype )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return (ContentHandler)handlers.get( mimetype
+);<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+This class is flexible, because other classes from the same package
+can add new <TT>ContentHandler</TT>s
+on-the-fly by calling <TT>addMimeType()</TT>.
+Listing 12.11 shows a little demo program which does this (<TT>ContentHandlerDemo.java</TT>).
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.11. ContentHandlerDemo.java: using a custom ContentHandler.
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>public class ContentHandlerDemo<BR>
+{<BR>
+&nbsp;&nbsp;public static void main(String args[])<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if ( args.length != 1 )&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.err.println( &quot;please
+give a URL argument!&quot; );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.exit(1);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;MyContentHandlerFactory chf = new MyContentHandlerFactory();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ColleagueHandler collHandler = new ColleagueHandler();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;chf.addMimeType( &quot;application/java-Colleague&quot;,
+collHandler );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;URLConnection.setContentHandlerFactory(
+chf );<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;URL url = new URL( args[0]
+);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Colleague coll = (Colleague)url.getContent();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;Loaded
+colleague:&quot;);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;name
+= &quot; + coll.name);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;phone
+= &quot; + coll.phone);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;fax
+= &quot; + coll.fax);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;birthday
+= &quot; + coll.birthday);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(&quot;next
+meeting = &quot; + coll.nextMeeting);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;} catch ( Exception e )&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.err.println( &quot;Exception:
+&quot; + e ) ;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.exit(1);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+To use this, define a colleague in a file. <TT>Fred.coll</TT>,
+for example, could contain this text:
+<BLOCKQUOTE>
+<TT>Fred Fredrickson<BR>
+800-8001<BR>
+805-8123<BR>
+Jan 12 1970<BR>
+Jul 26 1996 3:15 PM</TT>
+</BLOCKQUOTE>
+<P>
+Then, by giving the URL to <TT>Fred.coll</TT>,
+the <TT>ContentHandlerDemo</TT> program
+should be able to load the information from the server, as this
+example shows (using the UNIX command prompt as an example):
+<BLOCKQUOTE>
+<TT>wallaby$ java ContentHandlerDemo http://www.WidgetsGalore.com/~MrWidget/colleagues/</TT><FONT FACE="Wingdings">&Acirc;</FONT><TT>Fred&nbsp;coll
+<BR>
+Loaded colleague:<BR>
+name = Fred Fredrickson<BR>
+phone = 800-8001<BR>
+fax = 805-8123<BR>
+birthday = Mon Jan 12 00:00:00 PST 1970<BR>
+next meeting = Fri Jul 26 15:15:00 PDT 1996</TT>
+</BLOCKQUOTE>
+<P>
+If you can't get this working, make sure that your file is in
+a location where your Web server expects to find it. Also make
+sure that you have defined a new MIME type to the server and provided
+the correct URL on the command line.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+If an HTTP error occurs, the server returns an error screen of type <TT>text/html</TT>. Be warned that there is no predefined <TT>ContentHandler</TT> for this type, so you might want to detect this by explicitly examining the content type of the <TT>URLConnection</TT> object (if you don't, the <TT>java.net</TT> package throws a rather nondescriptive runtime exception (<TT>ClassNotFoundException</TT>) of its own.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheGETmethod"><B>The </B><TT><B><FONT SIZE=4>GET</FONT></B></TT><B><FONT SIZE=4>
+method</FONT></B></A></H3>
+<P>
+The <TT>GET</TT> method is the usual
+HTTP method for retrieving a URL, so you actually are using it
+every time you follow a hypertext link that isn't a Submit button
+on an HTML form. Some URLs expect to be fed additional information,
+however, which is appended onto the URL after a question mark.
+This so-called query information is useful for passing argument
+values to executable CGI scripts, such as WWW pages interfacing
+to databases or search engines. The query information is a sequence
+of attribute names and values, as this code shows:
+<BLOCKQUOTE>
+<TT>http://www.myserver.edu/searchquery.cgi?text=My+Favorite+Foods&amp;name=Fred</TT>
+</BLOCKQUOTE>
+<P>
+This query information encodes the name/value pairs <TT>&quot;text=My
+Favorite Foods&quot;</TT> and <TT>&quot;name=Fred&quot;</TT>.
+Any CGI application that expects to receive query information
+must be able to decode this information. The encoding is a standard
+one, in which space characters are mapped to + and any troublesome
+characters (control codes, <TT>+</TT>,
+<TT>%</TT>, and so on) are mapped
+to <TT>%<I>xx</I></TT>, where <TT><I>xx</I></TT>
+is the hexadecimal value of the character. Separating name/value
+pairs by ampersands (<TT>&amp;</TT>)
+is the usual thing to do when there is more than one pair.
+<P>
+To interact with such a CGI program, you can use the <TT>java.net.URLEncoder</TT>
+class to encode the URL. Somewhat surprisingly, the <TT>URLEncoder</TT>
+class maps <TT>&amp;</TT> and <TT>=</TT>
+to their hexadecimal code equivalents, so if you want to use the
+syntax described in the preceding paragraph, you need to encode
+each value separately and concatenate the results with ampersands
+and equal signs yourself. The CGI program must retrieve the information
+from the environment variable <TT>QUERY_STRING</TT>
+and reverse the encoding process described earlier. Look at some
+established CGI scripts if you're not sure how this works.
+<P>
+To use the information returned by the CGI script, you can read
+an <TT>InputStream</TT> furnished
+by <TT>URL.openStream()</TT> or <TT>URLConnection.getInputStream()</TT>.
+Alternatively, you can furnish a content handler for the MIME
+type of the object returned and just do a <TT>getContent()</TT>
+on the encoded URL. To avoid extensibility problems, you might
+not want to provide content handlers for common MIME types such
+as <TT>text/html</TT> (unless you
+are writing a Web browser in Java!).
+<H3><A NAME="ThePOSTMethod"><B>The </B><TT><B><FONT SIZE=4>POST</FONT></B></TT><B><FONT SIZE=4>
+Method</FONT></B></A></H3>
+<P>
+The <TT>POST</TT> method is the method
+used when submitting an HTML form. Generally, it enables you to
+write to a <TT>URLConnection</TT>
+so that whatever you write is fed to the referenced object (usually
+a CGI program) on its standard input stream. Because of the way
+HTTP transactions work, you should write and close the output
+stream before you read the input or do anything else that would
+cause the <TT>URLConnection</TT> to
+connect. The server can require that the content length of the
+input be specified along with the request, and this can be done
+only before connecting. This also lets the <TT>URLConnection</TT>
+object realize what you're up to and then specify the <TT>POST</TT>
+method rather than <TT>GET</TT>.
+<P>
+Listing 12.12 shows a simple example of how to use the <TT>POST</TT>
+method to interface with a CGI program. The <TT>PostMethodDemo</TT>
+applet posts the contents of a <TT>TextArea</TT>
+to a little CGI program called <TT>wordcount.cgi</TT>
+and then shows the result. You have to call this applet by its
+full URL, because it uses its code base to construct a URL to
+the CGI program, which should be in the same directory. Depending
+on your server configuration, you might not be allowed to execute
+CGI programs in user directories. Then you should move <TT>wordcount.cgi</TT>
+to your <TT>cgi-bin</TT> directory
+on the Web server and modify the applet source to supply the correct
+URL.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 12.12. </B><TT><B>PostMethodDemo.java</B></TT><B>:
+using the </B><TT><B>POST</B></TT><B>
+method.<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>import java.io.*;<BR>
+import java.net.*;<BR>
+import java.awt.*;<BR>
+import java.applet.Applet;<BR>
+<BR>
+public class PostMethodDemo extends Applet<BR>
+{<BR>
+&nbsp;&nbsp;Label title = new Label( &quot;An Applet using the
+POST method&quot;, Label.CENTER );<BR>
+&nbsp;&nbsp;TextArea text = new TextArea();<BR>
+&nbsp;&nbsp;Button load = new Button( &quot;Post!&quot; );<BR>
+<BR>
+&nbsp;&nbsp;public void init()<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Initialize the applet<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;setLayout( new BorderLayout() ); add(
+&quot;North&quot;, title );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add( &quot;Center&quot;, text );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Panel p = new Panel();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;p.add( load );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;add( &quot;South&quot;, p );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;validate();<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;void postText()<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String s;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;URL u = new URL( getCodeBase(),
+&quot;wordcount.cgi&quot; );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;URLConnection c = u.openConnection();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PrintStream out = new PrintStream(c.getOutputStream());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.print( text.getText().trim()
+);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.close();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataInputStream in = new DataInputStream(c.getInputStream());
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text.setText(&quot;&quot;);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while ( ( s = in.readLine()
+) != null )<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text.appendText(
+s + &quot;\n&quot; );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in.close();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;catch (IOException e)&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text.appendText( &quot;Exception:
+&quot; + e + &quot;\n&quot; ); return;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;public boolean action(Event e, Object o)<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if ( e.target == load )&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;postText();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return false;<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<HR>
+<P>
+The CGI program <TT>wordcount.cgi</TT>
+is just a simple Perl script that counts words and lines. You
+should make sure that it has world execute permissions and that
+it finds your local Perl compiler correctly (try running it by
+hand!). Notice that the first thing it prints is a header line
+indicating the content type, <TT>text/plain</TT>,
+followed by a blank line. The blank line is mandatory, and it
+is not part of the content. It separates the head information
+from the content body:
+<BLOCKQUOTE>
+<TT>#!/usr/bin/perl<BR>
+<BR>
+$words = 0;<BR>
+$lines = 0;<BR>
+<BR>
+print &quot;Content-type: text/plain\n\n&quot;;<BR>
+<BR>
+while (&lt;&gt;)&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;$lines++;<BR>
+&nbsp;&nbsp;$words += s/\S+//g;<BR>
+}<BR>
+<BR>
+print &quot;You entered $words words on $lines lines.\n&quot;;</TT>
+</BLOCKQUOTE>
+<P>
+Using the <TT>POST</TT> method doesn't
+prevent you from also passing query information along with the
+URL if you choose, just as with the <TT>GET</TT>
+method (of course, this depends on the CGI program being smart
+enough to look for the query string).
+<H2><A NAME="Summary"><B><FONT SIZE=5 COLOR=#FF0000>Summary</FONT></B></A>
+</H2>
+<P>
+In this chapter, you've explored the various networking capabilities
+of Java. Several levels of functionality are available: the entire
+gamut from plain sockets (both TCP and UDP), to manipulating URLs
+and URL connections on the Web, right up to fetching Java objects
+from URLs by using content handlers. Though applets are hobbled
+in their connectivity by security restrictions, there is still
+quite a bit that can be done. Stand-alone programs can avoid the
+problem entirely, and new Java environments are being developed
+that should make the security interface more user-configurable.
+<P>
+Java complements and enhances existing CGI programs, which are
+still appropriate for a number of database lookup tasks. Java
+is also ideal for writing stand-alone server programs to service
+socket requests, and could even serve as a CGI language itself.
+<P>
+In <A HREF="ch13.htm" >Chapter 13</A>, &quot;General Purpose Classes,&quot;
+you'll learn about the utility classes provided in Java. These
+general-purpose classes provide some of the handiest data structures
+that every programmer needs. It's important to understand what
+they can do so that you can use them to save time and trouble
+in solving your own programming problems.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

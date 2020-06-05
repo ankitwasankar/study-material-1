@@ -1,0 +1,926 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 26 -- Making Object-Oriented Programs with Visual Basic</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch25.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch25/ch25.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch27.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch27/ch27.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 26 -<BR>
+Making Object-Oriented Programs with Visual Basic</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Understanding User-Defined Types</A>
+	<LI><A HREF="#Heading2">Making Objects from Classes</A>
+	<UL>
+		<LI><A HREF="#Heading3">Creating a Class in Visual Basic</A>
+		<LI><A HREF="#Heading4">Adding Properties to a Class</A>
+		<LI><A HREF="#Heading5">Creating an Object from a Class</A>
+	</UL>
+	<LI><A HREF="#Heading6">Making an ActiveX DLL</A>
+	<LI><A HREF="#Heading7">Working with Components</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Understanding User-Defined Types</H2>
+<P>Before you dive into the complexities of classes and objects, you need to understand
+user-defined types. As you go along, you'll learn that user-defined types and classes
+are very similar.</P>
+<P>Throughout this book you've been using the intrinsic Visual Basic data types such
+as Integer, Double, and String. One advanced feature of VB is that it enables you
+to take the use of data types further by creating your own custom data type, known
+as a <I>user-defined data type</I>. You can think of a user-defined type as a variable
+that's broken into pieces for each part of the UDT that can be used repeatedly throughout
+your program.</P>
+<P>Consider a program that stores the names of musical pieces and of the composer
+of each piece. You could keep track of everything by declaring variables grouped
+by a naming convention, as shown in Listing 26.1.</P>
+<P>
+<H4>LISTING 26.1&#160;&#160;26LIST01.TXT--Using Variable Naming to Keep Track of
+Related <BR>
+Data</H4>
+<PRE><B>01 </B>Public g_ComposerOne As String</PRE>
+<PRE><B>02 </B>Public g_PieceOne As String</PRE>
+<PRE><B>03</B></PRE>
+<PRE><B>04 </B>Public g_ComposerTwo As String</PRE>
+<PRE><B>05 </B>Public g_PieceTwo As String</PRE>
+<PRE><B>06</B></PRE>
+<PRE><B>07 </B>Public g_ComposerThree As String</PRE>
+<PRE><B>08 </B>Public g_PieceThree As String</PRE>
+<P>This might work well in the short run, if you don't have many pieces to track.
+No matter what size your program is, however, you're relying on the naming of variables
+to define a structure that your program's data needs. An easier way would be to make
+a &quot;package&quot; of variables and give that package a name. This package is
+formally called a user-defined type. Then, you would create variables for your user-defined
+types by using the Dim, Public, or Private keywords.</P>
+<P>You create a user-defined type by using the Type keyword in the General section
+of a module:</P>
+<P>
+<PRE>Type <I>TypeName</I>
+     Elements as DataType
+     ...
+End Type
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>Type is the Visual Basic keyword that denotes the beginning of a type block.
+	<P>
+	<LI><I>TypeName</I> is the name that you give to the type.
+	<P>
+	<LI>Elements as <I>DataType</I> is each member of the type.
+	<P>
+	<LI>End Type denotes the end of the Type statement.
+</UL>
+
+<P>You reference elements in the user-defined type by using the following syntax:</P>
+<P>
+<PRE><I>VarName</I>.<I>ElementName</I>
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI><I>VarName</I> is the name that you give to the variable (an instance of the
+	type).
+	<P>
+	<LI><I>ElementName</I> is the name of the specific element in the type.
+</UL>
+
+<P>Listing 26.2 shows you how to create a user-defined type, Music, which encapsulates
+the composer and the piece. (If you want to follow along, this code is in project
+UserType.vbp, which you can download from http://www.mcp.com/info. At this site,
+enter the book's ISBN (078971633x) and then click the Search button to go to the
+Book Info page for Using Visual Basic 6. Listing 26.3 shows you how to create a variable
+of the Music user-defined type, named MyMusic (line 1).</P>
+<P>
+<H4>LISTING 26.2&#160;&#160;26LIST02.TXT--Creating a User-Defined Type</H4>
+<PRE><B>01 </B>`Make a user-defined type that has</PRE>
+<PRE><B>02 </B>`elements for the composer and the piece</PRE>
+<PRE><B>03 </B>Type Music</PRE>
+<PRE><B>04 </B>Composer As String</PRE>
+<PRE><B>05 </B>Piece As String</PRE>
+<PRE><B>06 </B>End Type</PRE>
+<P>
+<H4>LISTING 26.3&#160;&#160;26LIST03.TXT--Implementing a User-Defined Type</H4>
+<PRE><B>01 </B>Dim MyMusic As Music</PRE>
+<PRE><B>02 </B>Dim Msg$</PRE>
+<PRE><B>03 </B>`Assign values to each element in the user-</PRE>
+<PRE><B>04 </B>`defined type. Values come from TextBoxes on a form.</PRE>
+<PRE><B>05 </B>MyMusic.Composer = txtComposer.Text</PRE>
+<PRE><B>06 </B>MyMusic.Piece = txtPiece.Text
+<B></B></PRE>
+
+<PRE><B>07</B></PRE>
+<PRE><B>08 </B>`Create a string that displays all of the</PRE>
+<PRE><B>09 </B>`values in the type</PRE>
+<PRE><B>10 </B>Msg$ = &quot;Composer: &quot; &amp; MyMusic.Composer &amp; vbCrLf</PRE>
+<PRE><B>11 </B>Msg$ = Msg$ &amp; &quot;Piece: &quot; &amp; MyMusic.Piece</PRE>
+<PRE><B>12</B></PRE>
+<PRE><B>13 </B>`Display the string</PRE>
+<PRE><B>14 </B>MsgBox Msg$</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using user-defined types in Windows API programming</STRONG></P>
+	<P>If you decide to pursue Windows API programming with Visual Basic, you can expect
+	to be using user-defined types often. The Windows API is filled with hundreds of
+	them. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Keep this in mind: Variables that are instances of user-defined types are subject
+to the same rules of scope as any other variable. Therefore, you might want to think
+about where your type will be used. Always plan ahead before declaring variables.
+You need to ask yourself if the variables will be local or global. If different areas
+of your program will share it, you need to make it global. However, if only certain
+areas of your program will need access to your variables, don't make them global.</P>
+<P>
+<H2><A NAME="Heading2"></A>Making Objects from Classes</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Definitions of a data element</STRONG></P>
+	<P>In the world of object-oriented programming, a data element is also known as a
+	property, and a procedure is also know as a method. Other terms for property and
+	method are attribute and behavior, respectively. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>A class is similar to a user-defined type, except that in addition to having data,
+a class has procedures. A class is a collection of properties and procedures. An
+<I>object</I> is an instance of a class. For example, the user-defined type Music
+is defined as follows:</P>
+<P>
+<PRE>Type Music
+    Composer As String
+    Piece As String
+End Type
+</PRE>
+<P>Consider a procedure named Report:</P>
+<P>
+<PRE>Sub Report()
+     Dim Msg$
+    Msg$ = &quot;Composer: &quot; &amp; Composer &amp; vbCrLf
+    Msg$ = Msg$ &amp; &quot;Piece: &quot; &amp; Piece
+    `Display the string
+    MsgBox Msg$
+End Sub
+</PRE>
+<P>Now consider that you could add the procedure to be an element of the user-defined
+type Music:</P>
+<P>
+<PRE>Type Music
+    Composer As String
+    Piece As String
+    Report()
+End Type
+</PRE>
+<P>Next, you declare an instance of the type:</P>
+<P>
+<PRE>MyMusic as Music
+</PRE>
+<P>Then you assign the values:</P>
+<P>
+<PRE>MyMusic.Composer = &quot;Prince&quot;
+MyMusic.Piece = &quot;Nothing Compares 2 U&quot;
+</PRE>
+<P>Thus, if you want to display the elements' values, you could call</P>
+<P>
+<PRE>MyMusic.Report()
+</PRE>
+<P>Theoretically, this is what a class is about. However, things are trickier than
+this conceptual example illustrates: Scope plays a larger role, and the mechanics
+of Visual Basic demand that you create a class's properties and methods in a specific
+way.</P>
+<P>
+<H3><A NAME="Heading3"></A>Creating a Class in Visual Basic</H3>
+<P>A class is like an ActiveX control without a graphical user interface--you can
+use it, but you can't program it visually as you would an ActiveX control. As discussed
+earlier, you create objects from a class. The building block of a class is the class
+module.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Download this project</STRONG></P>
+	<P>The code for this example is in the project smplmath.vbp, which you can download
+	from <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/ info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/%20info'" tppabs="http://www.mcp.com/%20info">http://www.mcp.com/ info</A>, as explained
+	earlier in this chapter. 
+<HR>
+</P>
+
+</BLOCKQUOTE>
+
+<P><B>Make a class with properties and a method that lets you add a number to a grand
+total</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project and name it SmplMath.vbp. Rename the default form
+	to frmMain. Set the value of the form's Caption property to Simple Math Class.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Choose <B>Add Class Module</B> from the <B>Project</B> menu.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Choose to begin a new project.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Set the class module's Name to CSmplMath. Make sure the Properties
+	window is available and then save the class to the file CSmplMath.cls (see Figure
+	26.1).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig01.gif')"><B>FIGURE 26.1</B></A> <I>Class modules
+are listed separ-ately in the Project Explorer.</I></P>
+<P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>5. </B>Add a TextBox, CommandButton, and Label control to the form frmMain.
+	Set the Name and Caption properties of the controls as shown in Table 26.1, and size
+	and position the controls as you want them (see Figure 26.2).
+	<P>
+</DL>
+
+<H4>TABLE 26.1&#160;&#160;Control Names and Captions</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Control</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">Text Property Value</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">txtNum</TD>
+		<TD ALIGN="LEFT">(leave blank)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">cmdAdd</TD>
+		<TD ALIGN="LEFT">Add</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">lblAnswer</TD>
+		<TD ALIGN="LEFT">(leave blank)</TD>
+	</TR>
+</TABLE>
+</P>
+<P><A HREF="javascript:popUp('26fig02.gif')"><B>FIGURE 26.2</B></A> <I>You enter
+data to be passed to a CSmplMath object through a form.</I></P>
+<P>
+<H3><A NAME="Heading4"></A>Adding Properties to a Class</H3>
+<P>So far, you've created the project structure of a form and a class module. You
+created an object as an instance of the class represented by the class module. Now
+you need to create the properties for the class. The class CSmplMath has two properties,
+NumToAdd and Total, both of type Integer. Figure 26.3 shows a diagram of the class
+CSmplMath and its properties. It also shows one internal Let and two internal Get
+procedures for the class, which will be discussed in a moment.</P>
+<P><A HREF="javascript:popUp('26fig03.gif')"><B>FIGURE 26.3</B></A> <I>The scope
+of data and procedures is crucial when making a class. The only data that should
+be visible outside the class are the properties of the class.</I></P>
+<P><B>Add properties to a class</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Select the class module in the <B>Code</B> window.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Choose <B>Add Procedure</B> from the <B>Tools</B> menu.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Select the <B>Property</B> option in the Add Procedure dialog.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Add the property NumToAdd in the <B>Name</B> text box (see Figure 26.4).
+	Click <B>OK</B>.
+	<P>
+	<DT></DT>
+	<DD>Notice that the Add Procedure dialog adds the Property methods Get NumToAdd and
+	Let NumToAdd to the Code window, as shown in Figure 26.5.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig04.gif')"><B>FIGURE 26.4</B> </A><I>When you use
+the Add Procedure dialog to add a property to a class, the Visual Basic IDE creates
+a Let and Get procedure for that property.</I></P>
+<P><A HREF="javascript:popUp('26fig05.gif')"><B>FIGURE 26.5</B></A> <I>You set and
+access a class's internal data for a property by using the Let and Get procedures,
+respectively.</I></P>
+
+<DL>
+	<DD><B>5. </B>Add the property Total to your class module through the Add Procedure
+	dialog, the same way you added the property NumToAdd.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Add the sub AddNum to the class module by using the Add Procedure dialog
+	(see Figure 26.6). Make sure that the <B>Sub</B> option is selected.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig06.gif')"><B>FIGURE 26.6</B></A> <I>If you set
+the scope of a sub to Pu<U>b</U>lic, it will be a method of the class. If you set
+the scope to Pri<U>v</U>ate, only the internal members of the class can use the sub.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>7. </B>Add the following code to the General section of the class module:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private As Integer m_NumToAdd%
+Private As Integer m_Total%</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Complete the Get and Let procedures of the class module as well as
+	the sub AddNum, as shown in Listing 26.4.
+	<P>
+</DL>
+
+<H4>LISTING 26.4&#160;&#160;Code for the CSmplMath Class Properties and Methods</H4>
+<PRE><B>01 </B>Public Property Get NumToAdd() As Integer</PRE>
+<PRE><B>02 </B>NumToAdd = m_NumToAdd%</PRE>
+<PRE><B>03 </B>End Property</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>Public Property Let NumToAdd(ByVal iNewValue As Integer)</PRE>
+<PRE><B>06 </B>m_NumToAdd% = iNewValue</PRE>
+<PRE><B>07 </B>AddNumbers</PRE>
+<PRE><B>08 </B>End Property</PRE>
+<PRE><B>09</B></PRE>
+<PRE><B>10 </B>Public Property Get Total() As Integer</PRE>
+<PRE><B>11 </B>Total = m_Total%</PRE>
+<PRE><B>12 </B>End Property</PRE>
+<PRE><B>13</B></PRE>
+<PRE><B>14 </B>Public Property Let Total(ByVal iNewValue As Integer)</PRE>
+<PRE><B>15 </B>m_Total% = iNewValue</PRE>
+<PRE><B>16 </B>End Property</PRE>
+<PRE><B>17</B></PRE>
+<PRE><B>18 </B>Private Sub AddNumbers()</PRE>
+<PRE><B>19 </B>m_Total% = m_NumToAdd% + m_Total%</PRE>
+<PRE><B>20 </B>End Sub</PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Go back in the class's Get and Let procedures in the code and change
+	the Variant data types to Integers.
+	<P>
+	<DT></DT>
+	<DD><B>10. </B>Save the code.
+	<P>
+</DL>
+
+<P>A lot is going on in this code. First, consider the functionality of the class
+CSmplMath, which has two properties, NumToAdd and Total. When you assign an Integer
+to NumToAdd, it's assigned through the internals of the class to a grand total. Then
+that grand total is internally transferred to the property Total.</P>
+<P>Now consider the internals. In a class, you have Public data and procedures and
+Private data and procedures. Public data and procedures are what you've come to know
+as properties and methods. Private data and procedures are called <I>member variables</I>
+and <I>member functions</I>. This Public/Private schema is called <I>encapsulation</I>,
+a fundamental principle of object-oriented programming (OOP).</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Specific ways of accessing Private data and functions</STRONG></P>
+	<P>Get and Let are specific to Visual Basic. Other object-oriented languages use
+	different ways of accessing Private data and functions. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>In object-oriented programming, the program using the class doesn't work directly
+with Private data members or member functions. Instead, the program asks the class's
+Public procedures to access the data. The Public access procedures used by Visual
+Basic to access private data and functions are the Get and Let functions. Note that
+Visual Basic automatically handles property procedures differently from most object-oriented
+languages--they must be in a particular format with only certain arguments, or they
+won't work.</P>
+<P>As you saw when you created the property NumToAdd, Get and Let property procedures
+were created to accommodate the property. Internal to the class are two private member
+variables, m_NumToAdd% and m_Total%, which you created in the General section. These
+variables hold the real data for class. The Let property procedure NumToAdd(iNewValue
+as Integer) passes in the runtime value of the property NumToAdd to the Private member
+variable m_NumToAdd% in line 6 of Listing 26.4. The runtime value is passed to the
+Let property procedure NumToAdd() as the argument iNewValue:</P>
+<P>
+<PRE><B>05</B> Public Property Let NumToAdd(ByVal iNewValue As Integer)
+<B>06</B>     m_NumToAdd% = iNewValue
+<B>07</B>     AddNumbers
+<B>08</B> End Property
+</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Private member variables assignments</STRONG></P>
+	<P>By convention, private member variables are assigned by the prefix m. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The Get property procedure of the property NumToAdd is Get NumToAdd() As Integer.
+This property procedure, which is a function, passes on the value of the associated
+private member variable m_NumToAdd% in line 2 to the property NumToAdd:</P>
+<P>
+<PRE><B>01</B> Public Property Get NumToAdd() As Integer
+02     NumToAdd = m_NumToAdd%
+<B>03</B> End Property
+</PRE>
+<P>The same principles apply for the property Total. The private member variable
+associated with Total is m_Total%. The Get and Let property procedures are Get Total()
+As Integer and Let Total(ByVal iNewValue As Integer), respectively. The internal
+works are</P>
+<P>
+<PRE><B>10</B> Public Property Get Total() As Integer
+<B>11</B>    Total = m_Total%
+<B>12</B> End Property
+<B>13</B>
+<B>14</B> Public Property Let Total(ByVal iNewValue As Integer)
+<B>15</B>     m_Total% = iNewValue
+<B>16</B> End Property
+</PRE>
+<P>The sub AddNum() is a procedure private to the class. This procedure adds the
+member variable m_NumToAdd% to m_Total%:</P>
+<P>
+<PRE><B>19</B> Private Sub AddNumbers()
+<B>20</B>    m_Total% = m_NumToAdd% + m_Total%
+<B>21</B> End Sub 
+</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Calling the class's property</STRONG></P>
+	<P>When you set a value to an object's property, internally the object's class calls
+	the associated Let property procedure. When you ask an object for a property's value,
+	the internals call the Get property procedure. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>This procedure is called within the Let property procedure Let NumToAdd(ByVal
+iNewValue As Integer) in line 7. In reality, this means that every time the program
+sets a number to the class's AddToNum property, the class sets the property's value
+to the private member m_NumToAdd%, as shown in line 6. Then the class calls AddNum()
+(line 7), which adds the member variable m_NumToAdd% to m_Total% (line 20).</P>
+<P>When the program calls the class's Total property, the property procedure Get
+Total() As Integer returns the now incremented private member variable m_Total% to
+the class's Total property, as shown in line 11.</P>
+<P>
+<H3><A NAME="Heading5"></A>Creating an Object from a Class</H3>
+<P>Now that you've created a class, you can use an instance of it in your program
+as an object.</P>
+<P><B>Create an object based on the class <I>CSmplMath</I></B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Select the form <B>frmMain</B> from Project Explorer and then click
+	the <B>View Code</B> button .
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add the code shown here to the General section of the form frmMain
+	(see Figure 26.7).
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public gf_MyMath As New CSmplMath</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><A HREF="javascript:popUp('26fig07.gif')"><B>FIGURE 26.7</B></A> <I>If you want
+an object to persist throughout the life of the program, you must create it in the
+General section.</I></P>
+<P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>3. </B>Add the following code to the cmdAdd_Click() event procedure:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>gf_MyMath.NumToAdd = CInt(txtNum.Text)
+    lblAnswer.Caption = CStr(gf_MyMath.Total)</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Save and run the code.
+	<P>
+</DL>
+
+<P>You created your first object when you declared the variable gf_MyMath in the
+General section of the form frmMain. The syntax for creating an object is</P>
+<P>
+<PRE>Dim|Public|Private <I>MyObject</I> As New <I>MyClass</I>
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>Dim|Public|Private are the keywords that define the object's scope.
+	<P>
+	<LI><I>MyObject</I> is the name of the object.
+	<P>
+	<LI>As is the keyword indicating type definition.
+	<P>
+	<LI>New is the keyword that creates an instance of an object.
+	<P>
+	<LI><I>MyClass</I> is the class from which to instantiate an object.
+</UL>
+
+<P>Thus, the statement</P>
+<P>
+<PRE>Public gf_MyMath As New CSmplMath
+</PRE>
+<P>creates an object that you can use in your code, based on the class you made in
+the class module.</P>
+<P>If you want to use this class in other projects, all you need to do is add the
+class module file CSmplMath.cls to the new project and then instantiate an object
+within the project's form or module by using the New keyword.</P>
+<P>
+<H2><A NAME="Heading6"></A>Making an ActiveX DLL</H2>
+<P>The class that you made earlier can be used only within the project if the .cls
+file is one of the project's files. If you want to make this class available to other
+programs at runtime as a separate DLL, you can do this by making the class an ActiveX
+DLL.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>ActiveX DLLs are language independent</STRONG></P>
+	<P>ActiveX DLLs are language independent. They can be written in any language that
+	supports the Component Object Model (COM). 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>An ActiveX DLL can be complex, with implications far beyond this introductory
+exercise. The goal here is to give you a sense of what an ActiveX DLL is about by
+transforming the Visual Basic class that you made previously into one. If you want
+to know more about ActiveX DLLs, you can read about them in the Visual Basic Books
+Online documentation that comes with your copy of Visual Basic.</P>
+<P><B>Make an ActiveX DLL by using your <I>CSmplMath</I> class</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project. Select <B>ActiveX DLL</B> as the project type
+	(see Figure 26.8).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig08.gif')"><B>FIGURE 26.8</B></A> <I>When you select
+ActiveX DLL, the Visual Basic IDE automatically sets up the project.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>2. </B>Select the project in Project Explorer and name it CMathSrvr (see Figure
+	26.9). Save it to the file CMathSrvr.vbp.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig09.gif')"><B>FIGURE 26.9</B></A> <I>The default
+name of the ActiveX DLL will be the name of the project, not the name of the class.</I></P>
+<P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>3. </B>Right-click in the Project Explorer window. Choose <B>Add</B> from
+	the context menu and then choose <B>Add File</B>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Don't use the default class file</STRONG></P>
+	<P>When you create an ActiveX DLL, you're provided with a default class file. If
+	you want to make your class part of the project, you must add your class's .cls file.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the file CSmplMath.cls for your class, CSmplMath. (You can download
+	the file from <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/info'" tppabs="http://www.mcp.com/info">http://www.mcp.com/info</A>.)
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Right-click the default class file in the Project Explorer Class1.cls
+	and choose <B>Remove Class1.cls</B> from the context menu.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>From the <B>Project</B> menu, choose <B>CMathSrvr Properties</B>.
+	<P>
+	<DT></DT>
+	<DD><B>7. </B>Enter Simple ActiveX DLL Demo in the <B>Project Description</B> text
+	box (see Figure 26.10).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig12.gif')"><B>FIGURE 26.10</B></A> <I>The <U>P</U>roject
+Description text box describes your class to others when it's viewed in the Object
+Browser and the Tools/References dialog.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>8. </B>Select the class <B>CSmplMath</B> in Project Explorer. In the Properties
+	window, set the Instancing property to <B>5 - MultiUse</B> (see Figure 26.11).
+	<P>
+	<DT></DT>
+	<DD>You compile an ActiveX DLL as you would an executable. When you deploy it, use
+	the Setup Wizard to ensure that all the accompanying runtime files are shipped with
+	the DLL.
+	<P>
+	<DT></DT>
+	<DD><B>9. </B>Choose <B>Make CMathSrvr.dll</B> from the <B>File</B> menu.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig13.gif')"><B>FIGURE 26.11</B></A> <I>You can have
+many different types of Automation Servers. &quot;MultiUse&quot; means that all objects
+created from this class will share a single instance of the server.</I></P>
+<P>You've just made an ActiveX DLL. Your class, CSmplMath, now resides in that DLL
+and can be used in Visual Basic just like any other ActiveX component. Before you
+can use the class, however, you must add the DLL to the Visual Basic IDE.</P>
+<P><B>Add an ActiveX DLL to Your Visual Basic code</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project and name it UserActvX. Rename the default form
+	frmMain. Set the value of the form's Caption property to Using an ActiveX DLL.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Automated features of ActiveX in Visual Basic</STRONG></P>
+	<P>Visual Basic automates a lot of the labor required to use ActiveX DLLs. In other
+	languages such as C++, to use an ActiveX DLL, you must first find the DLL's type
+	library (which describes the DLL to other programs). Visual Basic automatically makes
+	and subsequently finds your custom ActiveX DLL's type library. Then VB presents the
+	ActiveX DLLs to you in the References dialog. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add a TextBox, CommandButton, and Label control. Set the Name and Caption
+	properties as shown earlier in Table 26.1. Position the controls as you did for the
+	form shown in Figure 26.2.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>From the <B>Project</B> menu, choose <B>References</B>.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Make sure that the ActiveX DLL is listed in the Reference dialog by
+	its description (see Figure 26.12). If it's not, click the <B>Browse</B> button to
+	open the Add Reference dialog, navigate to the location where you saved the DLL CMathSrvr.DLL,
+	and select the file.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig15.gif')"><B>FIGURE 26.12</B></A> <I>If an ActiveX
+DLL is registered with your system, the classes in the DLL will appear in the References
+dialog. Otherwise, you need to select the DLL directly by using the Browse button.
+If you install the DLL using a Setup.EXE, the Setup process will register the DLL
+to your system.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>5. </B>To make the new classes in the ActiveX DLL available to your project,
+	select the check box of the <B>CMathSrvr</B> class (it will be listed by its description,
+	as in Figure 26.12). Then click <B>OK</B>.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Press <B>F2</B> to display the Object Browser. Select the <B>CMathSrvr</B>
+	class library from the drop-down list at the top left corner (see Figure 26.13).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig16.gif')"><B>FIGURE 26.13</B></A> <I>The Object
+Browser enables you to look at all of a class's properties and methods within an
+ActiveX component.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>7. </B>Select the class <B>CSmplMath</B> from the classes list. Click the
+	Copy icon at the top of the Object Browser.
+	<P>
+	<DT></DT>
+	<DD><B>8. </B>Enter the following code into the General section of the project's
+	only form, frmMain:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public gf_MyMath As New</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Paste the classname from the Clipboard to complete the line of code.
+	If you don't want to paste the object from the Object Browser, you can select the
+	object <B>CSmplMath</B> from the auto-complete drop-down list (see Figure 26.14).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig18.gif')"><B>FIGURE 26.14</B></A> <I>When you
+add a class to the project, it automatically appears in the Methods/Objects drop-down
+list of the Visual Basic IDE.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>10. </B>Add the following code to the cmdAdd_Click() event procedure:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>gf_MyMath.NumToAdd = CInt(txtNum.Text)
+lblAnswer.Caption = CStr(gf_MyMath.Total)</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Save and run the code (see Figure 26.15).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('26fig19.gif')"><B>FIGURE 26.15</B></A> <I>This program
+might seem identical to the one you made earlier, but it's not. This code is calling
+a class that's part of an external DLL, whereas the previous code compiled the class
+right into the executable.</I></P>
+<P>
+<H2><A NAME="Heading7"></A>Working with Components</H2>
+<P>On the Web site at http://www.mcp.com/info is a project named MthFuncs.vbp, which
+is the source code for an ActiveX component named SimpleMathFunctions. <I>ActiveX
+component</I> is a term for an Active DLL that contains one or more classes.</P>
+<P>The SimpleMathFunctions component is an enhancement of the work you did with CSmplMath.
+SimpleMathFunctions contains the class CMathFunc. CMathFunc publishes three properties:
+NewValue, Operation, and TotalValue. It also publishes one method, DoOperation.</P>
+<P>The way the class works is that you set a numeric value to the property NewValue,
+and then you set a value to the property Operation. Operation can take one of four
+values:</P>
+
+
+<BLOCKQUOTE>
+	<P>0 - Addition<BR>
+	<BR>
+	1 - Subtraction<BR>
+	<BR>
+	2 - Multiplication<BR>
+	<BR>
+	3 - Division</P>
+	<P>
+<HR>
+<STRONG>Mastering OOP with ActiveX DLLs</STRONG></P>
+	<P>Making ActiveX DLLs requires mastery of object-oriented programming. You might
+	want to start by making a few class modules first to get the hang of things. Then,
+	when you have a clear understanding and facility in that arena, you can expand these
+	skills by working with ActiveX DLLs. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>After the NewValue and Operation properties are set with appropriate values, you
+invoke the DoOperation method. The result will be displayed in the read-only property
+TotalValue.</P>
+<P>This ActiveX component is an advanced demonstration of ActiveX DLLs. Remember
+when you use this code to make sure that the DLL is registered to your system or
+included in the Visual Basic IDE. Remember to use the Add Reference dialog to make
+the component available to your program.</P>
+<P>ActiveX DLLs are a key part of Microsoft's Distributed Computing Technology. Not
+only can you design ActiveX DLLs to reside on a desktop computer and to be used by
+applications on that desktop computer, but you can make ActiveX DLLs that reside
+on remote computers and are accessed by local computers. You can even make Active
+DLLs that can run on Microsoft's Internet Information Server as components or IIS
+applications.</P>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch25.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch25/ch25.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch27.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch27/ch27.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> <BR>
+</P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

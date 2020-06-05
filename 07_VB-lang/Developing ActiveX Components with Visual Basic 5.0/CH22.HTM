@@ -1,0 +1,2915 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 22 -- Advanced Techniques</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;22</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Advanced Techniques</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#VisualBasicversusVisualC">
+Visual Basic versus Visual C++</A>
+<UL>
+<LI><A HREF="#VisualBasicsquotLimitationsquot">
+Visual Basic's &quot;Limitations&quot;</A>
+</UL>
+<LI><A HREF="#OverviewofWindowsMessaging">
+Overview of Windows Messaging</A>
+<UL>
+<LI><A HREF="#WhatIsamessage">
+What Is a message?</A>
+<LI><A HREF="#WhatHappensWhenaWindowIsCreated">
+What Happens When a Window Is Created?</A>
+<LI><A HREF="#WhatisSubclassing">
+What is Subclassing?</A>
+<LI><A HREF="#WhatIsaWindowsHook">
+What Is a Windows Hook?</A>
+</UL>
+<LI><A HREF="#MessagingExamples">
+Messaging Examples</A>
+<UL>
+<LI><A HREF="#AdvancedKeystrokeHandling">
+Advanced Keystroke Handling</A>
+<LI><A HREF="#ManagingUpdateAreas">
+Managing Update Areas</A>
+</UL>
+<LI><A HREF="#ATaleofFourListboxes">
+A Tale of Four Listboxes</A>
+<UL>
+<LI><A HREF="#AConstituentBasedControl">
+A Constituent-Based Control</A>
+<LI><A HREF="#AUserDrawnControl">
+A User-Drawn Control</A>
+<LI><A HREF="#ABetterUserDrawnControl">
+A Better User-Drawn Control</A>
+<LI><A HREF="#ACustomWindowBasedControl">
+A Custom Window-Based Control</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+You've probably noticed that I like to start each chapter with
+a welcoming paragraph to introduce you to what you are about to
+read and why it is important. I started doing so with this chapter,
+but 1,500 words later I realized that what I was writing was the
+chapter itself.
+<P>
+So instead of the usual introduction, I would like to offer a
+few words of caution. This chapter discusses some of the most
+advanced functionality supported by Windows. Many of the techniques
+I demonstrate are difficult to understand and debug, and when
+they fail, they are likely to cause your application or your system
+to hang or raise a memory exception. While I will try to briefly
+introduce the fundamental ideas behind the techniques shown, you
+probably won't really understand them without a good understanding
+of Windows and the Win32 API. So, if you get lost, all I can do
+is encourage you to read my other book, <I>Dan Appleman's Visual
+Basic 5.0 Programmer's Guide to the Win32 API</I>, which is referenced
+throughout this book. Its sole reason for existence is to give
+Visual Basic programmers a good understanding of Windows and the
+Win32 API. Since it consists of more than 1500 pages, I'm sure
+you can appreciate why I don't try to include the information
+in this chapter.
+<H2><A NAME="VisualBasicversusVisualC"><FONT SIZE=5 COLOR=#FF0000>
+Visual Basic versus Visual C++</FONT></A></H2>
+<P>
+Now that we have discussed the creation of ActiveX controls with
+Visual Basic at some length, allow me to ask two simple questions.
+Does Visual Basic 5 make it easy to create ActiveX controls? Does
+Visual Basic 5 make it possible to create serious, robust, professional-quality
+ActiveX controls? The answer to both questions is clearly yes-and
+no. To explain what I mean by this, I first need to discuss a
+completely different language: Visual C++.
+<P>
+If you have used both Visual Basic and Visual C++, you know they
+are completely different, and not only because the underlying
+language is different. You see, Visual C++ is not really &quot;Visual&quot;
+in the same sense as Visual Basic.
+<P>
+Visual Basic is a highly interactive development environment,
+where you can interact easily with user interface elements and
+other objects and attach code directly to their events. The Visual
+Basic environment encapsulates the underlying Windows and OLE
+technology so you don't have to deal with it. This encapsulation
+makes Visual Basic relatively easy to learn and use but does result
+in some loss of functionality. You can only use those capabilities
+that are either exposed by Visual Basic or can be accessed by
+bypassing Visual Basic via API calls or third-party tools.
+<P>
+Visual C++ is a combination of a compiler, class library (called
+the Microsoft Foundation Classes, or MFC), and set of sophisticated
+wizards. The class library provides a framework for working with
+Windows and OLE that can be programmed using the wizards. The
+wizards know how to create code to accomplish a wide variety of
+tasks using this framework. The framework itself provides pretty
+much full access to all of the underlying capability of Windows
+and OLE. The catch to this approach is: As long as you are trying
+to implement functionality that is known by one of the wizards,
+Visual C++ is easy to learn and use. However, the instant you
+go beyond this built-in functionality, Visual C++ requires a substantial
+knowledge of Windows and its extension libraries in order to accomplish
+anything. And while the wizards and class libraries do implement
+most of the &quot;grunge work&quot; involved in common Windows
+tasks, they do little or nothing when it comes to implementing
+features unique to your applications. With Visual Basic, all you
+need to learn to write simple controls is Visual Basic itself.
+With Visual C++, you need to know C++, Windows API functions,
+MFC classes, and OLE. Ultimately, Visual C++ is much harder to
+learn and use than Visual Basic (and this is from the perspective
+of someone who routinely uses both).
+<P>
+Here is another thing to keep in mind about Visual C++: If you
+use the MFC classes and their associated wizards, you will need
+to distribute the MFC run-time libraries with your control. So
+despite the fact that you are using C++, you are still stuck with
+distributing a run-time library-exactly the same situation you
+face with Visual Basic. It is possible to use Visual C++ to create
+controls without MFC, but in doing so you lose the benefits of
+the wizards and the functionality provided by the classes. Learning
+to create these &quot;lightweight&quot; controls is a significant
+undertaking, since they require an excellent understanding of
+both Windows and OLE technology.
+<H3><A NAME="VisualBasicsquotLimitationsquot">
+Visual Basic's &quot;Limitations&quot;</A></H3>
+<P>
+I've heard a number of people complain about perceived limitations
+in Visual Basic's ability to create ActiveX controls. These limitations
+derive from two distinct facts:
+<P>
+First, there are some definite limitations in Visual Basic's implementation
+of ActiveX controls. These result from the very encapsulation
+that makes it easy to create controls in VB in the first place.
+Most of these can be worked around with the aid of API and OLE
+techniques or third-party tools such as SpyWorks.
+<P>
+Second, there is the problem of expectations. When Visual Basic
+first appeared, some people considered it a toy language because
+it didn't do everything they wanted. Features were missing from
+the core language that could not be implemented without direct
+access to the Windows API or use of third-party tools. Now we
+understand that the very nature of the encapsulation VB provides
+requires that some functionality be left out of the core language.
+If Visual Basic did everything, it would just be another Visual
+C++ and be just as hard to learn and use. VB programmers became
+accustomed to taking advantage of those features built into the
+language directly, while using API calls or third-party tools
+to selectively extend Visual Basic where necessary for their own
+applications. That is perhaps Visual Basic's greatest strength,
+that it gives you the power to choose for yourself which tasks
+to perform at a high (VB) level and which to perform at a low
+(API) level. I believe that many of those programmers who are
+complaining about Visual Basic's implementation of ActiveX controls
+are forgetting this trade-off. They've decided that just because
+Visual Basic does not make it easy to do everything possible in
+a Visual C++ ActiveX control, it is somehow not suitable for serious
+control development. This is as silly now as it was then.
+<P>
+You should also keep in mind that Visual Basic's ActiveX control
+implementation has some unique advantages over the approach taken
+in Visual C++. It is extraordinarily difficult to build controls
+out of constituent controls using VC++. The vast majority of VC++
+controls are either pure user-drawn controls or are subclassed
+from a standard control-a technique similar to one you will see
+shortly in this chapter.
+<P>
+So now let us revisit the opening questions in this chapter. Does
+Visual Basic 5.0 make it easy to create ActiveX controls? The
+key word here is <I>easy</I>. The answer is yes, so long as the
+controls fit closely into the functionality encapsulated by Visual
+Basic itself. The answer is no, as soon as you need to implement
+functionality that goes beyond what Visual Basic is designed to
+handle easily.
+<P>
+Does Visual Basic 5 make it possible to create serious, robust,
+professional-quality ActiveX controls? The key word here is <I>possible</I>.
+The answer again is yes, as long as you are willing to put in
+the effort to take full advantage of all of the resources available
+to you. If you know the functionality provided by Visual Basic,
+understand Win32 API programming techniques, understand how to
+take advantage of advanced API techniques such as subclassing
+and hooks, understand the nature of COM interfaces, and are willing
+to use third-party tools that can manipulate those interfaces,
+then almost anything you can imagine will be possible. But if
+you are unwilling to learn or use these additional resources,
+the answer will be no. You will be stuck with using Visual C++,
+where you may ultimately be forced to use all of those techniques
+anyway, whether you like it or not!
+<P>
+One of the consequences of this situation is that a sophisticated
+control can be as complex and difficult to write in Visual Basic
+as it is in Visual C++. I believe that even in these situations
+Visual Basic will often have the advantage, if only because it
+provides a much more interactive development environment with
+regard to testing and debugging.
+<H2><A NAME="OverviewofWindowsMessaging"><FONT SIZE=5 COLOR=#FF0000>
+Overview of Windows Messaging</FONT></A></H2>
+<P>
+Creating advanced controls demands a good understanding of the
+fundamentals of Windows messaging. If you are already acquainted
+with Windows messaging, you can skip this section. For everyone
+else, it should provide enough of a background to allow you to
+follow the techniques described later in this chapter.
+<H3><A NAME="WhatIsamessage">
+What Is a message?</A></H3>
+<P>
+Consider what happens when you click your mouse on a window. The
+mouse driver for the Windows operating system detects the mouse
+click and notifies the operating system that a click has occurred.
+The operating system detects which window appears under the mouse
+pointer location and determines which application needs to receive
+the information.
+<P>
+The operating system maintains a queue for each application that
+contains a list of events, such as mouse clicks and keystrokes,
+that need to be sent to the application. Each of these events
+is called a message, and the queue is thus called the <I>message
+queue</I>. Each message has associated information, as shown in
+Table 22.1.<BR>
+<P>
+<CENTER><B>Table 22.1:&nbsp;Message Parameters</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=93><B>Message Parameter</B></TD><TD WIDTH=166>
+<B>Description</B>
+</TD><TD WIDTH=219><B>Mouse Click Example</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=93>hWnd</TD><TD WIDTH=166>The 32-bit window handle that is the destination for the message.
+</TD><TD WIDTH=219>The window handle of the window that was clicked.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=93>Message</TD><TD WIDTH=166>A 32-bit number assigned to a particular message.
+</TD><TD WIDTH=219>&amp;H201, also called WM_LBUTTONDOWN.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=93>wParam</TD><TD WIDTH=166>A 32-bit parameter whose meaning depends on the message.
+</TD><TD WIDTH=219>Flags indicating whether the control and/or shift key is pressed and whether any of the other mouse buttons are currently pressed.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=93>lParam</TD><TD WIDTH=166>A 32-bit parameter whose meaning depends on the message.
+</TD><TD WIDTH=219>The low 16 bits contain the horizontal location within the window of the mouse click position. The high 16 bits contain the vertical location.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+How does the operating system actually send a message to a window?
+Within each Windows application, there is a loop in which the
+program continuously polls the operating system to see if any
+messages are available. This loop, called the application <I>message</I>
+<I>loop,</I> does not exit until the application is closed. This
+loop is also completely hidden from Visual Basic programmers.
+When the loop sees that a message is available, it dispatches
+it to the window that is supposed to receive the message.
+<P>
+How does it do this? Every window in the system has a function
+defined called a <I>window</I> <I>function</I>. The window function
+for the window has four parameters. A window function written
+in Visual Basic would take the form:
+<BLOCKQUOTE>
+<PRE>
+Public Function MyWindowFunction(ByVal hWnd As Long, ByVal message As _
+Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+</PRE>
+</BLOCKQUOTE>
+<P>
+In other words, the message loop for the application calls an
+API function that looks up the window function for a window and
+calls the function with the message parameters.
+<P>
+It is also possible to call the window function for any window
+directly, in effect sending a message to the window. There are
+two API functions you will typically use to do this, each of which
+takes the standard message parameters (hWnd, message, wParam,
+and lParam):
+<UL>
+<LI>PostMessage-This API function loads the message into the message
+queue for the application. The function returns immediately and
+the message is processed when the application's message loop reaches
+that message in the queue. Because the message is processed after
+the PostMessage call returns, it is not possible for the window
+to return values to functions calling PostMessage.
+<LI>SendMessage-This API function calls the window function for
+the specified window directly. The SendMessage function does not
+return until the window function has finished processing the message.
+Because the message is processed before SendMessage returns, the
+SendMessage function makes it possible for a window function to
+return a value to the calling function.
+</UL>
+<P>
+When working with Windows, the term <I>posting a message</I> always
+refers to the use of the PostMessage or related API functions
+to post a message into an application's message queue. The term
+<I>sending a message</I> always refers to the use of SendMessage
+or related API functions to call the window function for a window
+immediately.
+<H3><A NAME="WhatHappensWhenaWindowIsCreated">
+What Happens When a Window Is Created?</A></H3>
+<P>
+When a window is created, whether it is a form, a control, or
+a custom window, it is always given a window function by the application
+that creates it. This is another one of those tasks that Visual
+Basic handles for you. When an application receives messages,
+it can handle them as it chooses or send them on to a <I>class</I>
+<I>window function</I> that is provided by Windows. For example:
+Windows defines a class of windows called LISTBOX. When a window
+belongs to this class, it can call a class window function provided
+by Windows which implements the default behavior of a list box.
+This is what makes it possible for applications to create list
+boxes without implementing all the complexity of a list box itself.
+<P>
+Figure 22.1 illustrates the control flow when a message is sent
+to a window. The application (or operating system) calls the window
+function. The window function can either call the class window
+function to implement a standard behavior provided by the class
+or handle the message itself. The arrows with broken lines indicate
+an optional path for the program's flow.
+<P>
+<A HREF="f22-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f22-1.gif"><B>Figure 22.1 :</B> <I>Execution flow for a window</I>.</A>
+<H3><A NAME="WhatisSubclassing">
+What is Subclassing?</A></H3>
+<P>
+Visual Basic provides window functions for forms and controls
+it creates. Not only does this window function implement the behavior
+of forms and controls, it also raises Visual Basic events for
+selected incoming messages.
+<P>
+But it does not raise events for every incoming message. And there
+are cases where you may wish to override the standard behavior
+of the form or control provided by the window function that VB
+furnishes. In cases like this, it is possible to subclass the
+window. The SetWindowLong API function can be used to set the
+window function for a window to a function that you specify. Then
+you have the option of calling the previous window function if
+you wish. This situation is illustrated in Figure 22.2.
+<P>
+<A HREF="f22-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f22-2.gif"><B>Figure 22.2 :</B> <I>Execution flow for a subclassed window</I>.</A>
+<H3><A NAME="WhatIsaWindowsHook">
+What Is a Windows Hook?</A></H3>
+<P>
+A Windows hook is a technique for intercepting messages at various
+points along the normal message processing sequence. Hooks are
+installed by providing an address of a hook function to the SetWindowsHookEx
+function call. Some of the more common hook types are as follows:
+<UL>
+<LI>WH_GETMESSAGE hook: Windows calls your hook function each
+time your application requests a message from the application's
+message queue. The hook function can change or remove the message
+before the application processes it.
+<LI>WH_CALLWNDPROC hook: Windows calls your hook function immediately
+before the window function is called for every window in your
+application thread. The hook function can change or remove the
+message. However, this type of hook is extremely inefficient,
+because the hook function is called for every message.
+<LI>WH_KEYBOARD hook: Windows calls your hook function for each
+keystroke message (key up and key down) before the message is
+placed in the application's message queue. The hook function can
+change or discard keystrokes.
+<LI>WH_MOUSE hook: Windows calls your hook function for each mouse
+message before the message is placed in the application's message
+queue. The hook function can change or discard mouse messages.
+</UL>
+<P>
+Hooks must be handled very carefully, since it is possible to
+confuse Windows as to what is happening in the system. 
+<P>
+It is also possible to establish hooks that work on a system-wide
+basis or that hook processes other than your own. However, I have
+serious doubts as to whether this can be done safely (if at all)
+with Visual Basic. The cross-process hook controls provided with
+SpyWorks are all written in C++.
+<H3>Custom Windows, Subclassing, and Visual Basic</H3>
+<P>
+One of the intriguing new features of Visual Basic 5.0 is the
+fact that it is possible to obtain the address of a function using
+the AddressOf operator. You can pass this address to the CreateWindow
+API function and create and manage your own private windows. Or,
+you can pass this address to the SetWindowLong API function to
+subclass an existing window. This approach is illustrated in the
+Visual Basic documentation. This means that Visual Basic is now
+able to create private windows and subclass existing windows,
+a task that previously required third-party tools.
+<P>
+There are, however, a number of crucial issues relating to these
+techniques that the Visual Basic documentation does not address:
+<UL>
+<LI>Functions using the AddressOf operator must be in standard
+modules. Yet, in most cases, when you subclass a form or control,
+you need an object reference in order to do anything useful with
+the incoming message. This means you need to implement an efficient
+way to obtain an object reference for a window-and let me stress
+the word <I>efficient</I>. This function will be called for all
+incoming messages; the last thing you want to do is add significant
+overhead at this point in your code. Use of the VB collection
+object and late bound references can be deadly.
+<LI>It is not uncommon for Visual Basic controls to subclass each
+other or their containers. If any one of them behaves incorrectly,
+it can sabotage the operation of other controls that are subclassing
+the same window-even to the point of causing a memory exception.
+Problems are especially likely during window destruction or application
+termination. Your own cleanup operation must be well behaved as
+well.
+<LI>Use of subclassing is inherently dangerous. It bypasses all
+of the safety mechanisms built into Visual Basic. Failure to handle
+a message properly may not just lead to a Visual Basic run-time
+error. It is very likely to cause a memory exception and can even
+interfere with the normal functioning of your operating system
+(especially under Windows 95, which is significantly less robust
+than Windows NT in this regard).
+<LI>Reliable use of these techniques demands that every message
+be processed. But when you stop your program or enter break mode,
+your Visual Basic code-including the code for your windows function-stops
+executing immediately. For this reason, I strongly recommend that,
+regardless of whether you use a third-party product or your own
+code, you implement your window functions in a separate ActiveX
+control or DLL.
+</UL>
+<P>
+These issues posed a significant dilemma for me in terms of how
+I would demonstrate these techniques in this book. You see, my
+staff just invested a significant effort in adding a Visual Basic-authored
+component that handles subclassing, private windows, hooks, and
+more to version 5 of our SpyWorks product. This product is intended
+to provide VB programmers with the safest and most efficient possible
+solution to handle this type of low-level windows functionality.
+It also includes some high-level solutions that are based on this
+technology and designed specifically to help with ActiveX control
+development. It is also intended to be educational, in that it
+includes complete source code. As such, a number of possibilities
+faced me.
+<P>
+I could have included a subset of the component with some source
+code. But the schedule for this book did not permit an adequate
+explanation of the code. I could have included the whole component,
+but frankly, I couldn't afford to. Our customers understand that
+what they pay for our software goes directly towards providing
+them with support and with new features and new products as time
+goes on. I could have avoided using the component and instead
+used the techniques shown in the VB documentation. But then I
+would have been guilty of misleading you by demonstrating code
+that I would never consider using in my own projects. I could
+have included a demo version of the component that is fully functional,
+as long as the component is being run from within Visual Basic
+itself.
+<P>
+I finally decided on the latter approach. The first customer that
+every SpyWorks component is designed for is our own technical
+staff. I personally implemented most of the features in this particular
+component during the course of my own ActiveX control development
+(and the writing of this book). I believe that no programmer should
+ever ship software they are not willing to use in their own applications.
+These are the components I personally use. So, I do hope you will
+find this component (and the others in SpyWorks) useful and cost
+effective. Along the way here I'll try to explain what each call
+to the component does so you can reproduce the component's functionality
+yourself if you choose. For those who are interested, SpyWorks
+includes the full source code for the components used in this
+chapter. 
+<H2><A NAME="MessagingExamples"><FONT SIZE=5 COLOR=#FF0000>
+Messaging Examples</FONT></A></H2>
+<P>
+It is simply not possible to discuss the enormous array of advanced
+techniques that are made possible through the use of API and messaging
+techniques. All I can hope to do is offer a few representative
+examples. In this section you will see two of the most common
+examples for use with ActiveX controls. In the next section you
+will see how a number of these techniques can be combined to create
+advanced controls.
+<H3><A NAME="AdvancedKeystrokeHandling">
+Advanced Keystroke Handling</A></H3>
+<P>
+The dwCounter control illustrates a common problem relating to
+user-drawn controls. You have already seen that the ability to
+tab between constituent controls within a control is provided
+by Visual Basic. And you know that you can tab to a user-drawn
+control. But what if you want to be able to tab between elements
+in a user-drawn control?
+<P>
+This is the case with the dwCounter control shown in Figure 22.3.
+This control can be thought of as a digit counter, where each
+digit can be clicked or changed individually. The version of this
+control shown here is a simplified version of the dwCounter control
+from Desaware's ActiveX Gallimaufry.
+<P>
+<A HREF="f22-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f22-3.gif"><B>Figure 22.3 :</B> <I>Counter control</I>.</A>
+<P>
+The control treats each digit individually, meaning that it must
+be possible not only to set the focus to the control, but also
+to switch easily between the digits. This is representative of
+a more complex type of problem, where you have a control that
+contains a complex form and you want to be able to switch between
+the elements on the form and edit them individually, without using
+multiple constituent text boxes.
+<P>
+Listing 22.1 begins our exploration of how this control is implemented
+by showing the code that implements the control's properties.
+The listing also includes event and API declarations that will
+be described later.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 22.1:&nbsp;Counter Control Code Relating to Properties
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' dwCounter control
+' Part of Desaware's ActiveX Gallimaufry
+' Copyright &#169; 1997 by Desaware Inc.  All Rights Reserved.
+
+Option Explicit
+'Default Property Values:
+Const m_def_Digits = 2
+Const m_def_Value = 0
+Const m_def_FocusColor = &amp;HFF&amp;   ' Red
+'Property Variables:
+Dim m_Digits As Integer
+Dim m_Value As Long
+Dim m_FocusColor As OLE_COLOR
+
+'Event Declarations:
+Event Click() 'MappingInfo=UserControl,UserControl,-1,Click
+Event KeyDown(KeyCode As Integer, Shift As Integer) 'MappingInfo=UserControl, _
+UserControl,-1,KeyDown
+Event KeyPress(KeyAscii As Integer) 'MappingInfo=UserControl,UserControl _
+,-1,KeyPress
+Event KeyUp(KeyCode As Integer, Shift As Integer) 'MappingInfo=UserControl,UserControl,-1,KeyUp
+
+' API stuff
+Private Const WM_KEYDOWN = &amp;H100
+Private Const WM_KEYUP = &amp;H101
+' Not redeclaration of InvalidateRect from standard
+Private Declare Function InvalidateRect Lib &quot;user32&quot; (ByVal hwnd As Long, _
+ByVal lpRect As Long, ByVal bErase As Long) As Long
+
+' Other values
+Dim m_DigitWidth As Long
+Dim m_FocusIsAt As Integer
+Dim WithEvents PretranslateHook As dwPretranslate
+Dim m_ClickedDigit As Integer
+
+Private Sub UserControl_Initialize()
+   m_ClickedDigit = 1
+End Sub
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,BackColor
+Public Property Get BackColor() As OLE_COLOR
+   BackColor = UserControl.BackColor
+End Property
+
+Public Property Let BackColor(ByVal New_BackColor As OLE_COLOR)
+   UserControl.BackColor() = New_BackColor
+   PropertyChanged &quot;BackColor&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,BorderStyle
+Public Property Get BorderStyle() As Integer
+   BorderStyle = UserControl.BorderStyle
+End Property
+
+Public Property Let BorderStyle(ByVal New_BorderStyle As Integer)
+   UserControl.BorderStyle() = New_BorderStyle
+   PropertyChanged &quot;BorderStyle&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,Enabled
+Public Property Get Enabled() As Boolean
+   Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal New_Enabled As Boolean)
+   UserControl.Enabled() = New_Enabled
+   PropertyChanged &quot;Enabled&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,Font
+Public Property Get Font() As Font
+   Set Font = UserControl.Font
+End Property
+
+Public Property Set Font(ByVal New_Font As Font)
+   Set UserControl.Font = New_Font
+   PropertyChanged &quot;Font&quot;
+   UserControl.Refresh
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,ForeColor
+Public Property Get ForeColor() As OLE_COLOR
+   ForeColor = UserControl.ForeColor
+End Property
+
+Public Property Let ForeColor(ByVal New_ForeColor As OLE_COLOR)
+   UserControl.ForeColor() = New_ForeColor
+   PropertyChanged &quot;ForeColor&quot;
+End Property
+
+Public Property Get FocusColor() As OLE_COLOR
+   FocusColor = m_FocusColor
+End Property
+
+Public Property Let FocusColor(ByVal New_FocusColor As OLE_COLOR)
+   m_FocusColor = New_FocusColor
+   PropertyChanged &quot;FocusColor&quot;
+End Property
+
+'WARNING! DO NOT REMOVE OR MODIFY THE FOLLOWING COMMENTED LINES!
+'MappingInfo=UserControl,UserControl,-1,hWnd
+Public Property Get hwnd() As Long
+   hwnd = UserControl.hwnd
+End Property
+
+Public Property Get Digits() As Integer
+   Digits = m_Digits
+End Property
+
+Public Property Let Digits(ByVal New_Digits As Integer)
+   If New_Digits &lt; 0 Or New_Digits &gt; 10 Then
+      Err.Raise 380
+   End If
+   If Ambient.UserMode Then
+      ' In this preliminary edition, digits is design time only
+      Err.Raise 382
+   End If
+   m_Digits = New_Digits
+   PropertyChanged &quot;Digits&quot;
+   SetSize
+   UserControl.Refresh
+End Property
+
+Public Property Get Value() As Long
+   Value = m_Value
+End Property
+
+Public Property Let Value(ByVal New_Value As Long)
+   Dim MaxValue&amp;
+   ' Trick to get maximum value -
+   ' example: 4 digits is 999
+   MaxValue = Val(String$(m_Digits, &quot;9&quot;))
+   If New_Value &gt; MaxValue Then
+      ' In this preliminary version, no auto digit setting
+      Err.Raise 380
+   End If
+   m_Value = New_Value
+   PropertyChanged &quot;Value&quot;
+   UserControl.Refresh
+End Property
+
+'Initialize Properties for User Control
+Private Sub UserControl_InitProperties()
+   Set Font = Ambient.Font
+   m_Digits = m_def_Digits
+   m_Value = m_def_Value
+   m_FocusColor = m_def_FocusColor
+End Sub
+
+'Load property values from storage
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   UserControl.BackColor = PropBag.ReadProperty(&quot;BackColor&quot;, &amp;H8000000F)
+   UserControl.BorderStyle = PropBag.ReadProperty(&quot;BorderStyle&quot;, 0)
+   UserControl.Enabled = PropBag.ReadProperty(&quot;Enabled&quot;, True)
+   Set Font = PropBag.ReadProperty(&quot;Font&quot;, Ambient.Font)
+   UserControl.ForeColor = PropBag.ReadProperty(&quot;ForeColor&quot;, &amp;H80000012)
+   m_FocusColor = PropBag.ReadProperty(&quot;FocusColor&quot;, m_def_FocusColor)
+   m_Digits = PropBag.ReadProperty(&quot;Digits&quot;, m_def_Digits)
+   m_Value = PropBag.ReadProperty(&quot;Value&quot;, m_def_Value)
+End Sub
+
+'Write property values to storage
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;BackColor&quot;, UserControl.BackColor, &amp;H8000000F)
+   Call PropBag.WriteProperty(&quot;BorderStyle&quot;, UserControl.BorderStyle, 0)
+   Call PropBag.WriteProperty(&quot;Enabled&quot;, UserControl.Enabled, True)
+   Call PropBag.WriteProperty(&quot;Font&quot;, Font, Ambient.Font)
+   Call PropBag.WriteProperty(&quot;ForeColor&quot;, UserControl.ForeColor, &amp;H80000012)
+   Call PropBag.WriteProperty(&quot;FocusColor&quot;, m_FocusColor, m_def_FocusColor)
+   Call PropBag.WriteProperty(&quot;Digits&quot;, m_Digits, m_def_Digits)
+   Call PropBag.WriteProperty(&quot;Value&quot;, m_Value, m_def_Value)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Most of the properties are implemented using standard techniques
+and were, in fact, generated using the ActiveX Interface Wizard.
+There are three custom properties in this version of the control:
+<UL>
+<LI>FocusColor-the background color for a digit that has the focus.
+You can switch focus among the digits using the keypad or the
+tab key.
+<LI>Digits-the number of digits to display.
+<LI>Value-the current numeric value to display.
+</UL>
+<P>
+Both the Digits and Value property have simple range checking
+to make sure that the properties are valid. They raise error 380
+(Invalid Property Value) if they are not. The Digits property
+procedure and the control's Resize event also call the Following
+function to make sure the control is large enough to display the
+digits for the currently selected font:
+<BLOCKQUOTE>
+<PRE>
+' Sets the minimum control size
+Private Sub SetSize()
+   Dim minwidth&amp;
+   Dim useheight&amp;
+   ' Calculate the width of each digit
+   m_DigitWidth = ScaleWidth / Digits
+   minwidth = Digits * TextWidth(&quot;W&quot;)
+   useheight = TextHeight(&quot;1&quot;)
+   If ScaleWidth &lt; minwidth Or ScaleHeight &lt; useheight Then 
+      ' Control is too small
+      If ScaleHeight &gt; useheight Then useheight = ScaleHeight
+      UserControl.Size ScaleWidth, useheight
+      Exit Sub
+   End If
+End Sub
+
+Private Sub UserControl_Resize()
+   SetSize
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The control has an internal variable named m_FocusIsAt that indicates
+the focus status of the control. If the control does not have
+the focus, the variable is set to 0. If the control does have
+the focus, the variable is set to the digit in the control (starting
+from 1) that has the focus. The control's EnterFocus and ExitFocus
+events control the initial setting of the variable when the control
+receives the focus. They set it to 0 when the control loses the
+focus as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_EnterFocus()
+   m_FocusIsAt = m_ClickedDigit
+   UserControl.Refresh
+End Sub
+
+Private Sub UserControl_ExitFocus()
+   m_FocusIsAt = 0
+   m_ClickedDigit = 1   ' Reset to first digit
+   UserControl.Refresh
+End Sub
+
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+   m_ClickedDigit = Int(X / m_DigitWidth) + 1
+   If m_FocusIsAt &gt; 0 Then ' Change now if already have focus
+      m_FocusIsAt = m_ClickedDigit
+      UserControl.Refresh
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The m_ClickedDigit variable is used to keep track of which digit
+was clicked in cases where the focus is set to the control due
+to a mouse click. This digit is given the focus immediately if
+the control already has the focus, or during the EnterFocus event
+if the control is about to gain the focus due to the click.
+<P>
+The control's appearance is defined by the Paint event, which
+is shown here:
+<BLOCKQUOTE>
+<PRE>
+' This preliminary version has no sophisticated
+' border setting
+Private Sub UserControl_Paint()
+   Dim ypos&amp;
+   Dim txt$, fmt$
+   Dim charpos%
+   Dim thischar$
+   If Not Ambient.UserMode Then
+      ' Design time shows control name
+      txt$ = Ambient.DisplayName
+      CurrentY = (ScaleHeight - TextHeight(txt)) / 2
+      CurrentX = (ScaleWidth - TextWidth(txt)) / 2
+      If CurrentX &lt; 0 Then CurrentX = 0
+      Print txt
+      Exit Sub
+   End If
+   ypos = (ScaleHeight - TextHeight(&quot;1&quot;)) / 2
+   fmt$ = String$(m_Digits, &quot;0&quot;)
+   txt$ = Format$(m_Value, fmt$)
+   For charpos = 1 To m_Digits
+      If charpos = m_FocusIsAt Then
+         UserControl.Line ((charpos - 1) * m_DigitWidth, 0)-(charpos _
+         * m_DigitWidth, ScaleHeight), m_FocusColor, BF
+      End If
+      thischar$ = Mid$(txt$, charpos, 1)
+      CurrentX = m_DigitWidth * (charpos - 1) + (m_DigitWidth _
+      - TextWidth(thischar)) / 2
+      CurrentY = ypos
+      UserControl.Print thischar
+   Next charpos
+   For charpos = 1 To m_Digits - 1
+      UserControl.Line (m_DigitWidth * charpos, 0)-(m_DigitWidth * _
+      charpos, ScaleHeight)
+   Next charpos
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The appearance of the control at design time differs radically
+from that at runtime. At design time, the control simply displays
+the Ambient DisplayName property in the center of the control
+using the currently selected font. The DisplayName is the name
+the developer assigned to the control.
+<P>
+At runtime, the routine first obtains a string where each character
+represents a digit in the control. A format string is defined
+with the correct length. This string is used with the VB Format
+function to load a string with the correct number of leading zeros.
+<P>
+The position of each digit is calculated separately so it will
+appear in the center of the area allocated for that digit. If
+the digit currently has the focus, the background color for that
+digit is first filled with the color defined by the FocusColor
+property. Finally, a line is drawn between the digits. A later
+version of this control will have a more sophisticated look but,
+for now, this approach is adequate.
+<P>
+The last problem we face with this control is to provide a way
+for the user to switch focus between the digits within the control.
+A first cut at this is to use the arrow keys for this purpose.
+The right and down arrow keys are defined as switching to the
+next digit. The left and up keys switch to the previous digit.
+This is accomplished using the following code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
+   RaiseEvent KeyDown(KeyCode, Shift)
+   If KeyCode = vbKeyRight Or KeyCode = vbKeyDown Then
+      If m_FocusIsAt &lt; m_Digits Then
+         m_FocusIsAt = m_FocusIsAt + 1
+         UserControl.Refresh
+         Exit Sub
+      End If
+   End If
+   If KeyCode = vbKeyLeft Or KeyCode = vbKeyUp Then
+      If m_FocusIsAt &gt; 1 Then
+         m_FocusIsAt = m_FocusIsAt - 1
+         UserControl.Refresh
+         Exit Sub
+      End If
+   End If
+End Sub
+Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
+   RaiseEvent KeyUp(KeyCode, Shift)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The first thing the UserControl_KeyDown event does is raise the
+control's KeyDown event. This allows the developer to override
+the keystroke. Next, the routine looks for the arrow keys. If
+it finds one, it changes the m_FocusIsAt variable and redraws
+the control. The control currently does not allow you to use the
+arrow keys to change the focus to another control.
+<P>
+The KeyPress event shown below demonstrates how typing a number
+when a digit has the focus can change the value of that digit.
+A developer could easily disable this behavior by setting the
+KeyAscii parameter to 0 during the control's KeyPress event. This
+is possible because the control's KeyPress event is raised before
+the KeyAscii value is processed by this routine.
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_KeyPress(KeyAscii As Integer)
+   Dim fmt$, txt$
+   RaiseEvent KeyPress(KeyAscii)
+   If KeyAscii &gt;= vbKey0 And KeyAscii &lt;= vbKey9 Then
+      fmt$ = String$(m_Digits, &quot;0&quot;)
+      txt$ = Format$(m_Value, fmt$)
+      Mid$(txt$, m_FocusIsAt, 1) = Chr$(KeyAscii)
+      Value = txt$
+   End If
+   
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The one problem with the implementation so far is that you cannot
+use the tab key to switch focus between the digits of the control.
+This is because the tab key is intercepted by the container so
+it can tab between controls. Your control's KeyDown and KeyUp
+events never see it (even if the KeyPreview property for the control
+is set to True).
+<P>
+The solution for this problem is to intercept the tab key before
+it gets to the container. This is accomplished using a WH_GETMESSAGE
+hook. The dwspyvb.dll component contains an object called dwPretranslate,
+which uses this hook internally to implement a function similar
+to the PreTranslateMessage method of the Visual C++ MFC control
+class. This allows you to see every message before the application
+processes it. The dwPretranslate object uses internal filtering
+to retrieve messages destined only for the window that you specify,
+in this case, the control's window. This reduces the control's
+overhead considerably. Since Pre-translate functionality is typically
+used for keyboard messages, an additional filter in this control
+lets you restrict it to intercepting the WM_KEYDOWN and WM_KEYUP
+messages.
+<P>
+The PretranslateHook variable is initialized in the following
+code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_Show()
+   If Ambient.UserMode And PretranslateHook Is Nothing Then
+      ' Not yet initialized
+      Set PretranslateHook = New dwPretranslate
+      PretranslateHook.KeyMessagesOnly = True
+      PretranslateHook.hwnd = UserControl.hwnd
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Since there is no need for pre-translation at design time, the
+PretranslateHook object is only set at runtime. The object raises
+a single event called PreTranslateMessage which is shown below:
+<BLOCKQUOTE>
+<PRE>
+Private Sub PretranslateHook_PreTranslateMessage(ByVal hwnd As Long, _
+Msg As Long, wParam As Long, lParam As Long, nodef As Boolean)
+   Static UpPending As Boolean
+   Dim IsShiftPressed As Boolean
+   
+   IsShiftPressed = GetKeyState(vbKeyShift) &lt; 0
+   ' Watch for tab key
+   If Msg = WM_KEYDOWN And wParam = vbKeyTab Then
+      If m_FocusIsAt &lt; m_Digits And Not IsShiftPressed Then
+         m_FocusIsAt = m_FocusIsAt + 1
+         Call InvalidateRect(UserControl.hwnd, 0, True)
+         UpPending = True
+         Msg = 0
+         nodef = True
+      End If
+      If m_FocusIsAt &gt; 1 And IsShiftPressed Then
+         m_FocusIsAt = m_FocusIsAt - 1
+         Call InvalidateRect(UserControl.hwnd, 0, True)
+         UpPending = True
+         Msg = 0
+         nodef = True
+      End If
+      Exit Sub
+   End If
+   If Msg = WM_KEYUP And wParam = vbKeyTab And UpPending Then
+      ' Kill the pending keyup tab
+      Msg = 0
+      nodef = True
+      UpPending = False
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+This event includes the standard message parameters. The Msg,
+wParam, lParam, and nodef parameters are passed by reference,
+meaning that the functions can change their values before they
+are processed by the application. If you set the nodef parameter
+to True, you prevent subsequent controls that have placed windows
+hooks from intercepting the message.
+<P>
+The routine first checks the current state of the shift key, which
+allows it to determine in which direction the focus is changing.
+The current implementation always sets the focus to the first
+digit when the control receives the focus, so performing a shift
+tab into the control will go to the first digit instead of the
+last. It is possible to change this behavior, but it is a great
+deal of trouble since you must figure out which control previously
+had the focus. However, this is a minor limitation, since few
+people use the shift-tab combination to tab backward.
+<P>
+When a tab key arrives, the control determines whether a focus
+change is necessary. If so, it changes the value of the m_FocusIsAt
+variable. 
+<P>
+It then sets the UpPending static variable to True. This is a
+static variable that belongs to the event procedure. It is used
+when the WM_KEYUP message arrives indicating that the tab key
+has been released. You see, the event procedure throws away the
+WM_KEYDOWN message, and Windows might become confused if it sees
+the tab key being released without its first being pressed. So
+this variable is set to True before the tab key press message
+is discarded as a signal to throw away the release message as
+well.
+<P>
+The message is thrown away by setting the Msg value to 0. The
+null message is ignored by all windows. The nodef parameter is
+also set to True to prevent other hooks from seeing the message
+as well.
+<P>
+The InvalidateRect API function is used to update the control
+display. Why not use the UserControl Refresh method? Because this
+event is occurring during a Windows message hook, which is a dangerous
+time for many operations. It is always a good idea to keep hook
+functions as simple as possible and avoid performing complex operations
+that might confuse the system if they occur in the middle of a
+message dispatch operation. A refresh operation, with all of the
+code associated in the Paint event, is a vast unknown. It may
+work safely, but it's a risk. The InvalidateRect API is a fast
+call that simply notifies Windows that the entire area of the
+control window is now invalid and needs to be redrawn. Windows
+will itself post a WM_PAINT message for the window into the application's
+message queue, which in turn will trigger the control's Paint
+event.
+<P>
+One thing this control does not do is properly set the focus for
+a digit when you click on the control. This is left as an exercise
+for the reader. (Hint: use the UserControl's MouseDown event.)
+<H3><A NAME="ManagingUpdateAreas">
+Managing Update Areas</A></H3>
+<P>
+One of the limitations of the Visual Basic model of ActiveX control
+development with regard to user-drawn controls relates to the
+Paint event. The problem is that when this event occurs, you must
+redraw the entire control. This can be a very time-consuming operation
+for a complex control, and much of that time may be wasted in
+cases where the Paint event is triggered and only a small portion
+of the control needs to be redrawn. This often happens when dragging
+windows over each other or when a dialog box or message box is
+hidden.
+<P>
+If your control's drawing routine can be designed to only update
+those parts of the window that have changed, you might be able
+to gain a substantial performance benefit. You can determine the
+update area of a window using subclassing by calling the GetUpdateRect
+API function during the WM_PAINT message for the window. Listing
+22.2 shows a control that does not use this technique to update
+itself. Instead, it subclasses its container so the container
+can determine its update area.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 22.2:&nbsp;The PaintUpdate Control Code<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed
+' Paint update example
+' Copyright &#169; 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Private Type RECT
+        Left As Long
+        Top As Long
+        Right As Long
+        Bottom As Long
+End Type
+
+Private Declare Function GetUpdateRect Lib &quot;user32&quot; (ByVal hwnd As Long, _
+lpRect As RECT, ByVal bErase As Long) As Long
+
+Private Const WM_PAINT = &amp;HF
+
+Dim m_UpdateRect As RECT
+
+Dim WithEvents UpdateHook As dwSubClass
+
+Private Sub UpdateHook_WndMessage(ByVal hwnd As Long, Msg As Long, wp As _
+Long, lp As Long, retval As Long, nodef As Boolean)
+   Call GetUpdateRect(Extender.Parent.hwnd, m_UpdateRect, False)
+End Sub
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   If Ambient.UserMode Then
+      Set UpdateHook = New dwSubClass
+      UpdateHook.AddMessage WM_PAINT
+      UpdateHook.HwndParam = Extender.Parent.hwnd
+   End If
+End Sub
+
+Private Sub UserControl_Resize()
+   UserControl.Size UserControl.Picture.Width, UserControl.Picture.Height
+End Sub
+
+Private Sub UserControl_Terminate()
+   Set UpdateHook = Nothing
+End Sub
+
+Public Property Get UpdateLeft() As Long
+   UpdateLeft = m_UpdateRect.Left * Screen.TwipsPerPixelX
+End Property
+
+Public Property Get UpdateTop() As Long
+   UpdateTop = m_UpdateRect.Top * Screen.TwipsPerPixelY
+End Property
+
+Public Property Get UpdateRight() As Long
+   UpdateRight = m_UpdateRect.Right * Screen.TwipsPerPixelX
+End Property
+
+Public Property Get UpdateBottom() As Long
+   UpdateBottom = m_UpdateRect.Bottom * Screen.TwipsPerPixelY
+End Property
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+The dwSubClass object is part of the dwspyvb.dll component. The
+UpdateHook variable is initialized during the ReadProperties event,
+by which time the Extender property is valid. The HwndParam property
+of the UpdateHook object sets the window to be subclassed, in
+this case using the window handle of the container. The control
+could detect its own update area by using the hWnd property of
+the UserControl object instead.
+<P>
+The AddMessage method sets the WM_PAINT message as the only message
+to be detected. The object performs message filtering at a low
+level to provide the best possible performance. This also eliminates
+the need to check for messages during the object's WndMessage
+event. The WM_PAINT message is the only one that will arrive.
+<P>
+During the WndMessage event, the update rectangle is retrieved
+using the GetUpdateRect function and stored in the m_UpdateRect
+variable. The fields of this variable can be read using the UpdateLeft,
+UpdateTop, UpdateRight, and UpdateBottom properties.
+<P>
+The UpdateTest program demonstrates this by displaying the update
+coordinates in a Label control on the frmUpdate form. Try dragging
+a window over part of the form to see how this works.
+<H2><A NAME="ATaleofFourListboxes"><FONT SIZE=5 COLOR=#FF0000>
+A Tale of Four Listboxes</FONT></A></H2>
+<P>
+We will conclude both our discussion of advanced controls, and
+our discussion of controls in general, with a look at four different
+approaches towards implementing a custom Listbox control. These
+will include:
+<UL>
+<LI>A constituent-based control
+<LI>A user-drawn control
+<LI>A better user-drawn control
+<LI>A custom window-based control
+</UL>
+<P>
+Before beginning, I should stress that none of these controls
+are intended as examples of complete or robust controls. In most
+cases only a few properties and events are implemented-just enough
+to illustrate the techniques associated with the particular approach.
+They have undergone minimal testing and have little or no error
+checking.
+<P>
+The ListCtls.vbg project group contains two projects. ListCtls.vbp
+contains the four controls that demonstrate the approaches listed
+above. ListTest.vbp contains four forms that demonstrate some
+of the characteristics of the four controls.
+<H3><A NAME="AConstituentBasedControl">
+A Constituent-Based Control</A></H3>
+<P>
+Listing 22.3 contains the code for the constituent control-based
+example. This control illustrates the main limitation of this
+approach-that it is impossible for a developer using your control
+to set the design-time properties of a constituent control. This
+is because your control is in run mode even during the container's
+design time. The MultiSelect property is an example of a property
+that cannot be changed at runtime. The ListCtlA supports the MultiSelect
+property by including two separate list controls, one that is
+set to multi-select mode, the other to single-select.
+<HR>
+<BLOCKQUOTE>
+<B>Listing 22.3:&nbsp;Listing for Control ListCtlA.ctl<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+' Constituent control based list example
+' Copyright (c) 1997, by Desaware Inc. All Rights Reserved
+
+Option Explicit
+'Event Declarations:
+Event Click()
+Event DblClick()
+Event KEYDOWN(KeyCode As Integer, Shift As Integer)
+Event KeyPress(KeyAscii As Integer)
+Event KEYUP(KeyCode As Integer, Shift As Integer)
+Event MouseDown(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Event MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Event MouseUp(Button As Integer, Shift As Integer, x As Single, Y As Single)
+
+Dim CurrentListBox As ListBox
+Dim m_MultiSelect As Boolean
+
+Public Property Get MultiSelect() As Boolean
+   MultiSelect = m_MultiSelect
+End Property
+
+
+Public Property Get BackColor() As OLE_COLOR
+   BackColor = CurrentListBox.BackColor
+End Property
+
+Public Property Let BackColor(ByVal New_BackColor As OLE_COLOR)
+   List1.BackColor = New_BackColor
+   List2.BackColor = New_BackColor
+   PropertyChanged &quot;BackColor&quot;
+End Property
+
+Public Property Get ForeColor() As OLE_COLOR
+   ForeColor = CurrentListBox.ForeColor
+End Property
+
+Public Property Let ForeColor(ByVal New_ForeColor As OLE_COLOR)
+   List1.ForeColor = New_ForeColor
+   List2.ForeColor = New_ForeColor
+   PropertyChanged &quot;ForeColor&quot;
+End Property
+
+Public Property Get Enabled() As Boolean
+   Enabled = CurrentListBox.Enabled
+End Property
+
+Public Property Let Enabled(ByVal New_Enabled As Boolean)
+   List1.Enabled = New_Enabled
+   List2.Enabled = New_Enabled
+   PropertyChanged &quot;Enabled&quot;
+End Property
+
+Public Property Get Font() As Font
+   Set Font = CurrentListBox.Font
+End Property
+
+Public Property Set Font(ByVal New_Font As Font)
+   Set List1.Font = New_Font
+   Set List2.Font = New_Font
+   PropertyChanged &quot;Font&quot;
+End Property
+
+Public Sub Refresh()
+   CurrentListBox.Refresh
+End Sub
+
+Private Sub List1_Click()
+   RaiseEvent Click
+End Sub
+
+Private Sub List2_Click()
+   RaiseEvent Click
+End Sub
+
+
+Private Sub List1_DblClick()
+   RaiseEvent DblClick
+End Sub
+
+Private Sub List2_DblClick()
+   RaiseEvent DblClick
+End Sub
+
+Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
+   RaiseEvent KEYDOWN(KeyCode, Shift)
+End Sub
+
+Private Sub List2_KeyDown(KeyCode As Integer, Shift As Integer)
+   RaiseEvent KEYDOWN(KeyCode, Shift)
+End Sub
+
+Private Sub List1_KeyPress(KeyAscii As Integer)
+   RaiseEvent KeyPress(KeyAscii)
+End Sub
+
+Private Sub List2_KeyPress(KeyAscii As Integer)
+   RaiseEvent KeyPress(KeyAscii)
+End Sub
+
+Private Sub List1_KeyUp(KeyCode As Integer, Shift As Integer)
+   RaiseEvent KEYUP(KeyCode, Shift)
+End Sub
+
+Private Sub List2_KeyUp(KeyCode As Integer, Shift As Integer)
+   RaiseEvent KEYUP(KeyCode, Shift)
+End Sub
+
+Private Sub List1_MouseDown(Button As Integer, Shift As Integer, x As Single, _
+                            Y As Single)
+   RaiseEvent MouseDown(Button, Shift, x, Y)
+End Sub
+
+Private Sub List2_MouseDown(Button As Integer, Shift As Integer, x As Single, _
+                            Y As Single)
+   RaiseEvent MouseDown(Button, Shift, x, Y)
+End Sub
+
+Private Sub List1_MouseMove(Button As Integer, Shift As Integer, x As Single, _
+                            Y As Single)
+   RaiseEvent MouseMove(Button, Shift, x, Y)
+End Sub
+
+Private Sub List2_MouseMove(Button As Integer, Shift As Integer, x As Single, _
+                            Y As Single)
+   RaiseEvent MouseMove(Button, Shift, x, Y)
+End Sub
+
+Private Sub List1_MouseUp(Button As Integer, Shift As Integer, x As Single, _
+                          Y As Single)
+   RaiseEvent MouseUp(Button, Shift, x, Y)
+End Sub
+
+Private Sub List2_MouseUp(Button As Integer, Shift As Integer, x As Single, _
+                          Y As Single)
+   RaiseEvent MouseUp(Button, Shift, x, Y)
+End Sub
+
+Public Sub AddItem(item As String, Optional Index As Variant)
+   CurrentListBox.AddItem item, Index
+End Sub
+
+Public Sub Clear()
+   CurrentListBox.Clear
+End Sub
+
+
+Public Property Get hwnd() As Long
+   hwnd = CurrentListBox.hwnd
+End Property
+
+Public Property Get ItemData(ByVal ItemIndex As Long) As Long
+   ItemData = CurrentListBox.ItemData(ItemIndex)
+End Property
+
+Public Property Let ItemData(ByVal ItemIndex As Long, ByVal New_ItemData _
+                             As Long)
+   CurrentListBox.ItemData(ItemIndex) = New_ItemData
+   PropertyChanged &quot;ItemData&quot;
+End Property
+
+Public Property Get List(ByVal ItemIndex As Long) As String
+   List = CurrentListBox.List(ItemIndex)
+End Property
+
+Public Property Let List(ByVal ItemIndex As Long, ByVal New_List As String)
+   CurrentListBox.List(ItemIndex) = New_List
+   PropertyChanged &quot;List&quot;
+End Property
+
+Public Property Get ListCount() As Integer
+   ListCount = CurrentListBox.ListCount
+End Property
+
+Public Property Get ListIndex() As Integer
+   ListIndex = CurrentListBox.ListIndex
+End Property
+
+Public Property Let ListIndex(ByVal New_ListIndex As Integer)
+   CurrentListBox.ListIndex = New_ListIndex
+   PropertyChanged &quot;ListIndex&quot;
+End Property
+
+Public Property Get MouseIcon() As Picture
+   Set MouseIcon = CurrentListBox.MouseIcon
+End Property
+
+Public Property Set MouseIcon(ByVal New_MouseIcon As Picture)
+   Set List1.MouseIcon = New_MouseIcon
+   Set List2.MouseIcon = New_MouseIcon
+   PropertyChanged &quot;MouseIcon&quot;
+End Property
+
+Public Property Get NewIndex() As Integer
+   NewIndex = CurrentListBox.NewIndex
+End Property
+
+Public Sub RemoveItem(Index As Integer)
+   CurrentListBox.RemoveItem Index
+End Sub
+
+Public Property Get Selected(ByVal ItemIndex As Long) As Boolean
+   If CurrentListBox Is List2 Then
+      Selected = CurrentListBox.Selected(ItemIndex)
+   Else
+      ListError 1000
+   End If
+End Property
+
+Public Property Let Selected(ByVal ItemIndex As Long, ByVal New_Selected _
+As Boolean)
+   If CurrentListBox Is List2 Then
+      CurrentListBox.Selected(ItemIndex) = New_Selected
+      PropertyChanged &quot;Selected&quot;
+   Else
+      ListError 1000
+   End If
+End Property
+
+
+Private Sub UserControl_InitProperties()
+   Set CurrentListBox = List1
+End Sub
+
+'Load property values from storage
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   m_MultiSelect = PropBag.ReadProperty(&quot;MultiSelect&quot;, False)
+   If m_MultiSelect Then
+      Set CurrentListBox = List2
+      List1.Visible = False
+      List2.Visible = True
+   Else
+      Set CurrentListBox = List1
+      List2.Visible = False
+      List1.Visible = True
+   End If
+   BackColor = PropBag.ReadProperty(&quot;BackColor&quot;, &amp;H80000005)
+   ForeColor = PropBag.ReadProperty(&quot;ForeColor&quot;, &amp;H80000008)
+   Enabled = PropBag.ReadProperty(&quot;Enabled&quot;, True)
+   Set CurrentListBox.Font = PropBag.ReadProperty(&quot;Font&quot;)
+   Set CurrentListBox.MouseIcon = PropBag.ReadProperty(&quot;MouseIcon&quot;, Nothing)
+End Sub
+
+
+'Write property values to storage
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;MultiSelect&quot;, m_MultiSelect, False)
+   Call PropBag.WriteProperty(&quot;BackColor&quot;, CurrentListBox.BackColor, &amp;H80000005)
+   Call PropBag.WriteProperty(&quot;ForeColor&quot;, CurrentListBox.ForeColor, &amp;H80000008)
+   Call PropBag.WriteProperty(&quot;Enabled&quot;, CurrentListBox.Enabled, True)
+   Call PropBag.WriteProperty(&quot;Font&quot;, CurrentListBox.Font)
+   Call PropBag.WriteProperty(&quot;MouseIcon&quot;, CurrentListBox.MouseIcon, Nothing)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+As you can see, most of the standard properties and events are
+implemented in the same manner that we have seen throughout this
+book.
+<P>
+In this implementation, the properties are mapped to both controls.
+It might be more efficient to use variables to hold the property
+values and only set the constituent properties for the control
+that is currently visible. However, this would also require additional
+code to load all of the constituent control's properties when
+you switch from one control to the other.
+<P>
+A variable called CurrentListBox serves as a handy reference to
+the constituent control that is in use. It is set during both
+the ReadProperties event and the Property Let procedure for the
+MultiSelect property as shown below.
+<BLOCKQUOTE>
+<PRE>
+Public Property Let MultiSelect(ByVal vNewValue As Boolean)
+   If UserControl.Ambient.UserMode Then
+      ' Can't change list type at runtime
+      SetNotSupportedAtRuntime
+   End If
+   m_MultiSelect = vNewValue
+   If m_MultiSelect Then
+      Set CurrentListBox = List2
+      List1.Visible = False
+      List2.Visible = True
+   Else
+      Set CurrentListBox = List1
+      List1.Visible = True
+      List2.Visible = False
+   End If
+   
+   PropertyChanged &quot;MultiSelect&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Note that it is possible using this approach to allow the user
+to switch between multiple-select and single-select mode at the
+container's runtime as well, though that functionality is not
+implemented here. If you decide to allow that feature, you would
+also have to decide whether the current contents of the listbox
+should be copied from one constituent control to the other during
+the switch. This example raises an error in this case to remain
+compatible with the standard listbox.
+<P>
+The Resize event positions both listboxes so they fill the client
+area of your control as shown here in the UserControl_Resize event:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_Resize()
+   List1.Move 0, 0, ScaleWidth - Screen.TwipsPerPixelX, _
+   ScaleHeight - Screen.TwipsPerPixelY
+   List2.Move 0, 0, ScaleWidth - Screen.TwipsPerPixelX, _
+   ScaleHeight - Screen.TwipsPerPixelY
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+What if you wanted to handle the constituent control's Appearance
+property as well? This is another design-time-only property, so
+you would need four separate constituent list controls in order
+to support it. The Integral property would bring you to eight
+controls. Add the Sorted property, and you would be up to 16 constituent
+controls&#133;
+<P>
+As you see, this approach can verge on the ridiculous very quickly.
+The overhead of supporting 17 windows for each control (the 16
+listboxes plus the UserControl object) is horrendous. Any programmer
+who chooses this approach should (hopefully) quit the profession
+in embarrassment.
+<P>
+This is not to say that you should never use the constituent approach.
+Just that it is impractical if you require that your developer
+be able to change more than one design-time property (two at the
+most).
+<H3><A NAME="AUserDrawnControl">
+A User-Drawn Control</A></H3>
+<P>
+Consider, for a moment, the standard listbox window class implemented
+by Windows. This is the class  used by Visual Basic to implement
+its standard listbox control. How is the class itself implemented?
+<P>
+When a listbox window is created, the system first creates a window
+(which is just like any other window in the system). It assigns
+the class window function for the listbox class to the window.
+This window function receives incoming messages sent or posted
+to the window. When a paint message arrives, the code draws the
+listbox using API functions. Mouse or keyboard messages perform
+various selection and scrolling operations. Control messages can
+be sent to the window in order to perform tasks such as adding
+and deleting strings. The listbox is able to send messages to
+its parent window to notify it when certain events occur, such
+as a selection change. The characteristics of the listbox, such
+as whether it is sorted, or if it is a single- or multiple-selection
+listbox, are determined by the style characteristics of the window.
+Every window has two 32-bit style variables. Some of the bits
+in these variables are standardized, such as whether the window
+has a border. Others depend on the type of window.
+<P>
+We'll revisit this subject in slightly more detail later. For
+now, consider this: A Visual Basic-authored ActiveX control receives
+events. It can define internal variables. It can expose methods
+and properties to the outside world. It can paint whatever it
+chooses into its control window. The mechanism might not be the
+same as a window class defined by the system, but the effect is
+the same.
+<P>
+A listbox window is a window with code that processes incoming
+messages. An ActiveX control is a window with code that processes
+incoming messages. Obviously, you could implement your own list
+control from scratch, duplicating all or part of the functionality
+of a standard listbox window. If the thought of doing this seems
+a bit intimidating, it's probably because the task is quite intimidating.
+But it can be done, and with Visual Basic's new support for native
+code compilation, you can obtain excellent performance from this
+approach.
+<P>
+And keep in mind one important fact: If you do choose this approach,
+you are not limited to the features or characteristics of either
+the standard Visual Basic Listbox control or the Listbox window
+class. Your List control could include bitmaps, or even audio
+or video clips.
+<P>
+The ListCtlB example demonstrates this approach. In this case
+the control is designed to mimic the appearance and much of the
+behavior of the standard listbox, just to show it can be done.
+Once again, let me stress that what you see here is an experimental
+control designed purely for educational purposes. It is based
+on code I have been using in conference and training sessions
+over the past few years to demonstrate some of the possibilities
+that Visual Basic offers. It has gradually evolved over that time,
+and this is its first incarnation as an ActiveX control. Note
+that the multiple-selection capability, as it is implemented here,
+is a hack that was added to demonstrate the possibility of supporting
+both single and multiple selection in such a control. The multiple-selection
+behavior does not duplicate that of a standard listbox, nor is
+it a demonstration of good design. A proper redesign and implementation
+is a task for some future version.
+<P>
+The declarations and variables for the ListCtlB control are shown
+below. As you can see, this control takes advantages of a number
+of Win32 API functions.
+<BLOCKQUOTE>
+<PRE>
+' User drawn list example
+' Copyright (c) 1997, by Desaware Inc. All Rights Reserved
+Option Explicit
+
+Private Type RECT   '16 Bytes
+    left As Long
+    top As Long
+    right As Long
+    bottom As Long
+End Type
+
+Private Type POINTAPI  '8 Bytes - Synonymous with LONG
+    x As Long
+    Y As Long
+End Type
+
+Private Declare Function DrawFocusRect&amp; Lib &quot;user32&quot; (ByVal hdc As Long, _
+lpRect As RECT)
+Private Declare Function DrawText&amp; Lib &quot;user32&quot; Alias &quot;DrawTextA&quot; (ByVal hdc _
+As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal _
+wFormat As Long)
+Private Declare Function GetSysColor&amp; Lib &quot;user32&quot; (ByVal nIndex As Long)
+Private Declare Function InflateRect&amp; Lib &quot;user32&quot; (lpRect As RECT, ByVal x _
+As Long, ByVal Y As Long)
+Private Declare Function ScrollWindowByNum&amp; Lib &quot;user32&quot; Alias &quot;ScrollWindow&quot; _
+(ByVal hwnd As Long, ByVal XAmount As Long, ByVal YAmount As Long, lpRect As _
+RECT, ByVal lpClipRect As Long)
+Private Declare Function GetCursorPos&amp; Lib &quot;user32&quot; (lpPoint As POINTAPI)
+Private Declare Function SetCursorPos&amp; Lib &quot;user32&quot; (ByVal x As Long, ByVal Y _
+As Long)
+Private Declare Function SetCapture&amp; Lib &quot;user32&quot; (ByVal hwnd As Long)
+Private Declare Function ReleaseCapture&amp; Lib &quot;user32&quot; ()
+Private Declare Function GetFocus Lib &quot;user32&quot; () As Long
+Private Declare Function SetTextColor&amp; Lib &quot;gdi32&quot; (ByVal hdc As Long, _
+ByVal crColor As Long)
+Private Declare Function SelectObject Lib &quot;gdi32&quot; (ByVal hdc As Long, ByVal _
+hObject As Long) As Long
+
+Private CurrentTop As Long
+Private TotalLines As Long
+Private PixelsPerLine As Integer
+Private Selected() As Long    ' The number of the selected line
+Private HasFocus As Long
+Private highlight As Long
+Private HighlightText As Long
+' Note, -1,-1 on these means to draw it all
+Private LowDrawRange As Long    ' Lowest that needs drawing
+Private HighDrawRange As Long   ' Highest that needs drawing
+Private ClickLine As Long       ' Line on which click is detected
+Private InContext As Integer    ' Prevent reentrant mousemove events
+Private Light3D As Long       ' 3D highlight
+Private Dark3D As Long        ' 3D shadow
+Private DarkShadow As Long    ' 3D dark shadow
+Private FixNextScroll As Long
+
+Private Const KEYDOWN = 40
+Private Const KEYUP = 38
+Private Const COLOR_HIGHLIGHT = 13
+Private Const COLOR_HIGHLIGHTTEXT = 14
+Private Const COLOR_BTNSHADOW = 16
+Private Const COLOR_BTNHIGHLIGHT = 20
+Private Const COLOR_3DDKSHADOW = 21
+Private m_BorderStyle As Integer  ' 1 = Single, 2 = 3D, 0 = None
+Private m_MultiSelect As Boolean  ' Multiple selection dialog
+
+
+Private Const DT_LEFT = &amp;H0
+Private Const DT_SINGLELINE = &amp;H20
+Private Const DT_NOPREFIX = &amp;H800
+</PRE>
+</BLOCKQUOTE>
+<P>
+The control has a number of internal variables that hold precalculated
+values such as the number of pixels per line. The control has
+a single constituent scroll bar to allow the listbox to scroll.
+<P>
+This List control does not actually hold string data. Instead,
+it requests the string data for each item from the container using
+the GetText event. This approach does require additional work
+from the container, but it can be extremely efficient in that
+it does not require that you preload the listbox with data ahead
+of time. This can be ideal for database applications, where you
+would only need to retrieve those few items visible when the control
+is first displayed. It also makes it easy to handle very large
+numbers of entries efficiently.
+<P>
+The code for the properties and methods for the control is shown
+below. As you can see, it is possible to set both the BorderStyle
+and MultiSelect properties at the container's design time and
+runtime. This is because these characteristics impact the control's
+behavior and appearance, and these are implemented entirely in
+the control's code.
+<BLOCKQUOTE>
+<PRE>
+'------------------------------------------------------
+'
+'  Control Public Methods and Events
+'
+Event GetText(ByVal location As Long, ListBoxString As String)
+Event Click()
+Event DblClick()
+
+Public Property Get BorderStyle() As dwBorderStyle
+   BorderStyle = m_BorderStyle
+End Property
+
+Public Property Let BorderStyle(vNewBorder As dwBorderStyle)
+   If vNewBorder &lt; 0 Or vNewBorder &gt; 2 Then
+      ListError 380
+   End If
+   m_BorderStyle = vNewBorder
+   PropertyChanged &quot;BorderStyle&quot;
+   CalculateValues
+   PositionScrollBar
+   lbInvalidateRange
+   Refresh
+End Property
+
+Public Property Get MultiSelect() As Boolean
+   MultiSelect = m_MultiSelect
+End Property
+
+Public Property Let MultiSelect(ByVal vNewValue As Boolean)
+   m_MultiSelect = vNewValue
+   ReDim Preserve Selected(0)
+   lbInvalidateRange
+   Refresh
+   PropertyChanged &quot;MultiSelect&quot;
+End Property
+
+Public Property Get BackColor() As OLE_COLOR
+   BackColor = UserControl.BackColor
+End Property
+
+Public Property Let BackColor(vNewColor As OLE_COLOR)
+   UserControl.BackColor = vNewColor
+   PropertyChanged &quot;BackColor&quot;
+End Property
+
+Public Property Get Font() As Font
+   Set Font = UserControl.Font
+End Property
+
+Public Property Set Font(ByVal vNewValue As Font)
+   Set UserControl.Font = vNewValue
+   PropertyChanged &quot;Font&quot;
+   CalculateValues
+   lbInvalidateRange
+   Refresh
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The UserControl_Initialize event initializes the internal listbox
+variables to their default values. The listbox colors are retrieved
+at this time based on the standard system colors. You can add
+new properties to override their values if you wish.
+<P>
+Those user events that control the operation of the listbox call
+a set of private functions with the LB prefix. This arrangement
+is intended to improve the readability and modularity of the code.
+Some events, such as the Resize event, require that some of the
+listbox variables be recalculated. One of the important tasks
+you must perform with any user-drawn control is to check the impact
+each variable has on the appearance of the control and handle
+it correctly. This control does demonstrate a good approach for
+handling this, where the calculations are isolated into a few
+routines that can be called as necessary.
+<BLOCKQUOTE>
+<PRE>
+'------------------------------------------------------
+'
+'  UserControl Methods and Events
+'
+
+
+Private Sub UserControl_Initialize()
+   CurrentTop = 0
+   LowDrawRange = -1
+   HighDrawRange = -1
+   m_BorderStyle = dw3d
+   UserControl.BackColor = &amp;HFFFFFF
+   ReDim Selected(0)
+   Selected(0) = -1
+   FixNextScroll = -1
+   PixelsPerLine = TextHeight(&quot;W&quot;) + 1
+   highlight = GetSysColor(COLOR_HIGHLIGHT)
+   HighlightText = GetSysColor(COLOR_HIGHLIGHTTEXT)
+   Light3D = GetSysColor(COLOR_BTNHIGHLIGHT)
+   Dark3D = GetSysColor(COLOR_BTNSHADOW)
+   DarkShadow = GetSysColor(COLOR_3DDKSHADOW)
+End Sub
+
+Private Sub UserControl_Click()
+   RaiseEvent Click
+End Sub
+
+Private Sub UserControl_DblClick()
+   RaiseEvent DblClick
+End Sub
+
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x _
+As Single, Y As Single)
+    LBMouseDown x, Y
+End Sub
+
+Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x _
+As Single, Y As Single)
+    LBMouseMove Button, x, Y
+End Sub
+
+Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x _
+As Single, Y As Single)
+    LBMouseUp
+End Sub
+
+Private Sub UserControl_Paint()
+    LBDraw
+End Sub
+
+Private Sub UserControl_Resize()
+   CalculateValues
+   PositionScrollBar
+   lbInvalidateRange
+End Sub
+
+Private Sub UserControl_EnterFocus()
+   LBGotFocus
+End Sub
+
+Private Sub UserControl_ExitFocus()
+   LBLostFocus
+End Sub
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   m_BorderStyle = PropBag.ReadProperty(&quot;BorderStyle&quot;, dw3d)
+   m_MultiSelect = PropBag.ReadProperty(&quot;MultiSelect&quot;, False)
+   UserControl.BackColor = PropBag.ReadProperty(&quot;BackColor&quot;, &amp;HFFFFFF)
+   Set UserControl.Font = PropBag.ReadProperty(&quot;Font&quot;, Ambient.Font)
+   CalculateValues
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;BorderStyle&quot;, m_BorderStyle, dw3d)
+   Call PropBag.WriteProperty(&quot;MultiSelect&quot;, m_MultiSelect, 0)
+   Call PropBag.WriteProperty(&quot;BackColor&quot;, UserControl.BackColor, &amp;HFFFFFF)
+   Call PropBag.WriteProperty(&quot;Font&quot;, UserControl.Font, Ambient.Font)
+End Sub
+
+Private Sub UserControl_InitProperties()
+   m_BorderStyle = dw3d
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The ListCtlB control uses a constituent scrollbar to provide scrolling
+capability for the listbox. The prospect of creating an owner-drawn
+scrollbar on the control window was too depressing to contemplate.
+This approach does have one major disadvantage. As you may recall,
+when you use a visible constituent control in a Visual Basic-authored
+control, the control itself cannot receive the focus. Focus will
+always go to the constituent control. This means all keystroke
+events will come in by way of the scrollbar control instead of
+the UserControl object. It also means that the scrollbar will
+appear to have the focus when your control has the focus, which
+will not produce the appearance of a standard list control. This
+is unavoidable using this particular implementation, but you'll
+see an easy solution in the next example.
+<BLOCKQUOTE>
+<PRE>
+'------------------------------------------------------
+'
+'  VScroll1 Methods and Events
+'
+
+Private Sub VScroll1_Change()
+   If FixNextScroll &gt;= 0 Then
+      If VScroll1.Value &lt;&gt; FixNextScroll Then
+         VScroll1.Value = FixNextScroll
+         Exit Sub
+      End If
+      FixNextScroll = -1
+      Exit Sub
+   End If
+   Debug.Print &quot;Change&quot;
+   LBScrollChange
+End Sub
+
+Private Sub VScroll1_KeyDown(KeyCode As Integer, Shift As Integer)
+   FixNextScroll = VScroll1.Value
+   LBArrow KeyCode
+End Sub
+
+Private Sub VScroll1_Scroll()
+   Debug.Print &quot;Scroll&quot;
+   LBScroll
+End Sub
+
+Private Sub VScroll1_KeyPress(KeyAscii As Integer)
+   If KeyAscii = vbKeySpace And m_MultiSelect Then
+      LBSelect ClickLine
+      lbInvalidateRange ClickLine, ClickLine
+      Refresh
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The user-drawn List control is actually implemented using the
+functions that follow. Now, I'll admit that this code looks somewhat
+complex. The truth is, I could probably spend the better part
+of an entire chapter describing it, but time and space do not
+permit that. My best suggestion is that you tackle it the way
+you would any other complex piece of code. Try to follow the logic,
+and trace through the code at runtime.
+<BLOCKQUOTE>
+<PRE>
+'------------------------------------------------------
+'
+'  Functions that implement the user drawn list control
+'
+'
+' Call this from the keydown event in the control
+'
+Private Sub LBArrow(keyid%)
+   Dim newClickLine&amp;
+   Dim NewScrollValue&amp;
+   Select Case keyid%
+      Case KEYDOWN
+         newClickLine = ClickLine + 1
+      Case KEYUP
+         newClickLine = ClickLine - 1
+      Case Else
+         Exit Sub
+   End Select
+   If newClickLine &lt; 0 Or newClickLine &gt; VScroll1.Max Then
+      ' No change, so block the redraw caused by the container
+      Exit Sub
+   End If
+   ClickLine = newClickLine
+   HasFocus = ClickLine
+   If Not m_MultiSelect Then LBSelect ClickLine
+
+   If ClickLine &lt; CurrentTop Then
+      FixNextScroll = -1
+      NewScrollValue = VScroll1.Value - 1
+      VScroll1.Value = NewScrollValue
+      FixNextScroll = NewScrollValue
+      Exit Sub
+   End If
+   
+   If ClickLine &gt; CurrentTop + TotalLines - 1 Then
+      FixNextScroll = -1
+      NewScrollValue = VScroll1.Value + 1
+      VScroll1.Value = NewScrollValue
+      FixNextScroll = NewScrollValue
+      Exit Sub
+   End If
+   LBDraw
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Each line obtains the text to draw using the GetText event. It
+calculates the exact area in the window that will be covered by
+the line, taking the current border and scrollbar position into
+account. If the line is not visible, it doesn't bother drawing
+the line at all.
+<BLOCKQUOTE>
+<PRE>
+' Draw the specified line number in the list box
+'
+Private Sub LBDrawLine(tloc&amp;)
+   Dim rc As RECT
+   Dim rc2 As RECT
+   Dim di&amp;
+   Dim oldcolor&amp;
+   Dim txt$
+   Dim usefont As IFont
+   Dim oldfont As Long
+   If tloc &lt; CurrentTop Or tloc &gt; CurrentTop + TotalLines Then
+      ' It's not visible
+      Exit Sub
+   End If
+   If Ambient.UserMode Then
+      RaiseEvent GetText(tloc, txt$)
+   Else
+      If tloc = 0 Then txt = Extender.Name
+   End If
+
+   rc.left = m_BorderStyle + 1
+   rc.right = ScaleWidth - VScroll1.Width - m_BorderStyle * 2
+   rc.top = (tloc - CurrentTop) * PixelsPerLine + m_BorderStyle
+   rc.bottom = rc.top + PixelsPerLine - 1
+   Line (m_BorderStyle, rc.top + m_BorderStyle)-(ScaleWidth - _
+   VScroll1.Width, rc.bottom + m_BorderStyle), BackColor, BF
+   If IsSelected(tloc) Then
+      If VScroll1.hwnd = GetFocus() And HasFocus = tloc Then   _
+      ' This line has the focus
+         LSet rc2 = rc
+         rc2.left = m_BorderStyle
+         rc2.right = ScaleWidth - VScroll1.Width - m_BorderStyle
+         di = DrawFocusRect(hdc, rc2)
+         di = InflateRect(rc2, -1, -1)
+         Line (rc2.left, rc2.top)-(rc2.right - 1, rc2.bottom - 1), highlight, BF
+      Else
+         Line (m_BorderStyle, rc.top)-(ScaleWidth - VScroll1.Width - _
+         m_BorderStyle, rc.bottom), highlight, BF
+      End If
+      oldcolor = SetTextColor(hdc, HighlightText)
+
+   Else
+      If VScroll1.hwnd = GetFocus() And HasFocus = tloc Then   
+         ' This line has the focus
+         LSet rc2 = rc
+         rc2.left = m_BorderStyle
+         rc2.right = ScaleWidth - m_BorderStyle
+         di = DrawFocusRect(hdc, rc2)
+         di = InflateRect(rc2, -1, -1)
+         Line (rc2.left, rc2.top)-(rc2.right - 1, rc2.bottom - 1), BackColor, BF
+      Else
+         Line (m_BorderStyle, rc.top)-(ScaleWidth - m_BorderStyle, rc.bottom), _
+               BackColor, BF
+      End If
+   End If
+    
+   'Set usefont = UserControl.Font
+   'oldfont = SelectObject(hdc, usefont.hFont)
+   di = DrawText(hdc, txt, Len(txt), rc, DT_LEFT Or DT_SINGLELINE Or _
+                 DT_NOPREFIX)
+   'Call SelectObject(hdc, oldfont)
+   If IsSelected(tloc) Then
+      oldcolor = SetTextColor(hdc, oldcolor)
+   End If
+
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+It would be very inefficient for the control to display every
+entry in the listbox any time a change occurs. For example: when
+the list is scrolled one item up or down, it should be possible
+to just scroll the window contents and draw the one line that
+has just appeared. This feature is supported by this implementation.
+The lbInvalidateRange function is used to mark which entries in
+the listbox actually need to be drawn.
+<BLOCKQUOTE>
+<PRE>
+'
+' Invalidate a range of entries
+'
+Private Sub lbInvalidateRange(Optional ByVal lowval&amp; = 0, Optional _
+ByVal highval&amp; = &amp;H7FFFFFFF)
+   Dim tval&amp;
+   Dim highest&amp;
+   If LowDrawRange = -1 And HighDrawRange = -1 Then
+      LowDrawRange = &amp;H7FFFFFFF
+   End If
+   If highval &lt; lowval Then
+      ' Swap if necessary to keep range in order
+      tval = lowval
+      lowval = highval
+      highval = tval
+   End If
+   If lowval &lt; LowDrawRange Then LowDrawRange = lowval
+   If highval &gt; HighDrawRange Then HighDrawRange = highval
+   If LowDrawRange &lt; CurrentTop Then LowDrawRange = CurrentTop
+   highest = CurrentTop + TotalLines
+   If HighDrawRange &gt; highest Then HighDrawRange = highest
+
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+When an entry is clicked, it may need to be redrawn if the selection
+state changed. This is handled by the LBMouseDown function as
+shown here. Note how it shifts the entry that has the focus as
+well. The function also captures mouse input. This will be described
+further in the LBMouseMove function.
+<BLOCKQUOTE>
+<PRE>
+'
+' Called this by the mouse down event for the control
+'
+Private Sub LBMouseDown(ByVal x&amp;, ByVal Y&amp;)
+   Dim newClickLine&amp;
+   Dim li&amp;
+   li = SetCapture(hwnd)
+   newClickLine = (Y - m_BorderStyle) \ PixelsPerLine + CurrentTop
+   ' Listbox line did not change
+   If HasFocus &lt;&gt; newClickLine Then
+      HasFocus = newClickLine
+      lbInvalidateRange HasFocus, HasFocus
+   End If
+   If IsSelected(newClickLine) And Not m_MultiSelect Then
+       Exit Sub
+   End If
+   ClickLine = newClickLine
+   LBSelect ClickLine
+   LBDraw
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The LBScroll function handles the scrolling operation that was
+described earlier. It calculates how far the list needs to scroll
+and calls the ScrollWindow API function to scroll the contents
+of the window the correct amount. It then uses the lbInvalidateRange
+function to mark the lines that need to be drawn from scratch.
+This approach provides for very fast and smooth scrolling.
+<BLOCKQUOTE>
+<PRE>
+'
+' Call from the scroll event of the vertical scroll bar
+'
+Private Sub LBScroll()
+   Dim howmuch&amp;
+   Dim newtop&amp;
+   Dim dl&amp;
+   Dim rc As RECT
+   rc.left = m_BorderStyle
+   rc.right = ScaleWidth - VScroll1.Width - m_BorderStyle
+   rc.top = m_BorderStyle
+   rc.bottom = ScaleHeight - m_BorderStyle
+   newtop&amp; = VScroll1.Value
+   howmuch&amp; = CurrentTop - newtop&amp;
+   If howmuch&amp; = 0 Then
+      Exit Sub
+   End If
+   If Abs(howmuch) &gt;= TotalLines Then
+      ' Set to redraw it all
+      LowDrawRange = -1
+      HighDrawRange = -1
+      CurrentTop = newtop
+      LBDraw
+      Exit Sub
+   End If
+   CurrentTop = newtop
+   dl&amp; = ScrollWindowByNum(hwnd, 0, howmuch&amp; * PixelsPerLine, rc, 0)
+   ' Now invalidate
+   If howmuch &lt; 0 Then ' We scrolled up
+       lbInvalidateRange newtop + TotalLines + howmuch, newtop + TotalLines
+   Else
+       lbInvalidateRange newtop, newtop + howmuch
+   End If
+   LBDraw
+
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The selection operation is quite straightforward. In single-selection
+mode, the first entry in the selected array specifies the entry
+currently selected. In multiple-selection mode, the Selected array
+is dynamically sized using the SetSelection function to contain
+a list of lines that are currently selected. 
+<BLOCKQUOTE>
+<PRE>
+'
+' Select the specified entry
+'
+Private Sub LBSelect(ByVal tloc&amp;)
+   If m_MultiSelect Then
+      SetSelection tloc, Not IsSelected(tloc)
+      lbInvalidateRange
+   Else
+      lbInvalidateRange Selected(0), tloc
+      Selected(0) = tloc
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The LBDraw function draws those lines that are currently marked
+as invalid. Its most interesting characteristic, however, is the
+border implementation. As you can see, it is quite easy to implement
+3D effects using simple VB code. Remember this the next time you
+consider using an ActiveX control solely to provide a 3D appearance.
+The code approach is much more efficient in terms of memory and
+resources, and its performance is excellent.
+<BLOCKQUOTE>
+<PRE>
+Private Sub LBDraw()
+   Dim startline&amp;, lastline&amp;
+   Dim x&amp;
+   Dim sw As Long
+   Dim sh As Long
+   sw = ScaleWidth
+   sh = ScaleHeight
+   
+   If LowDrawRange = -1 And HighDrawRange = -1 Then
+        startline&amp; = CurrentTop
+        lastline&amp; = TotalLines + CurrentTop
+   Else
+        startline&amp; = LowDrawRange
+        lastline&amp; = HighDrawRange
+   End If
+   For x&amp; = startline&amp; - 1 To lastline&amp; + 1
+      LBDrawLine x
+   Next x&amp;
+   LowDrawRange = -1
+   HighDrawRange = -1
+   
+   Select Case m_BorderStyle
+      Case dw3d
+         UserControl.Line (0, 0)-(sw, 0), Dark3D
+         UserControl.Line (1, 1)-(sw, 1), DarkShadow
+         UserControl.Line (0, 0)-(0, sh), Dark3D
+         UserControl.Line (1, 1)-(1, sh), DarkShadow
+         UserControl.Line (sw - 1, 0)-(sw - 1, sh), Light3D
+         UserControl.Line (sw - 1, sh - 1)-(1, sh - 1), Light3D
+         UserControl.Line (sw - 2, sh - 2)-(2, sh - 2), Dark3D
+      Case dwSingle
+         UserControl.Line (0, 0)-(sw, 0), 0
+         UserControl.Line (0, 0)-(0, sh), 0
+         UserControl.Line (sw - 1, 0)-(sw - 1, sh), 0
+         UserControl.Line (sw - 1, sh - 1)-(1, sh - 1), 0
+   End Select
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+What happens when you click on an entry in a listbox and drag
+the mouse outside of the top or bottom border of the listbox.
+The listbox continues to scroll. The LBMouseMove uses an API trick
+to accomplish this. If a MouseMove event appears from a coordinate
+outside of the listbox, it checks to see if the location is above
+or below the control. If it is, the code first scrolls the listbox.
+Then it performs a DoEvents operation to allow the update to occur.
+A module level context variable named incontext is used to prevent
+reentrancy at this time. Thus, any other MouseMove events are
+ignored at this time. Next, the function uses the GetCursorPos
+and SetCursorPos to set the mouse pointer position to its current
+location. This does not move the mouse, but it does generate another
+MouseMove event, causing the scroll operation to repeat.
+<P>
+How can a MouseMove event appear for a point outside of the control?
+During the LBMouseDown function, the SetCapture API function was
+called to capture the mouse input. Under Win32, mouse capture
+is only guaranteed to remain in effect while the mouse button
+is held down, which is perfect for this application. The LBMouseUp
+function releases the capture using the ReleaseCapture API function.
+<BLOCKQUOTE>
+<PRE>
+'
+' Call this from the MouseMove event of the control
+'
+Private Sub LBMouseMove(ByVal Button%, ByVal x&amp;, ByVal Y&amp;)
+    Dim pt As POINTAPI
+    Dim dl&amp;
+    If InContext% Then Exit Sub
+    If (Button And 1) = 0 Then Exit Sub
+    If Y &lt; 0 Or Y &gt; ScaleHeight Then ' We be scrolling
+        InContext% = True
+        If Y &lt; 0 Then
+            If VScroll1.Value &gt; 0 Then VScroll1.Value = VScroll1.Value - 1
+        Else
+            If VScroll1.Value &lt; VScroll1.Max Then VScroll1.Value = _
+            VScroll1.Value + 1
+        End If
+        DoEvents
+        ' Force another mouse event so it will scroll again
+        InContext% = False
+        dl&amp; = GetCursorPos(pt)
+        dl&amp; = SetCursorPos(pt.x, pt.Y)
+        Exit Sub
+    End If
+    If Not m_MultiSelect Then LBMouseDown x, Y
+End Sub
+
+Private Sub LBMouseUp()
+    Dim dl&amp;
+    dl&amp; = ReleaseCapture()
+End Sub
+
+Private Property Get LBClickLine()
+    LBClickLine = ClickLine
+End Property
+
+
+'
+' Call this from the GotFocus event
+'
+Private Sub LBGotFocus()
+   If m_MultiSelect Then
+      lbInvalidateRange
+   Else
+      lbInvalidateRange Selected(0), Selected(0)
+   End If
+   LBDraw
+End Sub
+
+'
+' Call this from the Change event of the scrollbar
+'
+Private Sub LBScrollChange()
+    LBScroll
+End Sub
+
+'
+' Call this from the control LostFocus event
+'
+Private Sub LBLostFocus()
+   If m_MultiSelect Then
+      lbInvalidateRange
+   Else
+      lbInvalidateRange Selected(0), Selected(0)
+   End If
+   LBDraw
+End Sub
+
+
+Private Sub PositionScrollBar()
+   Dim slidescroll%
+   If m_BorderStyle = dw3d Then slidescroll = 1
+   VScroll1.Move ScaleWidth - (VScroll1.Width + slidescroll), _
+   slidescroll, VScroll1.Width, ScaleHeight - m_BorderStyle
+End Sub
+
+Private Function IsSelected(ByVal location&amp;) As Boolean
+   Dim x&amp;
+   For x = 0 To UBound(Selected)
+      If Selected(x) = location Then
+         IsSelected = True
+         Exit Function
+      End If
+   Next x
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+The SetSelection subroutine manages the selection array. This
+is one of the hacks that were described earlier and does not represent
+the most efficient way of handling this task. But it does the
+trick.
+<BLOCKQUOTE>
+<PRE>
+Private Sub SetSelection(ByVal location&amp;, ByVal newstate As Boolean)
+   Dim x&amp;
+   Dim firstfree&amp;
+   firstfree = -1
+   For x = 0 To UBound(Selected)
+      If Selected(x) = location Then
+         If Not newstate Then Selected(x) = -1
+         Exit Sub
+      End If
+      If firstfree &lt; 0 And Selected(x) = -1 Then firstfree = x
+   Next x
+   If newstate Then
+      If firstfree &gt;= 0 Then
+         Selected(firstfree) = location
+         Exit Sub
+      End If
+      ReDim Preserve Selected(UBound(Selected) + 1)
+      Selected(UBound(Selected)) = location
+   End If
+   
+End Sub
+
+
+Private Sub CalculateValues()
+   PixelsPerLine = UserControl.TextHeight(&quot;W&quot;) + 1
+   TotalLines = (ScaleHeight - m_BorderStyle * 2) \ PixelsPerLine
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+As you can see, the user-drawn approach does require substantially
+more work, but you gain a great deal of flexibility in the process.
+Before leaving this approach behind, there is one more example
+to look at that fixes the focus problem that exists with this
+implementation.
+<H3><A NAME="ABetterUserDrawnControl">
+A Better User-Drawn Control</A></H3>
+<P>
+The ListCtlC.ctl example eliminates the problems relating to focus
+that result from having a visible constituent control. It turns
+out that Windows has built-in scrollbar support that is available
+to virtually every type of window. This scrollbar support can
+be turned on using API functions but requires subclassing to obtain
+the necessary messages. You can turn on these built-in scrollbars
+for the UserControl window as well. Doing so does not count as
+a visible constituent control. Thus the control itself will receive
+the focus.
+<P>
+Turning on scrollbars and managing the incoming messages turns
+out to be quite a bit of work, but the dwspyvb.dll component includes
+an object that does the work for you: the dwScrollBars object.
+It works with many types of windows including ActiveX control
+windows, forms, and picture controls. The object is declared and
+initialized as follows:
+<P>
+Private WithEvents VScroll As dwScrollBars
+<P>
+The object is initialized in the UserControl_Initialize event
+as follows:
+<P>
+Set VScroll = New dwScrollBars
+<P>
+The vertical scrollbar is turned on during the UserControl_Show
+event as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_Show()
+   If Ambient.UserMode Then
+      VScroll.hwnd = UserControl.hwnd
+      VScroll.ScrollBars = sbeVerticalScrollbar
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+There is no need to display the scrollbar at design time.
+<P>
+The control itself now receives keyboard input, which is handled
+as follows:
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
+   FixNextScroll = VScroll.VValue
+   LBArrow KeyCode
+End Sub
+
+Private Sub UserControl_KeyPress(KeyAscii As Integer)
+   If KeyAscii = vbKeySpace And m_MultiSelect Then
+      LBSelect ClickLine
+      lbInvalidateRange ClickLine, ClickLine
+      Refresh
+   End If
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The VScroll object properties and events are similar to those
+of the standard scrollbar control. The only difference is that
+each event or property name is prefixed with an H or V character
+indicating whether it belongs to the vertical or horizontal scrollbar.
+This control only uses the vertical scrollbar, but the object
+supports both, either individually or simultaneously.
+<BLOCKQUOTE>
+<PRE>
+'------------------------------------------------------
+'
+'  VScroll1 Methods and Events
+'
+Private Sub VScroll_VChange()
+   If FixNextScroll &gt;= 0 Then
+      If VScroll.VValue &lt;&gt; FixNextScroll Then
+         VScroll.VValue = FixNextScroll
+         Exit Sub
+      End If
+      FixNextScroll = -1
+      Exit Sub
+   End If
+   Debug.Print &quot;Change&quot;
+   LBScrollChange
+End Sub
+
+Private Sub VScroll_VScroll()
+   LBScroll
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The remaining control functions are virtually identical except
+for the change from the VScroll1 control to VScroll object and
+the change in name to the scrolling property and event names.
+<P>
+This concludes our discussion of user-drawn controls and leaves
+us with one more approach to discuss: the fourth model of control
+creation, which is the window-based control.
+<H3><A NAME="ACustomWindowBasedControl">
+A Custom Window-Based Control</A></H3>
+<P>
+The major limitation of constituent-based controls is that you
+cannot change the design properties of the constituent controls.
+This is because those properties are based on window styles that
+must be defined when the window is created. Visual Basic 5.0 does
+not provide a mechanism to destroy and recreate a control. But
+if you were to create your own window from scratch, you could
+destroy and re-create the window any time you wanted, including
+the container's design time and runtime. Of course, in doing so
+your control would take on a number of responsibilities:
+<UL>
+<LI>You would have to handle incoming messages to the window.
+<LI>You would need to intercept messages sent by the window to
+its parent (your UserControl object).
+<LI>All communication with the window would be through messages.
+</UL>
+<P>
+But that really isn't as bad as it might sound, as you will soon
+see.
+<P>
+The ListCtlD sample control creates a standard listbox window
+and places it over the UserControl window for your control. The
+sample begins with a number of standard API declarations.
+<P>
+The WS and LBS prefixed constants describe the styles of the window.
+You can guess the meanings of most of them by their names. Detailed
+explanations can be found in any good API reference. Only a few
+of the styles shown here are actually used in this control.
+<BLOCKQUOTE>
+<PRE>
+' CreateWindow list example
+' Copyright (c) 1997, by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Private Const WS_CHILD = &amp;H40000000
+Private Const WS_VISIBLE = &amp;H10000000
+Private Const WS_CLIPSIBLINGS = &amp;H4000000
+Private Const WS_BORDER = &amp;H800000
+Private Const WS_GROUP = &amp;H20000
+Private Const WS_TABSTOP = &amp;H10000
+Private Const WS_VSCROLL = &amp;H200000
+Private Const WS_EX_APPWINDOW = &amp;H40000
+Private Const WS_EX_CLIENTEDGE = &amp;H200&amp;
+Private Const WS_EX_CONTEXTHELP = &amp;H400&amp;
+Private Const WS_EX_CONTROLPARENT = &amp;H10000
+Private Const WS_EX_LEFT = &amp;H0&amp;
+Private Const WS_EX_LEFTSCROLLBAR = &amp;H4000&amp;
+Private Const WS_EX_LTRREADING = &amp;H0&amp;
+Private Const WS_EX_MDICHILD = &amp;H40&amp;
+Private Const WS_EX_RIGHT = &amp;H1000&amp;
+Private Const WS_EX_RIGHTSCROLLBAR = &amp;H0&amp;
+Private Const WS_EX_RTLREADING = &amp;H2000&amp;
+Private Const WS_EX_STATICEDGE = &amp;H20000
+Private Const WS_EX_TOOLWINDOW = &amp;H80&amp;
+Private Const WS_EX_WINDOWEDGE = &amp;H100&amp;
+
+' Listbox Styles
+Private Const LBS_NOTIFY = &amp;H1&amp;
+Private Const LBS_SORT = &amp;H2&amp;
+Private Const LBS_NOREDRAW = &amp;H4&amp;
+Private Const LBS_MULTIPLESEL = &amp;H8&amp;
+Private Const LBS_OWNERDRAWFIXED = &amp;H10&amp;
+Private Const LBS_OWNERDRAWVARIABLE = &amp;H20&amp;
+Private Const LBS_HASSTRINGS = &amp;H40&amp;
+Private Const LBS_USETABSTOPS = &amp;H80&amp;
+Private Const LBS_NOINTEGRALHEIGHT = &amp;H100&amp;
+Private Const LBS_MULTICOLUMN = &amp;H200&amp;
+Private Const LBS_WANTKEYBOARDINPUT = &amp;H400&amp;
+Private Const LBS_EXTENDEDSEL = &amp;H800&amp;
+Private Const LBS_DISABLENOSCROLL = &amp;H1000&amp;
+Private Const LBS_NODATA = &amp;H2000&amp;
+Private Const LBS_NOSEL = &amp;H4000&amp;
+Private Const LBS_STANDARD = (LBS_NOTIFY Or LBS_SORT Or WS_VSCROLL Or WS_BORDER)
+</PRE>
+</BLOCKQUOTE>
+<P>
+Notification codes are types of WM_COMMAND messages that are sent
+from the window to the parent, in this case, the UserControl window.
+<BLOCKQUOTE>
+<PRE>
+' Listbox Notification Codes
+Private Const LBN_ERRSPACE = (-2)
+Private Const LBN_SELCHANGE = 1
+Private Const LBN_DBLCLK = 2
+Private Const LBN_SELCANCEL = 3
+Private Const LBN_SETFOCUS = 4
+Private Const LBN_KILLFOCUS = 5
+</PRE>
+</BLOCKQUOTE>
+<P>
+The LB_ prefixed messages are used to control the operation of
+the listbox window. Only a few of the commands shown here are
+actually implemented in this example.
+<BLOCKQUOTE>
+<PRE>
+' Listbox messages
+Private Const LB_ADDSTRING = &amp;H180
+Private Const LB_INSERTSTRING = &amp;H181
+Private Const LB_DELETESTRING = &amp;H182
+Private Const LB_SELITEMRANGEEX = &amp;H183
+Private Const LB_RESETCONTENT = &amp;H184
+Private Const LB_SETSEL = &amp;H185
+Private Const LB_SETCURSEL = &amp;H186
+Private Const LB_GETSEL = &amp;H187
+Private Const LB_GETCURSEL = &amp;H188
+Private Const LB_GETTEXT = &amp;H189
+Private Const LB_GETTEXTLEN = &amp;H18A
+Private Const LB_GETCOUNT = &amp;H18B
+Private Const LB_SELECTSTRING = &amp;H18C
+Private Const LB_DIR = &amp;H18D
+Private Const LB_GETTOPINDEX = &amp;H18E
+Private Const LB_FINDSTRING = &amp;H18F
+Private Const LB_GETSELCOUNT = &amp;H190
+Private Const LB_GETSELITEMS = &amp;H191
+Private Const LB_SETTABSTOPS = &amp;H192
+Private Const LB_GETHORIZONTALEXTENT = &amp;H193
+Private Const LB_SETHORIZONTALEXTENT = &amp;H194
+Private Const LB_SETCOLUMNWIDTH = &amp;H195
+Private Const LB_ADDFILE = &amp;H196
+Private Const LB_SETTOPINDEX = &amp;H197
+Private Const LB_GETITEMRECT = &amp;H198
+Private Const LB_GETITEMDATA = &amp;H199
+Private Const LB_SETITEMDATA = &amp;H19A
+Private Const LB_SELITEMRANGE = &amp;H19B
+Private Const LB_SETANCHORINDEX = &amp;H19C
+Private Const LB_GETANCHORINDEX = &amp;H19D
+Private Const LB_SETCARETINDEX = &amp;H19E
+Private Const LB_GETCARETINDEX = &amp;H19F
+Private Const LB_SETITEMHEIGHT = &amp;H1A0
+Private Const LB_GETITEMHEIGHT = &amp;H1A1
+Private Const LB_FINDSTRINGEXACT = &amp;H1A2
+Private Const LB_SETLOCALE = &amp;H1A5
+Private Const LB_GETLOCALE = &amp;H1A6
+Private Const LB_SETCOUNT = &amp;H1A7
+Private Const LB_MSGMAX = &amp;H1A8
+Private Const WM_CTLCOLORLISTBOX = &amp;H134
+
+
+Private Const WM_LBUTTONDOWN = &amp;H201
+Private Const WM_LBUTTONUP = &amp;H202
+Private Const WM_SETFONT = &amp;H30
+
+Private Const WHITE_BRUSH = 0
+Private Declare Function GetStockObject Lib &quot;gdi32&quot; (ByVal nIndex As Long) As Long
+
+Event Click()
+Event DblClick()
+</PRE>
+</BLOCKQUOTE>
+<P>
+This sample uses two objects from the dwSpyvb.dll component. The
+dwPrivateWindow class is used to manage the creation and use of
+private windows. The dwSubClass object you saw earlier is used
+to intercept the listbox window notifications.
+<BLOCKQUOTE>
+<PRE>
+Dim WithEvents listwnd As dwPrivateWindow
+Dim WithEvents cmdhook As dwSubClass
+
+Private Const defClassName = &quot;LISTBOX&quot;
+
+Private m_MultiSelect As Boolean
+Private m_BorderStyle As Integer
+</PRE>
+</BLOCKQUOTE>
+<P>
+Changing the MultiSelect and BorderStyle properties both require
+that the listbox window be destroyed and re-created, as you can
+see in their property procedures.
+<BLOCKQUOTE>
+<PRE>
+Public Property Get MultiSelect() As Boolean
+   MultiSelect = m_MultiSelect
+End Property
+
+Public Property Let MultiSelect(ByVal vNewValue As Boolean)
+   m_MultiSelect = vNewValue
+   PropertyChanged &quot;MultiSelect&quot;
+   InitTheWindow  ' Change the appearance now!
+End Property
+
+Public Property Get BorderStyle() As dwBorderStyle
+   BorderStyle = m_BorderStyle
+End Property
+
+Public Property Let BorderStyle(ByVal vNewValue As dwBorderStyle)
+   If vNewValue &gt; 2 or vNewValue &lt; 0 Then
+      Err.Raise 380
+   End If
+   m_BorderStyle = vNewValue
+   PropertyChanged &quot;BorderStyle&quot;
+   InitTheWindow
+End Property
+
+
+Public Property Get Font() As Font
+   Set Font = UserControl.Font
+End Property
+
+Public Property Set Font(ByVal vNewValue As Font)
+   Set UserControl.Font = vNewValue
+   PropertyChanged &quot;Font&quot;
+   UpdateTheFont
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+When your control receives the focus, you must set the focus to
+the contained listbox window. This is necessary because a private
+window is not really a constituent control, so Visual Basic doesn't
+know that it should receive the focus when the control does. The
+SetFocus method you see here is a method of the dwPrivateWindow
+object that calls the API SetFocus command.
+<BLOCKQUOTE>
+<PRE>
+'---------------------------------------------
+'
+'     UserControl events and properties
+'
+Private Sub UserControl_EnterFocus()
+   listwnd.SetFocus
+End Sub
+
+
+Private Sub UserControl_Initialize()
+   Set listwnd = New dwPrivateWindow
+   Set cmdhook = New dwSubClass
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The InitWindow function is called when the control is initialized
+or loaded.
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_InitProperties()
+   ' Create the child window after properties are read
+   InitTheWindow
+End Sub
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   ' Create the child window after properties are read
+   m_MultiSelect = PropBag.ReadProperty(&quot;MultiSelect&quot;, False)
+   m_BorderStyle = PropBag.ReadProperty(&quot;BorderStyle&quot;, False)
+   Set UserControl.Font = PropBag.ReadProperty(&quot;Font&quot;, Ambient.Font)
+   InitTheWindow
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+   Call PropBag.WriteProperty(&quot;MultiSelect&quot;, m_MultiSelect, False)
+   Call PropBag.WriteProperty(&quot;BorderStyle&quot;, m_BorderStyle, False)
+   Call PropBag.WriteProperty(&quot;Font&quot;, UserControl.Font, Ambient.Font)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The following cleanup on termination is mostly a matter of good
+style. Both the dwPrivateWindow and dwSubClass objects know how
+to clean up after themselves when they are destroyed.
+<BLOCKQUOTE>
+<PRE>
+Private Sub UserControl_Terminate()
+   listwnd.DestroyWindow
+   cmdhook.HwndParam = 0
+   Set listwnd = Nothing
+   Set cmdhook = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+You cannot obtain a font handle from the Font object directly,
+but the Font object implements an interface called IFont that
+allows you to retrieve the handle to the font. This can be sent
+to the listbox window using the WM_SETFONT message.
+<BLOCKQUOTE>
+<PRE>
+'-------------------------------------
+'
+'     Functions used internally
+'
+
+Private Sub UpdateTheFont()
+   Dim usefont As IFont
+   Set usefont = UserControl.Font
+   Call listwnd.SendMessageNumber(WM_SETFONT, usefont.hFont, 1)
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The GetListboxStyle function is a utility function that retrieves
+the correct window style to use for the given multiple-select
+and border settings.
+<BLOCKQUOTE>
+<PRE>
+Private Function GetListboxStyle() As Long
+   Dim LS As Long
+   LS = WS_CHILD Or WS_TABSTOP Or WS_CLIPSIBLINGS Or WS_VISIBLE Or WS_VSCROLL
+   LS = LS Or LBS_NOTIFY Or LBS_HASSTRINGS
+   If m_MultiSelect Then LS = LS Or LBS_MULTIPLESEL Or LBS_EXTENDEDSEL
+   If m_BorderStyle Then LS = LS Or WS_BORDER
+   GetListboxStyle = LS
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+The InitTheWindow function creates the contained listbox window.
+The cmdhook object is set to subclass the user control window.
+It is set to detect command messages using the CommandMessage
+event, which breaks the WM_COMMAND message parameters into their
+individual components. It is also set to detect the WM_CTLCOLORLISTBOX
+message, which allows you to set the background color of the listbox.
+The listwnd CreateWindowEx method creates the new window. There
+is no need to destroy the previous window-that operation is handled
+automatically when you create the new one.
+<BLOCKQUOTE>
+<PRE>
+Private Sub InitTheWindow()
+   cmdhook.EnableCommandEvent = True
+   cmdhook.HwndParam = UserControl.hwnd
+   cmdhook.AddMessage WM_CTLCOLORLISTBOX
+   Call listwnd.CreateWindowEx(0, defClassName, &quot;&quot;, GetListboxStyle, _
+         0, 0, ScaleWidth, ScaleHeight, hwnd, 0)
+   If Not Ambient.UserMode Then AddItem Ambient.DisplayName
+   UpdateTheFont
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+WM_COMMAND messages from the listbox window are intercepted on
+their way to the UserControl window. The UserControl window receives
+WM_COMMAND messages from many sources, including other controls
+and menus. In this example, no other window exists, so the only
+source of WM_COMMAND messages is the listbox window. However,
+it is still good practice to double check. The messages are mapped
+directly into Control events.
+<BLOCKQUOTE>
+<PRE>
+' Here is where command notifications come in
+Private Sub cmdhook_CommandMessage(ByVal hwnd As Long, ByVal wID As Long, _
+ByVal wNotifyCode As Long, ByVal hwndCtl As Long, retval As Long, nodef _
+As Boolean)
+   If hwndCtl &lt;&gt; listwnd.hwnd Then Exit Sub  ' It's not for the list box
+   Select Case wNotifyCode
+      Case LBN_SELCHANGE
+         RaiseEvent Click
+      Case LBN_DBLCLK
+         RaiseEvent DblClick
+   End Select
+   ' Default result for notification messages
+   nodef = True
+   retval = 0
+End Sub
+
+Private Sub cmdhook_WndMessage(ByVal hwnd As Long, Msg As Long, wp As Long, lp As_
+Long, retval As Long, nodef As Boolean)
+   If lp &lt;&gt; listwnd.hwnd Then Exit Sub  ' It's not for the list box
+   Select Case Msg
+      Case WM_CTLCOLORLISTBOX
+         retval = GetStockObject(WHITE_BRUSH)   ' Return white brush
+         nodef = True   ' Block default processing
+   End Select
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The cmdhook_WndMessage function intercepts the WM_CTLCOLORLISTBOX
+message and returns a handle to a white brush to force the background
+color of the list box to white. You could, of course, set this
+value based on a BackColor property should you choose to implement
+one. The nodef event parameter must be set to True to prevent
+default processing for the message, which would set the color
+to the default background color for listboxes.
+<P>
+Adding and removing a string is a simple matter of sending the
+appropriate message.
+<BLOCKQUOTE>
+<PRE>
+' Add a string to the list box
+Public Sub AddItem(item As String, Optional Index As Long = -1)
+   Dim res&amp;
+   If Index = -1 Then
+      res = listwnd.SendMessageString(LB_ADDSTRING, 0, item)
+      ' TODO - on fail raise error
+   Else
+      res = listwnd.SendMessageString(LB_INSERTSTRING, Index, item)
+      ' TODO - on fail raise error
+   End If
+End Sub
+
+' Remove a string from the list box
+Public Sub RemoveItem(ByVal Index As Long)
+   If Index &lt; 0 Or Index &gt; ListCount Then
+      Err.Raise 380
+   Else
+      Call listwnd.SendMessageNumber(LB_DELETESTRING, Index, 0)
+   End If
+End Sub
+
+Public Property Get ListCount() As Long
+   ListCount = listwnd.SendMessageNumber(LB_GETCOUNT, 0, 0)
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+What about the messages that are being sent to the private listbox
+window? Unless you specify otherwise, they are automatically sent
+by the listwnd object to the default window function-the class
+window function that implements the listbox functionality. You
+can override the handling of these messages if you wish, but in
+this case there is no need to do so. The nice thing about this
+approach is that if you break or pause your application, window
+messages will continue to receive their default processing, thus
+allowing Windows message processing to continue in a normal manner.
+This is because default message processing is built into the dwPrivateWindow
+object. You can override it if you choose, but if your code is
+stopped, the default message processing will always take place.
+<BLOCKQUOTE>
+<PRE>
+Private Sub listwnd_WndMessage(ByVal hwnd As Long, ByVal Msg As Long, _
+ByVal wParam As Long, ByVal lParam As Long, retval As Long, nodef As Boolean)
+   Select Case Msg
+      ' We can handle window messages here
+   End Select
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The approach shown here can become much more useful when using
+a technique called <I>owner drawn listboxes</I>. In this case
+the standard listbox window does not actually draw the list box.
+Instead, it sends a message to the parent window telling it which
+line to draw and whether it is selected or has the focus. It also
+provides a device context that is ready for drawing.
+<P>
+You may feel you need to be a bit of a Windows expert to take
+full advantage of the private window approach. There is some truth
+to this. But it just serves to stress the point I made at the
+beginning of this chapter: that you can take advantage of virtually
+all of the control development techniques that are possible using
+other languages when writing controls using Visual Basic. However,
+to do so you must learn those techniques and handle them at the
+same level-the API and windows messaging level. Visual Basic may
+be the easiest way to create advanced controls, but this is empathetically
+not the same as saying that it is easy.
+<P>
+This concludes our coverage of developing ActiveX controls using
+Visual Basic. We'll return to the subject again in Part 4, where
+we cover the related topics of versioning and licensing. Meanwhile,
+let's turn our attention to a closely related component type:
+the ActiveX document.
+<HR>
+
+<CENTER><P><A HREF="ch21.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch21.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="part4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/part4.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

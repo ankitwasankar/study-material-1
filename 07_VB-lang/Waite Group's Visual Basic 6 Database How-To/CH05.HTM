@@ -1,0 +1,4661 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Visual Basic 6 Database How-To -- Ch 5 --MICROSOFT ACCESS DATABASES</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="sams.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/sams.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"></H1>
+
+<H1 ALIGN="CENTER">Visual Basic 6 Database How-To</H1>
+<CENTER>
+<P><A HREF="ch04.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch04/ch04.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch06.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch06/ch06.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1></H1>
+<H1 ALIGN="CENTER">- 5 -<BR>
+Microsoft Access Databases</H1>
+<H2></H2>
+
+<UL>
+	<LI>How do I...
+	<UL>
+		<LI><A HREF="#Determine the number of records ">5.1 Determine the number of records
+		in a table and the table's creation and last-modified dates?</A>
+		<LI><A HREF="#Attach a table from another data">5.2 Attach a table from another database
+		file?</A>
+		<LI><A HREF="#Import a text file?">5.3 Import a text file?</A>
+		<LI><A HREF="#Save graphics in a database file">5.4 Save graphics in a database file?</A>
+		<LI><A HREF="#Make sure that an operation ...">5.5 Make sure that an operation involving
+		multiple tables is not left partially completed?</A>
+		<LI><A HREF="#Compact a database or repair ...">5.6 Compact a database or repair
+		a corrupted database?</A>
+		<LI><A HREF="#Use parameter queries ...">5.7 Use parameter queries stored in Microsoft
+		Access databases?</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<H3></H3>
+<P>Although you have a choice of database formats, such as indexed sequential access
+method (ISAM) or Open Database Connectivity (ODBC) drivers, you will find it easiest
+to work with Visual Basic's &quot;native&quot; database format, Microsoft Access.
+Because Visual Basic and Microsoft Access have been created to work in tandem, you
+have a rich feature set available to you. This chapter shows you how to use many
+of the unique features of Microsoft Access database files.</P>
+<P>
+<H4>5.1 Determine the number of records in a table and the table's creation and last-modified
+dates</H4>
+<P>A Microsoft Access database contains information about each table in the database--including,
+among other items, when the table was created, when it was last modified, and the
+number of records it currently contains. This How-To consists of a tool for extracting
+and displaying that information.</P>
+<P>
+<H4>5.2 Attach a table from another database file</H4>
+<P>In some cases, it is necessary or desirable to make the contents of a table available
+to more than one Microsoft Access database. A database can access a table from another
+database by attaching the table to itself. This How-To shows you how to attach Microsoft
+Access tables to Microsoft Access databases through Visual Basic.</P>
+<P>
+<H4>5.3 Import a text file</H4>
+<P>The source of your application's data might be files consisting of delimited ASCII
+or ANSI text. This How-To shows how to use Visual Basic classes and collections to
+convert text files into records that you can add to Microsoft Access tables.</P>
+<P>
+<H4>5.Save graphics in a database file</H4>
+<P>The capability to store graphics in a database can be very useful, but sometimes
+challenging. This How-To explains two methods of saving graphics, as well as providing
+an example of one of them.</P>
+<P>
+<H4>5.5 Make sure that an operation involving multiple tables is not left partially
+completed</H4>
+<P>A well-designed relational database uses multiple tables that are related. A single
+&quot;logical&quot; add, delete, or update operation often requires making a change
+to more than one table. If an error occurs during a multitable operation, you generally
+want to abort the entire operation and return all the tables to the condition in
+which they existed at the start of the operation. This How-To shows how to use the
+transaction features of the Jet database engine to ensure the integrity of your tables.</P>
+<P>
+<H4>5.6 Compact a database or repair a corrupted database</H4>
+<P>The Jet database engine has the capability to recover space after deletion of
+data, but it does not perform the operation automatically. The Jet engine also can
+repair certain types of database damage--but again, it will not make the attempt
+unless it is instructed to do so. This How-To shows how to use Visual Basic to initiate
+the Jet engine's database-compact and database-repair capabilities.</P>
+<P>
+<H4>5.7 Use Parameter Queries Stored in Microsoft Access Databases</H4>
+<P>Microsoft Access queries can be designed to use replaceable parameters. A query
+with a replaceable parameter must be provided with a value for that parameter each
+time the query is run. This How-To shows how to use stored queries with replaceable
+parameters from Visual Basic.</P>
+<P>
+<H2>5.1 How do I...</H2>
+<H3><A NAME="Determine the number of records "></A>Determine the number of records
+in a table and the table's creation and last-modified dates?</H3>
+<P><B>Problem</B></P>
+<P>I have an application that periodically adds records to a table. No other user
+or application ever modifies this table. To make sure that I don't perform the same
+update twice, I'd like to check the current record count and the date the last changes
+were made to the table's recordset. How can I do this from Visual Basic?</P>
+<P><B>Technique</B></P>
+<P>The TableDefs collection of the Database object consists of TableDef objects,
+each of which represents one table from the database. The properties of the TableDef
+object describe the table. Table 5.1 lists the properties of TableDef objects applicable
+to native Microsoft Access database tables.</P>
+<P>
+<H4>Table 5.1. Properties of a TableDef object applicable to Microsoft Access tables.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>DESCRIPTION</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Attributes</TD>
+		<TD ALIGN="LEFT">Characteristics of the table, including whether the table is an attached table</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">DateCreated</TD>
+		<TD ALIGN="LEFT">The date and time the table was created</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">LastUpdated</TD>
+		<TD ALIGN="LEFT">The date and time the table was most recently changed</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">The name of the table</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">RecordCount</TD>
+		<TD ALIGN="LEFT">The number of records in the table</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SourceTableName</TD>
+		<TD ALIGN="LEFT">The name of the base table, if the TableDef is for an attached table</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Updatable</TD>
+		<TD ALIGN="LEFT">Specification of whether SourceTableName, ValidationRule, and ValidationText properties
+			of the TableDef can be modified</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ValidationRule</TD>
+		<TD ALIGN="LEFT">An expression used to set the criteria for accepting a new record or a modification
+			to an existing record</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ValidationText</TD>
+		<TD ALIGN="LEFT">The message returned if a change fails to meet the ValidationRule criteria</TD>
+	</TR>
+</TABLE>
+</P>
+<P><B>Steps</B></P>
+<P>The Table Status application displays four of the most useful properties for each
+user table in a database. Open and run TableData.VBP. You'll see a standard Windows
+File Open dialog box. Choose a Microsoft Access (*.MDB) file, and click OK. The form
+shown in Figure 5.1 appears with a list of the tables in the database shown in the
+list box. After you select a table, the table's creation date, last modification
+date, and current record count appear in the boxes on the form, similar to Figure
+5.2.</P>
+<P><A HREF="javascript:popUp('05fig01.gif')"><B>Figure 5.1.</B></A><B> </B><I>The
+table statistics form on startup.</I></P>
+<P><A HREF="javascript:popUp('05fig02.gif')"><B>Figure 5.2.</B></A><B> </B><I>The
+table statistics form with the statistics from the Title Author table shown.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called TableData.VBP. Create the objects and properties
+	listed in Table 5.2, and save the form as TableData.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.2. Objects and properties for the Table Status form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">Form1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Chapter 5.1 Example&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdChangeFile</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Change &amp;File&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdExit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;E&amp;xit&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstTables</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Sorted</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommonDialog</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cdlTableData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">CancelError</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DefaultExt</TD>
+		<TD ALIGN="LEFT">&quot;MDB&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DialogTitle</TD>
+		<TD ALIGN="LEFT">&quot;Database File&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">FileName</TD>
+		<TD ALIGN="LEFT">&quot;*.MDB&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Filter</TD>
+		<TD ALIGN="LEFT">&quot;*.MDB&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblCreated</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">2 (Center)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 (Fixed Single)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblModified</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">2 (Center)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 (Fixed Single)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblRecords</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">2 (Center)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 (Fixed Single)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblTableData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Created:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblTableData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Last Modified:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblTableData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Records:&quot;</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add the following code to the declarations section of Form1. The Collection
+	object created by the declaration is used by several procedures within the form,
+	so it is declared at form level to give all of the procedures access to it.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>Option Explicit</P>
+	<P>
+	<PRE>Private colTableData As Collection</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the Form_Load event of Form1. Form_Load calls
+	the GetDatabase subroutine, which controls the rest of the application.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    GetDatabase
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Create the GetDatabase subroutine with the following code. This procedure
+	gets a database selection from the user, retrieves information from its nonsystem
+	table definitions into clsTableStatus objects, and puts the clsTableData objects
+	into colTableData. (The clsTableData class is discussed later in this section.) It
+	then lists the table names in the form's list box.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub GetDatabase()
+    Dim dbfTableData As Database
+    Dim tdfTables As TableDefs, tdfSelectedTable As TableDef
+    Dim objTable As clsTableData
+    Dim strDatabaseName As String
+    On Error GoTo NoDatabaseError
+        `Call the ShowOpen method of the CommonDialog control, so 
+        `the user can select a database.
+        cdlTableData.ShowOpen
+        On Error GoTo GetDatabaseError
+            strDatabaseName = cdlTableData.filename
+            Screen.MousePointer = vbHourglass
+            `Open the chosen database
+            Set dbfTableData = _
+                DBEngine.Workspaces(0).OpenDatabase( _
+                strDatabaseName, False, True)
+            `Fetch the TableDefs collection &amp; place in a local 
+            `variable.  This has the benefit of slightly faster 
+            `processing
+            Set tdfTables = dbfTableData.TableDefs
+            `Set up the collection class we're using, so new 
+            `instances of our clsTableData class can be stored in 
+            `it.
+            Set colTableData = New Collection
+            `For each TableDef in TableDefs, use the clsTableData 
+            `to get the needed info from the table, and place the 
+            `table's name and its index within the collection in 
+            `the list box.
+            For Each tdfSelectedTable In tdfTables
+                If Left$(tdfSelectedTable.Name, 4) &lt;&gt; &quot;MSys&quot; Then
+                    Set objTable = New clsTableData
+                    objTable.ExtractStatusData tdfSelectedTable
+                    colTableData.Add objTable
+                    With lstTables
+                        .AddItem objTable.Name
+                        .ItemData(lstTables.NewIndex) = _
+                                  colTableData.Count
+                    End With
+                End If
+            Next
+            `Now that it's not needed, close the database.
+            dbfTableData.Close
+        On Error GoTo 0
+        Screen.MousePointer = vbDefault
+    On Error GoTo 0
+Exit Sub
+NoDatabaseError:
+    `If the user didn't select a database, end the application.
+    End
+GetDatabaseError:
+    Screen.MousePointer = vbDefault
+    MsgBox Err.Description, vbExclamation
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the following code to the Click event of lstTables. When the user
+	clicks on a table name in the list box, this procedure extracts the properties from
+	the selected clsTableData object and displays those properties in the boxes on the
+	form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub lstTables_Click()
+    Dim objTable As clsTableData, intPosition As Integer
+    `Get the ItemData from the list, the index of the selected
+    `clsTableData stored in our collection.
+    intPosition = lstTables.ItemData(lstTables.ListIndex)
+    `Using this index, fetch our selected instance of 
+    `clsTableData.
+    Set objTable = colTableData.Item(intPosition)
+    `Read the properties of our class into the labels
+    lblCreated = Format$(objTable.WhenCreated, &quot;General Date&quot;)
+    lblModified = Format$(objTable.WhenModified, &quot;General Date&quot;)
+    lblRecords = objTable.NumRecords
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code to the Click event of cmdChangeFile. This procedure
+	first clears the data from the controls on the form and empties the Collection object.
+	It then resets the common dialog default filename to *.MDB and calls GetDatabase.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdChangeFile_Click()
+    `Clear out the form, and flush the existing collection.
+    lstTables.Clear
+    lblCreated = &quot;&quot;: lblModified = &quot;&quot;: lblRecords = &quot;&quot;
+    Set colTableData = Nothing
+    `Reset our CommonDialog control, and get another database.
+    cdlTableData.filename = &quot;*.MDB&quot;
+    GetDatabase
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the following code to the Click event of cmdExit:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdExit_Click()
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Insert a new class module into the project and name it clsTableData;
+	then add the following code to the declarations section of the class module. The
+	four private variables represent the properties of the class. As private class-module-level
+	variables, they are accessible to all routines within the class but accessible to
+	outside procedures only through the methods defined for the class.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+`Module-level variables used to hold property values.  They are 
+`not accessible, or not &quot;exposed,&quot; outside of the class directly.  
+`Property Get statements are used to &quot;expose&quot; this data to other 
+`objects that may request it.
+Private mlngNumRecords As Long
+Private mdatWhenModified As Date
+Private mdatWhenCreated As Date
+Private mstrName As String</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Add the following code to clsTableData as the ExtractStatusData method.
+	This public method sets the class properties to the values of the table definition
+	object passed as an argument.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Sub ExtractStatusData(tblDef As TableDef)
+    `This subroutine retrieves the property data from a given 
+    `TableDef.
+    mstrName = tblDef.Name
+    mdatWhenModified = tblDef.LastUpdated
+    mdatWhenCreated = tblDef.DateCreated
+    mlngNumRecords = tblDef.RecordCount
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Add the following four Property Get methods to clsTableData. Each
+	of these methods returns the value of a property to the requesting procedure.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Property Get Name() As String
+    Name = mstrName
+End Property
+Property Get NumRecords() As Long
+    NumRecords = mlngNumRecords
+End Property
+Property Get WhenModified() As Date
+    WhenModified = mdatWhenModified
+End Property
+Property Get WhenCreated() As Date
+    WhenCreated = mdatWhenCreated
+End Property</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>When the application's only form loads, it calls the GetDatabase procedure, which
+uses the Windows common dialog to prompt the user to enter the name of the database
+to be examined. It then opens the database and the TableDefs collection of the database,
+cycling through the TableDefs collection and examining each TableDef object in the
+collection to see whether it represents a system table or a user-defined table. If
+it is a user-defined table, GetDatabase creates a new clsTableData object and points
+the variable objTable to the object. The clsTableData object extracts four properties
+from the TableDef object. These TableDef properties become the properties of the
+clsTableData object. GetDatabase then adds the clsTableData object to the colTableData.
+When all the TableDef objects in the TableDefs collection have been examined, GetDatabase
+closes the database. It then cycles through the clsTableData objects in the colTableData
+and adds the name of each table in the collection to the list box.</P>
+<P>When the user clicks on a table name in the list box, the Click routine extracts
+the information about the chosen table from the clsTableData object in colTableData
+and displays the information on the form.</P>
+<P><B>Comments</B></P>
+<P>Each Microsoft Access database includes a set of system tables that maintain information
+about the objects in the database. These tables all have names beginning with &quot;MSys.&quot;
+You can access some of these tables directly. The tables are not documented and,
+therefore, are subject to change in a new release of Access, so it's generally not
+a good idea to build an application that relies on direct access to the MSys tables.
+Fortunately, the TableDefs object described in this How-To gives you a documented
+way to get at much of the most useful information in these system tables, including
+status information on each table in the database.</P>
+<P>
+<H2>5.2 How do I...</H2>
+<H3><A NAME="Attach a table from another data"></A><B>Attach a table from another
+database file?</B></H3>
+<P><B>Question</B></P>
+<P>My application has a Microsoft Access database file with several tables that it
+&quot;owns.&quot; But it also needs to work with data in a table that resides in
+another Microsoft Access file, a table that my application must share with other
+applications. How can I use a table in a different Microsoft Access file?</P>
+<P><B>Technique</B></P>
+<P>A &quot;database&quot; in older PC database products (such as dBASE, FoxPro, and
+Paradox products) consists of multiple files--data files, index files, form files,
+report files, procedure files, and so on. Microsoft Access, on the other hand, uses
+a single file, into which it incorporates multiple objects--data objects (tables),
+queries, indexes, forms, reports, macros, and Access Basic code modules. The &quot;database&quot;
+is a single file.</P>
+<P>In most situations, the Microsoft Access way is better. This method eases system
+administration and makes it less likely that a needed file will be inadvertently
+moved or deleted. But it's not an advantage when multiple applications each maintain
+separate databases--and, therefore, separate database files--and the applications
+also need to share some common data.</P>
+<P>Microsoft Access provides the capability to share data between separate databases
+through the use of attached tables. Attaching a table creates a link between a database
+file and a table that physically resides in a different file. When you attach a table
+to a Microsoft Access database, you can treat that table very much like you treat
+the internal tables of the database--with a few restrictions.</P>
+<P>The major restriction in working with attached tables is that you cannot use them
+with table-type recordsets--you can use only dynaset- or snapshot-type recordsets.
+Because you cannot work with attached table-type recordsets, you cannot use the Seek
+method to access data. The Seek method is usually the fastest way to randomly access
+data from a single table, so this might or might not be a significant restriction,
+depending on the needs of your application. (See the introduction to Chapter 3, &quot;Creating
+Queries with SQL,&quot; for a discussion of the conditions under which the Seek method
+provides faster access than the use of SQL SELECT queries.)</P>
+<P><B>Attaching Tables</B></P>
+<P>Each Microsoft Access database file contains a set of table definitions. When
+you create a Database object and connect a database file to that object, the file's
+table definitions constitute the TableDefs collection of the Database object. If
+tables have been attached to the database, the TableDefs collection includes TableDef
+objects for each attached table; one of the properties of the TableDef object indicates
+that it is an attached table. For more detailed information on the steps needed to
+attach a table in a Microsoft Access database, be sure to closely follow step 5 in
+this How-To.</P>
+<P><B>Steps</B></P>
+<P>Open the project ATTACH.VBP and then run the project. The form shown in Figure
+5.3 appears. Click Attach a Table and a standard File Open dialog box appears. Select
+a Microsoft Access database file to which you want to attach a table (the destination
+file), and then select the source file for the table (you must select different files).
+After you have selected both files, the form shown in Figure 5.4 appears with a list
+of the tables in the source file. Select a table from the list and click OK. A message
+appears indicating successful attachment, and then the form shown in Figure 5.3 reappears.</P>
+<P><A HREF="javascript:popUp('05fig03.gif')"><B>Figure 5.3.</B></A><B> </B><I>The
+attach and detach table example on startup.</I></P>
+<P>Click <U>D</U>etach a Table and select the same file you used as the destination
+file when you attached a table. The form shown in Figure 5.4 appears again, this
+time listing the attached tables in the selected file. Select the table you just
+attached, and click OK.</P>
+<P><A HREF="javascript:popUp('05fig04.gif')"><B>Figure 5.4.</B></A><B> </B><I>The
+project's Table List form, showing table names.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called ATTACH.VBP. Rename Form1 to frmAttach and
+	use it to create the objects and properties listed in Table 5.3. Save the form as
+	frmAttach.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.3. Objects and properties for frmAttach.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmAttach</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Chapter 5.2 Example&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdAttach</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Attach a Table&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdDetach</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Detach a Table&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdClose</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Close&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommonDialog</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cdlFile</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add a new form to the project, and create the objects and properties
+	shown in Table 5.4.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.4. Objects and properties for frmSelector.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmSelector</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstBox</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblList</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdOK</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;OK&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Default</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdCancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Cancel&quot;</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add a new module to the project, name it basAttach, and add the following
+	code. The GetFileName function, given a full path and filename string, extracts and
+	returns just the name of the file. It does so in an inefficient but workable manner,
+	by stepping backward through the string, checking each character until it finds a
+	backslash. When the backslash is found, the function retrieves everything to the
+	right of that backslash and returns it as the filename.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Function GetFileName(ByVal strFullPath As String) As String
+    Dim I As Integer, strTemp As String
+    If Len(strFullPath) Then
+        For I = Len(strFullPath) To 1 Step -1
+            If Mid(strFullPath, I) = &quot;\&quot; Then strTemp = _
+            Right(strFullPath, Len(strFullPath) - I)
+        Next
+        If strTemp = &quot;&quot; Then strTemp = strFullPath
+    End If
+    GetFileName = strTemp
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code to the declarations section of frmAttach. These
+	constants will be used later for the GetMDBFile function.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Const SOURCE_FILE = 1
+Const DESTINATION_FILE = 2
+Const DETACH_FILE = 3</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Enter the following code in frmAttach as the Click event of cmdAttach.
+	This routine gets the user's choices of the destination and source files for the
+	table to be attached. It then gets the user's selection of the table to be attached.
+	If a table is selected, it performs several steps--it creates a TableDef object with
+	the name of the table to be attached, and provides a Connect string with the name
+	of the source database and then providing the SourceTableName property. All three
+	items are needed to attach an external table. After all these items have been provided,
+	the Attach method is called to attach the new TableDef to our Database object.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdAttach_Click()
+    Static strSourceFile As String, strDestFile As String
+    Dim strTableName As String
+    Dim dbfAttach As Database, tdfAttach As TableDef
+    strDestFile = GetMDBFile(DESTINATION_FILE)
+    If Len(strDestFile) Then strSourceFile = _
+       GetMDBFile(SOURCE_FILE)
+    If Len(strSourceFile) Then
+        `Call the custom method, Display, from frmSelector.  This
+        `will return either &quot;&quot; or the name of a selected table.
+        strTableName = frmSelector.Display(True, strSourceFile)
+        On Error GoTo BadAttach
+            If Len(strTableName) Then
+                `If we have a table, let's attach it.
+                Set dbfAttach = _
+                    Workspaces(0).OpenDatabase(strDestFile)
+                `Generate a TableDef object
+                Set tdfAttach = _
+                    dbfAttach.CreateTableDef(strTableName)
+                `Provide the connection info
+                tdfAttach.Connect = &quot;;DATABASE=&quot; &amp; strSourceFile
+                `Provide the table's name
+                tdfAttach.SourceTableName = strTableName
+                `Append it to the database's TableDefs collection
+                dbfAttach.TableDefs.Append tdfAttach
+                `And it's good!
+                MsgBox &quot;Table &quot; &amp; strTableName &amp; _
+                   &quot; attached to &quot; &amp; _
+                    GetFileName(strDestFile) &amp; &quot;.&quot;
+            End If
+        On Error GoTo 0
+    End If
+Exit Sub
+BadAttach:
+    MsgBox Err.Description, vbExclamation
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Enter the following code in frmAttach as the Click event of cmdDetach.
+	This routine gets the user's choices of the file from which the table is to be detached,
+	and then the user's selection of the table to be detached from the file. After these
+	items have been retrieved, the routine finds the appropriate TableDef in our Database
+	object and runs the Delete method to remove it from the database.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdDetach_Click()
+    Static strDetachFile As String
+    Dim strTableName As String
+    Dim dbfDetach As Database
+    strDetachFile = GetMDBFile(DETACH_FILE)
+    `Call frmSelector's Display method
+    If Len(strDetachFile) Then strTableName = _
+        frmSelector.Display(False, strDetachFile)
+    On Error GoTo BadDetach
+        If Len(strTableName) Then
+            `If we have a table, then detach it.
+            Set dbfDetach = _
+                Workspaces(0).OpenDatabase(strDetachFile)
+            dbfDetach.TableDefs.Delete strTableName
+            MsgBox &quot;Table &quot; &amp; strTableName &amp; &quot; detached from &quot; &amp; _
+                GetFileName(strDetachFile) &amp; &quot;.&quot;
+        End If
+    On Error GoTo 0
+Exit Sub
+BadDetach:
+    MsgBox Err.Description, vbExclamation
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Enter the following code in frmAttach as the GetMDBFile subroutine.
+	This subroutine is used for three related purposes: to get a source file for an attached
+	table, to get a destination file for an attached table, and to get the file from
+	which a table is to be attached. This subroutine uses the Windows File Open common
+	dialog box for all three purposes. It sets the defaults for the common dialog box
+	to facilitate the opening of an existing Microsoft Access (MDB) file. If the user
+	selects a file, the routine returns the name and path of that file. If the user does
+	not select a file (that is, the user clicks Cancel when the common dialog box appears),
+	the function returns an empty string.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function GetMDBFile(intPurpose As Integer) As String
+    On Error GoTo GetMDBFileError
+        Select Case intPurpose
+            Case SOURCE_FILE
+                cdlFile.DialogTitle = _
+                        &quot;Select Source File For Attach&quot;
+            Case DESTINATION_FILE
+                cdlFile.DialogTitle = _
+                        &quot;Select Destination File For Attach&quot;
+            Case DETACH_FILE
+                cdlFile.DialogTitle = _
+                        &quot;Select Source File For Detach&quot;
+        End Select
+        With cdlFile
+            .DefaultExt = &quot;*.MDB&quot;
+            .Filter = &quot;Access Files *.MDB|*.MDB|All Files *.*|*.*&quot;
+            `The user must select an existing file.
+            .Flags = cdlOFN_FILEMUSTEXIST
+            .CancelError = True
+            .filename = &quot;*.MDB&quot;
+            .ShowOpen
+        End With
+        GetMDBFile = cdlFile.filename
+    On Error GoTo 0
+Exit Function
+GetMDBFileError:
+    Exit Function
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Enter the following code in frmAttach as the ExtractPath function of
+	frmAttach. This function extracts the pathname from a fully qualified filename (drive,
+	path, and file) and returns the drive and path to the calling routine.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function ExtractPath(fileName As String, fullPath As String)
+    ExtractPath = Left$(fullPath, _
+Len(fullPath) - (Len(fileName) + 1))
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Enter the following code in frmAttach as the Click event of cmdClose:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdClose_Click()
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>That completes frmAttach. Now turn your attention to frmSelector and
+	add the following line to its declarations section:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Add the following new function to frmSelector. This function is used
+	for two purposes: to list the tables that are candidates for attachment and to list
+	the already-attached tables. The method that displays frmSelector determines the
+	reason for which the form is being displayed by providing a Boolean variable. This
+	method, Display, sets the form's captions appropriately and then calls ListTables
+	to fill the list box. The arguments to ListTables specify the file and what kind
+	of tables to list.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function ListTables(blnAttach As Boolean, _
+strFileSpec As String) _
+As Integer
+    Dim dbfTemp As Database, tdfTemp As TableDef
+    Dim intTablesAdded As Integer
+    lstBox.Clear
+    On Error GoTo ListTablesError
+        Screen.MousePointer = vbHourglass
+        Set dbfTemp = _
+            DBEngine.Workspaces(0).OpenDatabase(strFileSpec)
+        intTablesAdded = 0
+        For Each tdfTemp In dbfTemp.TableDefs
+            If blnAttach Then
+                If Left$(tdfTemp.Name, 4) &lt;&gt; &quot;MSys&quot; And _
+                    tdfTemp.Attributes &lt;&gt; dbAttachedTable And _
+                    tdfTemp.Attributes &lt;&gt; dbAttachSavePWD And _
+                    tdfTemp.Attributes &lt;&gt; dbAttachExclusive Then
+                        lstBox.AddItem tdfTemp.Name
+                        intTablesAdded = intTablesAdded + 1
+                End If
+            ElseIf tdfTemp.Attributes = dbAttachedTable Or _
+                tdfTemp.Attributes = dbAttachSavePWD Or _
+                tdfTemp.Attributes = dbAttachExclusive Then
+                    lstBox.AddItem tdfTemp.Name
+                    intTablesAdded = intTablesAdded + 1
+            End If
+        Next
+    Screen.MousePointer = vbDefault
+    ListTables = intTablesAdded
+Exit Function
+ListTablesError:
+    Screen.MousePointer = vbDefault
+    MsgBox Err.Description, vbExclamation
+    ListTables = 0
+Exit Function
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>12. </B>Enter the following code in frmSelector as the Display function. This
+	is the public function that is called by frmAttach to provide a table name to attach
+	or detach. The blnAttach Boolean determines the form's purpose when called: if set
+	to True, it configures for attachment; otherwise, it configures for detachment. The
+	strFileSpec is the name of the database that was provided in frmAttach via the GetMDBFile
+	function.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Function Display(ByVal blnAttach As Boolean, _
+  ByVal strFileSpec As String) As String
+    With Me
+        .Caption = &quot;Table to &quot; &amp; IIf(blnAttach, &quot;Attach&quot;, _
+&quot;Detach&quot;)
+        .lblList = &quot;Select table to &quot; &amp; _
+                   IIf(blnAttach, &quot;attach:&quot;, &quot;detach:&quot;)
+    End With
+    If ListTables(blnAttach, strFileSpec) Then
+        Me.Show vbModal
+    Else
+        MsgBox &quot;There are no attached tables in &quot; &amp; _
+               GetFileName(strFileSpec) &amp; &quot;.&quot;
+    End If
+    If lstBox.ListIndex &gt; -1 Then Display = lstBox.Text
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>13. </B>Enter the following code in frmSelector as the Click event of cmdOK.
+	If the user has made a selection, the routine hides the form. Because the form is
+	opened modally, this allows the Display function to complete, passing back the selected
+	table name.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdOK_Click()
+    If lstBox.ListIndex &gt; -1 Then
+        frmSelector.Hide
+    Else
+        MsgBox &quot;You have not yet made a selection.&quot;, vbExclamation
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>14. </B>Enter the following code in frmSelector as the DblClick event of lstBox.
+	If the user has made a selection, the routine updates the Public variable TableName
+	and hides the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub lstBox_DblClick()
+    cmdOK_Click
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>15. </B>Enter the following code in frmSelector as the Click event of cmdCancel.
+	The user does not want to designate a table, so set the list box's ListIndex to -1
+	and then hide the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdCancel_Click()
+    lstBox.ListIndex = -1
+    frmSelector.Hide
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>When the user clicks the Attach a Table button, the Click event uses the Windows
+File Open common dialog box to get the destination and source files for the attachment.
+It then calls the Display method of frmSelector, setting blnAttach to True to indicate
+that frmSelector is to display those tables eligible for attachment from the designated
+source file. When the user makes a selection in frmSelector, the subroutine creates
+a new TableDef object and appends it to the destination file's TableDefs collection.</P>
+<P>When the user clicks Detach a Table, the Click event uses the Windows File Open
+common dialog box to get the file from which the table is to be detached. It then
+calls the Display method of frmSelector again, setting blnAttach to False to indicate
+that frmSelector is to display the attached tables in the designated file. When the
+user makes a selection in frmSelector, the subroutine removes the selected TableDef
+object from the designated file's TableDefs collection.</P>
+<P><B>Comments</B></P>
+<P>The capability to attach external tables opens a lot of possibilities for the
+Visual Basic database application developer. The DAO engine is capable of providing
+many services that would otherwise be inconvenient to duplicate with extensive ODBC-related
+code, with a familiar object hierarchy. Also, when you need to import and export
+data, the capability to attach tables comes in very handy, making a sometimes tedious
+process of reading from one database and writing to another a snap. At a client/server
+level, the flexibility granted by the capability to attach tables from several different
+external database platforms allows for an ease of data access, whether for mainframe
+databases, server databases, or even several locally accessed workstation databases,
+without having to program for each database platform.</P>
+<P>
+<H2>5.3 How do I...</H2>
+<H3><A NAME="Import a text file?"></A><B>Import a text file?</B></H3>
+<P><B>Problem</B></P>
+<P>I periodically get downloads from a mainframe database (or other source) as delimited
+text files that I need to import into my database. If I could be sure that users
+had Microsoft Access installed, my program could use OLE to invoke the import capability
+of Access--but some users might not have a copy of Access. How can I use Visual Basic
+to import text files into a database file?</P>
+<P><B>Technique</B></P>
+<P>Visual Basic has a rich variety of features for working with text files. You can
+employ these capabilities to open the text file and read the text data. From that
+point, the problem resolves to using the delimiters in the text file to split the
+text into records and fields and storing the data in the appropriate database tables.
+You need to be prepared to handle errors, both the normal data access errors and
+any errors that incorrect input text might cause.</P>
+<P><B>Steps</B></P>
+<P>This How-To uses text data from the text files VENDORS.DAT and INVOICES.DAT imported
+into a Microsoft Access database, ACCTSPAY.MDB. The text files use an end-of-line
+sequence (a carriage return followed by a line feed) as a record delimiter and a
+tab character as a field delimiter. The Vendors table in the ACCTPAY.MDB has the
+following fields, with [Vendor Number] as the primary key:</P>
+
+<UL>
+	<LI>Vendor Number
+	<P>
+	<LI>Name
+	<P>
+	<LI>Address
+	<P>
+	<LI>FEIN (Federal Employer Identification Number, required for tax reporting purposes)
+</UL>
+
+<P>The Invoices table in the database has the following fields. The primary key is
+a composite of [Vendor Number] and [Invoice Number].</P>
+
+<UL>
+	<LI>Vendor Number
+	<P>
+	<LI>Invoice Number
+	<P>
+	<LI>Date
+	<P>
+	<LI>Amount
+</UL>
+
+<P>The tables are related on the [Vendor Number] field; every record in the Invoices
+table must have a corresponding record in the Vendors table.</P>
+<P>Open and run TextImport.VBP. You'll see the form shown in Figure 5.5. Click the
+<U>I</U>mport Data button, and the application imports the contents of the text files
+VENDORS.DAT and INVOICES.DAT into the Vendors and Invoices tables of ACCTSPAY.MDB.
+Click <U>L</U>ist Vendors, and a list of the vendors imported appears in the list
+box at the top of the form. Select a vendor name; if any invoices for that vendor
+were imported, a list of the invoices appears in the grid control at the bottom of
+the form. With a vendor selected, click <U>V</U>endor Details, and you'll see the
+vendor details form shown in Figure 5.6.</P>
+<P><A HREF="javascript:popUp('05fig05.gif')"><B>Figure 5.5.</B></A><B> </B><I>The
+program's Text Import form on startup.</I></P>
+<P><A HREF="javascript:popUp('05fig06.gif')"><B>Figure 5.6.</B></A><B> </B><I>The
+program's Vendor Details form, showing vendor information.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called TextImport.VBP. Rename Form1 to frmVendorDetails,
+	and then create the objects and properties listed in Table 5.5. Save the form as
+	Vendors.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.5. Objects and properties for the Vendor Details form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmVendorDetails</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Chapter 5.3 Example - Vendor Details &quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblNumber</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 (Fixed Single)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 (Fixed Single)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblAddress</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 (Fixed Single)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblFEIN</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 (Fixed Single)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblVendor</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Vendor Number:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblVendor</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Vendor Name:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblVendor</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Vendor Address:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblVendor</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Vendor FEIN:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdClose</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Close&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Default</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Insert the following code into the Click event of cmdClose on frmVendorDetails
+	(this is the only code needed for this form):
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdClose_Click()
+    Unload frmVendorDetails
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Insert a second form into the project. Change its name to frmMain,
+	and then create the objects and properties listed in Table 5.6. Save the form as
+	TextImp.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.6. Objects and properties for the main Text Import form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmMain</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Chapter 5.3 Example&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstVendors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Sorted</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">MSFlexGrid</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">grdInvoices</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cols</TD>
+		<TD ALIGN="LEFT">4</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Scrollbars</TD>
+		<TD ALIGN="LEFT">2 - flexScrollBarVertical</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdImport</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Import Data&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdListVendors</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;List Vendors&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdVendorDetails</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Vendor Details&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdExit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Exit&quot;</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Insert the following code into the declarations section of frmMain.
+	Edit the pathnames in the Const declarations to point to the locations of the indicated
+	files on your system.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+`Change this constant to whatever path you have installed the
+`CD contents into.
+Const DATA_PATH = &quot;D:\VB6DBHT&quot;
+Private VendorFile As String, InvoiceFile As String, DatabaseFile As String</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the following code to the Load event of frmMain. When the form
+	loads, it calls the InitializeGrid subroutine to set up the grid and then deletes
+	all existing data from the Vendors and Invoices tables in the database. You wouldn't
+	ordinarily delete all the existing data before importing new data, but with this
+	demonstration program, this step is necessary if you want to run it more than once
+	using the same input files. Otherwise, you'll get primary key errors when you try
+	to add new records that duplicate existing primary key values.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    Dim dbfTemp As Database
+    `Assign fully qualified pathnames to the form level data file 
+    `variables.
+    VendorFile = DATA_PATH &amp; &quot;\CHAPTER05\VENDORS.DAT&quot;
+    InvoiceFile = DATA_PATH &amp; &quot;\CHAPTER05\INVOICES.DAT&quot;
+    DatabaseFile = DATA_PATH &amp; &quot;\CHAPTER05\ACCTSPAY.MDB&quot;
+    ` Initialize the grid control.
+    InitializeGrid
+    ` Delete any existing data in the Vendors and Invoices tables.
+    Set dbfTemp = _
+        DBEngine.Workspaces(0).OpenDatabase(DatabaseFile)
+    dbfTemp.Execute (&quot;DELETE Vendors.* from Vendors&quot;)
+    dbfTemp.Execute (&quot;DELETE Invoices.* from Invoices&quot;)
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Create the following subroutine in frmMain. This code sets the grid
+	column widths and alignments and inserts the column titles. Because the initial state
+	of the grid (before a vendor is selected) shows no invoices, it is initialized with
+	only the title row visible.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub InitializeGrid()
+    With grdInvoices
+        .ColWidth(0) = 0:
+        .ColWidth(1) = 1300
+        .ColWidth(2) = 1300
+        .ColWidth(3) = 1300
+        .ColAlignment(1) = flexAlignLeftCenter
+        .ColAlignment(2) = flexAlignCenterCenter
+        .ColAlignment(3) = flexAlignRightCenter
+        .FixedAlignment(1) = flexAlignLeftCenter
+        .FixedAlignment(2) = flexAlignCenterCenter
+        .FixedAlignment(3) = flexAlignRightCenter
+        .Row = 0
+        .Col = 1: .Text = &quot;Inv #&quot;
+        .Col = 2: .Text = &quot;Date&quot;
+        .Col = 3: .Text = &quot;Amount&quot;
+        .Rows = 1
+    End With
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the following code to the Click event of cmdImport. This procedure
+	imports vendor and invoice records from the text files named by the form-level variables
+	VendorFile and InvoiceFile, respectively. As the procedure imports the file, it creates
+	from each record an object of the class clsVendor or clsInvoice. (These classes are
+	defined by vendor and invoice class modules, which are discussed later.) The cmdImport_Click
+	subroutine then adds each clsVendor or clsInvoice object to a Collection object.
+	One Collection object receives all the clsVendor objects, and a second Collection
+	object receives all clsInvoice objects. After both collections have been built, the
+	subroutine appends the objects in each collection to the Vendors table or Invoices
+	table, as is appropriate.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdImport_Click()
+    Dim dbfTemp As Database, tblVendors As Recordset, tblInvoices _
+        As Recordset
+    Dim objVendor As clsVendor, objInvoice As clsInvoice
+    Dim colVendors As New Collection, colInvoices _
+        As New Collection
+    Dim strInputLine As String, strErrMsg As String
+    Dim blnNeedRollback As Boolean
+    Dim intFileHandle As Integer
+    On Error GoTo ImportTextError
+        Screen.MousePointer = vbHourglass
+        `Get the vendor text file, and create an instance
+        `of objVendor for each line found in the text file,
+        `passing the line to the DelimitedString property
+        `of the instance of objVendor.
+        intFileHandle = FreeFile
+        Open VendorFile For Input As intFileHandle
+        Do Until EOF(intFileHandle)
+            Line Input #intFileHandle, strInputLine
+            Set objVendor = New clsVendor
+            objVendor.DelimitedString = strInputLine
+            colVendors.Add objVendor
+        Loop
+        Close intFileHandle
+        `Same as above, but with the invoice text file.
+        intFileHandle = FreeFile:
+        Open InvoiceFile For Input As intFileHandle
+        Do Until EOF(intFileHandle)
+            Line Input #intFileHandle, strInputLine
+            Set objInvoice = New clsInvoice
+            objInvoice.DelimitedString = strInputLine
+            colInvoices.Add objInvoice
+        Loop
+        Close intFileHandle
+        `Prepare for addition
+        Set dbfTemp = _
+            DBEngine.Workspaces(0).OpenDatabase(DatabaseFile)
+        Set tblVendors = _
+            dbfTemp.OpenRecordset(&quot;Vendors&quot;, dbOpenTable)
+        Set tblInvoices = _
+            dbfTemp.OpenRecordset(&quot;Invoices&quot;, dbOpenTable)
+        `This is where we start the transaction processing.  None 
+        `of the changes we make will be committed to the database 
+        `until the CommitTrans line, some lines below.
+        Workspaces(0).BeginTrans
+        blnNeedRollback = True
+        `Iterate through our collection of clsVendor objects,
+        `calling the StoreNewItem method and passing our newly 
+        `opened table.
+        If colVendors.Count Then
+            For Each objVendor In colVendors
+                If objVendor.StoreNewItem(tblVendors) = False Then
+                    strErrMsg = _
+                  &quot;An error occurred while importing vendor #&quot; &amp; _
+                    CStr(objVendor.Number)
+                    Err.Raise 32767
+                End If
+            Next
+        End If
+        `Same as above, but for invoices. (Deja vu...?)
+        If colInvoices.Count Then
+            For Each objInvoice In colInvoices
+                If objInvoice.StoreNewItem(tblInvoices) = False 
+                    Or objInvoice.VendorNumber = 0 Then
+                    strErrMsg = _
+                    &quot;An error occurred while importing invoice #&quot; &amp; _
+                    objInvoice.InvoiceNumber
+                    Err.Raise 32767
+                End If
+            Next
+        End If
+        `Here's where the data is committed to the database.
+        `Had an error occurred, we would never reach this point;
+        `instead, the Rollback command in our error
+        `trapping routine would have removed our changes.
+        Workspaces(0).CommitTrans
+        Screen.MousePointer = vbDefault
+    On Error GoTo 0
+Exit Sub
+ImportTextError:
+    Screen.MousePointer = vbDefault
+    If strErrMsg = &quot;&quot; Then strErrMsg = _
+                   &quot;The following error has occurred:&quot; &amp; vbCr _
+        &amp; Err.Description
+    strErrMsg = strErrMsg &amp; _
+                &quot; No records have been added to the database.&quot;
+    MsgBox strErrMsg, vbExclamation
+    `Here's the Rollback method; if the blnNeedRollback variable
+    `is still set to True, we undo our uncommitted changes.
+    If blnNeedRollback Then Workspaces(0).Rollback
+Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD>The error handling in this subroutine requires comment. If the error is due to
+	faulty input data, you want to give the user enough information to identify the specific
+	record that caused the problem. For import data errors, therefore, the error message
+	that will be displayed for the user is built into the body of the code. Error messages
+	for errors encountered when importing vendors include the vendor number; error messages
+	for errors encountered when importing invoices include both the vendor and the invoice
+	numbers. Other types of errors, those not due to input data problems, have a standard
+	error message built into the error-handling routine.
+	<P>
+	<DT></DT>
+	<DD>In this application, it's highly likely that you don't want to import some of
+	the records--you want to import all of them or, if an error occurs, none of them.
+	You accomplish this task by enclosing the code that actually appends the records
+	to the database tables between BeginTrans and CommitTrans statements. This converts
+	all the database modifications into a single atomic transaction. Any changes made
+	within an atomic transaction (that is, changes made after BeginTrans and before CommitTrans)
+	are not irrevocably committed to the database until CommitTrans. In this subroutine,
+	if an error occurs between BeginTrans and CommitTrans, control is transferred to
+	the error-handling routine, which executes a Rollback statement. The Rollback statement
+	tells the Jet engine, &quot;Back out all the changes made since the BeginTrans statement.&quot;
+	<P>
+	<DT></DT>
+	<DD>Rollback is executed only when the value of the Boolean variable blnNeedRollback
+	is True. Initially, blnNeedRollback is False and is set to True at the beginning
+	of the transaction in the statement immediately following BeginTrans. This provision
+	is needed to ensure that Rollback doesn't get executed by an error that occurs before
+	BeginTrans--because trying to execute a Rollback outside a transaction is itself
+	an error.
+	<P>
+	<DT></DT>
+	<DD><B>8. </B>Add the following code to the Click event of cmdListVendors. This procedure
+	lists the vendors in the database and in the list box on the form. It uses the ItemData
+	property of the list box to attach the vendor number to the vendor name. Other procedures
+	in the application use ItemData to uniquely identify the vendor.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdListVendors_Click()
+    Dim dbfTemp As Database, tblVendors As Recordset
+    On Error GoTo ListVendorsError
+    Set dbfTemp = _
+        DBEngine.Workspaces(0).OpenDatabase(DatabaseFile, _
+            False, True)
+    Set tblVendors = dbfTemp.OpenRecordset(&quot;Vendors&quot;, dbOpenTable)
+    If tblVendors.RecordCount &lt;&gt; 0 Then
+        tblVendors.MoveFirst
+        Do Until tbl.EOF
+            lstVendors.AddItem tblVendors!Name
+            lstVendors.ItemData(lstVendors.NewIndex) = _
+                       tblVendors![Vendor Number]
+            tblVendors.MoveNext
+        Loop
+    End If
+    tblVendors.Close
+Exit Sub
+ListVendorsError:
+    lstVendors.Clear
+    MsgBox Err.Description
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Add the following code to the Click event of lstVendors. This procedure
+	retrieves the vendor number from the selected item's ItemData value and passes that
+	value to the FillInvoiceList routine, which fills the grid with invoices linked to
+	this vendor.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub lstVendors_Click()
+    FillInvoiceList lstVendors.ItemData(lstVendors.ListIndex)
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Create the FillInvoiceList subroutine by entering the following code
+	into frmMain. This list box Click event calls FillInvoiceList when the user clicks
+	on a vendor name. This subroutine fills the grid with information about the invoices
+	for the selected vendor by creating a collection of all the invoice objects with
+	vendor numbers that match the argument passed to the subroutine. It then cycles though
+	the collection and adds each invoice to the grid.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub FillInvoiceList(intVendor As Integer)
+    Dim dbfTemp As Database, recInvoices As Recordset
+    Dim intRow As Integer, strSQL As String
+    Dim colInvoices As New Collection, objInvoice As clsInvoice
+    On Error GoTo FillInvoiceListError
+        `Open the database &amp; recordset used to fill the list box
+        Set dbfTemp = 
+            DBEngine.Workspaces(0).OpenDatabase(DatabaseFile, _
+                False, True)
+        strSQL = &quot;SELECT [Invoice Number] FROM Invoices &quot; &amp; _
+            &quot;WHERE [Vendor Number] = &quot; &amp; intVendor
+        Set recInvoices = _
+            dbfTemp.OpenRecordset(strSQL, dbOpenSnapshot)
+        If recInvoices.RecordCount &gt; 0 Then
+            recInvoices.MoveFirst
+            Do Until recInvoices.EOF
+                Set objInvoice = New clsInvoice
+                If objInvoice.Retrieve(dbfTemp, intVendor, _
+                   recInvoices(&quot;Invoice Number&quot;)) _
+                    Then colInvoices.Add objInvoice
+                recInvoices.MoveNext
+            Loop
+            grdInvoices.Rows = colInvoices.Count + 1
+            For intRow = 1 To colInvoices.Count
+                Set objInvoice = colInvoices(intRow)
+                objInvoice.AddToGrid grdInvoices, intRow
+            Next intRow
+        Else
+            grdInvoices.Rows = 1
+        End If
+    On Error GoTo 0
+Exit Sub
+FillInvoiceListError:
+    grdInvoices.Rows = 1: lstVendors.ListIndex = -1
+    MsgBox Err.Description, vbExclamation
+Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Add the following code to the Click event of cmdVendorDetails. This
+	procedure displays a form with information about the currently selected vendor in
+	the list box.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdVendorDetails_Click()
+    Dim dbfTemp As Database
+    Dim tblVendors As Recordset
+    Dim intVendorNumber As Integer
+    On Error GoTo VendorDetailsError
+        If lstVendors.ListIndex &gt; -1 Then
+            intVendorNumber = 
+               lstVendors.ItemData(lstVendors.ListIndex)
+            Set dbfTemp = 
+                DBEngine.Workspaces(0).OpenDatabase(DatabaseFile, _
+                    False, True)
+            Set tblVendors = dbfTemp.OpenRecordset(&quot;Vendors&quot;, _
+                dbOpenTable)
+            tblVendors.Index = &quot;PrimaryKey&quot;
+            tblVendors.Seek &quot;=&quot;, intVendorNumber
+            With frmVendorDetails
+                .lblNumber = tblVendors![Vendor Number]
+                .lblName = IIf(IsNull(tblVendors!Name), &quot;&quot;, _
+                           tblVendors!Name)
+                .lblAddress = IIf(IsNull(tblVendors!Address), &quot;&quot;, _
+                              tblVendors!Address)
+                .lblFEIN = IIf(IsNull(tblVendors!FEIN), &quot;&quot;, _
+                           tblVendors!FEIN)
+            End With
+            tblVendors.Close
+            frmVendorDetails.Show vbModal
+        Else
+            Beep
+            MsgBox &quot;You haven't selected a vendor.&quot;, vbExclamation
+        End If
+    On Error GoTo 0
+Exit Sub
+VendorDetailsError:
+    MsgBox Error(Err)
+Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>12. </B>Add the following code to the Click event of cmdExit:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdExit_Click()
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>13. </B>Insert a new class module into the project. Name the module clsVendor.
+	Each object of the clsVendor class will represent one vendor record.
+	<P>
+	<DT></DT>
+	<DD><B>14. </B>Insert the following code into the declarations section of clsVendor.
+	The class has five properties, maintained in five private variables, each starting
+	with the prefix prop. One property, propDelimitedString, is set to the &quot;raw&quot;
+	vendor data as read from the text file. The other four properties each hold a value
+	that corresponds to a field in the Vendors table. Because these are private variables,
+	they are not directly accessible to routines outside the class module, but can be
+	accessed only through methods of the class.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Private mintNumber As Integer
+Private mstrCompany As String
+Private mstrAddress As String
+Private mstrFEIN As String
+Private mstrDelimitedString As String</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>15. </B>Create the following Property Let method in clsVendor. This method
+	is passed a delimited string representing one vendor record. It stores the passed
+	argument as the DelimitedString property by assigning it to the private variable
+	mstrDelimitedString. The Property Let DelimitedString method also parses the string
+	into fields and stores the individual field values as the appropriate object properties.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Property Let DelimitedString(strInput As String)
+    Dim strDelimiter As String, strTextNumber As String
+    Dim intEnd As Integer, intField As Integer, intStart As _
+        Integer
+    Dim I As Integer
+    strDelimiter = Chr$(9): mstrDelimitedString = strInput
+    intStart = 1: intField = 1
+    Do
+        intEnd = InStr(intStart, strInput, strDelimiter)
+        If intEnd = 0 Then intEnd = Len(strInput) + 1
+        Select Case intField
+            Case 1
+                strTextNumber = ExtractField(intStart, intEnd)
+                If IsNumeric(strTextNumber) Then
+                    If strTextNumber &gt;= 1 And _
+                       strTextNumber &lt;= 32767 Then
+                       mintNumber = Val(strTextNumber)
+                    Else
+                        mintNumber = 0
+                    End If
+                Else
+                    mintNumber = 0
+                End If
+            Case 2
+                mstrCompany = ExtractField(intStart, intEnd)
+            Case 3
+                mstrAddress = ExtractField(intStart, intEnd)
+            Case 4
+                mstrFEIN = ExtractField(intStart, intEnd)
+        End Select
+        intStart = intEnd + 1: intField = intField + 1
+    Loop While intEnd &lt; Len(strInput) And intField &lt;= 4
+End Property</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>16. </B>Create ExtractField as a private function in clsVendor. As a private
+	function, it can be called only by other procedures within the class module. ExtractField
+	returns a selection of text from the private variable mstrDelimitedString. The text
+	to return is defined by the start and end positions received as arguments.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function ExtractField(intStart As Integer, intEnd As 
+        Integer)
+    ExtractField = Mid$(mstrDelimitedString, intStart, _
+                   (intEnd - intStart))
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>17. </B>Create the public method StoreNewItem in clsVendor. This method inserts
+	the object into the database as a new record. It returns True if it successfully
+	stores the object, it returns False otherwise. StoreNewItem calls a private function,
+	WriteItem, to actually assign property values to fields. Splitting the code into
+	two functions allows the WriteItem code to be shared with another routine that would
+	update an existing record. (This demonstration program does not include such a routine,
+	but an actual application might.)
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Function StoreNewItem(rs As Recordset) As Boolean
+    On Error GoTo StoreNewError
+        rs.AddNew
+        If WriteItem(rs) Then
+            rs.Update
+        Else
+            GoTo StoreNewError
+        End If
+        StoreNewItem = True
+    On Error GoTo 0
+Exit Function
+StoreNewError:
+    StoreNewItem = False
+    Exit Function
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>18. </B>Create the private function WriteItem in clsVendor with the following
+	code. It assigns the current property values to the Vendor table fields in the current
+	record. WriteData returns True unless an error occurs.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function WriteItem(recTemp As Recordset) As Boolean
+    On Error GoTo WriteItemError
+        recTemp(&quot;Vendor Number&quot;) = mintNumber
+        recTemp(&quot;Name&quot;) = mstrCompany
+        recTemp(&quot;Address&quot;) = mstrAddress
+        recTemp(&quot;FEIN&quot;) = mstrFEIN
+        WriteItem = True
+    On Error GoTo 0
+Exit Function
+WriteItemError:
+    WriteItem = False
+    Exit Function
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>19. </B>Create the following four Property Get methods in clsVendor. These
+	methods allow outside routines to access the values of the record represented by
+	the object.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Property Get Number() As Integer
+    Number = mintNumber
+End Property
+Property Get Company() As String
+    Company = mstrCompany
+End Property
+Property Get Address() As String
+    Address = mstrAddress
+End Property
+Property Get FEIN() As String
+    FEIN = mstrFEIN
+End Property</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>20. </B>Insert a new class module into the project. Name the module clsInvoice.
+	Each object of the clsInvoice class will represent one invoice record.
+	<P>
+	<DT></DT>
+	<DD><B>21. </B>Insert the following code into the declarations section of clsInvoice.
+	Like clsVendor, clsInvoice has five properties maintained in five private variables,
+	each starting with the prefix prop. One property, mstrDelimitedString, is set to
+	the &quot;raw&quot; invoice data as read from the text file. The other four properties
+	each contain a value that corresponds to a field in the Invoices table. Because these
+	are all private variables, they are not directly accessible to routines outside the
+	class module but can be accessed only through public methods of the class.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Const FLD_VENNUMBER = 1
+Const FLD_INVNUMBER = 2
+Const FLD_DATE = 3
+Const FLD_AMOUNT = 4
+Private mintVendorNumber As Integer
+Private mstrInvoiceNumber As String
+Private mdatDate As Date
+Private mcurAmount As Currency
+Private mstrDelimitedString As String</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>22. </B>Copy these four routines from the clsVendor class module and paste
+	them into clsInvoice: Let DelimitedString, ExtractField, StoreNewItem, and WriteItem.
+	(In the following steps, you will modify Let Delimited String and WriteItem. ExtractField
+	and StoreNewItem require no modifications.)
+	<P>
+	<DT></DT>
+	<DD><B>23. </B>In clsInvoice, modify the six program lines shown in bold in the following
+	listing. (All the statements to be modified are in the Select Case structure.)
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Property Let DelimitedString(strInput As String)
+    Dim strDelimiter As String
+    Dim intEnd As Integer, intField As Integer, intStart As _
+        Integer
+    Dim I As Integer
+    Dim strTextNumber As String
+    strDelimiter = Chr$(9): mstrDelimitedString = strInput
+    intStart = 1: intField = 1
+    Do
+        intEnd = InStr(intStart, strInput, strDelimiter)
+        If intEnd = 0 Then intEnd = Len(strInput) + 1
+        Select Case intField
+            Case 1
+                strTextNumber = ExtractField(intStart, intEnd)
+                If IsNumeric(strTextNumber) Then
+                    If strTextNumber &gt;= 1 And strTextNumber &lt;= _
+                        32767 Then
+                        <B>mintVendorNumber = Val(strTextNumber)</B>
+                    Else
+                        <B>mintVendorNumber = 0</B>
+                    End If
+                Else
+                    <B>mintVendorNumber = 0</B>
+                End If
+            Case 2
+                <B>mstrInvoiceNumber = ExtractField(intStart, intEnd)</B>
+            Case 3
+                <B>mdatDate = CDate(ExtractField(intStart, intEnd))</B>
+            Case 4
+                <B>mcurAmount = CCur(ExtractField(intStart, intEnd))</B>
+        End Select
+        intStart = intEnd + 1: intField = intField + 1
+    Loop While intEnd &lt; Len(strInput) And intField &lt;= 4
+End Property</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>24. </B>Make the four modifications shown in bold to the WriteItem function
+	of clsInvoice:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function WriteItem(recTemp As Recordset) As Boolean
+    On Error GoTo WriteItemError
+<B>        recTemp(&quot;Vendor Number&quot;) = mintVendorNumber</B>
+<B>        recTemp(&quot;Invoice Number&quot;) = mstrInvoiceNumber</B>
+<B>        recTemp(&quot;Date&quot;) = mdatDate</B>
+<B>        recTemp(&quot;Amount&quot;) = mcurAmount</B>
+        WriteItem = True
+    On Error GoTo 0
+Exit Function
+WriteItemError:
+    WriteItem = False
+Exit Function
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>25. </B>Create the public Retrieve method in clsInvoice. This method retrieves
+	the invoice with the primary key values named in the arguments from the Invoices
+	table and assigns the field values to the object's properties. It returns True if
+	a corresponding record is located and successfully read; it returns False otherwise.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Function Retrieve(dbfTemp As Database, VendorNumber As _
+       Integer, _
+InvoiceNumber As String) As Boolean
+    Dim recTemp As Recordset
+    On Error GoTo RetrieveError
+        Set recTemp = dbfTemp.OpenRecordset(&quot;Invoices&quot;, _
+            dbOpenTable, dbReadOnly)
+        recTemp.Index = &quot;PrimaryKey&quot;
+        recTemp.Seek &quot;=&quot;, VendorNumber, InvoiceNumber
+        DBEngine.Idle dbFreeLocks
+        If Not recTemp.NoMatch Then
+            mintVendorNumber = VendorNumber
+            mstrInvoiceNumber = InvoiceNumber
+            mdatDate = recTemp(&quot;Date&quot;)
+            mcurAmount = recTemp(&quot;Amount&quot;)
+            Retrieve = True
+        Else
+            Retrieve = False
+        End If
+    On Error GoTo 0
+Exit Function
+RetrieveError:
+    Retrieve = False
+Exit Function
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>26. </B>Create the AddToGrid method in clsInvoice. This method receives a
+	grid and grid row as its arguments and inserts the object's property values into
+	the grid row.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Public Sub AddToGrid(grdTemp As MSFlexGrid, intGridRow As Integer)
+    With grdTemp
+        .Row = intGridRow
+        .Col = 1: .Text = mstrInvoiceNumber
+        .Col = 2: .Text = Format$(mdatDate, &quot;Short Date&quot;)
+        .Col = 3: .Text = Format$(mcurAmount, &quot;Currency&quot;)
+    End With
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>27. </B>Create the following four Property Get methods in clsInvoice. These
+	public methods allow outside routines to access the values of the record represented
+	by the object.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Property Get VendorNumber() As Integer
+    VendorNumber = mintVendorNumber
+End Property
+Property Get InvoiceNumber() As String
+    InvoiceNumber = mstrInvoiceNumber
+End Property
+Property Get InvoiceDate() As Date
+    InvoiceDate = mdatDate
+End Property
+Property Get Amount() As Currency
+    Amount = mcurAmount
+End Property</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The Form_Load event of frmMain initializes the grid and deletes any existing values
+from the database tables. (As noted in the discussion for step 5, you probably would
+not delete the records in a real production application.) When the user clicks the
+Import Data button, the data is imported from the text files into objects of the
+clsVendor and clsInvoice classes, and these objects are collected into Collection
+classes. The contents of each Collection class are then written to the database tables.</P>
+<P>The cmdImport_Click routine controls the import process and does the portion of
+the work that does not require knowledge of the structure of the database tables
+or the format of the individual records within the imported text strings. The processing
+that does require such knowledge is encapsulated into the objects by providing methods
+within the objects to perform the needed operations.</P>
+<P>Each line in the vendor and invoice input files represents one record. The cmdImport_Click
+routine reads a line, creates a new clsVendor or clsInvoice object, and passes the
+record to the object through the object's Property Let DelimitedString method. Property
+Let DelimitedString parses the text string into individual fields and assigns the
+field values to the object's property variables. Later, cmdImport_Click cycles through
+each of the collection objects and causes each object to store itself into the database
+by invoking the object's StoreNewItem method.</P>
+<P>When the user clicks the List Vendors button, cmdListVendors_Click retrieves the
+vendor list from the Vendors table and displays it in the list box. When the user
+then clicks on a vendor name, the list box Click routine passes the vendor number
+of the selected vendor to frmMain's FillInvoiceList subroutine. FillInvoiceList creates
+a snapshot consisting of the invoice numbers of invoices for which the vendor numbers
+match the selected vendor. It then creates a clsInvoice object for each invoice,
+causes each object to retrieve itself from disk by invoking the object's Retrieve
+method, and adds the invoice object to a Collection object. When all the matching
+invoices have been retrieved, the list box Click subroutine cycles through the collection,
+causing each invoice object in the collection to display itself in a grid row.</P>
+<P><B>Comments</B></P>
+<P>A significant amount of code is duplicated, or duplicated with minor changes,
+between the two classes in this How-To. If Visual Basic were a full object-oriented
+programming language that supported class hierarchies with inheritance, this duplication
+would be unnecessary. The common code could be put into a parent object from which
+both clsVendor and clsInvoice would inherit. Each class would then add methods and
+override inherited methods as necessary to implement its unique needs.</P>
+<P>Because Visual Basic doesn't have this feature, another approach would be to put
+the identical and nearly identical routines in code modules as Public procedures
+and let the class routines call them as needed. This option would certainly reduce
+code size, but it would also introduce two problems:</P>
+
+<UL>
+	<LI>Using Public procedures in code modules violates the object-oriented programmer's
+	principle of encapsulation. Class methods have privileged access to the object's
+	private data (that is, its properties). Converting class methods to Public procedures
+	in a code module means that any data that the &quot;methods&quot; share can also
+	be accessed by other routines in the same code module.
+	<P>
+	<LI>The more a shared routine deviates from a common form, the harder it is to implement
+	this option. In the example in this How-To, you have two record types, and each has
+	four fields; so a four-option Select Case structure in the Property Let DelimitedString
+	procedure fits both. What if you had 15 records, varying in size from 2 fields to
+	40? Yes, it could be done by passing parameters and lots of convoluted If...Then
+	logic. No, you wouldn't want to write it, and you surely wouldn't want to maintain
+	it.
+</UL>
+
+<P>The bottom line: If encapsulation and simple code are more important to you than
+the smallest possible code size, use the technique described in this How-To. If minimizing
+the amount of code is more important, consider using Public procedures in code modules.</P>
+<P>
+<H2>5.How do I...</H2>
+<H3><A NAME="Save graphics in a database file"></A><B>Save graphics in a database
+file?</B></H3>
+<P><B>Problem</B></P>
+<P>I have an application that tracks employee information for generating company
+ID cards, and I need to include a picture of the employee in the database. How can
+I do this from Visual Basic?</P>
+<P><B>Technique</B></P>
+<P>There are two basic techniques, each with its benefits and detriments, for saving
+graphical data in a Microsoft Access database. One method, the easier but more limiting
+of the two, is to use a PictureBox control as a data-bound control and link it to
+an OLE Object field in the Access database (the data type is represented by the constant
+dbLongBinary), allowing direct loading and saving of data to the database by use
+of the LoadPicture and SavePicture commands. This technique makes it simple to import
+pictures in common formats, such as the Windows bitmap (.BMP) format, the Graphic
+Interchange Format (.GIF), or the JPEG (.JPG) format, used by many graphics-processing
+software packages. However, the data is saved as raw binary information and is difficult
+to use outside of your application without allowing for an import/export feature
+in your Visual Basic code.</P>
+<P>The second technique, which is more versatile, but much more complex, is to use
+an OLE Container control as a data-bound control, linking it to an OLE Object field
+in a manner similar to that used by the PictureBox control discussed in the first
+technique. The data, however, is stored as an OLE object, available for export by
+any application that can employ OLE Automation techniques for importing the data.
+This technique has its own problems. The data is linked to a specific OLE class;
+your user might not be able to work with the data from another application if he
+does not have that specific OLE class registered by the external application. Also,
+it assumes that the external application, in most instances, will be used to edit
+the object; this adds overhead to your application that might not be needed.</P>
+<P>The first technique tends to be more commonly employed, but the second technique
+is used enough to make it worthwhile to provide further information on the subject.
+The Microsoft Knowledge Base, an excellent tool for programming research, provides
+several articles on the subject. Table 5.7 provides the names and article IDs of
+several relevant Knowledge Base entries.</P>
+<P>
+<H4>Table 5.7. Knowledge Base entries.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>ARTICLE ID</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>NAME AND DESCRIPTION</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Q147727</TD>
+		<TD ALIGN="LEFT">&quot;How To View Photos from the NWIND.MDB Database in VB 4.0.&quot; Although the
+			article is for VB 4.0, its code is still up-to-date. The code provides a complete
+			but complex method of loading the stored graphics in NWIND.MDB, a database provided
+			with Visual Basic, into a PictureBox control with some API prestidigitation. Very
+			educational.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Q103115</TD>
+		<TD ALIGN="LEFT">&quot;PRB: Invalid Picture Error When Trying To Bind Picture Control.&quot; If you
+			have ever attempted to bind a PictureBox to an OLE Object database field and received
+			this error, it's due to the fact that the control expects bitmap information, not
+			an OLE object. The article explains in more detail.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Q153238</TD>
+		<TD ALIGN="LEFT">&quot;HOW TO: Use GetChunk and AppendChunk Methods of RDO Object.&quot; This article
+			describes how to interact with Binary Large Objects (BLOBs) with certain RDO data
+			sources, such as Microsoft SQL Server.</TD>
+	</TR>
+</TABLE>
+</P>
+<P><B>Steps</B></P>
+<P>Open and run PicLoad.VBP. You'll see a form appear, similar to the one displayed
+in Figure 5.7. Click the <U>L</U>oad Picture button, and a File Open common dialog
+appears. Select a bitmap file, and click the Open button. That bitmap now displays
+in the center of the form, and it is added to the database. Move forward, then back,
+with the data control and the graphic reappears, loaded from the database.</P>
+<P><A HREF="javascript:popUp('05fig07.gif')"><B>Figure 5.7.</B></A><B> </B><I>The
+saving graphics form at startup.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called PicLoad.VBP. Create the objects and properties
+	listed in Table 5.8, and save the form as PicLoad.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.8. Objects and properties for the Picture Load form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">Form1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Chapter 5.4 Example&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Data</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Publishers&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">RecordSource</TD>
+		<TD ALIGN="LEFT">&quot;Publishers&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPublishers</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Publisher: &quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPublisherName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 - Fixed Single</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">&quot;Name&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">PictureBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">picPicture</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">&quot;Logo&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdLoad</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Load Picture&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdClose</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Close&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommonDialog</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cdlPicture</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Filter</TD>
+		<TD ALIGN="LEFT">&quot;Bitmap files (*.bmp)|*.bmp|JPEG files (*.jpg, *.jpeg)|*.jpg;*.jpeg|GIF Files
+			(*.gif)|*.gif|All Files (*.*)|*.*&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DefaultExt</TD>
+		<TD ALIGN="LEFT">&quot;BMP&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Flags</TD>
+		<TD ALIGN="LEFT">&amp;H1000</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add the following code to the declarations section of Form1:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Const BIBLIO_PATH = _
+      &quot;C:\Program Files\Microsoft Visual Studio\VB6\Biblio.MDB&quot;</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the following subroutine to Form1. The CheckForLogoField subroutine
+	checks our beloved BIBLIO.MDB and adds a new field to the Publishers table, called
+	Logo. Our graphics loading and saving will be done from and to that field when run.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub CheckForLogoField()
+    Dim dbfTemp As Database, tdfTemp As TableDef, fldTemp As Field
+    Dim blnLogoFieldExists As Boolean
+    On Error GoTo BadCheck
+        Set dbfTemp = Workspaces(0).OpenDatabase(BIBLIO_PATH)
+        For Each tdfTemp In dbfTemp.TableDefs
+            If tdfTemp.Name = &quot;Publishers&quot; Then
+                For Each fldTemp In tdfTemp.Fields
+                    If fldTemp.Name = &quot;Logo&quot; Then
+                        blnLogoFieldExists = True
+                        Exit For
+                    End If
+                Next
+                Exit For
+            End If
+        Next
+        If blnLogoFieldExists = False Then
+           If tdfTemp.Updatable Then
+                Set fldTemp = New Field
+                With fldTemp
+                    .Name = &quot;Logo&quot;
+                    .Type = dbLongBinary
+                End With
+                tdfTemp.Fields.Append fldTemp
+            Else
+                MsgBox &quot;The database needs to be updated &quot; &amp; _
+                       to Jet 3.0 format. &quot; &amp; _
+                    &quot;See How-To 5.7 for more information.&quot;, &quot; &amp; _
+                         vbExclamation
+            End If
+        End If
+    On Error GoTo 0
+Exit Sub
+BadCheck:
+    MsgBox Err.Description, vbExclamation
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code to the Load event of Form1. The form will, when
+	loading, check the BIBLIO.MDB database for the existence of our graphics field via
+	the CheckForLogoField subroutine, constructed in the preceding step.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    dtaData.DatabaseName = BIBLIO_PATH
+    CheckForLogoField
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the following code to the Click event of cmdLoad. The Load Picture
+	button uses the CommonDialog control cdlPicture to enable the user to select a graphics
+	file to load into the database. When a file is selected, the LoadPicture method is
+	used to copy the information from the file to the PictureBox control, picPicture.
+	Because picPicture is data-bound, the database field Logo now contains that graphics
+	information. When the data control is moved to a different record, that information
+	is committed to the database.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdLoad_Click()
+    On Error GoTo CancelLoad
+        cdlPicture.ShowOpen
+        On Error GoTo BadLoad
+            picPicture = LoadPicture(cdlPicture.filename)
+        On Error GoTo 0
+    On Error GoTo 0
+Exit Sub
+CancelLoad:
+    If Err.Number &lt;&gt; cdlCancel Then
+        MsgBox Err.Description, vbExclamation
+    Else
+        Exit Sub
+    End If
+BadLoad:
+    MsgBox Err.Description, vbExclamation
+    Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code to the Click event of cmdClose:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdClose_Click()
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>When Form1 loads, it sets up the dtaData data control, using the BIBLIO_PATH constant
+to set the DatabaseName property and point it at BIBLIO.MDB. Then, using the CheckForLogoField
+routine, it confirms that the [Logo] field exists in the [Publishers] table; if the
+[Logo] field does not exist, it adds the field. Because the PictureBox control is
+bound to the data control, all aspects of displaying the data from the [Logo] field
+are handled as any other bound control, including field updates. The cmdLoad button
+allows new data to be added to the field using the LoadPicture method. Because the
+new data is added to the bound control, the loaded picture is saved to the database
+and is automatically displayed when the record is again shown.</P>
+<P><B>Comments</B></P>
+<P>The method previously detailed is quick to implement and makes ensuring security
+easy. The data stored in the Logo field is stored as raw binary data; as such, it's
+not recognized as an OLE object and is not easily edited. This is also the primary
+drawback to this method, making it less portable (not easily used by other applications).
+This method does conserve space, because the OLE object requires other information
+stored with it to describe what it is, how it can be processed, and so on. But for
+sheer flexibility, the OLE object approach is superior, and the articles mentioned
+in Table 5.8 should be reviewed. Be warned, however, that the information covered
+in those articles is advanced and should be reviewed only when you are confident
+in your understanding of the technique demonstrated in this How-To.</P>
+<P>
+<H2>5.5 How do I...</H2>
+<H3><A NAME="Make sure that an operation ..."></A><B>Make sure that an operation
+involving multiple tables is not left partially completed?</B></H3>
+<P><B>Question</B></P>
+<P>I have an operation that requires that several tables be updated. Because of the
+nature of the operation, I want all the tables to be updated--or, if an error occurs,
+none of the tables to be updated. How can I ensure that only complete operations
+are applied to my database?</P>
+<P><B>Technique</B></P>
+<P>In database parlance, a <I>transaction</I> is a single logical operation that
+can involve multiple physical operations. Take, for example, a simple transaction
+in a banking environment, one in which money is withdrawn from a checking account
+and deposited to a savings account. If the money is withdrawn from the checking account
+but not applied to the savings account, the depositor will be unhappy. If the money
+is deposited to the savings account but never withdrawn from the checking account,
+the bank will be equally unhappy.</P>
+<P>Various things might go wrong to cause the update to either account to fail. There
+might be a power failure or an error in the program. In a multiuser environment,
+the table representing one of the accounts might be locked by another user. Because
+it is important that both accounts be updated--or that neither account be updated--there
+needs to be some way to ensure that if any part of the transaction fails, the entire
+transaction is abandoned.</P>
+<P>To tell Visual Basic and the Jet database engine to enforce transaction integrity,
+you enclose (or &quot;wrap&quot;) all the program code implementing the transaction
+between two statements. The statement BeginTrans tells the database engine, &quot;The
+transaction starts here. From here on, don't actually update the database. Make sure
+that it's possible to perform every operation I specify, but instead of actually
+changing the database, write the changes to a memory buffer.&quot; The statement
+CommitTrans tells the engine, &quot;There have been no errors since the last BeginTrans,
+and this is the end of the transaction. Go ahead and write the changes to the database.&quot;
+The process of &quot;making the changes permanent&quot; is known as <I>committing</I>
+the transaction.</P>
+<P>You can cancel the transaction in one of two ways. One method is to close the
+Workspace object without executing the CommitTrans statement--that automatically
+cancels the transaction. Another way, the preferred way, is to execute a Rollback
+statement. Rollback simply tells the database engine, &quot;Cancel the transaction.&quot;
+Upon calling Rollback, the database is set back to the untouched state it was in
+before the transaction occurred.</P>
+<P>The normal way to use these statements is to turn on error trapping before executing
+the BeginTrans statement. Wrap the operations that implement the transaction between
+a BeginTrans...CommitTrans pair. If an error occurs, execute the Rollback statement
+as part of your error routine.</P>
+<P>Here's an example. Assume that WithdrawFromChecking is a subroutine that withdraws
+funds from a checking account, and that DepositToSaving deposits funds to a savings
+account. Both take two arguments: the account number and the amount.</P>
+
+
+<BLOCKQUOTE>
+	<PRE>Sub CheckingToSaving(strAccountNumber as String, curAmount as Currency)
+    On Error Goto CheckingToSavingError
+    BeginTrans
+            WithdrawFromChecking strAccountNumber, curAmount
+            DepositToSaving strAccountNumber, curAmount
+    CommitTrans
+    Exit Sub
+CheckingToSavingError:
+     Rollback
+     MsgBox Err.Description, vbExclamation
+     Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P>If an error occurs in either the WithdrawFromChecking or the DepositToSaving routine,
+the error trapping causes execution to branch to the CheckingToSavingError label.
+The code there executes the Rollback statement to terminate the transaction, displays
+an error message, and then exits from the subroutine. You can, of course, implement
+more sophisticated error handling, but the principle illustrated is the same--in
+the error routine, cancel the pending transaction with a Rollback.</P>
+<P><B>Steps</B></P>
+<P>Open and run the project TRANSACT.VBP. The form shown in Figure 5.8 appears. Enter
+the following record:</P>
+
+
+<BLOCKQUOTE>
+	<PRE>Author:     Heyman, Bill        [type this in as a new entry]
+Title:      Visual Basic 6.0 Database How-To
+Publisher:  Sams  [select from the list]
+ISBN:       0-0000000-0-0        [not the actual ISBN!]
+Year Published:                  1998</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P>Click Save. The record is saved and the form is cleared, ready for another entry.
+Enter the same data again, this time choosing the author's name from the author list.
+Be sure to enter exactly the same ISBN. Click Save, and an error message should appear.
+The ISBN number is the primary key of the Titles table, and you cannot save two records
+with identical primary keys. Because this application uses the transaction protection
+features of the Jet engine and the error occurred within the transaction, no changes
+were made to the database.</P>
+<P><A HREF="javascript:popUp('05fig08.gif')"><B>Figure 5.8.</B></A><B> </B><I>The
+Transactor form on startup.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called Transact.VBP. Use Form1 to create the objects
+	and properties listed in Table 5.9, and save the form as TRANSACT.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.9. Objects and properties for the Transactor form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">Form1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Chapter 5.5 Example&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ComboBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cboAuthor</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Sorted</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ComboBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cboPublisher</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Sorted</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtYearPublished</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtISBN</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtTitle</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdSave</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Save&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Default</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdClose</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Close&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblTransact</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Author:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblTransact</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Title:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblTransact</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Publisher:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblTransact</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;ISBN:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblTransact</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">4</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Year Published:&quot;</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add the following code to the declarations section of Form1:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Const BIBLIO_PATH = &quot;C:\Program Files\Microsoft Visual Studio\VB6\Biblio.MDB&quot;
+Const AUTHOR_LIST = 1
+Const PUBLISHER_LIST = 2
+Private blnFormIsDirty As Boolean
+Private blnRefillAuthorList As Boolean
+Private blnRefillPublisherList As Boolean</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Enter the following code as the Load event of Form1. The event makes
+	use of the FillList subroutine, explained in the next step, to populate the Authors
+	and Publishers combo boxes. It then sets the blnFormIsDirty variable to False, meaning
+	that no data has yet been changed in the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    FillList AUTHOR_LIST: FillList PUBLISHER_LIST
+    blnFormIsDirty = False
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Create the FillList subroutine in Form1 with the following code. This
+	subroutine, depending on the list type, retrieves a list of authors or publishers
+	and loads them into their respective combo boxes.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Sub FillList(intListType As Integer)
+    Dim cboTemp As ComboBox
+    Dim dbfTemp As Database, recTemp As Recordset
+    On Error GoTo FillListError
+    Set dbfTemp = DBEngine.Workspaces(0).OpenDatabase(BIBLIO_PATH)
+    Select Case intListType
+        Case AUTHOR_LIST
+            Set cboTemp = cboAuthor
+            Set recTemp = dbfTemp.OpenRecordset( _
+                &quot;SELECT [Au_ID], &quot; &amp; _
+                &quot;[Author] FROM [Authors]&quot;)
+        Case PUBLISHER_LIST
+            Set cboTemp = cboPublisher
+            Set recTemp = dbfTemp.OpenRecordset( _
+                &quot;SELECT [PubID], &quot; &amp; _
+                &quot;[Name] FROM [Publishers]&quot;)
+    End Select
+    cboTemp.Clear
+    If recTemp.RecordCount Then
+        recTemp.MoveFirst
+        Do
+            cboTemp.AddItem recTemp.Fields(1)
+            cboTemp.ItemData(cboTemp.NewIndex) = recTemp.Fields(0)
+            recTemp.MoveNext
+        Loop Until recTemp.EOF
+    End If
+Exit Sub
+FillListError:
+    Dim strErrMsg As String
+    strErrMsg = &quot;Error while filling &quot; &amp; _
+        IIf(intListType = AUTHOR_LIST, &quot;Author&quot;, &quot;Publisher&quot;) &amp; _
+                          &quot; list.&quot;
+    strErrMsg = strErrMsg &amp; vbCr &amp; Err.Number &amp; &quot; - &quot; &amp; _
+                Err.Description
+    MsgBox strErrMsg, vbCritical
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Create the SaveRecord function in Form1 with the following code. SaveRecord
+	creates a transaction by wrapping a series of database-updating statements between
+	BeginTrans and CommitTrans statements. If an error occurs anywhere within the transaction,
+	the SaveError error-handling routine is called. SaveError uses a Rollback statement
+	to cancel the transaction and then informs the user of the specific error.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Function SaveRecord() As Boolean
+    Dim lngAuthorID As Long, lngPublisherID As Long
+    Dim dbfTemp As Database, recTemp As Recordset
+    On Error GoTo SaveError
+        Workspaces(0).BeginTrans
+        If cboAuthor.ListIndex = -1 Then
+            If cboAuthor.Text = &quot;&quot; Then Error 32767
+1000        lngAuthorID = CreateAuthor(cboAuthor.Text)
+            blnRefillAuthorList = True
+        Else
+            lngAuthorID = cboAuthor.ItemData(cboAuthor.ListIndex)
+        End If
+        If cboPublisher.ListIndex = -1 Then
+            If cboPublisher.Text = &quot;&quot; Then Error 32766
+1050        lngPublisherID = CreatePublisher(cboPublisher.Text)
+            blnRefillPublisherList = True
+        Else
+            lngPublisherID = _
+               cboPublisher.ItemData(cboPublisher.ListIndex)
+        End If
+        If txtTitle &lt;&gt; &quot;&quot; And txtISBN &lt;&gt; &quot;&quot; Then
+            Set dbfTemp = _
+                DBEngine.Workspaces(0).OpenDatabase(BIBLIO_PATH)
+1100        Set recTemp = dbfTemp.OpenRecordset( _
+                &quot;Titles&quot;, dbOpenTable)
+            With recTemp
+                .AddNew
+                ![PubID] = lngPublisherID
+                ![ISBN] = txtISBN
+                ![Title] = txtTitle
+                ![Year Published] = txtYearPublished
+                .Update
+            End With
+1150        Set recTemp = dbfTemp.OpenRecordset( _
+                          &quot;Title Author&quot;, dbOpenTable)
+            With recTemp
+                .AddNew
+                ![Au_ID] = lngAuthorID
+                ![ISBN] = txtISBN
+                .Update
+            End With
+        Else
+            If txtTitle = &quot;&quot; Then Error 32765 Else Error 32764
+        End If
+        Workspaces(0).CommitTrans
+    On Error GoTo SaveErrorNoRollback
+        ClearForm
+        blnFormIsDirty = False
+        SaveRecord = True
+    On Error GoTo 0
+Exit Function
+SaveError:
+    Dim strErrMsg As String
+    Workspaces(0).Rollback
+    Select Case Err
+        Case 32767
+            strErrMsg = &quot;You have not entered an author name&quot;
+        Case 32766
+            strErrMsg = &quot;You have not entered a publisher name&quot;
+        Case 32765
+            strErrMsg = &quot;You have not entered a title&quot;
+        Case 32764
+            strErrMsg = &quot;You have not entered an ISBN number&quot;
+        Case Else
+            Select Case Erl
+                Case 1000
+                    strErrMsg = &quot;Error &quot; &amp; Err.Number &amp;  _
+                                &quot; (&quot; &amp; Err.Description &amp; _
+                        &quot;} encountered creating new Authors &quot; &amp; _
+                           &quot;record.&quot;
+                Case 1050
+                    strErrMsg = &quot;Error &quot; &amp; Err.Number &amp; 
+                                &quot; (&quot; &amp; Err.Description &amp; _
+                        &quot;} encountered creating new Publishers &quot; _
+                           &quot;&amp; record.&quot;
+                Case 1100
+                    strErrMsg = &quot;Error &quot; &amp; Err.Number &amp; _
+                                &quot; (&quot; &amp; Err.Description &amp; _
+                        &quot;} encountered creating new Titles &quot; &amp; _
+                           &quot;record.&quot;
+                Case 1150
+                    strErrMsg = &quot;Error &quot; &amp; Err.Number 
+                                &amp; &quot; (&quot; &amp; Err.Description &amp; _
+                        &quot;} encountered creating new Title Author &quot;  _
+                           &quot;&amp; record.&quot;
+                Case Else
+                    strErrMsg = Err.Description
+            End Select
+    End Select
+    MsgBox strErrMsg, vbExclamation
+    SaveRecord = False
+Exit Function
+SaveErrorNoRollback:
+    MsgBox Err.Description, vbExclamation
+    Resume Next
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD>Errors are generated by Visual Basic (or the Jet engine) for various reasons.
+	To enable the display of an informative error message, line numbers are used within
+	the transaction, and the error-handling routine uses these line numbers to tell the
+	user where the error occurred.
+	<P>
+	<DT></DT>
+	<DD>The function also employs user-generated errors--the Error statement followed
+	by an error number in the 32000 range. User-handler errors are set when the application
+	detects that the user has entered data the application &quot;knows&quot; is incorrect--for
+	example, if the user has failed to enter an author. These user errors have the same
+	effect as the Visual Basic-generated errors: They call the error handler, which cancels
+	the transaction. The error handler uses the user error number to display an informative
+	error message; this lets the user correct the error and try to save again.
+	<P>
+	<DT></DT>
+	<DD>After CommitTrans has been executed, a different error routine must be used,
+	because the original error routine contains a Rollback statement. The CommitTrans
+	closes the pending transaction, and trying to execute a Rollback when there is no
+	pending transaction will cause an error.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Enter the following code in Form1 as the CreateAuthor function. CreateAuthor
+	creates a new record in the Authors table and returns the Au_ID assigned to the new
+	author.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Function CreateAuthor(strAuthorName As String) As Long
+    Dim dbfTemp As Database, recTemp As Recordset
+    Set dbfTemp = DBEngine.Workspaces(0).OpenDatabase(BIBLIO_PATH)
+    Set recTemp = dbfTemp.OpenRecordset(&quot;Authors&quot;, dbOpenTable)
+    With recTemp
+        .AddNew
+        ![Author] = strAuthorName
+        .Update
+        .Bookmark = .LastModified
+    End With
+    CreateAuthor = recTemp![Au_ID]
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Enter the following code in Form1 as the CreatePublisher function.
+	CreatePublisher creates a new record in the Publishers table and returns the PubID
+	assigned to the new publisher.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Function CreatePublisher(strPublisherName As String) As Long
+    Dim dbfTemp As Database, recTemp As Recordset
+    Dim lngLastID As Long
+    Set dbfTemp = DBEngine.Workspaces(0).OpenDatabase(BIBLIO_PATH)
+    Set recTemp = dbfTemp.OpenRecordset(&quot;Publishers&quot;, dbOpenTable)
+    With recTemp
+        .Index = &quot;PrimaryKey&quot;
+        .MoveLast
+        lngLastID = ![PubID]
+        .AddNew
+        ![PubID] = lngLastID + 1
+        ![Name] = strPublisherName
+        .Update
+    End With
+    CreatePublisher = lngLastID + 1
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Enter the following code in Form1 as the ClearForm subroutine. ClearForm
+	clears the text and combo boxes on the form. If the previous record resulted in a
+	new author or publisher being added, ClearForm refreshes the appropriate combo box
+	to put the new author or publisher into the list.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Sub ClearForm()
+    If blnRefillAuthorList Then
+        FillList AUTHOR_LIST
+        blnRefillAuthorList = False
+    Else
+        cboAuthor.ListIndex = -1
+    End If
+    If blnRefillPublisherList Then
+        FillList PUBLISHER_LIST
+        blnRefillPublisherList = False
+    Else
+        cboPublisher.ListIndex = -1
+    End If
+    ` Clear the text boxes.
+    txtTitle = &quot;&quot;
+    txtISBN = &quot;&quot;
+    txtYearPublished = &quot;&quot;
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Enter the following code into Form1 as the Click event of cmdClose.
+	If the form has an unsaved record, the subroutine gives the user a chance to save
+	the record or cancel the close event.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdClose_Click()
+    If blnFormIsDirty Then
+        Select Case MsgBox(&quot;Do you want to save the current &quot; &amp; _
+               record?&quot;, _
+        vbQuestion + vbYesNoCancel)
+            Case vbYes
+                If SaveRecord() = False Then Exit Sub
+            Case vbNo
+                End
+            Case vbCancel
+                Exit Sub
+        End Select
+    End If
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Enter the following five subroutines into Form1 as the Change events
+	for txtISBN, txtTitle, txtYearPublished, cboAuthor, and cboPublisher. Each of these
+	event routines sets the blnFormIsDirty flag when the user types an entry into the
+	control.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub txtISBN_Change()
+    blnFormIsDirty = True
+End Sub
+Private Sub txtTitle_Change()
+    blnFormIsDirty = True
+End Sub
+Private Sub txtYearPublished_Change()
+    blnFormIsDirty = True
+End Sub
+Private Sub cboAuthor_Change()
+    blnFormIsDirty = True
+End Sub
+Private Sub cboPublisher_Change()
+    blnFormIsDirty = True
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Enter the following two subroutines into Form1. These subroutines
+	set the blnFormIsDirty flag when the user changes the entry in one of the combo boxes
+	by selecting an item from the list.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cboAuthor_Click()
+    If cboAuthor.ListIndex &lt;&gt; -1 Then blnFormIsDirty = True
+End Sub
+Private Sub cboPublisher_Click()
+    If cboPublisher.ListIndex &lt;&gt; -1 Then blnFormIsDirty = True
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>When the user clicks Save, the cmdSave_Click event calls SaveRecord, which does
+most of the work. If the user has entered a new author or new publisher (instead
+of selecting an existing item from the author or publisher list), SaveRecord calls
+a function (CreateAuthor or CreatePublisher) to create the new record. It then saves
+the record. If an error occurs (either a Visual Basic error or a user-generated error),
+the error handler in SaveRecord rolls back the transaction.</P>
+<P><B>Comment</B></P>
+<P>The main use of transactions is to maintain integrity when you're updating more
+than one table as part of a single logical operation. You can also use BeginTrans,
+CommitTrans, and Rollback when you're performing multiple operations on a single
+table and you want to make sure that all the operations are performed as a unit.</P>
+<P>Transactions can also speed up some database operations. Under normal conditions,
+every time you use the Update method, the Jet engine writes the changes to disk.
+Multiple small disk writes can significantly slow down an application. Executing
+a BeginTrans holds all the operations in memory until CommitTrans executes, which
+can noticeably improve execution time.</P>
+<P>The transaction features described in this How-To work when you are using Microsoft
+Access database files and most of the other file types supported by the Jet engine.
+Some database types--Paradox is one example--do not support transactions. You can
+check whether the database supports transactions by reading the Transactions property
+of the database object:</P>
+<P>
+<PRE>Dim dbfTemp as Database
+Dim blnSupportsTransactions as Boolean
+...
+blnSupportsTransactions = dbfTemp.Transactions
+...
+</PRE>
+<P>Using the transactions statements BeginTrans, CommitTrans, and Rollback with a
+database that does not support transactions does not generate an error--but you need
+to be aware that you won't get the transaction integrity protection these statements
+would normally provide.</P>
+<P>
+<H2>5.6 How do I...</H2>
+<H3><A NAME="Compact a database or repair a c"></A><B>Compact a database or repair
+a corrupted database?</B></H3>
+<P><B>Question</B></P>
+<P>I know that Microsoft Access provides the capability to make a database smaller
+by compacting it. Microsoft Access also enables me to repair a database that has
+been corrupted. How can I perform these operations from my Visual Basic program?</P>
+<P><B>Technique</B></P>
+<P>When you delete data (or database objects) from a Microsoft Access database file,
+the Jet engine does not automatically shrink the size of the file to recover the
+no-longer-needed space. If the user deletes a significant amount of data, the file
+size can grow very large, and include a lot of wasted space. You can use the CompactDatabase
+method of the DBEngine object to recover this space.</P>
+<P>Occasionally, a database file becomes corrupted by a General Protection Fault,
+a power failure, a bug in the database engine, or some other cause. Most corrupted
+databases can be restored by the RepairDatabase method of the DBEngine object.</P>
+<P><B>Steps</B></P>
+<P>Open the project REPAIR.VBP and run it. The form shown in Figure 5.9 appears.
+Choose Compact a database and click OK. The application asks you to designate an
+existing database and to supply a new filename for the compacted version of the database.
+When you have done so, the application compacts the database and displays a message
+indicating completion.</P>
+<P><A HREF="javascript:popUp('05fig09.gif')"><B>Figure 5.9.</B></A><B> </B><I>The
+Database Maintenance form on startup.</I></P>
+<P>Choose Repair a database and click OK. The application asks you to designate a
+database to be repaired. When you have done so, the application repairs the database
+and displays a message indicating success.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project called Repair.VBP. Use Form1 to create the objects
+	and properties listed in Table 5.10, and save the form as Repair.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.10. Objects and properties for the Database Maintenance form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">Form1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Chapter 5.6 Example&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Frame</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">grpOperation</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Operation&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">OptionButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">optCompact</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Compact a database&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">OptionButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">optRepair</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Repair a database&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdOK</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;OK&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Default</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdClose</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Close&quot;</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DD><B></B>
+
+	<P><B>2. </B>Add the following code to the declarations section of Form1: Option
+	Explicit<B></B>
+
+	<P><B>3. </B>Enter the following code into Form1 as the Click event of cmdOK. The
+	setting of optCompact determines whether the user wants to compact or repair the
+	database. This procedure uses the Windows File Open common dialog box to get the
+	name of the file to compact or repair. In the case of a compact operation, it then
+	uses the File Save common dialog box to get the name of the output file. It then
+	uses the DBEngine's CompactDatabase or RepairDatabase method to perform the operation.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdOK_Click()
+    Dim strInput As String, strOutput As String
+    On Error GoTo OKError
+        With cdlDatabase
+            .DialogTitle = &quot;Select File To &quot; &amp; _
+                IIf(optCompact, &quot;Compact&quot;, &quot;Repair&quot;)
+            .ShowOpen
+        End With
+        strInput = cdlDatabase.filename
+        If optCompact Then
+            With cdlDatabase
+                .DialogTitle = &quot;Repaired Filename&quot;
+                .filename = &quot;&quot;
+                .ShowSave
+            End With
+            strOutput = cdlDatabase.filename
+            Screen.MousePointer = vbHourglass
+            DBEngine.CompactDatabase strInput, strOutput
+            Screen.MousePointer = vbDefault
+            MsgBox &quot;Database &quot; &amp; strInput &amp; _
+                   &quot; compacted to &quot; &amp; strOutput
+        Else
+            Screen.MousePointer = vbHourglass
+            DBEngine.RepairDatabase strInput
+            Screen.MousePointer = vbDefault
+            MsgBox &quot;Repair of &quot; &amp; strInput &amp; &quot; successful.&quot;
+        End If
+    On Error GoTo 0
+Exit Sub
+OKError:
+    Screen.MousePointer = vbDefault
+    If Err &lt;&gt; 32755 Then MsgBox Err.Description
+Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Enter the following into Form1 as the Click event of cmdClose:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdClose_Click()
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The cmdOK button supplies almost all the project's action. Depending on the selected
+option button, the cmdOK_Click event code first uses the CommonDialog control to
+retrieve the name of a valid Access database. After a name is returned, it issues
+either a CompactDatabase method or a RepairDatabase method, depending on the selected
+option button. If a CompactDatabase is required, the routine will again use the CommonDialog
+control to get the desired name for the compacted database. It has to do this because
+the CompactDatabase command cannot compact a database back into itself; instead,
+it rebuilds the database from the ground up, so to speak, into another Access database
+file. The RepairDatabase method, however, does not write to another database file
+and is instead called directly on the selected database.</P>
+<P><B>Comments</B></P>
+<P>It is strongly recommended that CompactDatabase be performed on Access databases
+regularly, because it reclaims wasted space and re-indexes tables to enable faster,
+more efficient use. RepairDatabase, on the other hand, should be used only when an
+Access database is indicated as corrupt. In Visual Basic, a trappable error is triggered
+when an Access database is corrupt, so automating this process is relatively easy.
+By setting up an On Error trap in your function and checking if Err is equal to 3049,
+you can make a call to the RepairDatabase method.</P>
+<P>
+<H2>5.7 How do I...</H2>
+<H3><A NAME="Use parameter queries stored in "></A><B>Use parameter queries stored
+in Microsoft Access databases?</B></H3>
+<P><B>Question</B></P>
+<P>I'd like to use stored QueryDef objects to reduce the execution time for my program.
+But I need to change one or two values each time I run my SELECT query. How can I
+use stored queries with replaceable parameters from Visual Basic?</P>
+<P><B>Technique</B></P>
+<P>Microsoft Access provides the <I>parameter query</I> as a variation of the standard
+SELECT query. The definition of a parameter query specifies one or more <I>replaceable
+</I>parameters--values to be supplied each time the query executes. Each replaceable
+parameter is represented by a name, which is used much like a field name. The name
+can be any legal object name, provided that the name has not already been used as
+a field name in any of the tables in the query.</P>
+<P>For example, you have a query that extracts information about customer accounts
+from several tables. Each time the query runs, it requires a value for the [Customer
+Number] field in the Customers table. If the name of the replaceable parameter was
+CustNum, the WHERE clause of the query would be this:</P>
+
+
+<BLOCKQUOTE>
+	<PRE>WHERE Customers.[Customer Number] = [CustNum]</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P>When run from Microsoft Access, a parameter query pops up an input box for the
+user at runtime. The user types a value, and this value is used as the replaceable
+parameter. When you use a stored parameter query from Visual Basic, your code must
+provide the value for the replaceable parameter before you execute the query.</P>
+<P>You provide the replaceable value through the QueryDef object. Each QueryDef object
+owns a Parameters collection, which consists of a set of Parameter objects, each
+with a name. When you assign a value to a Parameter object, the QueryDef object uses
+that as the replaceable value when you run the query.</P>
+<P>Following is the full syntax for assigning a value to a QueryDef Parameter object
+(where myQueryDef is an object variable assigned to a QueryDef object and CustNum
+is the name of a Parameter object):</P>
+
+
+<BLOCKQUOTE>
+	<PRE>qdfTempQueryDef.Parameters(&quot;CustNum&quot;) = 141516</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P>This can be abbreviated using the bang operator like so:</P>
+
+
+<BLOCKQUOTE>
+	<PRE>qdfTempQueryDef![CustNum] = 141516</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P>The sequence for using a stored parameter query from your Visual Basic code, therefore,
+is this:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Declare the appropriate variables:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Dim dbfTemp as Database
+Dim qdfTemp as QueryDef
+Dim recTemp as Recordset</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Set the Database and QueryDef variables to valid objects:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Set dbfTemp = DBEngine.Workspaces(0).OpenDatabase(&quot;ACCOUNTS.MDB&quot;)
+Set qdfTemp = dbfTemp.OpenQueryDef(&quot;Customer Data&quot;)</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Assign an appropriate value to each replaceable parameter of the QueryDef
+	object. If the Customer Data QueryDef has two parameters, CustNum and Start Date,
+	this would be your code:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>qdfTemp![CustNum] = 124151
+qdfTemp![Start Date] = #1/1/97#    ` the # signs delimit a date</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Use the OpenRecordset method of the QueryDef object to create the recordset:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Set recTemp = qdfTemp.OpenRecordset()</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>Steps</B></P>
+<P>Open and run the project ParameterQuery.VBP. The form shown in Figure 5.10 appears.
+Select a publisher and then click OK. Then the form shown in Figure 5.11 appears
+with the first record in BIBLIO.MDB belonging to that publisher. If the publisher
+has no titles in the database, the form is blank. Browse through the records by using
+the browse buttons. To select a different publisher, click the Publisher button.</P>
+<P><A HREF="javascript:popUp('05fig10.gif')"><B>Figure 5.10.</B></A><B> </B><I>The
+project's Publisher Parameters form, showing publisher names.</I></P>
+<P><A HREF="javascript:popUp('05fig11.gif')"><B>Figure 5.11.</B></A><B> </B><I>The
+project's Publisher Titles form, showing publisher title information.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called ParameterQuery.VBP. Rename Form1 to frmMain.
+	Then create the objects and properties listed in Table 5.11, and save the form as
+	ParameterQuery.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.11. Objects and properties for the Query User form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmMain</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Publisher Information&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Data</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Publisher's Titles By Author&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtPublisher</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">&quot;Name&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtYearPublished</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">&quot;Year Published&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtISBN</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">&quot;ISBN&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtTitle</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">&quot;Title&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtAuthor</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataField</TD>
+		<TD ALIGN="LEFT">&quot;Author&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblQuery</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Author:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblQuery</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Title:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblQuery</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;ISBN:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblQuery</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Published:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblQuery</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">4</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;by:&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdPublisher</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Publisher&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdClose</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Close&quot;</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add a new form to the project. Name it frmSelectPublisher. Create the
+	objects and properties listed in Table 5.12, and save the form as Publishers.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 5.12. Objects and properties for the Query User form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>PROPERTY</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>SETTING</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmSelectPublisher</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;Chapter 5.7 Example - Publishers&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstPublishers</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdOK</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;OK&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Default</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdCancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&quot;&amp;Cancel&quot;</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Enter the following code into the declarations section of frmMain:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+`NOTE:  The constant does NOT include the database name this time.
+Const BIBLIO_PATH = &quot;C:\Program Files\Microsoft Visual Studio\VB6&quot;
+`Because the variable is public (exposed for use by other 
+`objects), the naming conventions for variables do not apply 
+`here - treat as a property.
+Public SelectedPubID As Integer</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Enter the following code into frmMain as its Load event. The CheckDatabaseVersion
+	routine, called in this event, ensures that the BIBLIO.MDB database is Jet 3.0 compatible;
+	if the database was created with an earlier version of Access, there could be some
+	difficulties.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    `Older versions of BIBLIO.MDB must be converted to the Jet 3.0 
+    `format before a parameter query can be saved to it.
+    CheckDatabaseVersion
+    dtaData.DatabaseName = BIBLIO_PATH &amp; &quot;\Biblio.MDB&quot;
+    cmdPublisher_Click
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Enter the following code into frmMain as the Click event for cmdPublisher.
+	If a publisher's ID has been selected, the RunQuery subroutine is called. If not,
+	the form is still displayed, but with a different title and no data.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdPublisher_Click()
+    frmSelectPublisher.Show vbModal
+    If SelectedPubID &gt; 0 Then
+        RunQuery
+    Else
+        frmMain.Caption = &quot;Chapter 5.7 Example - No Titles&quot;
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Enter the following code into frmMain as the CheckDatabaseVersion subroutine.
+	This subroutine checks the version of the Access database to ensure that it's compatible
+	with Jet 3.0. It does so by creating a Database object and then checking the Version
+	property, which supplies a formatted string indicating the major and minor number
+	of the database version. If less than 3.0, the program uses the CompactDatabase method
+	to convert the database to Jet 3.0 format, backing it up in the process, just in
+	case.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub CheckDatabaseVersion()
+    Dim dbfTemp As Database, sngVersion As Single
+    Set dbfTemp = Workspaces(0).OpenDatabase(BIBLIO_PATH &amp; _
+                  &quot;\Biblio.MDB&quot;)
+    `If the database's Version property is less than 3.0, then it 
+    `needs to be converted before we can save a parameter query to 
+    `it from 32-bit Visual Basic.
+    sngVersion = Val(dbfTemp.Version)
+    dbfTemp.Close: DBEngine.Idle dbFreeLocks
+    If Val(sngVersion) &lt; 3 Then
+        `First, we'll back up the old database
+        FileCopy BIBLIO_PATH &amp; &quot;\Biblio.MDB&quot;, BIBLIO_PATH &amp; _
+                 &quot;\BiblioBackup.MDB&quot;
+        `Then, we'll use the CompactDatabase method to convert it 
+        `to the version 3.0 format
+        CompactDatabase BIBLIO_PATH &amp; &quot;\Biblio.MDB&quot;, _
+            BIBLIO_PATH &amp; &quot;\BiblioNew.MDB&quot;, , dbVersion30
+        `Next, we'll delete the old database after we're sure the 
+        `new one exists.
+        If Len(Dir(&quot;BiblioNew.MDB&quot;)) Then Kill BIBLIO_PATH &amp; _
+           &quot;\Biblio.MDB&quot;
+        `Finally, we'll rename the new database to the old name, 
+        `&quot;Biblio.MDB&quot;.
+        If Len(Dir(BIBLIO_PATH)) = 0 Then
+            Name BIBLIO_PATH &amp; &quot;\BiblioNew.MDB&quot; As BIBLIO_PATH &amp; _
+                 &quot;\Biblio.MDB&quot;
+        End If
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Enter the following code into frmMain as the RunQuery subroutine. This
+	subroutine searches for the query definition [Publisher's Titles By Author]. If it
+	doesn't find what it's seeking, it creates the query and saves that query in BIBLIO.MDB.
+	It next inserts the PubID code of the selected publisher into the Publisher parameter
+	of the query definition. Then it runs the query and uses DisplayRecord to display
+	the data.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Sub RunQuery()
+    Dim dbfTemp As Database, recTemp As Recordset
+    Dim qdfTemp As QueryDef
+    Dim strSQL As String
+    Dim blnFoundQuery As Boolean
+    On Error GoTo QueryError
+        Set dbfTemp = Workspaces(0).OpenDatabase(BIBLIO_PATH &amp; _
+            &quot;\Biblio.MDB&quot;)
+        For Each qdfTemp In dbfTemp.QueryDefs
+            If qdfTemp.Name = &quot;Publisher's Titles By Author&quot; Then
+                blnFoundQuery = True
+                Exit For
+            End If
+        Next
+        If blnFoundQuery = False Then
+            strSQL = &quot;PARAMETERS pintPubID Long; &quot; &amp; _
+                &quot;SELECT Authors.Author, Titles.Title, &quot; &amp; _
+                        &quot;Titles.ISBN, &quot; &amp; _
+                &quot;Titles.[Year Published], Publishers.Name &quot; &amp; _
+                &quot;FROM (Publishers INNER JOIN Titles ON &quot;
+            strSQL = strSQL &amp; &quot;Publishers.PubID = &quot; _
+                     &quot;Titles.PubID) &quot; &amp; _
+                     &quot;INNER JOIN &quot; &amp; _
+                &quot;(Authors INNER JOIN [Title Author] ON &quot; &amp; _
+                &quot;Authors.Au_ID = [Title Author].Au_ID) ON &quot; &amp; _
+                &quot;Titles.ISBN = [Title Author].ISBN WHERE &quot; &amp; _
+                               &quot;Publishers.PubID &quot; &amp; _
+                &quot;= pintPubID ORDER by Authors.Author;&quot;
+            Set qdfTemp = dbfTemp.CreateQueryDef( _
+                &quot;Publisher's Titles By &quot; &amp; _
+                &quot;Author&quot;, strSQL)
+        Else
+            Set qdfTemp = dbfTemp.QueryDefs( _
+                          &quot;Publisher's Titles By Author&quot;)
+        End If
+        qdfTemp.Parameters![pintPubID] = SelectedPubID
+        Set dtaData.Recordset = qdfTemp.OpenRecordset()
+        If dtaData.Recordset.RecordCount &gt; 0 Then
+            frmMain.Caption = &quot;Chapter 5.7 Example - &quot; &amp; _
+                Str$(dtaData.Recordset.RecordCount) &amp; _
+                IIf(dtaData.Recordset.RecordCount = 1, _
+                    &quot; Title&quot;, &quot; Titles&quot;)
+        Else
+            frmMain.Caption = frmMain.Caption = &quot;Chapter 5.7 _
+                              Example - No Titles&quot;
+        End If
+    On Error GoTo 0
+Exit Sub
+QueryError:
+    MsgBox Err.Description, vbExclamation
+Exit Sub
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Enter the following code into frmMain as the Click event of cmdClose:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdClose_Click()
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Now that frmMain is complete, let's move on to frmSelectPublisher.
+	Add the following code to its declarations section:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Enter the following code as the Load event of frmSelectPublisher:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    Dim dbfTemp As Database, recTemp As Recordset
+    Dim strSQL As String
+    On Error GoTo LoadError
+        Set dbfTemp = Workspaces(0).OpenDatabase(BIBLIO_PATH)
+        strSQL = &quot;SELECT [PubID], [Company Name] FROM &quot; &amp; _
+                 &quot;[Publishers]&quot;
+        Set recTemp = dbfTemp.OpenRecordset(strSQL)
+        If recTemp.RecordCount Then
+            recTemp.MoveFirst
+            Do Until recTemp.EOF
+                If Not IsNull(recTemp![Company Name]) Then
+                    lstPublishers.AddItem recTemp![Company Name]
+                Else
+                    lstPublishers.AddItem &quot;&quot;
+                End If
+                lstPublishers.ItemData(lstPublishers.NewIndex) = _
+                              recTemp![PubID]
+                recTemp.MoveNext
+            Loop
+        Else
+            MsgBox &quot;There are no publishers in the database.&quot;, _
+                   vbCritical
+            End
+        End If
+    On Error GoTo 0
+Exit Sub
+LoadError:
+    MsgBox Err.Description, vbCritical
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Enter the following code into frmSelectPublisher as the Click event
+	of cmdOK. This routine gets the PubID of the selected publisher from the list box
+	ItemData property, puts that value into the public variable SelectedPubID, and then
+	hides the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>If lstPublishers.ListIndex &gt; -1 Then
+        frmMain.SelectedPubID = _
+                lstPublishers.ItemData(lstPublishers.ListIndex)
+        Me.Hide
+    Else
+        MsgBox &quot;You have not selected a publisher&quot;, vbExclamation
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>12. </B>Enter the following code into frmSelectPublisher as the DblClick event
+	of lstPublishers:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub lstPublishers_DblClick()
+    cmdOK_Click
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>13. </B>Enter the following code into frmSelectPublisher as the Click event
+	of cmdCancel. This routine puts the value 0 into the public variable SelectedPubID
+	and then hides the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdCancel_Click()
+    frmMain.SelectedPubID = 0
+    Hide
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>When frmMain loads, it immediately generates a Click event for cmdPublisher to
+display the Select Publisher form. When the user makes a selection from the publisher
+list and clicks OK, the PubID of the selected publisher is used to set the Public
+variable SelectedPubID. The value of SelectedPubID is then used as the parameter
+passed to the [Publisher's Titles by Author] query definition. After its parameter
+has been set, the QueryDef is used to create the recordset of title information.</P>
+<P><B>Comments</B></P>
+<P>The parameter query allows for the flexibility of dynamically built SQL statements,
+but with the optimized speed of static SQL. One of the other benefits to using a
+parameter query is the Requery method, which enables you to re-execute a parameter
+query with different values. Access will actually reuse the existing connection and
+be able to run the query faster. Also, the optimization engine built into Jet works
+best on static SQL (that is, SQL stored in the database, as opposed to the SQL statements
+stored in code), so you can get even more benefit from the use of a parameter query
+that is saved to a Microsoft Access database. For a similar example on the use of
+a parameter query, How-To 3.5 is another good reference, especially with the use
+of the Requery method.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch04.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch04/ch04.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch06.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch06/ch06.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

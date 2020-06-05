@@ -1,0 +1,750 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 23 -- Programming Beyond Visual Basic Using the Windows API</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch22.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch22/ch22.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch24.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch24/ch24.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 23 -<BR>
+Programming Beyond Visual Basic Using the Windows API</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Understanding the Windows API</A>
+	<LI><A HREF="#Heading2">Working with the API Viewer</A>
+	<LI><A HREF="#Heading3">Monitoring Mouse Movement with GetCursorPos</A>
+	<LI><A HREF="#Heading4">Keeping a Window Always on Top by Using SetWindowPos</A>
+	<LI><A HREF="#Heading5">Dragging a Window by Using SendMessage</A>
+	<LI><A HREF="#Heading6">Enhancing a List Box with SendMessage</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Understanding the Windows API</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Understanding DLLs</STRONG></P>
+	<P>A DLL (dynamic link library) is compiled code that can be accessed only by other
+	programs at the programming level. You put functions and subroutines into DLLs so
+	that you can share them among many programs running at the same time. DLLs are made
+	in languages such as C(++) and Object Pascal (Delphi). You also can make DLLs in
+	VB, except that they're called ActiveX DLLs. For more information about making ActiveX
+	DLLs in VB, read Chapter 26, &quot;Making Object-Oriented Programs with Visual Basic.&quot;
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The Windows <I>Application Programming Interface </I>(<I>API</I>) is a set of
+hundreds of predefined functions built into the DLLs that make up the Windows operating
+system. <I>End users</I> can't access these functions. However, programmers can access
+the code written in the DLLs through the API and use this code in their programs
+(see Figure 23.1). This allows you to use existent code in the DLLs and save you
+time in the programming development cycle.</P>
+<P><A HREF="javascript:popUp('23fig01.gif')"><B>FIGURE 23.1</B></A> <I>The most often
+used DLLs in the API for 32-bit Windows operating systems are Kernel32.DLL, User32.DLL,
+and GDI32.DLL.</I></P>
+<P>You can program any type of Visual Basic project to access the Windows API by
+using the Declare statement in the General Declarations section of a module. For
+example, one function that you can access is GetCursorPos, which locates the onscreen
+cursor position. You define it for use within Visual Basic as follows:</P>
+<P>
+<PRE>Declare Function GetCursorPos Lib &quot;user32&quot; _    Alias &quot;GetCursorPos&quot; (lpPoint As POINTAPI) As Long
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>Declare&#160;&#160;A keyword indicating an external procedure declaration
+	<P>
+	<LI>Function&#160;&#160;The procedure type
+	<P>
+	<LI>GetCursorPos&#160;&#160;The name of this particular external procedure
+	<P>
+	<LI>Lib&#160;&#160;A keyword indicating the DLL in which to locate the function
+	<P>
+	<LI>&quot;user32&quot;&#160;&#160;The DLL (must be enclosed in quotation marks, no
+	file extension required and must be in the path--that is, the program must know where
+	to find the DLL)
+	<P>
+	<LI>Alias&#160;&#160;A keyword that indicates a friendly name by which you can refer
+	to the function
+	<P>
+	<LI>&quot;GetCursorPos&quot;&#160;&#160;The friendly name
+	<P>
+	<LI>lpPoint&#160;&#160;An argument variable
+	<P>
+	<LI>As POINTAPI/As Long&#160;&#160;A keyword indicating argument type
+	<P>
+	<LI>POINTAPI&#160;&#160;An argument type
+	<P>
+	<LI>Long&#160;&#160;A function return type
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Windows-defined types</STRONG></P>
+	<P>A type is also known in C(++) as a structure. A structure is a group of variables
+	organized under one name. When they're grouped, you can create instances of the type,
+	as you would create a variable. (See Chapter 26, &quot;Making Object-Oriented Programs
+	with Visual Basic.&quot;) When you program directly in Windows by using the API,
+	sometimes you have to use Windows-defined types, such as POINTAPI. You can find the
+	definition of these Windows-defined types within the API Viewer tool provided with
+	your copy of VB or within the documentation of the Windows Software Development Kit
+	(SDK), which comes on the Developers Network CD-ROM included in your copy of VB.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>As you can see, GetCursorPos resides in the DLL User32.DLL. The function takes
+one argument, lpPoint, which is a Windows-defined type, POINTAPI. The function returns
+a Long. (Listing 23.1 shows you how to define the POINTAPI Windows-defined type.)</P>
+<P>
+<H4>LISTING 23.1&#160;&#160;23LIST01.TXT--The API and Subsequent Windows-Type <BR>
+Declaration for GetCursorPos</H4>
+<PRE><B>01 </B>Declare Function GetCursorPos Lib &quot;user32&quot; _</PRE>
+<PRE>(lpPoint As POINTAPI) As Long</PRE>
+<PRE><B>02</B></PRE>
+<PRE><B>03 </B>Type POINTAPI</PRE>
+<PRE><B>04 </B>x As Long</PRE>
+<PRE><B>05 </B>y As Long</PRE>
+<PRE><B>06 </B>End Type</PRE>
+<P>You don't need any tools other than VB itself to use the Windows API. Working
+with the API requires a lot of extra knowledge, however. If you plan to do any coding
+with the Windows API, you need a copy of The Microsoft Developers Network CD-ROM,
+which ships with the Professional and Enterprise versions of Visual Basic and documents
+all the available Windows API functions. It's an extensive work that provides a lot
+of sample code. Sadly, most of the code is in C, so you might need a good third-party
+Visual Basic book that deals with the Windows API. One such resource is Macmillan's
+Web site at http://www.mcp.com, where you can view many books about Windows programming
+in the library and even purchase a book from the online catalog.</P>
+<P>
+<H2><A NAME="Heading2"></A>Working with the API Viewer</H2>
+<P>Although you don't need any additional tools to work with the Windows API (Application
+Programming Interface), Visual Basic ships with a tool, the <I>API Viewer</I>, that
+enables you to cut and paste API functions, constants, and Windows-defined types
+right into your code. You access the API Viewer from the Visual Basic Start menu.
+Also, you can add the API Viewer to your VB IDE in the form of an Add-In, thus having
+it readily available to you while you work.</P>
+<P>Simply put, the API lets you access the DLLs in the Windows environment for programming
+purposes. Microsoft wisely put all reusable code into DLLs (dynamic link libraries)
+so they can be used over and over. This not only saves valuable programming time
+but also standardizes the programming community, as it allows the same code to be
+used repeatedly. This may not seem very important in some instances, but with the
+same code running in many similar applications, they become more compatible.</P>
+<P><B>Add the API Viewer to the Add-In menu</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Choose <B>Add-In Manager</B> from Visual Basic's <B>Add-Ins</B> menu.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Select <B>VB 6 API Viewer</B> from the <B>Available Add-Ins</B> list.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>In the Load Behavior section in the lower right corner of the Add-In
+	Manager dialog, select <B>Load on Startup</B>. (If this option is already checked,
+	the API Viewer should already be available in the Add-Ins menu.)
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Click <B>OK</B>.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Close Visual Basic and restart it.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Choose <B>API Viewer</B> from the <B>Add-Ins</B> menu to open the API
+	Viewer window.
+	<P>
+</DL>
+
+<P>In the following sections, you'll build a small program that shows you how to
+use some API functions to do things you normally can't do in VB. You'll use the API
+Viewer to retrieve functions, constants, and Windows-defined types to help you accomplish
+this. You'll also build a function that reports back the position of the cursor anywhere
+onscreen. To do this, you need to use the API function GetCursorPos.</P>
+<P>To use the API Viewer to retrieve GetCursorPos, you first need to configure the
+viewer for first-time use.</P>
+<P>Configure the API Viewer</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Start the API Viewer.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Choose <B>Load Text File</B> from the <B>File</B> menu (see Figure
+	23.2).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('23fig02.gif')"><B>FIGURE 23.2</B></A><B> </B><I>You
+load API definition data into the API Viewer from either a text file or a database
+file.</I></P>
+
+<DL>
+	<DD><B>3. </B>Select the file <B>Win32API.txt</B> from the Open File dialog.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>When the text file is loaded into the API Viewer (this takes about
+	15 seconds), choose <B>Convert Text to Database</B> from the <B>File</B> menu.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Save the database file with the filename suggested by the API viewer,
+	Win32API.mdb.
+	<P>
+</DL>
+
+<P>The API Viewer doesn't have API data definition built into it; you must load the
+data at the beginning of every session. After you configure the API Viewer to read
+its API definition data from a database file, you select the database file whenever
+you need to use the API Viewer. Although you can use the provided text file, Win32API.txt,
+using the database file makes the API Viewer perform faster.</P>
+<P>After you configure the API Viewer, you can use it to select functions, constants,
+and Windows-defined types associated with the Windows API.</P>
+<P><B>Select the API function <I>GetCursorPos</I></B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Select <B>Declares</B> from the <B>API Type</B> drop-down list (see
+	Figure 23.3).
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Type GetCursorPos in the text box below the <B>API Type</B> drop-down
+	list (See Figure 23.4).
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>API Viewer auto-searching</STRONG></P>
+	<P>The API Viewer auto-searches input made in the search TextBox against items listed
+	in the Available <U>I</U>tems list. However, it takes time for the API Viewer to
+	do a search. Therefore, if you type slowly, the API Viewer performs more accurately.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>When the GetCursorPos function is located in the <B>Available</B> <B>Items</B>
+	list, click the <B>Add</B> button to add the function to the <B>Selected Items</B>
+	list.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>From the <B>API Type</B> drop-down list, select <B>Types</B>.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Type the word POINTAPI in the search text box.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Click the <B>Copy</B> button to send the entire function and type definitions
+	to the Clipboard (see Figure 23.5).
+	<P>
+	<DT></DT>
+	<DD><B>7. </B>Exit and start a new session of Visual Basic.
+	<P>
+	<DT></DT>
+	<DD><B>8. </B>Choose <B>Add Module</B> from Visual Basic's <B>Project</B> menu.
+	<P>
+	<DT></DT>
+	<DD><B>9. </B>Paste the function definition for GetCursorPos and the type definition
+	for POINTAPI from the Clipboard to the General Declaration section of the module
+	(see Figure 23.6).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('23fig04.gif')"><B>FIGURE 23.3</B></A> <I>You can locate
+constants, declares (API functions), and types in the API Viewer.</I></P>
+<P><A HREF="javascript:popUp('23fig05.gif')"><B>FIGURE 23.4</B></A> <I>When you enter
+a word in the search text box, the API Viewer looks through the available items on
+a letter-by-letter basis.</I></P>
+<P><A HREF="javascript:popUp('23fig06.gif')"><B>FIGURE 23.5</B></A> <I>The Selected
+Items list holds selected constants, declares, and types that you can copy to the
+Clipboard in one process.</I></P>
+<P>Notice that GetCursorPos takes a Windows-defined type, POINTAPI, as an argument.
+You need to include the type definition in your VB project for the code to work.</P>
+<P><A HREF="javascript:popUp('23fig07.gif')"><B>FIGURE 23.6</B></A> <I>You must copy
+API declarations into the General Declarations section of a module.</I></P>
+<P>
+<H2><A NAME="Heading3"></A>Monitoring Mouse Movement with GetCursorPos</H2>
+<P>Now that you've seen how to use the API Viewer to work more easily with the Windows
+API, let's put the function GetCursorPos to work in a real-world example.</P>
+<P>GetCursorPos reports the position of the mouse pointer anywhere onscreen. Normally,
+a Visual Basic application is limited to reporting the position of the mouse pointer
+with the boundaries of itself, so when the mouse pointer is moved beyond a Visual
+Basic application's form, the application has no idea where the cursor is. Windows
+always knows where the mouse pointer is, however, and reports the location through
+the GetCursorPos API function.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Wrapper function</STRONG></P>
+	<P>A wrapper function is one that primarily uses the functionality of another function,
+	as if the function were wrapping itself around another. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>This use of GetCursorPos is illustrated in the project prjAPIStuff.vbp (see Figure
+23.7), which you can download from <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/info'" tppabs="http://www.mcp.com/info">http://www.mcp.com/info</A>.
+At the prompt for the book's ISBN, enter 078971633x and then click the <B>Search</B>
+button to access the book Info page for Using VB6. You can then download the code.
+Within the project, in the module modAPIStuff is a user-defined function, ReportMousePos(),
+which returns a string that reports back the location of the mouse pointer in <I>friendly
+language</I>. The function is a <I>wrapper function </I>for GetCursorPos. Listing
+23.2 shows the structure of ReportMousePos().</P>
+<P><A HREF="javascript:popUp('23fig08.gif')"><B>FIGURE 23.7</B></A> <I>The APIStuff
+project demonstrates various API functions.</I></P>
+<P>
+<H4>LISTING 23.2&#160;&#160;23LIST02.TXT--ReportMousePos() Wraps GetCursorPos</H4>
+<PRE><B>01 </B>Public Function ReportMousePos() As String</PRE>
+<PRE><B>02</B></PRE>
+<PRE><B>03 </B>Dim MyPointAPI As POINTAPI</PRE>
+<PRE><B>04 </B>Dim l As Long</PRE>
+<PRE><B>05 </B>Dim strReport As String</PRE>
+<PRE><B>06</B></PRE>
+<PRE><B>07 </B>`Call the API function</PRE>
+<PRE><B>08 </B>l = GetCursorPos(MyPointAPI)</PRE>
+<PRE><B>09</B></PRE>
+<PRE><B>10 </B>`Make a report string</PRE>
+<PRE><B>11 </B>strReport = &quot;X=&quot; &amp; CStr(MyPointAPI.X) &amp; &quot;, &quot;</PRE>
+<PRE><B>12 </B>strReport = strReport &amp; &quot;Y= &quot; &amp; CStr(MyPointAPI.Y)</PRE>
+<PRE><B>13</B></PRE>
+<PRE><B>14 </B>`Return the value of the report string</PRE>
+<PRE><B>15 </B>If l &gt; 0 Then</PRE>
+<PRE><B>16 </B>ReportMousePos = strReport</PRE>
+<PRE><B>17 </B>Else</PRE>
+<PRE><B>18 </B>ReportMousePos = &quot;Error&quot;</PRE>
+<PRE><B>19 </B>End If</PRE>
+<PRE><B>20</B></PRE>
+<PRE><B>21 </B>End Function</PRE>
+<P>Notice that line 3 initializes POINTAPI. The actual declaration of the type and
+the GetCursorPos function were done in the General Declarations section of the module.
+Line 8 calls the GetCursorPos function, using the type instance MyPointAPI as an
+argument. Windows passes back the x and y location of the mouse pointer to the elements
+of MyPointAPI. If the value of l (the return buffer) is greater than 0, the call
+was successful. Lines 11 and 12 <I>concatenate</I> a string that reports back the
+pixel location of the mouse pointer with some &quot;x:&quot; and &quot;y:&quot; labeling.
+If the operation was successful (line 15), the reporting string is returned by the
+ReportMousePos() function. Otherwise, an error string is returned (line 18).</P>
+<P>This function is called from within a Timer control's Timer() event procedure.
+The Timer() event procedure assigns the function's return value to the Caption property
+of a Label control. The event procedure is as follows:</P>
+<P>
+<PRE>Private Sub Timer1_Timer()
+    lblMousePos.Caption = ReportMousePos()
+End Sub
+</PRE>
+<P>GetCursorPos doesn't report back the mouse pointer position unless called. Therefore,
+the Timer control is used to <I>poll</I> Windows every 1/10 of a second for the location
+of the mouse pointer.</P>
+<P>For more information about timers, see Chapter 16, &quot;Working with Time and
+Timers.&quot;</P>
+<P>
+<H2><A NAME="Heading4"></A>Keeping a Window Always on Top by Using SetWindowPos</H2>
+<P>Sometimes you might want to write an application that has an &quot;always-on-top&quot;
+feature. An always-on-top feature ensures that your application's window isn't covered
+by another active application's window. This sort of feature is typical among utilities
+such as clocks that need to be visible at all times, whether or not they're running
+in the background.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>ByRef versus ByVal</STRONG></P>
+	<P>By default, Visual Basic passes arguments to a function ByRef (by reference),
+	which means that VB passes the address of the location in a computer's memory where
+	the argument lives. When you're working within the usual confines of Visual Basic,
+	this is no cause for concern; when you move into API programming, however, passing
+	memory locations to an external procedure can cause a problem. Therefore, most of
+	the time you pass only the value of the argument to a function, not the address of
+	the memory location--hence, the use of the keyword ByVal (by value). 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>To make your application always-on-top, you use the Windows API function SetWindowPos.
+The definition for SetWindowPos, which is put in the General Declarations section
+of a module, is as follows:</P>
+<P>
+<PRE>Public Declare Function SetWindowPos Lib &quot;user32&quot; _         (ByVal hWnd As Long, _          ByVal hWndInsertAfter As Long, _          ByVal X As Long, _          ByVal Y As Long, _          ByVal cx As Long, _          ByVal cy As 
+Long,_          ByVal wFlags As Long) As Long
+</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>What's an hWnd?</STRONG></P>
+	<P>Part of the Windows operating system's job is to make windows. Therefore, whenever
+	you start a program, Windows makes all the windows the program needs on invocation.
+	On creation, every window that Windows makes is assigned a number, called the window
+	handle and referred to as an hWnd. Some windows contain other windows. Most of the
+	intrinsic controls are considered windows and have their own window handles. Windows
+	assigns the value of a control's hWnd to the control's HWnd property. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>The arguments for this function are as follows:</P>
+
+<UL>
+	<LI>hWnd is the handle of the window to place.
+	<P>
+	<LI>hWndInsertAfter is the preceding window or (as in cases of always on top) the
+	Windows constant that sets the window as topmost. These constants can be retrieved
+	from the API Viewer.
+	<P>
+	<LI>X is the new left position of the window.
+	<P>
+	<LI>Y is the new top position of the window.
+	<P>
+	<LI>cx is the new width of the window measured in pixels.
+	<P>
+	<LI>cy is the new height of the window measured in pixels.
+	<P>
+	<LI>wFlags is the numeric &quot;flag&quot; that tells Windows to consider certain
+	things about window sizing and placement.
+</UL>
+
+<P>These constants can be retrieved from the API Viewer. For a full description of
+the constants and other associated values for SetWindowPos, see the documentation
+that comes with your copy of VB.</P>
+<P>The way you use SetWindowPos to make a window always on top is straightforward.
+First, you have to use SetWindowPos only once a session. When you call the function,
+Windows will juggle or adjust the bits in memory to tell the window in question whether
+to be on top all the time. After you set the always-on-top bit, you don't have to
+do anything else, unless (of course) you want to reset the window to not be on top
+all the time.</P>
+<P>The way you set the always-on-top bit is to use the constant HWND_TOPMOST for
+the argument hWndInsertAfter. When you pass this value, Windows automatically knows
+how to set the window to be on top all the time. To avoid resizing or repositioning
+issues, you need to combine the constants SWP_NOMOVE and SWP_NOSIZE and pass them
+as the wFlags argument. Combining the values effectively tells Windows to keep the
+size and position that the user determines.</P>
+<P>To use this API function for your coding needs, you must retrieve the function's
+description as well as the values for the constants associated with the function,
+using the API Viewer. Figure 23.8 shows the retrieved functions and constants included
+in the <B>Selected Items</B> list.</P>
+<P><A HREF="javascript:popUp('23fig09.gif')"><B>FIGURE 23.8</B></A> <I>You can add
+API and associate functions to the <U>S</U>elected Items list before you copy them
+to the Clipboard.</I></P>
+<P>Listing 23.3 shows an abridged version of the user-defined function SetWinPos()
+from the module of the prjAPIStuff.vbp project. SetWinPos() is a wrapper function
+for the SetWindowPos API function.</P>
+<P>
+<H4>LISTING 23.3&#160;&#160;23LIST03.TXT--SetWinPos() Wraps SetWindowPos</H4>
+<PRE><B>01 </B>Public Function SetWinPos (iPos As Integer, _</PRE>
+<PRE>lHWnd As Long) As Boolean</PRE>
+<PRE><B>02 </B>Dim lWinPos As Long `A variable to hold the value of</PRE>
+<PRE><B>03 </B>`the API window position constant</PRE>
+<PRE><B>04 </B>Dim l As Long</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>`Use a SELECT CASE to set the value of the</PRE>
+<PRE><B>07 </B>`API Window constant</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>Select Case iPos</PRE>
+<PRE><B>10 </B>`The window is set to its regular position</PRE>
+<PRE><B>11 </B>Case 0</PRE>
+<PRE><B>12 </B>lWinPos = HWND_NOTOPMOST</PRE>
+<PRE><B>13 </B>`Set the window always on top</PRE>
+<PRE><B>14 </B>Case 1</PRE>
+<PRE><B>15 </B>lWinPos = HWND_TOPMOST</PRE>
+<PRE><B>16 </B>`You have a bad value; leave the function</PRE>
+<PRE><B>17 </B>Case Else</PRE>
+<PRE><B>18 </B>Exit Function</PRE>
+<PRE><B>19 </B>End Select</PRE>
+<PRE><B>20</B></PRE>
+<PRE><B>21 </B>`Run the API SetWindowPos function</PRE>
+<PRE><B>22 </B>If SetWindowPos(lHWnd, lWinPos, 0, 0, 0, 0, SWP_NOMOVE _</PRE>
+<PRE>+ SWP_NOSIZE) Then</PRE>
+<PRE><B>23 </B>`If the function is greater than 0 (FALSE), the operation</PRE>
+<PRE><B>24 </B>`was successful. Return a True to indicate such.</PRE>
+<PRE><B>25 </B>SetWinPos = True</PRE>
+<PRE><B>26 </B>End If</PRE>
+<PRE><B>27 </B>End Function</PRE>
+<P>The user-defined SetWinPos function takes two arguments: iPos, an integer that
+determines whether the function will set a window always on top or not, and lHWnd,
+the handle of the window to process. Lines 9-19 are a Select Case statement that
+determines which value to pass to the hWndInsertAfter parameter of the SetWindowPos
+API function. If iPos is 0, the window to be processed isn't always on top (HWND_NOTOPMOST);
+if iPos is 1, the window is always on top (HWND_TOPMOST). Any value greater than
+1 is considered an error, and the function is terminated, returning the default value
+of False.</P>
+<P>Line 22 is the core of the user-defined function--this is where the API function
+is called. SetWindowPos takes it the value of its HWnd (window handle) argument from
+lHwnd, the value passed into the user-defined function SetWinPos (line 1). lWinPos
+is determined within the Select Case statement in lines 9-19. The size and position
+arguments x, y, cx, and cy are all set to 0 because the window being affected retains
+its original values. The combined values of the constants SWP_NOMOVE and SWP_NOSIZE
+are passed to the wFlags argument, effectively telling Windows to not change any
+of the original size and position settings of the window. If the API function is
+successful, a True value is passed out of SetWinPos (line 25). You can see a more
+fully commented version of this code on the Web at <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/'" tppabs="http://www.mcp.com/"><B>http://www.mcp.com</B></A>.</P>
+<P>The way end users select whether they want the window in project prjAPIStuff to
+be always on top at runtime is to check the Keep on Top check box (refer to Figure
+23.7). When the user checks the check box, the Click() event procedure for the control
+is called, which in turn calls the user-defined wrapper function SetWinPos. Listing
+23.4 shows the code for the event procedure.</P>
+<P>
+<H4>LISTING 23.4&#160;&#160;23LIST04.TXT--Using a Wrapper Function to Set a Window
+Always on Top</H4>
+<PRE><B>01</B> Private Sub chkOnTop_Cligck()</PRE>
+<PRE><B>02 </B>Dim b As Boolean</PRE>
+<PRE><B>03 </B>If chkOnTop.Value = 1 Then</PRE>
+<PRE><B>04 </B>b = SetWinPos(1, Me.hWnd)</PRE>
+<PRE><B>05 </B>Me.Caption = &quot;Always on Top&quot;</PRE>
+<PRE><B>06 </B>Else</PRE>
+<PRE><B>07 </B>b = SetWinPos(0, Me.hWnd)</PRE>
+<PRE><B>08 </B>Me.Caption = &quot;Not Always on Top&quot;</PRE>
+<PRE><B>09 </B>End If</PRE>
+<PRE><B>10</B></PRE>
+<PRE><B>11 </B>`If b returns false, the API function was unsuccessful</PRE>
+<PRE><B>12 </B>If Not b Then</PRE>
+<PRE><B>13 </B>MsgBox &quot;Positioning Error&quot;, vbCritical, &quot;Program Error&quot;</PRE>
+<PRE><B>14 </B>End If</PRE>
+<PRE><B>15 </B>End Sub</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>The keyword Me</STRONG></P>
+	<P>Me is a Visual Basic keyword that refers to the current form or class object in
+	which the word is used. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>If the value of the check box is set to 1 (checked), the wrapper function sends
+the API function instructions to set the window (as determined by the argument Me.hWnd)
+to always on top (line 4). Also, end users are sent a notification in the form's
+title bar that the window is set to always on top (line 5). If it's not checked,
+the window is set to not always on top (line 7) and an associated notification is
+sent to the end user (line 8).</P>
+<P>
+<H2><A NAME="Heading5"></A>Dragging a Window by Using SendMessage</H2>
+<P>Usually, you drag a window around the computer screen by clicking while the mouse
+pointer is over a window's title bar and then dragging. To move a window without
+using the title bar, you trick Windows into thinking that your mouse is over the
+title bar--by using the API function SendMessage.</P>
+<P>Windows is an operating system that uses messaging extensively. Every time something
+happens in Windows--for example, a mouse movement, a key press, or a window creation--a
+message is sent. Every second, thousands of numeric messages are sent to all the
+windows through the Windows environment, sort of like a very fast, internal mail
+delivery system. Not only are messages sent by the internals of Windows, but you,
+the programmer, also can send messages to Windows by using the SendMessage API function.
+The structure of SendMessage is as follows:</P>
+<P>
+<PRE>Public Declare Function SendMessage Lib &quot;user32&quot; _        Alias &quot;SendMessageA&quot; (ByVal hWnd As Long, _        ByVal wMsg As Long, _        ByVal wParam As Long, _        lParam As Any) As Long
+</PRE>
+<P>The handle of the window to which the message is being sent</P>
+<P>The numeric message</P>
+<P>A packet of numeric data specific to the message being sent</P>
+<P>The return value of SendMessage also is specific to the message being sent.</P>
+<P>To manipulate Windows into thinking that when you do a mouse move on a form, you're
+doing a mouse move on the form's title bar, you must send Windows a message by means
+of WM_NCLBUTTONDOWN in the form's MouseMove event procedure. WM_NCLBUTTONDOWN is
+a numeric message that Windows translates to mean that the left mouse button is down
+in the <I>nonclient area</I> of a window. Before you can send Windows the new message,
+however, you must nullify the message that Windows receives when you initially move
+your mouse over the form. You do so by using the ReleaseCapture() API call.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Client area</STRONG></P>
+	<P>The client area of a window is where end users enter data. Formally, the client
+	area is the region of a window that doesn't include the title bar, menus, toolbars,
+	status bars, or window borders. In Visual Basic, the width and height to the client
+	area can be determined by examining the value of a form's ScaleWidth and ScaleHeight
+	properties, respectively. 
+<HR>
+</P>
+
+</BLOCKQUOTE>
+
+<P><B>Make your form movable by dragging from anywhere on the form</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Copy the ReleaseCapture and SendMessage API functions from the API
+	Viewer to a module's Declarations section (see Figure 23.9).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('23fig10.gif')"><B>FIGURE 23.9</B></A> <I>Use the Windows
+API to copy the ReleaseCapture and SendMessage functions from the API Viewer to a
+module's declarations section.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>2. </B>Copy the constants WM_NCLBUTTONDOWN and HTCAPTION for the API Viewer
+	to the same module's Declarations section.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Copy the code in Listing 23.5 to the MouseMove event procedure of a
+	project's form. Omit the line numbers.
+	<P>
+</DL>
+
+<H4>LISTING 23.5&#160;&#160;23LIST05.TXT--The Code for Dragging a Window from a Form</H4>
+<PRE><B>01</B> Dim l As Long `Buffer for function return</PRE>
+<PRE><B>02 </B>`If the left button has been pressed</PRE>
+<PRE><B>03 </B>`and the Drag checkbox is checked</PRE>
+<PRE><B>04 </B>If Button = 1 And chkMove.Value = 1 Then</PRE>
+<PRE><B>05 </B>`terminate the mouse move message to the form</PRE>
+<PRE><B>06 </B>ReleaseCapture</PRE>
+<PRE><B>07 </B>`Send a new message to trick Windows into thinking</PRE>
+<PRE><B>08 </B>`that the user is dragging around the form's title</PRE>
+<PRE><B>09 </B>`bar</PRE>
+<PRE><B>10 </B>l = SendMessage(Me.hwnd, WM_NCLBUTTONDOWN, _ HTCAPTION, 0)</PRE>
+<PRE><B>11 </B>End If</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using the logical AND</STRONG></P>
+	<P>You can combine two conditions into one If...Then statement by using the logical
+	AND operator, which compares the two conditions. If both evaluate to True, the entire
+	If...Then statement is True. If either condition evaluates to False or both are False,
+	the entire statement is False. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>When you move a mouse over a form, the form's MouseMove event is raised, thus
+allowing you to program the form's MouseMove event procedure. The code in Listing
+23.5 checks whether the left mouse button is pressed during movement. The code also
+checks whether the Drag from Form check box (refer to Figure 23.7) has a check mark
+(chkMove in line 4). If these conditions are True, the program invokes the API function
+ReleaseCapture to nullify the default mouse action (line 6). Then, the program sends
+a new message to Windows, making Windows think that the mouse is being dragged over
+the form's title bar (lines 10-11). The constant HTCAPTION is a parameter associated
+with the WM_NCLBUTTONDOWN message that tells Windows that the mouse button is down
+over the menu bar. By default, when the mouse is dragged on a window's title bar,
+the window moves. For this reason, Windows moves the form because it believes the
+mouse is being dragged from the title bar.</P>
+<P>
+<H2><A NAME="Heading6"></A>Enhancing a List Box with SendMessage</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Extended study of the Windows messaging system</STRONG></P>
+	<P>Going into the details of each Windows message is well beyond the scope of this
+	book. If you're interested in pursuing extended study of Windows messages, you should
+	read the documentation in the Software Development Kit on the Microsoft Developers
+	Network Library CD-ROM that accompanies your copy of VB. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>As mentioned earlier, the API function SendMessage is very versatile. Windows
+has hundreds of different messages that you can master to alter your program's or
+another program's behavior within the Windows environment. To demonstrate the versatility
+of the SendMessage function, however, another use of the function is provided in
+the prjAPIStuff project created for this chapter.</P>
+<P>When you run the code for the project, notice that a ToolTip window appears as
+you move your mouse over items in the form's list box (see Figure 23.10).</P>
+<P><A HREF="javascript:popUp('23fig11.gif')"><B>FIGURE 23.10</B></A> <I>You can use
+the Windows API to help display the contents of a ListBox item in a ToolTip window.</I></P>
+<P>The code uses the LB_ITEMFROMPOINT message to determine which item a mouse pointer
+is moving over within a list box. After the ListIndex is determined, the text of
+that item is assigned to the list box's ToolTipText property. For a detailed account
+of the process, look at the MouseMove event procedure of the list box lstFiles in
+the project prjAPIStuff.vbp, which you can download from the Web at <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/info'" tppabs="http://www.mcp.com/info">http://www.mcp.com/info</A>.</P>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch22.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch22/ch22.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch24.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch24/ch24.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

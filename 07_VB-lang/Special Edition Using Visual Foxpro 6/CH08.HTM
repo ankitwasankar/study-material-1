@@ -1,0 +1,862 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 8 - Accessing Remote Data</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch07.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch09.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;8</H1>
+<H1>Accessing Remote Data</H1>
+
+<UL>
+<LI><A HREF="#IntroductiontoRemoteDataAccess">
+Introduction to Remote Data Access</A>
+<UL>
+<LI><A HREF="#WhatisRemoteData">
+What is Remote Data?</A>
+<LI><A HREF="#ODBC">
+ODBC</A>
+</UL>
+<LI><A HREF="#CreatingRemoteViewsinVisualFoxPro">
+Creating Remote Views in Visual FoxPro 6</A>
+<UL>
+<LI><A HREF="#UsingaDataSource">
+Using a Data Source</A>
+<LI><A HREF="#UsingaConnection">
+Using a Connection</A>
+</UL>
+<LI><A HREF="#UsingSQLPassThroughFunctions">
+Using SQL Pass Through Functions</A>
+<LI><A HREF="#UsingDCOM">
+Using DCOM</A>
+<UL>
+<LI><A HREF="#ADOVersusRDO">
+ADO Versus RDO</A>
+</UL>
+<LI><A HREF="#UserInterfaceConcernswithRemoteData">
+User Interface Concerns with Remote Data</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="IntroductiontoRemoteDataAccess"><FONT SIZE=5 COLOR=#FF0000>
+Introduction to Remote Data Access</FONT></A></H2>
+<P>
+Visual FoxPro has a very powerful database engine built into it.
+When you deal with data stored in the Visual FoxPro <TT>dbf</TT>
+tables, you are using what is called <I>local data</I>. Even though
+Visual FoxPro has this local data engine, in some situations the
+data you need to deal with is not stored in local tables. At these
+times, the remote data handling capabilities of Visual FoxPro
+6 will save your day.
+<P>
+In this chapter, you will see that Visual FoxPro has a variety
+of options for dealing with remote data. You can use ODBC data
+sources, Connections, ADO, or RDO to get at data that is stored
+outside Visual FoxPro. The best method depends on a number of
+factors, which are discussed in this chapter.
+<P>
+There is no single correct method. Each method has it own strengths
+and weaknesses. This chapter covers the strengths and weaknesses
+of each method so that you have the information to make decisions
+for your particular projects.
+<H3><A NAME="WhatisRemoteData">
+What is Remote Data?</A></H3>
+<P>
+<I>Remote data</I> refers to any data that is not being accessed
+directly by Visual FoxPro. In most cases, remote data refers to
+data stored in products such as Microsoft SQL Server or Oracle
+or any of the many other database server products. However, database
+servers are not the only kind of remote data.
+<P>
+You might need to access data stored in a Microsoft Access database
+file. You can even access a Visual FoxPro database remotely.
+<P>
+In using local data, you usually put the tables you want in a
+form's data environment. Then the form's data environment will
+<TT>USE</TT> those tables for you when you run the form. With
+remote data, you cannot place the table directly into the data
+environment; you must handle accessing the data externally to
+the form by using remote views or SQL Pass Through.
+<P>
+Visual FoxPro 6 can use two different technologies to access remote
+data. The two technologies have a lot in common, as one uses the
+other internally. The two technologies available are Open Database
+Connectivity (ODBC) and Distributed Component Object Model (DCOM).
+<P>
+DCOM uses ODBC to access its data. In Visual FoxPro, you can either
+use ODBC directly, or you can leverage the bigger feature set
+of DCOM and use ODBC indirectly.
+<H3><A NAME="ODBC">
+ODBC</A></H3>
+<P>
+As you saw in the preceding section, <I>ODBC</I> is an acronym
+for <I>Open Database Connectivity</I>. ODBC is a technology, built
+in to the Windows 95/98 and Windows NT environments, which enables
+two different database systems to share data with each other.
+<P>
+ODBC works based on the ODBC engine in Windows. The ODBC model
+is divided into three separate layers. One layer is the ODBC engine
+in Windows. The other two are referred to as ODBC drivers, one
+for the data consumer and the other for the data source.
+<P>
+The specifications of ODBC make it possible for a vendor, such
+as Microsoft, to provide an ODBC consumer driver without having
+specific knowledge of the data source that will be used. This
+is possible because the ODBC specifications deal only with the
+consumer talking to the ODBC engine.
+<P>
+Vendors of data sources can also provide ODBC source drivers without
+knowing what the consumer will be because the ODBC data source
+driver has to communicate only with the ODBC engine. The ODBC
+engine is a switchboard of sorts that receives requests from an
+ODBC consumer driver and passes them on to an ODBC data source
+driver.
+<P>
+Figure 8.1 is a block diagram of the ODBC process.
+<P>
+<IMG SRC="f8-1.gif"><B>Figure 8.1:</B></A>
+<P>
+<B>Data Sources&nbsp;&nbsp;</B>Because ODBC is a service of Windows,
+before you can access any ODBC data sources, you must first set
+up the data source driver in Windows.
+<P>
+ODBC drivers are usually available with the data sources you have,
+or you can find third-party vendors that sell ODBC drivers for
+many products. The speed of data access through ODBC is a direct
+result of the drivers being used. If ultimate speed is a goal,
+you might be well served to evaluate the third-party drivers available.
+<P>
+The process of setting up an ODBC driver is not difficult, although
+you will need to know some information about the data source that
+the driver will access.
+<P>
+<B>The ODBC Administrator&nbsp;&nbsp;</B>To set up an ODBC driver,
+you use the Windows ODBC Administrator. Figure 8.2 shows the 32-bit
+ODBC Administrator.
+<P>
+<IMG SRC="f8-2.gif"><B>Figure 8.2 : </B><I>The ODBC Administrator with the User DSN
+tab visible</I>.</A>
+<P>
+In the ODBC Administrator, choose the Add button. The dialog box
+you get will look similar to Figure 8.3.
+<P>
+<IMG SRC="f8-3.gif"><B>Figure 8.3 : </B><I>The ODBC driver selection dialog box in
+the ODBC Administrator</I>.</A>
+<P>
+The first step in setting up an ODBC data source is to select
+the ODBC driver that you want to use. The available drivers on
+your computer might be quite different from those you see in Figure
+8.3 because the list shows the ODBC drivers that have been installed
+on the computer. You might need to use the installation disks
+from the data source vendor to install the appropriate ODBC drivers
+before starting this process.
+<P>
+For this example, use the Microsoft Access driver. Figure 8.4
+shows the dialog box we get after selecting the Microsoft Access
+driver.
+<P>
+<IMG SRC="f8-4.gif"><B>Figure 8.4 : </B><I>The setup dialog box for the Microsoft Access
+ODBC driver</I>.</A>
+<P>
+The setup dialog box that you get depends on the ODBC driver you've
+chosen. For the example, you only have to choose the Select button
+under the Database prompt. This action brings up the dialog box
+shown in Figure 8.5.
+<P>
+<IMG SRC="f8-5.gif"><B>Figure 8.5 : </B><I>The database selection dialog box for the
+Microsoft Access ODBC driver</I>.</A>
+<P>
+In Figure 8.5, I selected an Access database that is installed
+on my computer. You might or might not have that same database
+installed on your computer.
+<P>
+After you select the database, click OK in the database dialog
+box and also click OK in the ODBC driver setup dialog box. Figure
+8.6 shows how the ODBC Administrator looks now on my computer.
+<P>
+<IMG SRC="f8-6.gif"><B>Figure 8.6 : </B><I>The ODBC Administrator after I added our
+new data source</I>.</A>
+<P>
+That is all there is to creating a data source in ODBC. As an
+example of another ODBC driver setup dialog box, Figure 8.7 shows
+the one for Microsoft SQL Server.
+<P>
+<IMG SRC="f8-7.gif"><B>Figure 8.7 : </B><I>The first page of the Microsoft SQL Server
+ODBC Driver Setup Wizard</I>.</A>
+<P>
+The process of setting up the driver for Microsoft SQL Server
+involves a number of steps sufficient for the driver to use a
+wizard to assist you. Included in the steps are elements such
+as a login name and password, and whether you want the data source
+to display SQL Server dialog boxes when it attempts to connect
+to the SQL Server database. The issues that are addressed by the
+setup process will vary based on the requirements of the particular
+data server you are using.
+<P>
+Oracle's setup dialog box would be different from the SQL Server
+dialog box shown in Figure 8.7. It is beyond the scope of this
+book to present and explain every possible ODBC driver you might
+encounter. Look to the documentation of the product you are connecting
+to get the information you need to set up its ODBC driver.
+<H2><A NAME="CreatingRemoteViewsinVisualFoxPro"><FONT SIZE=5 COLOR=#FF0000>
+Creating Remote Views in Visual FoxPro 6</FONT></A></H2>
+<P>
+Now that your data source is set up in ODBC, you can create a
+remote view in Visual FoxPro. To do so, open a database in the
+Database Designer, and right-click the designer. The shortcut
+menu you get is shown in Figure 8.8.
+<P>
+<IMG SRC="f8-8.gif"><B>Figure 8.8 : </B><I>The Database Designer shortcut menu</I>.</A>
+<P>
+Select the New Remote View option. If you see a dialog box asking
+whether you want the View Wizard or a new view, choose New View.
+Figure 8.9 shows the next dialog box.
+<P>
+<IMG SRC="f8-9.gif"><B>Figure 8.9 : </B><I>The data source and connection selection
+dialog box</I>.</A>
+<H3><A NAME="UsingaDataSource">
+Using a Data Source</A></H3>
+<P>
+In Figure 8.9, notice that we have selected the Available Data
+Sources radio button to get the dialog box to show us the data
+source we have created with the ODBC Administrator. For now, don't
+concern yourself with connections; we will cover them later in
+this chapter.
+<P>
+At this point, select My Remote Test Data Source and click OK.
+You will see the Open dialog box shown in Figure 8.10.
+<P>
+<IMG SRC="f8-10.gif"><B>Figure 8.10: </B><I>The Open dialog box with the tables from
+the My Remote Test Data Source database</I>.</A>
+<P>
+From this point forward, creating a remote view is exactly the
+same as creating a local view. You are now in the Visual FoxPro
+View Designer. The only difference is that the data is coming
+from a remote source through ODBC.
+<P>
+You finish creating the view by doing the same things you did
+in <A HREF="ch06/ch06.htm">Chapters 6</a>, &quot;Creating Basic Queries,&quot; and 7, &quot;Advanced
+Queries and Views.&quot; You select the tables, set the joins,
+select the fields, set the filter criteria, and set all the other
+options you want for this view.
+<P>
+Figure 8.11 shows our database after we have created two remote
+views from the <TT>Northwind.mdb</TT> sample database that Microsoft
+supplies with Access. The two remote views are named <TT>rvcust</TT>
+and <TT>rvorders</TT>. We use the naming convention of prefixing
+local views with <TT>lv</TT> and remote views with <TT>rv</TT>.
+<P>
+<IMG SRC="f8-11.gif"><B>Figure 8.11: </B><I>The Database Designer with two remote views
+in it</I>.</A>
+<P>
+Now we are going to create a local view that joins the two remote
+views. To do so, right-click the Database Designer, and select
+New Local View. When the Add Table or View dialog box appears,
+change the Select option from Tables to Views, as is done in Figure
+8.12.
+<P>
+<IMG SRC="f8-12.gif"><B>Figure 8.12: </B><I>The Add Table or View dialog box with the
+Views option selected</I>.</A>
+<P>
+You see the views that are in the database in the list. Select
+<TT>rvcust</TT> by double-clicking it; then select <TT>rvorders</TT>
+the same way. After you select the two views, choose Close to
+close the dialog box. Figure 8.13 shows the Join Condition dialog
+box, which you will see next.
+<P>
+<IMG SRC="f8-13.gif"><B>Figure 8.13: </B><I>The Join Condition dialog box with the
+join condition for the two remote views</I>.</A>
+<P>
+Notice that the dialog box contains a default join condition that
+is based on the <TT>customerid</TT> field in <TT>rvcust_b</TT>
+being joined to the <TT>customerid</TT> field in <TT>rvorders</TT>.
+Where did Visual FoxPro come up with this? VFP makes this assumption
+because the two fields share the same name and data type. Because
+these views get their data from outside Visual FoxPro, they have
+no persistent relations that VFP can use to determine a default
+join condition. Accept the join shown, and click OK.
+<P>
+Now simply do the same things you would for any other local view.
+Select fields, filter conditions, group by conditions, and order
+by conditions.
+<P>
+To see the results of the local view, right-click it and select
+Browse. Figure 8.14 shows the browse that we saw.
+<P>
+<IMG SRC="f8-14.gif"><B>Figure 8.14: </B><I>The browse of our local view</I>.</A>
+<P>
+As we just joined data from two remote views into a local view,
+you can also join data from a remote view and a local view or
+even from a remote view and a local table. These joins can be
+done in local views as long as the proper relationships exist
+in the data.
+<H3><A NAME="UsingaConnection">
+Using a Connection</A></H3>
+<P>
+The next method you will see for accessing remote data is using
+a connection. A <I>connection</I> is a predefined remote data
+source that has been stored in a Visual FoxPro database. You create
+connections by using the Connections option on the database shortcut
+menu (as shown earlier in Figure 8.8). Choosing this option brings
+up the dialog box in Figure 8.15.
+<P>
+<IMG SRC="f8-15.gif"><B>Figure 8.15: </B><I>The Visual FoxPro Connections dialog box
+used to select a connection for a remote view</I>.</A>
+<P>
+In this dialog box, you should select New to access a dialog box
+like the one in Figure 8.16.
+<P>
+<IMG SRC="f8-16.gif"><B>Figure 8.16: </B><I>The Visual FoxPro Connection Designer</I>.</A>
+<P>
+The first area to investigate in the Connection Designer is in
+the upper-left corner directly under Specify Data Source. There,
+you'll find two option buttons: Data Source, Userid, Password
+and Connection String. These options will control how you go about
+defining the connection. First, we will use the Data Source, Userid,
+Password option.
+<P>
+With this method, the next thing you need to do is select a data
+source from the Data Source combo box below the option buttons.
+The data sources listed in that combo box are those that have
+previously been set up using the ODBC Administrator described
+earlier in this chapter.
+<P>
+If you change the Specify Data Source option to Connection String,
+the set of text boxes for Data Source, Userid, Password, and Database
+are replaced with one large text box. In the large text box, you
+type the connection string exactly as it should be sent to the
+database server you are going to connect to.
+<P>
+The three text boxes beside the Data Source combo box are used
+to enter a user ID, password, and the name of the database you
+want to use, respectively. Some remote data sources require that
+a login is accomplished before the data can be accessed. In these
+cases, the user ID and password are used to log in to the database
+server. The values you use here, in the Connection Designer, will
+be given to you by the database administrator in charge of your
+database software. Both the user ID and the password can be supplied
+at a later time when you try to use the connection.
+<P>
+Just below the data source information is a section titled Display
+ODBC Login Prompts. There, you'll find three choices: When Login
+Information Is Not Specified, Always, and Never. These options
+correspond to showing the login dialog box from ODBC when the
+connection did not specify a user ID and password, always showing
+the login dialog box, and never showing the login dialog box.
+The option you choose here depends on the design of your data
+access for your application.
+<P>
+Some applications are designed with a user ID and password for
+the application set up in the database server. In these applications,
+you should probably choose Never, as you would supply the user
+ID and password in the connection definition.
+<P>
+In other designs, each user of the system might have his or her
+own user ID and password within the database server. In these
+cases, you might or might not want the login dialog boxes to appear,
+depending on whether you are storing the user IDs and passwords
+and supplying them at the time you connect to the server.
+<P>
+You might want to use the first option to handle situations in
+which your system doesn't have login information for a user. The
+first option will display the login dialog box if, and only if,
+you don't supply the user ID and password when you try to connect.
+<P>
+Table 8.1 describes the options available to you in the Data Processing
+section in the lower left of the Connection Designer dialog box.
+<BR>
+<P>
+<CENTER><B>Table 8.1&nbsp;&nbsp;The Data Processing Options of
+the Connection Designer</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Option</B></CENTER></TD><TD WIDTH=384><CENTER><B>Description</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Asynchronous Execution</TD><TD WIDTH=384>Enables the data for this connection to be fetched in the background. This setting can be very valuable when a remote view might need to fetch a large number of records from the data source and you want your application to continue while the fetching goes on in the background. Unchecking this option will cause any remote view to completely get all its data before your application code will continue.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Display Warnings</TD><TD WIDTH=384>Determines whether ODBC warning dialog boxes will be displayed when using this connection. You would set this option off if you are using error handling in your application to deal with the warning conditions that might arise during a remote connection.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Batch Processing</TD><TD WIDTH=384>Determines if the view will return all records together or if it will receive records a few at a time. With Batch Processing on, your view will not get any records until the data source has finished processing your <TT>SELECT</TT> command and is ready to send you all the records. Turning Batch mode off will allow the data source to return partial results as it gets them ready for you.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Automatic Transactions</TD><TD WIDTH=384>Turns on or off automatic transactions. Some database servers can use automatic transactions when processing table updates, deletes, and inserts. If you are connecting to a data source that can use automatic transactions, this option either turns them on or off. You will most likely want this option turned on unless you are using SQL Pass Through and not remote views. (SQL Pass Through is discussed later in this chapter.)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Packet Size</TD><TD WIDTH=384>Controls the size of the data packets sent back and forth on the connection. You can use this setting to optimize the connection for performance based on the probable size of the various queries that might hit the connection. Increasing the packet size will cause more data to be sent in each packet. Decreasing it will reduce the packet size. What size is best depends on a number of issues-among them, what is the average size of a record or set of records being retrieved over this connection. If the data size is large, then increase the packet size so the connection uses fewer packets. If the data size is small, then reduce the packet size so the connection uses the bandwidth of the network more efficiently.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The last set of options in the Connection Designer consists of
+the Timeout Intervals in the lower-right corner of the dialog
+box. Table 8.2 describes these options.<BR>
+<P>
+<CENTER><B>Table 8.2&nbsp;&nbsp;The Timeout Intervals in the Connection
+Designer</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Option</B></CENTER></TD><TD WIDTH=384><CENTER><B>Description</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Connection (sec):</TD><TD WIDTH=384>The time in seconds before Visual FoxPro will report a connection timeout error.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Idle (min):</TD><TD WIDTH=384>The Idle timeout period in minutes after which Visual FoxPro will break the connection. The connection is not broken if the connection is in manual transaction mode and a transaction is in process.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Query (sec):</TD><TD WIDTH=384>The time to wait, in seconds, before reporting a general timeout error.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Wait Time (ms):</TD><TD WIDTH=384>The time, in milliseconds, that Visual FoxPro will wait before checking to see whether the SQL statement has completed.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+By setting all these options, you can customize the connection
+that will be used for your remote views. After you have completed
+these settings, you can click OK. In the next dialog box you see,
+you can give the connection a name. We named ours <TT>MyTest</TT>.
+<P>
+If you now right-click the Database Designer and select New Remote
+View, you will see that your connection is listed in the Select
+Connection or Data Source dialog box. You can select the connection
+and then go on to the View Designer to define the view.
+<P>
+When you use one of these remote views, Visual FoxPro will make
+a connection through ODBC to the database server's ODBC driver
+and execute the <TT>SELECT</TT> statement defined by the view.
+The data retrieved will be in a Visual FoxPro cursor, and you
+can work with the contents of that cursor as you choose.
+<P>
+Remote views are capable of everything that local views are. You
+can update them, you can use the Top-N features, and so on.
+<P>
+In the next section, you will see how you can directly manage
+everything that is going on with remote data access by using SQL
+Pass Through.
+<H2><A NAME="UsingSQLPassThroughFunctions"><FONT SIZE=5 COLOR=#FF0000>
+Using SQL Pass Through Functions</FONT></A></H2>
+<P>
+In Visual FoxPro, <I>SQL Pass Through</I> is a set of functions
+that allow you to send commands directly through ODBC. The code
+in Listing 8.1, which comes from the program <TT>SQLPT.prg</TT>,
+uses SQL Pass Through to access the data source you saw earlier
+in this chapter.<P>
+
+<HR>
+<B>Listing 8.1&nbsp;&nbsp;</B><TT><B>08code01</B></TT><B>-Using
+</B><TT><B>SQL</B></TT><B> Pass
+Through to Access the My Remote Test Data Source<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+LOCAL lnHandle
+lnHandle = SQLConnect(&quot;My remote test&quot;)
+IF lnHandle &gt; -1
+     SQLExec(lnHandle,&quot;SELECT * FROM Customers&quot;,&quot;Results&quot;)
+     SELECT Results
+     BROWSE
+     SQLDisconnect(lnHandle)
+ENDIF
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+In Listing 8.1, you can see the use of the <TT>SQLConnect()</TT>
+function to establish a link to the data source. The handle to
+this connection is saved in the variable <TT>lnHandle</TT>. The
+<TT>IF</TT> checks to see whether the connection was successful.
+If the handle is a negative number, it indicates that the connection
+was not successful.
+<P>
+If the connection was successful, the <TT>SQLExec()</TT> function
+is used to pass a <TT>SELECT</TT> statement to the data source,
+and the results of that <TT>SELECT</TT> are stored in a cursor
+named <TT>Results</TT>. Finally, the <TT>Results</TT> cursor is
+selected and browsed. When the browse is closed, the <TT>SQLDisconnect()</TT>
+is issued to drop the connection to the data source.
+<P>
+In Listing 8.1, you see three SQL Pass Through functions being
+used: <TT>SQLConnect()</TT>, <TT>SQLExec()</TT>, and <TT>SQLDisconnect()</TT>.
+Many more SQL Pass Through functions than these three are available.
+For example, the <TT>SQLStringConnect()</TT> function uses a connection
+string rather than a data source. Table 8.3 lists all the SQL
+Pass Through functions and describes their use.<BR>
+<P>
+<CENTER><B>Table 8.3&nbsp;&nbsp;The SQL Pass Through Functions</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Function</B></CENTER></TD><TD WIDTH=384><CENTER><B>Description</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLConnect()</TT></TD><TD WIDTH=384>Creates a connection to an ODBC data source. Takes one or three arguments. If using a connection stored in the current Visual FoxPro database, a single argument of the connection name can be used. When not using a connection name, the three arguments are the Data source name, the user ID, and the password. <TT>SQLConnect</TT> returns a connection handle or <TT>-2</TT> to indicate that the connection was unsuccessful.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLStringConnect()</TT></TD><TD WIDTH=384>Similar to <TT>SQLConnect()</TT>, but it uses a single argument of a connection string. Like <TT>SQLConnect</TT>, it returns a connection handle or <TT>-2</TT> for failure.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLDisconnect()</TT></TD><TD WIDTH=384>Accepts a single argument of the connection handle to disconnect. Shuts down a connection. Returns <TT>1</TT> if successful, <TT>-1</TT> if an error occurred with the connection, and <TT>-2</TT> if an error occurred with an environment error. <TT>SQLDisconnect</TT> will cause an error if you try to disconnect from a connection that has a transaction in process.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLCancel()</TT></TD><TD WIDTH=384>Requests cancellation of an executing SQL command. Return types are the same as <TT>SQLDisconnect</TT>. The single argument is the handle for the connection to cancel.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLExec()</TT></TD><TD WIDTH=384>Sends a SQL command to the data source for the connection. Takes three arguments: the first is the connection handle, the second is the command to be executed, and the third is the name of the Visual FoxPro cursor to hold the results. The return value is <TT>1</TT> for a successful execution and <TT>-1</TT> if an error occurred.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLMoreResults()</TT></TD><TD WIDTH=384>Returns more results from a command executed with <TT>SQLExec()</TT> when in non-batch mode. This function accepts the connection handle as an argument and returns <TT>0</TT> if the command is still executing, <TT>1</TT> if the command is finished executing, and <TT>2</TT> if it finds no more results sets to get. A return of <TT>-1</TT> indicates an error on the connection, and <TT>-2</TT> indicates an error in the environment.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLPrepare()</TT></TD><TD WIDTH=384>Prepares a SQL command for execution with <TT>SQLExec()</TT>. <TT>SQLPrepare()</TT> takes three arguments: the connection handle, the SQL command to prepare, and the name for the results cursor. This function can be used to prepare a parameterized view in the data source. All parameters must exist before issuing the <TT>SQLPrepare()</TT> function call. To use the prepared command, issue the <TT>SQLExec()</TT> and supply only the connection handle.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLCommit()</TT></TD><TD WIDTH=384>Commits a transaction on the data source. Takes one argument of the connection handle. Returns <TT>1</TT> if the commit was successful and returns <TT>-1</TT> if an error occurred. You can use <TT>AERROR()</TT> to get information about the error that occurred.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLRollback()</TT></TD><TD WIDTH=384>Cancels a transaction in the data source. Takes the same argument and returns the same values as <TT>SQLCommit()</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLColumns()</TT></TD><TD WIDTH=384>Stores the field names in a Visual FoxPro cursor. Takes three arguments: the connection handle, the table name from which to return fields, and either <TT>FOXPRO</TT> or <TT>NATIVE</TT> to specify the format of the field information. <TT>FOXPRO</TT> is the default format. The resulting cursor has four fields in it for <TT>Field_Name</TT>, <TT>Field_Type</TT>, <TT>Field_Len</TT>, and <TT>Field_Dec</TT>. When you're using the <TT>NATIVE</TT> format, the fields of the cursor will vary depending on the data source for the connection. Returns <TT>1</TT> when finished successfully, <TT>0</TT> while still executing, <TT>-1</TT> for a connection error, and <TT>-2</TT> for an environment error. Consider this example: <TT>SQLTables(lnHandle, &quot;'VIEW', 'SYSTEM TABLE'&quot;, &quot;Results&quot;)</TT>. In this example, we are getting a list of all Views and System Tables from the data source.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLGetProp()</TT></TD><TD WIDTH=384>Takes two arguments: the connection handle and the setting you want returned. Used to read the properties of the remote connection.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQLSetProp()</TT></TD><TD WIDTH=384>Takes three arguments: the connection handle, the setting you want to change, and the new value for the setting. The settings that can be changed using <TT>SQLSetProp()</TT> are listed in the Visual FoxPro help file.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The big question you should be asking now is, &quot;When should
+I use SQL Pass Through instead of remote views?&quot; In answering
+this question, you need to know about the data source and its
+capabilities and the way in which you plan to use the data from
+that source.
+<P>
+The advantages of SQL Pass Through are as follows:
+<UL>
+<LI>A remote view is limited to only the SQL
+<TT>SELECT</TT> command, whereas SQL Pass Through can pass
+any valid command to the data source, allowing you to take advantage
+of the features of the data source.
+<LI>A remote view fetches only one result
+set, whereas SQL Pass Through can fetch multiple result sets.
+<LI>With remote views, you cannot access the
+transaction handling features of the data source, whereas with
+SQL Pass Through, the transaction handling is available if the
+data source supports it.
+</UL>
+<P>
+The disadvantages of SQL Pass Through are as follows:
+<UL>
+<LI>SQL Pass Through result cursors are not
+updateable by nature. You can set them to be updateable by using
+the <TT>SQLSetProp()</TT> function after the cursor exists.
+With remote views, you set the updateable properties when you
+design the view.
+<LI>With SQL Pass Through, you have no way
+of using the visual View Designer; you must write the SQL commands
+in program code.
+<LI>You create the connection to the data
+source, and you must manage that connection in your program code.
+</UL>
+<P>
+Based on the advantages and disadvantages of SQL Pass Through,
+you should be prepared to decide when to use the technology and
+when to use remote views. Although SQL Pass Through gives you
+more complete control over the access of data in a remote data
+source, it also requires that you manage the connections.
+<P>
+When comparing SQL Pass Through to an equivalent remote view,
+you will find no noticeable difference in speed. In fact, Microsoft
+has said that remote views might be the faster of the two approaches
+in most cases.  However, using the <TT>SQLPrepare()</TT> function
+to establish a remote parameterized view that is precompiled on
+the server can cause a performance improvement with SQL Pass Through.
+<P>
+SQL Pass Through also enables you to take advantage of certain
+features of the data server that remote views cannot access. They
+include data definition, administration of the server, and other
+features that are unique to the particular data server you are
+connecting to.
+<H2><A NAME="UsingDCOM"><FONT SIZE=5 COLOR=#FF0000>
+Using DCOM</FONT></A></H2>
+<P>
+<I>DCOM</I>  is an acronym for <I>Distributed Component Object
+Model</I>. DCOM is the Microsoft technology that enables you to
+create an object that is running on another machine as an ActiveX,
+or COM, object and then access the properties and methods of that
+object.
+<H3><A NAME="ADOVersusRDO">
+ADO Versus RDO</A></H3>
+<P>
+<I>COM, </I>which  is an acronym for <I>Component Object Model,</I>
+is the predecessor of DCOM. COM objects are created on the same
+machine that uses them, whereas DCOM objects might be created
+on a different machine.
+<P>
+The data access technologies that COM and DCOM use are named Active
+Data Object (ADO) and  Remote Data Object (RDO), respectively.
+RDO, which is an expansion of ADO, enables access to data that
+is stored on another machine. Both ADO and RDO can be used in
+Visual FoxPro 6 for accessing data.
+<P>
+ In this section, we will build a form that uses RDO to access
+the data in our My Remote Test data source. To the form, we add
+a property named <TT>oRDS</TT> to hold an object reference to
+the RDO. We also add properties for <TT>Company</TT> and <TT>Contact</TT>
+with assign methods. Listing 8.2 shows the form's <TT>Init</TT>
+event.<P>
+
+<HR>
+<B>Listing 8.2&nbsp;&nbsp;</B><TT><B>08CODE02</B></TT><B>-The
+Form's </B><TT><B>Init</B></TT><B>
+Method Code<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+This.oRDS = CreateObject(&quot;RDS.DataControl&quot;)
+If Type(&quot;This.oRDS&quot;) &lt;&gt; &quot;O&quot;
+     MessageBox(&quot;oRDS not created&quot;)
+Else
+     With This.oRDS
+         .Connect = &quot;dsn=My Remote Test&quot;
+         .SQL = &quot;Select * from customers&quot;
+         .ExecuteOptions = 1
+         .FetchOptions = 2
+         .Refresh
+     EndWith
+     This.ShowValues()
+EndIf
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This code starts by creating an instance of the <TT>RDS.DataControl</TT>
+class, which is the class for Remote Data Sets. The <TT>IF</TT>
+checks to see whether the RDS was successfully created. If it
+was, then the code in the <TT>ELSE</TT> is executed.
+<P>
+The <TT>ELSE</TT> code sets some properties of the RDS object.
+The properties being set are <TT>Connect</TT>, which stores the
+name of the data source to connect to; <TT>SQL</TT>, which holds
+the <TT>SELECT</TT> command to be run; <TT>ExecuteOptions</TT>,
+which controls how the SQL results will be processed; and <TT>FetchOptions</TT>,
+which controls the fetching method used. All these properties
+are described later in this section.
+<P>
+Notice the call to the form's <TT>ShowValues</TT> method. The
+<TT>ShowValues</TT> method was added to the form, and the code
+for it is shown in Listing 8.3.<P>
+
+<HR>
+<B>Listing 8.3&nbsp;&nbsp;</B><TT><B>08CODE03</B></TT><B>-The
+Form's </B><TT><B>ShowValues</B></TT><B>
+Method Code<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+With This
+     .txtCompany.Value = ;
+     .oRDS.Recordset.Fields(&quot;CompanyName&quot;).Value
+     .txtContact.Value = ;
+     .oRDS.Recordset.Fields(&quot;ContactName&quot;).Value
+EndWith
+This.Refresh
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This method requests data from the RDS by referring to its <TT>Recordset.Fields(#).Value</TT>
+property and storing the fields value in the <TT>Value</TT> property
+of the text boxes. We are only using two of the fields in the
+recordset: <TT>CompanyName</TT> and <TT>ContactName</TT>.
+<P>
+The <TT>Company</TT> property of the form is used to set the <TT>CompanyName</TT>
+for the current record in the RDS record set.  The assign method
+for the <TT>Company</TT> property is shown in Listing 8.4.<P>
+
+<HR>
+<B>Listing 8.4&nbsp;&nbsp;</B><TT><B>08CODE04</B></TT><B>-The
+</B><TT><B>Company_assign </B></TT><B>Method
+Code<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.COMPANY = m.vNewVal
+This.oRDS.Recordset.Fields(&quot;CompanyName&quot;).Value = ALLTRIM(vNewVal)
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+You can see that the code here is storing the value to the <TT>Company</TT>
+property of the form and updating the RDS <TT>CompanyName</TT>
+field with the value as well. The RDS field is updated by referring
+to the <TT>Recordset.Fields(&quot;CompanyName&quot;).Value</TT>
+property.
+<P>
+The navigation buttons in the form have code in them to tell the
+RDS to go to a new record. Listing 8.5 shows the code from the
+Next button's <TT>Click</TT> event.<P>
+
+<HR>
+<B>Listing 8.5&nbsp;&nbsp;</B><TT><B>08CODE05</B></TT><B>-The
+Next Button's Click Event Code<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+ThisForm.oRDS.RecordSet.MoveNext
+If ThisForm.oRDS.RecordSet.Eof
+     ThisForm.oRDS.RecordSet.MoveLast
+EndIf
+ThisForm.ShowValues
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This code calls the RDS <TT>RecordSet.MoveNext</TT> method and
+then checks to see whether the end of file was encountered. If
+end of file was encountered, it moves to the last record. The
+code finishes by calling the form's <TT>ShowValues</TT> method,
+just like before. The code in the other navigation buttons is
+similar except for the record movement itself.
+<P>
+The Save button has one line of code in it:
+<BLOCKQUOTE>
+<PRE>
+ThisForm.oRDS.SubmitChanges()
+</PRE>
+</BLOCKQUOTE>
+<P>
+This line calls the RDS <TT>SubmitChanges()</TT> method, which
+submits the changes to the data source.
+<P>
+To better understand the power of RDO, review Table 8.4 to learn
+the RDS properties and Table 8.5 to learn the RDS methods.<BR>
+<P>
+<CENTER><B>Table 8.4&nbsp;&nbsp;The RDS Properties</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Property</B></CENTER></TD><TD WIDTH=384><CENTER><B>Description</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Connect</TT></TD><TD WIDTH=384>Connects to a data source. Takes three arguments: data source name, user ID, and user password.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>ExecuteOptions</TT></TD><TD WIDTH=384>Sets the synchronous or asynchronous mode for executing the <TT>SELECT</TT> command. A value of <TT>1</TT> is synchronous, and a value of <TT>2</TT> is asynchronous.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>FetchOptions</TT></TD><TD WIDTH=384>Sets the type of asynchronous fetching. Accepts three values: <TT>1</TT> to fetch up front, <TT>2</TT> to fetch in the background, and <TT>3</TT> to fetch asynchronously.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>FilterColumn</TT></TD><TD WIDTH=384>Sets or returns the column for the filter criterion. The actual criterion is specified in the <TT>FilterCriterion</TT> property.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>FilterCriterion</TT></TD><TD WIDTH=384>Sets or returns the filter criterion as a string. The values available are <TT>&lt;</TT>, <TT>&lt;=</TT>, <TT>&gt;</TT>, <TT>&gt;=</TT>, <TT>=</TT>, and <TT>&lt;&gt;</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>FilterValue</TT></TD><TD WIDTH=384>Sets or returns the filter string. Holds the value with which to apply <TT>FilterCriterion</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>InternetTimeout</TT></TD><TD WIDTH=384>Sets the number of milliseconds to wait before timing out a request.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>ReadyState</TT></TD><TD WIDTH=384>Represents the progress of <TT>RDS.DataControl</TT> as it fetches its results. Can be one of three values: <TT>2</TT>, the query is still loaded and no records have been fetched; <TT>3</TT>, the initial set of rows has been fetched, and the remaining rows are still being fetched; or <TT>4</TT>, all rows have been fetched.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>RecordSet</TT> and <TT>SourceRecordSet</TT>
+</TD><TD WIDTH=384>Sets the RecordSet returned by the SQL <TT>SELECT</TT> command. You can manipulate the data in the recordset by manipulating the <TT>RecordSet</TT> property of the RDS.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Server</TT></TD><TD WIDTH=384>Sets or returns the Internet Information Server name and protocol for the data source.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SortColumn</TT></TD><TD WIDTH=384>Sets or returns the column used for sorting the records in the recordset.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SortDirection</TT></TD><TD WIDTH=384>Sets or returns a logical value of <TT>.T.</TT> for ascending sort or <TT>.F.</TT> for descending sort.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SQL</TT></TD><TD WIDTH=384>Sets or returns the SQL <TT>SELECT</TT> command used to retrieve the recordset.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>URL</TT></TD><TD WIDTH=384>Sets or returns the location of a file that stores the persistent or saved recordset.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Table 8.5 contains the methods of the <TT>RDS.DataControl</TT>.
+<BR>
+<P>
+<CENTER><B>Table 8.5&nbsp;&nbsp;The Methods of the RDS.DataControl</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Method</B></CENTER></TD><TD WIDTH=384><CENTER><B>Description</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Cancel</TT></TD><TD WIDTH=384>Cancels the currently running asynchronous fetch.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>CancelUpdate</TT></TD><TD WIDTH=384>Cancels all updates made to the recordset, restoring the recordset to its state at the last refresh.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>CreateRecordSet</TT></TD><TD WIDTH=384>Creates an empty recordset.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>MoveFirst</TT></TD><TD WIDTH=384>Moves to the first record in the current recordset.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>MoveLast</TT></TD><TD WIDTH=384>Moves to the last record in the current recordset.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>MoveNext</TT></TD><TD WIDTH=384>Moves to the next record in the current recordset.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>MovePrevious</TT></TD><TD WIDTH=384>Moves to the previous record in the current recordset.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Refresh</TT></TD><TD WIDTH=384>Requeries the record source and updates the recordset.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Reset</TT></TD><TD WIDTH=384>Executes the filter and sort criteria for the recordset on the client side. Takes one argument of logical: <TT>.T.</TT> uses the current filtered rowset; and <TT>.F.</TT> uses the original rowset, discarding any previous filter options.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>SubmitChanges</TT></TD><TD WIDTH=384>Updates the data source from the current cached recordset.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Using these properties and methods, you can manage the data returned
+in an <TT>RDS.DataControl</TT>.
+<H2><A NAME="UserInterfaceConcernswithRemoteData"><FONT SIZE=5 COLOR=#FF0000>
+User Interface Concerns with Remote Data</FONT></A></H2>
+<P>
+Any discussion would be incomplete if we were to describe remote
+data access and not describe the impact remote data access has
+on user interface design. The issue in user interface design related
+to remote data access is that a remote data source might have
+a very large number of records in it.
+<P>
+Imagine a Microsoft SQL Server database that has 10,000,000 customer
+records in it. Retrieving all the customer records with remote
+data access is not practical or desirable. Instead, your user
+interface should provide a method for the users to specify which
+customer records they want and then only get that number of records
+from the data source.
+<P>
+This type of interface design precludes this old style:
+<BLOCKQUOTE>
+<PRE>
+USE Customer
+BROWSE
+</PRE>
+</BLOCKQUOTE>
+<P>
+Instead, you need to provide controls for the users to specify
+criteria for selecting the customer records desired and then use
+a parameterized remote view or an <TT>RDS.DataControl</TT> with
+a filtered <TT>SELECT</TT> statement to retrieve the records.
+<HR>
+<CENTER>
+
+<A HREF="ch07.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch09.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,659 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 18 -- Writing Reusable Code with Subs and Functions</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch17/ch17.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch19/ch19.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 18 -<BR>
+Writing Reusable Code with Subs and Functions</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Using Procedures in Visual Basic</A>
+	<LI><A HREF="#Heading2">Making and Calling a Simple Sub</A>
+	<LI><A HREF="#Heading3">Making Subs by Using Add Procedure</A>
+	<LI><A HREF="#Heading4">Making a Simple Function</A>
+	<LI><A HREF="#Heading5">Passing Arguments into Subs and Functions</A>
+	<UL>
+		<LI><A HREF="#Heading6">Using Named Arguments</A>
+	</UL>
+	<LI><A HREF="#Heading7">Exiting Subs and Functions</A>
+	<LI><A HREF="#Heading8">Understanding Scope</A>
+	<LI><A HREF="#Heading9">Documenting Subs and Functions</A>
+	<LI><A HREF="#Heading10">Determining Your Entry Point with Sub Main()</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Using Procedures in Visual Basic</H2>
+<P>You might not be aware of it, but you've been working with subs and functions
+for a while. Event procedures such as Click() and Load() are subs, and Visual Basic
+comes with many predefined functions built right into it, such as LoadPicture() and
+Len().</P>
+<P>Visual Basic is a <I>procedural</I> language--that is, you can make blocks of
+code that can be referred to by a name. After a block of code has a name, it can
+be <I>called </I>and executed. In other words, you can write some lines of code,
+enclose them in a code block, give the block a name, and then call the block when
+you need it. It's almost like having a program within a program. These little programs
+that live within larger programs are called &quot;functions&quot; if they return
+a value and &quot;subs&quot; if they don't.</P>
+<P>Programmers have written user-defined subs and functions for years. (In fact,
+the term &quot;sub&quot; is a shortened form of &quot;subroutine&quot; that gradually
+became its own word.) They make coding easier, faster, and more <I>robust</I>. Also,
+making your own subs and functions puts you on the road to writing <I>encapsulated</I>
+and reusable code. <I>Encapsulation</I> is simply the methods and properties of an
+object enclosed behind a public interface.</P>
+<P>
+<H2><A NAME="Heading2"></A>Making and Calling a Simple Sub</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Making code changes easily</STRONG></P>
+	<P>Subs enable you to change code easily. If you have a body of code that you need
+	to use repeatedly, put the code in a sub. Then, if you need to make a change in the
+	code, simply go to the sub to make changes. If you don't put the code in a sub, you
+	will have to go to every instance of the code in your program to make the required
+	change. The more dispersed your code is, the harder it is to make changes effectively
+	and efficiently. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>A sub is a procedure that executes the lines of code within its block but doesn't
+return a value. The syntax for a simple sub is as follows:</P>
+<P>
+<PRE>[Private|Public] Sub <I>SubName</I>()
+<I>.....lines of code</I>
+End Sub
+</PRE>
+<P>In this syntax</P>
+
+<UL>
+	<LI>[Private|Public] are the optional Visual Basic keywords that define the scope
+	of the sub.
+	<P>
+	<LI>Sub is the Visual Basic keyword that denotes the type of procedure.
+	<P>
+	<LI><I>SubName</I> is the name that you assign to your sub.
+	<P>
+	<LI>End Sub are the Visual Basic keywords that denote the end of a code block.
+</UL>
+
+<P>The following code snippet is an example of a simple sub:</P>
+<P>
+<PRE>Public Sub DataNotFound()
+     MsgBox &quot;Data Not Found&quot;, vbInformation
+End Sub
+</PRE>
+<P>When you call this sub from other areas of your code, the sub displays a Windows
+message box with the string Data Not Found. The message box will display whatever
+text is used for the string constant.</P>
+<P>Listing 18.1 shows the sub being called with the Visual Basic Call statement (line
+2). Using the Call statement is optional. Although you can call a Sub by using only
+its name, using the Call keyword makes your code more readable.</P>
+<P>
+<H4>LISTING 18.1&#160;&#160;18LIST01.TXT--Calling a Sub from an Event Procedure</H4>
+<PRE><B>01 </B>Private Sub itmOpen_Click()</PRE>
+<PRE><B>02 </B>Call DataNotFound</PRE>
+<PRE><B>03 </B>End Sub</PRE>
+<P>
+<H2><A NAME="Heading3"></A>Making Subs by Using Add Procedure</H2>
+<P>You can add a sub to your project in two ways:</P>
+
+<UL>
+	<LI>By writing the code directly into the General Declarations section of a form
+	or module.
+	<P>
+	<LI>By using the <B>Tools</B> menu's <B>Add Procedure</B> option.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Enabling the Add Procedure menu item</STRONG></P>
+	<P>For the Add <U>P</U>rocedure menu item to be enabled, you must be in Code window
+	view of the form or module into which you want to add the procedure. 
+<HR>
+</P>
+
+</BLOCKQUOTE>
+
+<P><B>Add a sub to your project with Add Procedure</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>From the <B>Tools</B> menu, choose <B>Add Procedure</B> to display
+	the Add Procedure dialog.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Enter the sub <U>N</U>ame (see Figure 18.1).
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Click <B>OK</B> to add the sub's code block to the form or module (see
+	Figure 18.2).
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('18fig01.gif')"><B>FIGURE 18.1</B></A> <I>The Add Procedure
+dialog lets you create subs and functions for all types of Visual Basic projects,
+as well as properties and events for ActiveX controls and ActiveX servers.</I></P>
+<P><A HREF="javascript:popUp('18fig02.gif')"><B>FIGURE 18.2</B></A> <I>You'll find
+the new sub in the General section of the form or module.</I></P>
+<P>After you create the sub code block with the Add Procedure dialog, you add the
+procedure's code within the code block. Don't enter any code for the Sub after the
+End Sub keywords; this is illegal and generates syntax errors when you compile the
+code.</P>
+<P>
+<H2><A NAME="Heading4"></A>Making a Simple Function</H2>
+<P>A function is a procedure that executes lines of code and returns a value. The
+syntax for declaring a simple function is as follows:</P>
+<P>
+<PRE>[Private|Public] Function <I>FunctionName</I>() As <I>DataType</I>
+<I>...lines of code</I>
+ <I>FunctionName</I> = <I>ReturnValue</I>
+End Function
+</PRE>
+<P>In this syntax</P>
+
+<UL>
+	<LI>Private|Public are the optional Visual Basic keywords that define the scope of
+	the function.
+	<P>
+	<LI>Function is the Visual Basic keyword that denotes the procedure is a function.
+	<P>
+	<LI><I>FunctionName</I> is the name that you assign to your function.
+	<P>
+	<LI>As is the Visual Basic keyword that denotes a data type assignment.
+	<P>
+	<LI><I>DataType</I><B> </B>is the data type of the value that the function will return.
+	<P>
+	<LI><I>ReturnValue</I> is the value that you pass back from the function by assigning
+	it to the function's name. (This is very important!)
+	<P>
+	<LI>End Function are the Visual Basic keywords that denote the end of a code block.
+</UL>
+
+<P>The code snippet in Listing 18.2 shows a function, GetNumber(), the purpose of
+which is to return a number defined within the function itself.</P>
+<P>
+<H4>LISTING 18.2&#160;&#160;18LIST02.TXT--A Simple Function</H4>
+<PRE><B>01 </B>Public Function GetNumber() As Integer</PRE>
+<PRE><B>02 </B>Dim a%</PRE>
+<PRE><B>03 </B>Dim b%</PRE>
+<PRE><B>04 </B>Dim c%</PRE>
+<PRE><B>05 </B>`Assign values to some variables</PRE>
+<PRE><B>06 </B>a% = 7</PRE>
+<PRE><B>07 </B>b% = 12</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>`Add them together</PRE>
+<PRE><B>10 </B>c% = a% + b%</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>`Pass the result out of the function by assigning</PRE>
+<PRE><B>13 </B>`it to the function name.</PRE>
+<PRE><B>14 </B>GetNumber = c%</PRE>
+<PRE><B>15 </B>End Function</PRE>
+<P>You add a function to your project by using the same two methods that you use
+to add a sub--by putting it directly into the General Declarations section of the
+form or module or by using the Add Procedure dialog. However, be advised that you
+have to manually add a little code when you add a function to your code by using
+the Add Procedure dialog (see Figure 18.3).</P>
+<P><A HREF="javascript:popUp('18fig03.gif')"><B>FIGURE 18.3</B></A> <I>Add the code
+block in the Add Procedure dialog.</I></P>
+<P>
+<H2><A NAME="Heading5"></A>Passing Arguments into Subs and Functions</H2>
+<P>You can enhance the power and versatility of subs and functions by using <I>arguments</I>.
+An argument, also referred to as a <I>parameter,</I> is a variable that acts as a
+placeholder for a value that you'll pass into the sub or function. You create arguments
+by placing them within the parentheses of the declaration statement of the sub or
+function. The following snippet of code shows the declaration for the function EndDay(),
+which takes two arguments: one of type Integer and one of type String.</P>
+<P>
+<PRE>EndDay(NumOne As Integer, strName As String) As Integer
+</PRE>
+<P>Using arguments greatly increases the reusability of your code. For example, imagine
+that in many places of your code you need to figure out the greater of two numbers.
+Every time you need to do this calculation, you could write out the code, line for
+line, or you could write out a function that does this for you and then call the
+function when you need to do the calculation. The advantage of the latter method
+is twofold:</P>
+
+<UL>
+	<LI>One call satisfies many needs throughout your code.
+	<P>
+	<LI>If you need to enhance this functionality, you don't have to go through your
+	code and make enhancements line by line; you simply go back to the function and make
+	the changes within the function's code block.
+</UL>
+
+<P>Listing 18.3 shows the <I>user-defined function</I> GetGreaterNum(), which returns
+the greater of two numbers passed to it.</P>
+<P>
+<H4>LISTING 18.3&#160;&#160;18LIST03.TXT--A Simple Function That Takes Arguments</H4>
+<PRE><B>01 </B>Public Function GetGreaterNum(NumOne As Integer, _</PRE>
+<PRE>NumTwo As Integer) As Integer</PRE>
+<PRE><B>02 </B>`If the first number is greater than the second</PRE>
+<PRE><B>03 </B>If NumOne &gt; NumTwo Then</PRE>
+<PRE><B>04 </B>`return the first number</PRE>
+<PRE><B>05 </B>GetGreaterNum = NumOne</PRE>
+<PRE><B>06 </B>Else</PRE>
+<PRE><B>07 </B>`if not, return the second number</PRE>
+<PRE><B>08 </B>GetGreaterNum = NumTwo</PRE>
+<PRE><B>09 </B>End If</PRE>
+<PRE><B>10 </B>End Function</PRE>
+<P>Listing 18.4 shows the GetGreaterNum() function called from within a Click() event
+procedure.</P>
+<P>
+<H4>LISTING 18.4&#160;&#160;18LIST04.TXT--Using a Function Within an Event Procedure</H4>
+<PRE><B>0 1</B> Private Sub cmdGreaterNum_Click()</PRE>
+<PRE><B>02 </B>Dim i%</PRE>
+<PRE><B>03 </B>Dim j%</PRE>
+<PRE><B>04 </B>Dim RetVal%</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>`Get the input in txtNumOne and convert it to an integer</PRE>
+<PRE><B>07 </B>i% = CInt(txtNumOne.Text)</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>`Get the input in txtNumTwo and convert it to an integer</PRE>
+<PRE><B>10 </B>j% = CInt(txtNumTwo.Text)</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>RetVal% = GetGreaterNum(i%, j%)</PRE>
+<PRE><B>13</B></PRE>
+<PRE><B>14 </B>`Take the result from the function, convert it to a</PRE>
+<PRE><B>15 </B>`string and assign it to the caption of the button.</PRE>
+<PRE><B>16 </B>cmdGreaterNum.Caption = CStr(RetVal%)</PRE>
+<PRE><B>17 </B>End Sub</PRE>
+<P>It's very important when you use subs or functions that the argument's type and
+order match up. If you have a procedure that has three arguments of type Integer,
+you must pass in three integers; if you pass in two Integers and a String, the compiler
+will throw an error. For example, if you have a function EndDay() declared as follows,</P>
+<P>
+<PRE>Public Function EndDay(iNum As Integer, dAccount _
+                       As Double) As Double
+</PRE>
+<P>and call the function by using the following line of code,</P>
+<P>
+<PRE>dMyResult = EndDay(6, &quot;D56R&quot;)
+</PRE>
+<P>this call generates an error. &quot;D56R&quot; is of type String, but the function
+is expecting the second argument to be of type Double. For this reason, a variable
+type declaration error appears.</P>
+<P>Also, the argument count must match up. For example, you have a function declared
+as follows:</P>
+<P>
+<PRE>Public Function Bar(iNum as Integer, dNum as Double, _
+strName as String) as Integer
+</PRE>
+<P>and you call the function by using the following line of code:</P>
+<P>
+<PRE>iMyResult = Bar(6, 7)
+</PRE>
+<P>This call also causes an error. The function expects three arguments, but you've
+passed in only two. Again, an error occurs.</P>
+<P>It's possible to make an argument optional by using the Optional keyword before
+an argument when you declare the function. If there's an upper limit on the number
+of arguments that you're going to pass, you should use the Optional keyword. These
+arguments must be declared as Variant.</P>
+<P>
+<H3><A NAME="Heading6"></A>Using Named Arguments</H3>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Avoid problems with named arguments</STRONG></P>
+	<P>Using named arguments enables you to avoid problems that might arise in function
+	use because of the ordering of arguments. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>You can use named arguments to make passing arguments to a procedure easier. A
+named argument is the literal name of an argument in a procedure. For example, if
+you have a function EndDay() that takes two arguments, NumOne and NumTwo, of type
+Integer, you define it as follows:</P>
+
+<UL>
+	<LI>EndDay(NumOne as Integer, NumTwo as Integer) as Integer
+</UL>
+
+<P>To pass a value to the function by using named arguments, you use the names of
+the arguments and assign values to them by using the := characters. Thus, to pass
+actual values into EndDay() by using named arguments, you do the following:</P>
+<P>
+<PRE>X = EndDay(NumOne:=3, NumTwo:=4)
+</PRE>
+<H2><A NAME="Heading7"></A>Exiting Subs and Functions</H2>
+<P>Sometimes you need to leave a procedure before it finishes. You do this by using
+the Exit keyword. Listing 18.5 shows the function ExitEarly(), which takes two arguments:
+an Integer used to determine the upper limit of a loop and an Integer that flags
+the function when a special condition exists that requires the function to be exited
+early.</P>
+<P>
+<H4>LISTING 18.5&#160;&#160;18LIST05.TXT--Using the ExitEarly() Function</H4>
+<PRE><B>01 </B>Public Function ExitEarly(iLimit As Integer, _</PRE>
+<PRE>iFlag As Integer) As Integer</PRE>
+<PRE><B>02 </B>Dim i%</PRE>
+<PRE><B>03 </B>Dim Limit%</PRE>
+<PRE><B>04 </B>Dim Flag%</PRE>
+<PRE><B>05</B></PRE>
+<PRE><B>06 </B>`Assign the limit argument to a local variable</PRE>
+<PRE><B>07 </B>Limit% = iLimit</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>`Assign the state argument to local variable</PRE>
+<PRE><B>10 </B>Flag%= iFlag</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>`Run a For...Next loop to Limit%</PRE>
+<PRE><B>13 </B>For i% = 0 To Limit%</PRE>
+<PRE><B>14</B></PRE>
+<PRE><B>15 </B>`If the passed in state is one</PRE>
+<PRE><B>16 </B>If Flag% = 1 Then</PRE>
+<PRE><B>17</B></PRE>
+<PRE><B>18 </B>`Check to see if i% equals half the value of</PRE>
+<PRE><B>19 </B>`the Limit variable</PRE>
+<PRE><B>20 </B>If i% = Limit% / 2 Then</PRE>
+<PRE><B>21</B></PRE>
+<PRE><B>22 </B>`If it does, pass out the value of i%</PRE>
+<PRE><B>23 </B>`at that point</PRE>
+<PRE><B>24 </B>ExitEarly = i%</PRE>
+<PRE><B>25</B></PRE>
+<PRE><B>26 </B>`Terminate the function; there is no</PRE>
+<PRE><B>27 </B>`reason to go on</PRE>
+<PRE><B>28 </B>Exit Function</PRE>
+<PRE><B>29 </B>End If</PRE>
+<PRE><B>30 </B>End If</PRE>
+<PRE><B>31 </B>Next i%</PRE>
+<PRE><B>32</B></PRE>
+<PRE><B>33 </B>`If you made it this far, the flag variable does not</PRE>
+<PRE><B>34 </B>`equal one, so pass the value of i% out of the</PRE>
+<PRE><B>35 </B>`function by assigning the value of i% to the</PRE>
+<PRE><B>36 </B>`function name.</PRE>
+<PRE><B>37 </B>ExitEarly = i%</PRE>
+<PRE><B>38</B></PRE>
+<PRE><B>39 </B>End Function</PRE>
+<P>The ExitEarly() function works by taking the iLimit argument, assigning it to
+a variable local to the function (line 7) and then using that local variable to be
+the upper limit of a For...Next loop (line 13). The function also takes the iFlag
+argument and assigns that variable to one that's also local to the function (line
+10). Then the For...Next loop is run. Within the loop, if the value of the local
+Flag variable is 1 (line 16), an If...Then statement checks the value of the counting
+variable, i%, to see whether it's equal to half the value of the variable Limit (line
+20). If it is, the value is assigned to the function's name (line 24) to be passed
+back to the call, and the Exit keyword terminates the execution of the function (line
+28). If the value of the local variable Flag is other than 1, the loop continues
+until it reaches its limit (line 31). Then the value of i% is assigned to the function's
+name, and control is returned to the calling code (line 36).</P>
+<P>When you create a user-defined function, the Visual Basic IDE treats it as though
+it were an intrinsic function. This means that the function is listed in the Object
+Browser and appears in the Quick Info window (see Figure 18.4).</P>
+<P><A HREF="javascript:popUp('18fig04.gif')"><B>FIGURE 18.4</B></A><B> </B><I>One
+nice feature of Visual Basic 6 is that the Quick Info window pops up even for user-defined
+subs and functions.</I></P>
+<P>
+<H2><A NAME="Heading8"></A>Understanding Scope</H2>
+<P>Scope is the capability of two different variables to have the same name and maintain
+different values and lifetimes. Listing 18.6 shows two functions, EndDay() and Bar().</P>
+<P>
+<H4>LISTING 18.6&#160;&#160;18LIST05.TXT--Two Variables with Different Scope</H4>
+<PRE><B>01 </B>Public Function EndDay() as Integer</PRE>
+<PRE><B>02 </B>Dim x as Integer</PRE>
+<PRE><B>03 </B>Dim y as Integer</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>x = 2</PRE>
+<PRE><B>06 </B>y = 7</PRE>
+<PRE><B>07 </B>EndDay = x + y</PRE>
+<PRE>08 End Function</PRE>
+<PRE><B>09</B></PRE>
+<PRE><B>10 </B>Public Function Bar() as Integer</PRE>
+<PRE><B>11 </B>Dim x as Integer</PRE>
+<PRE><B>12 </B>Dim y as Integer</PRE>
+<PRE><B>13</B></PRE>
+<PRE><B>14 </B>x = 12</PRE>
+<PRE><B>15 </B>y = 34</PRE>
+<PRE><B>16 </B>Bar = x * y</PRE>
+<PRE><B>17 </B>End Function</PRE>
+<P>Notice that each function declares variables x and y. Also notice that those variables
+are assigned different values within each function (lines 5-6 and 14-15). This is
+possible because each set of variables exists only where it's created. In the function
+EndDay(), the variables x and y are created in lines 2 and 3. When the function ends
+in line 8, the variables are removed from memory and no longer exist. (This is known
+as going <I>out of scope</I>.) The same is true of the x and y variables in the Bar()
+function. Neither variable set can see the other. If you wanted to create variables
+i and j, the values of which could be seen by both functions, you would create the
+variables higher in scope in the General Declarations section of a form or module,
+using the Public or Private keywords when declaring them.</P>
+<P>
+<H2><A NAME="Heading9"></A>Documenting Subs and Functions</H2>
+<P>Although the EarlyExit()function is functionally adequate, it's difficult to implement
+from project to project. If other programmers wanted to use it, they would have to
+take more than a passing glance to figure out what the function is about and how
+to put it to good use. Proper documentation addresses this deficiency.</P>
+<P>All subs and functions should have a <I>header</I>, a section of commented code
+that appears at the top of a code block. The header usually gives a synopsis of the
+procedure: the procedure name, a description of the arguments and return value if
+any, and some remarks as to what the procedure is about, with any special instructions.
+Also in the header is a history of when and who created the code. If any changes
+are made to the code, a description and date of the changes are added to the header.
+Finally, the header contains the appropriate copyright information.</P>
+<P>You should also comment each task within the procedure. This saves time for others
+who will maintain your code. Commenting your code will save you a lot of effort when
+it comes time to revisit the code later. Listing 18.7 shows the ExitEarly() function
+commented in a professional manner (line numbering has been omitted for the sake
+of clarity).</P>
+<P>
+<H4>LISTING 18.7&#160;&#160;18LIST06.TXT--A Well-Documented Function</H4>
+<PRE><B>01 </B>Public Function ExitEarly(iLimit As Integer, _</PRE>
+<PRE><B>02 </B>iFlag As Integer) As Integer</PRE>
+<PRE><B>03 </B>`****************************************</PRE>
+<PRE><B>04 </B>`Sub/Function: ExitEarly</PRE>
+<PRE><B>05 </B>`</PRE>
+<PRE><B>06 </B>`Arguments: iLimit The upper limit of the For..Next Loop</PRE>
+<PRE><B>07 </B>` iFlag An integer indicating early exit from</PRE>
+<PRE><B>08 </B>` the function. 1 = Exit.</PRE>
+<PRE><B>09 </B>` Other values are ignored.</PRE>
+<PRE><B>10 </B>`</PRE>
+<PRE><B>11 </B>`Return: The value of the For...Next loop counter</PRE>
+<PRE><B>12 </B>`</PRE>
+<PRE><B>13 </B>`Remarks: This function is used to demonstrate the way</PRE>
+<PRE><B>14 </B>` to use arguments within a function</PRE>
+<PRE><B>15 </B>`</PRE>
+<PRE><B>16 </B>`Programmer: Bob Reselman</PRE>
+<PRE><B>17 </B>`</PRE>
+<PRE><B>18 </B>`History: Created 4/20/98</PRE>
+<PRE><B>19 </B>`</PRE>
+<PRE><B>20 </B>`Copyright 1998, Macmillan Publishing</PRE>
+<PRE><B>21 </B>`****************************************</PRE>
+<PRE><B>22</B></PRE>
+<PRE><B>23 </B>Dim i% `Counter variable</PRE>
+<PRE><B>24 </B>Dim Limit% `Internal variable for the upper limit of the</PRE>
+<PRE><B>25 </B>`For...Next loop</PRE>
+<PRE><B>26 </B>Dim Flag% `Internal variable for the exit flag</PRE>
+<PRE><B>27</B></PRE>
+<PRE><B>28 </B>`Assign the limit argument to a local variable</PRE>
+<PRE><B>29 </B>Limit% = iLimit</PRE>
+<PRE><B>30</B></PRE>
+<PRE><B>31 </B>`Assign the state argument to local variable</PRE>
+<PRE><B>32 </B>Flag% = iFlag</PRE>
+<PRE><B>33</B></PRE>
+<PRE><B>34 </B>`Run a For...Next loop to Limit%</PRE>
+<PRE><B>35 </B>For i% = 0 To Limit%</PRE>
+<PRE><B>36</B></PRE>
+<PRE><B>37 </B>`If the passed in state is one</PRE>
+<PRE><B>38 </B>If Flag% = 1 Then</PRE>
+<PRE><B>39</B></PRE>
+<PRE><B>40 </B>`Check to see if i% equals half the value of</PRE>
+<PRE><B>41 </B>`the Limit variable</PRE>
+<PRE><B>42 </B>If i% = Limit% / 2 Then</PRE>
+<PRE><B>43</B></PRE>
+<PRE><B>44 </B>`If it does, pass out the value of i%</PRE>
+<PRE><B>45 </B>`at that point</PRE>
+<PRE><B>46 </B>ExitEarly = i%</PRE>
+<PRE><B>47</B></PRE>
+<PRE><B>48 </B>`Terminate the function; there is no reason</PRE>
+<PRE><B>49 </B>`to go on</PRE>
+<PRE><B>50 </B>Exit Function</PRE>
+<PRE><B>51 </B>End If</PRE>
+<PRE><B>52 </B>End If</PRE>
+<PRE><B>53 </B>Next i%</PRE>
+<PRE><B>54</B></PRE>
+<PRE><B>55 </B>`If you made it this far, the state variable does not</PRE>
+<PRE><B>56 </B>`equal one, so pass the value of i% out of the function</PRE>
+<PRE><B>57 </B>`by assigning the value of i% to the function name.</PRE>
+<PRE><B>58 </B>ExitEarly = i%</PRE>
+<PRE><B>59</B></PRE>
+<PRE><B>60 </B>End Function</PRE>
+<P>
+<H2><A NAME="Heading10"></A>Determining Your Entry Point with Sub Main()</H2>
+<P>By default, when you start a Visual Basic project, the first form created will
+be the first form that the project loads. This is adequate if you have a one-form
+project. What if you have a project with many forms or a project with no forms at
+all? For the multiple-form problem, you could &quot;chain&quot; Form_Load() event
+procedures--have one form's Load event procedure Load another form--as follows:</P>
+<P>
+<PRE>Private Sub Form_Load()
+     Load frmAnotherForm
+End Sub
+</PRE>
+<P>This would work adequately for projects with a limited amount of forms, but it's
+not the best programming practice, particularly if you have projects that require
+the presentation of many forms.</P>
+<P>For projects that have no forms (and there are such projects, particularly in
+server-side Internet programs that use Visual Basic), there's nothing to load. What
+do you do for an <I>entry point</I> (or starting point) for your program? Visual
+Basic provides a nonform-based entry point for your program--the Sub Main() procedure.
+Sub Main() is a special procedure reserved by Visual Basic as the startup procedure
+for any given project. Sub Main() must be declared in a module, and there can be
+only one Sub Main() per project.</P>
+<P><B>Set <I>Sub Main()</I> to be the startup point for a project</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>From the <B>Project</B> menu, choose <B><I>ProjectName</I> Properties</B>.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Select <B>Sub Main</B> from the <B>Startup Object</B> drop-down list
+	on the <B>General</B> page of the Project Properties dialog (see Figure 18.5).
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Click <B>OK</B>.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('18fig05.gif')"><B>FIGURE 18.5</B></A> <I>You can choose
+Sub Main() or any form in your project as the startup object.</I></P>
+<P>After you define Sub Main() to be the startup object for your project, you need
+to create Sub Main in a module. You can use the Add Procedure dialog that you've
+used to create user-defined procedures, or you can manually enter the declaration
+in the General section of your chosen module. Remember, a project can have only one
+Sub Main(). After you create Sub Main(), you need to fill in some startup code.</P>
+<P>Listing 18.8 shows a Sub Main() that displays two forms by using the Show method
+(lines 4 and 5) and then displays a message box after all the forms are visible (line
+8).</P>
+<P>
+<H4>LISTING 18.8&#160;&#160;18LIST07.TXT--A Simple Sub Main()</H4>
+<PRE><B>01 </B>Sub Main()</PRE>
+<PRE><B>02 </B>`Use the Show method to display both</PRE>
+<PRE><B>03 </B>`forms upon startup</PRE>
+<PRE><B>04 </B>frmMain.Show</PRE>
+<PRE><B>05 </B>frmOther.Show</PRE>
+<PRE><B>06</B></PRE>
+<PRE><B>07 </B>`Report that all forms are shown</PRE>
+<PRE><B>08 </B>MsgBox &quot;Everything shown&quot;</PRE>
+<PRE><B>09 </B>End Sub</PRE>
+<P>The code for some versions of Sub Main() can be simple, but some Sub Main() procedures
+can be complex. Listing 18.9 shows how Sub Main() is used to invoke a comprehensive
+startup routine that calls other procedures. This listing is the Sub Main() procedure
+for the VBScheduler program that you can download from http://www.mcp.com/info.</P>
+<P>
+<H4>LISTING 18.9&#160;&#160;18LIST09.TXT--A More Complex Sub Main()</H4>
+<PRE><B>01 </B>Sub Main()</PRE>
+<PRE><B>02 </B>`Load the form and let it run the code in the</PRE>
+<PRE><B>03 </B>`Form_Load event handler</PRE>
+<PRE><B>04 </B>Load frmMain</PRE>
+<PRE><B>05 </B>`Intialize the contact list combo box</PRE>
+<PRE><B>06 </B>Call InitComboAsDb(frmMain.cboName, frmMain.DataMain)</PRE>
+<PRE><B>07 </B>`Fill the appointment list with today's appoinments</PRE>
+<PRE><B>08 </B>Call GetDailyAppointments(CDbl(Cdate _</PRE>
+<PRE>(frmMain.FormDateString())), _</PRE>
+<PRE>frmMain.lstSchedule, _</PRE>
+<PRE>frmMain.DataMain, _</PRE>
+<PRE>gAppointmentDelta%)</PRE>
+<PRE><B>09 </B>`Show the main form</PRE>
+<PRE><B>10 </B>frmMain.Show</PRE>
+<PRE><B>11 </B>`Set the mouse pointer back to an arrow</PRE>
+<PRE><B>12 </B>frmMain.MousePointer = 0</PRE>
+<PRE><B>13 </B>End Sub</PRE>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch17.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch17/ch17.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch19.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch19/ch19.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> <BR>
+</P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

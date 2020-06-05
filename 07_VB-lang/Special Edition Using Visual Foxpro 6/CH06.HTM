@@ -1,0 +1,2234 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 6 - Creating Basic Queries</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch05.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch07.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;6</H1>
+<H1>Creating Basic Queries</H1>
+
+<UL>
+<LI><A HREF="#WhatIsaQuery">
+What is a Query?</A>
+<LI><A HREF="#SelectingTablesforaQuery">
+Selecting Tables for a Query</A>
+<UL>
+<LI><A HREF="#AddingaTableorViewfromaDatabaseBR">
+Adding a Table or View from a Database<BR>
+</A>
+<LI><A HREF="#AddingaFreeTable">
+Adding a Free Table</A>
+</UL>
+<LI><A HREF="#SelectingFieldstoIncludeintheQuery">
+Selecting Fields to Include in the Query</A>
+<LI><A HREF="#OrderingtheResults">
+Ordering the Results</A>
+<LI><A HREF="#MiscellaneousTabOptions">
+Miscellaneous Tab Options</A>
+<LI><A HREF="#ViewingtheResults">
+Viewing the Results</A>
+<LI><A HREF="#UsingMultipleConditionFilters">
+Using Multiple-Condition Filters</A>
+<LI><A HREF="#RoutingtheQueryResults">
+Routing the Query Results</A>
+<UL>
+<LI><A HREF="#OutputtoaCursor">
+Output to a Cursor</A>
+<LI><A HREF="#OutputtoaTable">
+Output to a Table</A>
+<LI><A HREF="#OutputtoaGraph">
+Output to a Graph</A>
+<LI><A HREF="#OutputtotheScreen">
+Output to the Screen</A>
+<LI><A HREF="#OutputtoaReport">
+Output to a Report</A>
+<LI><A HREF="#OutputtoaLabel">
+Output to a Label</A>
+</UL>
+<LI><A HREF="#UsingQueryDesignerVersusManuallyCreatedSQLSELECTStatements">
+Using Query Designer Versus Manually Created SQL SELECT Statements
+</A>
+<LI><A HREF="#GroupingRecordstoSummarizeData">
+Grouping Records to Summarize Data</A>
+<LI><A HREF="#UsingQueriesinProgramsandForms">
+Using Queries in Programs and Forms</A>
+<LI><A HREF="#EditingtheGeneratedSQLTTSELECTTTStatement">
+Editing the Generated SQL <TT>SELECT</TT> Statement </A>
+<LI><A HREF="#CreatingComplexQueries">
+Creating Complex Queries</A>
+<UL>
+<LI><A HREF="#UsingaTTBETWEENTTClausetoFilteraRangeofValues">
+Using a <TT>BETWEEN</TT>
+Clause to Filter a Range of Values</A>
+<LI><A HREF="#UsinganTTINTTClausetoFilterSelectedValues">
+Using an <TT>IN</TT> Clause
+to Filter Selected Values</A>
+<LI><A HREF="#DefiningSubqueries">
+Defining Subqueries</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="WhatIsaQuery"><FONT SIZE=5 COLOR=#FF0000>
+What is a Query?</FONT></A></H2>
+<P>
+According to the <I>American Heritage Dictionary</I>, a <I>query</I>
+is a question, an inquiry. So when you query a database, you are
+asking it questions about data. Using a sales file, for example,
+you might ask the following questions:
+<UL>
+<LI>What is the total value of all sales for
+last week? last month? last year?
+<LI>Are sales increasing?
+<LI>Which products sell the greatest quantity?
+<LI>Which products produce the most sales
+dollars?
+<LI>Which products are losing sales?
+<LI>How many sales are made to repeat customers?
+<LI>How are sales distributed by state?
+</UL>
+<P>
+With a little effort, you surely can come up with infinitely more
+questions. Although you might write programs to answer many of
+those questions, you cannot anticipate them all. Both queries
+and views are built to order for answering these types of questions.
+In this chapter, you will examine the Visual FoxPro query and
+learn how to use it. In subsequent chapters, you will learn about
+Visual FoxPro views and see how they are often more powerful and
+full-featured than the queries.
+<P>
+Queries and views are similar, but the differences are important.
+Queries are stored as program files with the extension <TT>.QPR</TT>.
+The QPR program contains a SQL <TT>SELECT</TT> command. Views
+are stored in a database and are also stored as a SQL <TT>SELECT</TT>
+command. However, views have two advantages over queries. First,
+they can be updated, meaning that they update their source tables
+when the view is updated. Second, they can be parameterized. <A HREF="ch07.htm">Chapter
+7</a>, &quot;Advanced Queries and Views,&quot; will present views
+for you. In this chapter, the discussion is limited to queries.
+<H2><A NAME="SelectingTablesforaQuery"><FONT SIZE=5 COLOR=#FF0000>
+Selecting Tables for a Query</FONT></A></H2>
+<P>
+Open the Query Designer by choosing File, New from the system
+menu or by clicking the New button in the toolbar. Choose the
+Query option in the New dialog box, and click the New File button,
+as shown in Figure 6.1.
+<P>
+<IMG SRC="f6-1.gif"><B>Figure 6.1 : </B><I>Use the New dialog box to start a new query</I>.</A>
+<H3><A NAME="AddingaTableorViewfromaDatabaseBR">
+Adding a Table or View from a Database<BR>
+</A></H3>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You also can start a new query from the Command window by using the <TT>CREATE QUERY</TT> or <TT>MODIFY QUERY</TT> command.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can create a query without first opening the database. In the File Open dialog box, just select one of the tables that is in the database, and Visual FoxPro opens the database for you.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+A query requires at least one table. However, Visual FoxPro does
+not assume that you want to query the table in the current work
+area; rather, it immediately opens a window displaying the Open
+Table dialog box and enables you to select the first table. Actually,
+VFP can open two windows, depending on whether a database is open.
+Figure 6.2 shows the Add Table or View dialog box, which lists
+tables in an open database. If more than one database is open,
+you can pull down the database combo list and change the current
+one.
+<P>
+<IMG SRC="f6-2.gif"><B>Figure 6.2 : </B><I>The Add Table or View dialog box appears
+when you create a new query, allowing you to select a table</I>.</A>
+<P>
+For this set of examples, open the Tastrade database that comes
+with Visual FoxPro. In the Select area, you can choose either
+Tables or Views to use in the query. Tastrade has both tables
+and some predefined views. To start a new query definition, select
+from the available tables. Notice that the list of tables in this
+dialog box includes only tables that are defined in the Tastrade
+database.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Keep in mind that the methods discussed in this chapter apply to views as well.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="AddingaFreeTable">
+Adding a Free Table</A></H3>
+<P>
+To use a free table, either start the Query Designer without first
+opening a database, or click the Other button in the Add Table
+or View dialog box (see Figure 6.2). VFP displays the standard
+Open dialog box, shown in Figure 6.3. In this dialog box, you
+can select a table from any directory or drive, including network
+drives. If the selected table really is bound to a database, Visual
+FoxPro automatically opens the database, too.
+<P>
+<IMG SRC="f6-3.gif"><B>Figure 6.3 : </B><I>In the Open dialog box, you can select free
+tables or tables from databases that are not open</I>.</A>
+<P>
+To begin the first query, return to the Add Table or View dialog
+box, and select the <TT>PRODUCTS</TT> table from the Tastrade
+database. A small window in the data source area (the top half)
+of the Query Designer displays the table's field names. The name
+of the selected tables always appears in the window header. Figure
+6.4 shows the Query Designer at this point.
+<P>
+<IMG SRC="f6-4.gif"><B>Figure 6.4 : </B><I>The Query Designer, with two tables from
+the Tastrade database, is open in the source data area</I>.</A>
+<P>
+When the Query Designer opens, it also opens a toolbar (see Figure
+6.5). The toolbar's six buttons perform functions that are specific
+to queries.
+<P>
+<IMG SRC="f6-5.gif"><B>Figure 6.5 : </B><I>The Query Designer toolbox contains six
+buttons that provide fast access to some of the most common functions</I>.</A>
+<P>
+Suppose that you want to list products by suppliers. The <TT>PRODUCTS</TT>
+file has a supplier ID associated with every product. But the
+<TT>SUPPLIER</TT> table stores the details about each supplier,
+such as name and address. Therefore, you need to open both files.
+To add a second table, click the Add Table button in the query
+toolbar. VFP displays the View dialog box. Select the <TT>SUPPLIER</TT>
+table, and click Add.
+<P>
+In Figure 6.6, notice that when Query Designer adds the <TT>SUPPLIER</TT>
+table to the table view area, it also draws a line between <TT>PRODUCTS</TT>
+and <TT>SUPPLIER</TT>. To be more specific, it draws the line
+between the field <TT>PRODUCTS.Supplier_Id</TT> and <TT>SUPPLIER.Supplier_Id</TT>.
+This line indicates that these two files share a field that relates
+records from one table to another. FoxPro knew to draw this line
+because of the persistent relation defined between these two files
+in the database. VFP also displays this <I>join condition</I>
+on the Join page in the bottom half of the Query Designer window.
+<P>
+<IMG SRC="f6-6.gif"><B>Figure 6.6 : </B><I>The Query Designer is shown with two open
+tables</I>.</A>
+<P>
+Perhaps you wonder what the two buttons to the left of the field
+name in the Join page do. The leftmost button, which points up
+and down, enables you to change the order of the selection expressions
+(if you have more than one). The second button, which points left
+and right, appears only when the criteria define the link between
+tables and allow modification to the type of join condition. Click
+this second button to display the dialog box shown in Figure 6.7.
+You can also open this dialog box by clicking the Add Join button
+in the toolbar or by double-clicking the line that links the two
+tables in the source data area.
+<P>
+<IMG SRC="f6-7.gif"><B>Figure 6.7 : </B><I>Define the join criteria by using the Join
+Condition dialog box</I>.</A>
+<P>
+The Join page enables you to customize the join condition. You
+can select the type of join from the Type drop-down list, open
+the drop-down list for either field, and select fields to define
+the join relations. You can also change the connection criteria
+and reverse the logic by clicking the Not button. Join supports
+five criteria:
+<UL>
+<LI><TT>Equal</TT>
+<LI><TT>Like</TT>
+<LI><TT>Exacly Like</TT>
+<LI><TT>More Than</TT>
+<LI><TT>Less Than</TT>
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Join conditions that are established as the result of a persistent relationship between tables cannot be modified. If you try to modify such a join condition, you'll find that the drop-down lists are disabled. You must remove the join condition and then set it again from the Join page. Removing the join condition from the Join page does not affect the persistent relationships between tables.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The Join Condition dialog box enables you to select the type of
+join and describes each condition. The four types of joins are
+as follow:
+<UL>
+<LI>Inner join, which includes only
+the records from both tables that match the join condition.
+<LI>Left outer join, which includes
+all records from the table on the left and records that match
+the join condition from the table on the right.
+<LI>Right outer join, which includes
+all records from the table on the right and those records that
+match the join condition from the table on the left.
+<LI>Full outer join, which includes
+all records from both tables and combines those that match the
+join condition into one record in the result set.
+</UL>
+<P>
+To better understand the differences among these four join types,
+look at some sample ddata. Tables 6.1 and 6.2 show sample data
+from two tables.<BR>
+<P>
+<CENTER><B>Table 6.1&nbsp;&nbsp;The Persons Tabls</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>PersonID</B></CENTER></TD><TD WIDTH=96><CENTER><B>Name</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>1</TT></CENTER></TD><TD WIDTH=96>Joe</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>2</TT></CENTER></TD><TD WIDTH=96>John</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>3</TT></CENTER></TD><TD WIDTH=96>Mary</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>4</TT></CENTER></TD><TD WIDTH=96>Joan</TD>
+</TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<CENTER><B>Table 6.2&nbsp;&nbsp;The Cards Table</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>CardID</B></CENTER></TD><TD WIDTH=96><CENTER><B>PersonID</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Reason</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>1</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>1</TT></CENTER>
+</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>2</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>2</TT></CENTER>
+</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>3</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>3</TT></CENTER>
+</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>4</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>0</TT></CENTER>
+</TD><TD WIDTH=96>Christmas</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Notice that the <TT>Persons</TT> table has one person from whom
+we have never received a card, and the <TT>Cards</TT> table has
+one card that is not from any of the people. These two records
+are the ones that the various join types will affect.
+<P>
+The join criteria that we will use is <TT>Persons.PersonID = Cards.PersonID</TT>.
+Table 6.3 shows you the result of an inner join. Remember that
+an inner join contains only those records from the two tables
+that meet the join criteria.<BR>
+<P>
+<CENTER><B>Table 6.3&nbsp;&nbsp;The Inner Join</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>CardID</B></CENTER></TD><TD WIDTH=96><CENTER><B>PersonID</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Name</B></CENTER></TD><TD WIDTH=96><CENTER><B>Reason</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>1</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>1</TT></CENTER>
+</TD><TD WIDTH=96>Joe</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>2</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>2</TT></CENTER>
+</TD><TD WIDTH=96>John</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>3</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>3</TT></CENTER>
+</TD><TD WIDTH=96>Mary</TD><TD WIDTH=96>Birthday</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+In Table 6.3, notice that Joan doesn't show up and that no card
+is shown for Christmas. These two records did not meet the join
+criteria. Joan didn't have a matching card, and the Christmas
+card had no matching person.
+<P>
+Table 6.4 shows the left outer join.<BR>
+<P>
+<CENTER><B>Table 6.4&nbsp;&nbsp;The Left Outer Join</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>CardID</B></CENTER></TD><TD WIDTH=96><CENTER><B>PersonID</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Name</B></CENTER></TD><TD WIDTH=96><CENTER><B>Reason</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>1</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>1</TT></CENTER>
+</TD><TD WIDTH=96>Joe</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>2</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>2</TT></CENTER>
+</TD><TD WIDTH=96>John</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>3</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>3</TT></CENTER>
+</TD><TD WIDTH=96>Mary</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>0</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>4</TT></CENTER>
+</TD><TD WIDTH=96>Joan</TD><TD WIDTH=96>&nbsp;</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+In the left outer join, you see that Joan is included even though
+she has no corresponding card record. The fields for the card
+data are empty.
+<P>
+Table 6.5 is an example of the right outer join.<BR>
+<P>
+<CENTER><B>Table 6.5&nbsp;&nbsp;The Right Outer Join</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>CardID</B></CENTER></TD><TD WIDTH=96><CENTER><B>PersonID</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Name</B></CENTER></TD><TD WIDTH=96><CENTER><B>Reason</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>1</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>1</TT></CENTER>
+</TD><TD WIDTH=96>Joe</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>2</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>2</TT></CENTER>
+</TD><TD WIDTH=96>John</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>3</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>3</TT></CENTER>
+</TD><TD WIDTH=96>Mary</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>4</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>0</TT></CENTER>
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>Christmas</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Notice that the Christmas card is included in the right outer
+join even though it has no corresponding person record.
+<P>
+Finally, consider the full outer join shown in Table 6.6.<BR>
+<P>
+<CENTER><B>Table 6.6&nbsp;&nbsp;The Full Outer Join</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>CardID</B></CENTER></TD><TD WIDTH=96><CENTER><B>PersonID</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Name</B></CENTER></TD><TD WIDTH=96><CENTER><B>Reason</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>1</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>1</TT></CENTER>
+</TD><TD WIDTH=96>Joe</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>2</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>2</TT></CENTER>
+</TD><TD WIDTH=96>John</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>3</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>3</TT></CENTER>
+</TD><TD WIDTH=96>Mary</TD><TD WIDTH=96>Birthday</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>4</TT></CENTER></TD><TD WIDTH=96>&nbsp;
+</TD><TD WIDTH=96>&nbsp;</TD><TD WIDTH=96>Christmas</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>5</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>4</TT></CENTER>
+</TD><TD WIDTH=96>Joan</TD><TD WIDTH=96>&nbsp;</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Notice that both Joan and the Christmas card are included in the
+full outer join result.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+A type of join not yet mentioned is the Cartesian product. The Cartesian product is the result of a join with no join criteria. This join combines every record in one table with each of the records in the other table, resulting in a number of records equal to the first table's record count times the second table's record count.
+<BR>
+If you deal with tables that have large numbers of records, the Cartesian product can fill your disk drive in a heartbeat.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>Additional Filter Criteria</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Record filters support three additional criteria: <TT>BETWEEN</TT>, <TT>IN</TT>, and <TT>IS NULL</TT>. <TT>BETWEEN</TT> defines an inclusive range of values. The following would include employees between <TT>0100</TT> and <TT>0199</TT>, inclusive:
+<P>
+<TT>
+Employee_Id BETWEEN '0100' AND '0199'</TT>
+<P>
+On the other hand, <TT>IN</TT> defines a list of independent values. The following statement tells the query to include only records for these three employees:
+<P>
+<TT>
+Employee_Id IN ('0100', '0133', '0175')</TT>
+<P>
+You also can use <TT>IS NULL</TT> to find any records that do not have an employee ID entered. In this case, no <TT>Example</TT> value is necessary.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>Criteria Comparison</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The preceding sidebar shows the selection example as it appears in the resulting SQL statement. However, when you are entering the example for a criteria comparison, follow these rules:
+<UL>
+<LI>Do not enclose character strings in quotation marks. The Query Designer automatically adds the necessary quotes. If your comparison string contains multiple words that are separated by blanks, you might want to use the quotation marks for your own clarity. You also need to enclose the string in quotation marks if the text is the same as the name of a field in a table used by the query.
+<LI>If the example is the name of a field used by the query, the Query Designer treats it as such.
+<LI>Do not enclose dates in braces or use <TT>CTOD()</TT>. Simply enter the date in this format: <TT>03/22/99</TT>.
+<LI>If the example is a logical value, include the periods before and after the value (<TT>.T.</TT>).
+</UL></BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The <TT>Equality</TT> operator performs exactly like a simple
+equal sign between the strings on either side of the join. Thus,
+whether trailing blanks are considered in the comparison depends
+on the current setting of <TT>SET ANSI</TT>. If <TT>SET ANSI</TT>
+is <TT>ON</TT>, it pads the shorter string with spaces before
+comparing the strings, character for character, for their entire
+length. If <TT>SET ANSI</TT> is <TT>OFF</TT>, the strings are
+compared only until the end of the shorter string is reached.
+<P>
+The <TT>Like</TT> criterion performs a comparison equivalent to
+that of <TT>SET EXACT OFF</TT>. FoxPro compares the expression
+on the left, character by character, with the one on the right
+for as many characters as the expression has.
+<P>
+The <TT>Exactly Like</TT> criterion creates a more restrictive
+comparison. It compares the two strings character for character
+to see whether they match, and then it compares the two strings
+to see whether they are the same length. As you can see, this
+is slightly different than <TT>SET ANSI ON</TT>. It includes only
+those records whose criteria match exactly.
+<P>
+The <TT>More Than</TT> and <TT>Less Than</TT> criteria perform
+simple less-than and greater-than comparisons of the expression
+values. You can ask for product records with product unit prices
+more than $10, for example. In that case, only records whose product
+unit price is greater than $10 appear in the result set.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+<TT>More Than</TT> and <TT>Less Than</TT> can be used to compare strings also. When you're comparing strings, the ASCII sort order for the string is used, so <TT>&quot;A&quot;</TT> comes before <TT>&quot;B&quot;</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Because this example compares two fields in separate tables, each
+representing supplier ID defined the same way, choosing <TT>Like</TT>
+or <TT>Exactly Like</TT> generates the same results. Additional
+criteria in the form of record filters, however, might use these
+alternative comparison criteria.
+<P>
+Another option when you are defining the comparison criteria is
+the Not button. Clicking this button reverses the criteria's logic.
+Click Not with <TT>Exactly Like</TT> to create <TT>Not Exactly
+Like</TT>; choose it with <TT>More Than</TT> to create <TT>Less
+Than Or Equal To</TT>.
+<P>
+Finally, you can ignore the case of character strings by clicking
+the button on the right that appears below the Case heading. You
+might use it in record-selection criteria to ignore inconsistent
+case in field values.
+<H2><A NAME="SelectingFieldstoIncludeintheQuery"><FONT SIZE=5 COLOR=#FF0000>
+Selecting Fields to Include in the Query</FONT></A></H2>
+<P>
+Having defined the relation between the two tables, you next define
+which fields to include in the results. Clicking the Fields tab
+in the Query Designer displays two lists: Available Fields and
+Selected Fields. Initially, all fields in all selected tables
+appear in the Available Fields list, and the Selected Output list
+is empty.
+<P>
+To include all fields in the Selected Fields list, click the Add
+All button. (You can also double-click the asterisk in the table's
+field list or drag the asterisk to the Selected Fields list.)
+However, you seldom need to see all fields when viewing data.
+To select individual fields, click them in the Available Fields
+list. Each time you click an available field, the Add button becomes
+enabled. Click this button to move the field to the Selected Fields
+list. You might find double-clicking a field to be a faster way
+to select and move it.
+<P>
+Other ways to move a field from the Available Fields list to the
+Selected Fields list include the following:
+<UL>
+<LI>Drag the field from the Available list
+to the Selected list.
+<LI>Click the field name in the table field
+list in the table view of Query Designer, and drag it to the selected
+list.
+<LI>Double-click the field name in the table
+field list in the table view of Query Designer.
+<LI>Hold down the Ctrl key, click on multiple
+fields, and choose the Add button.
+<LI>Drag or double-click the asterisk in the
+table field list in the table view to include all the table's
+fields.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Selected Output fields initially appear in the order in which they are added. You can rearrange the order by dragging the mover button to the left of each field. The order of the selected fields determines the column order of the output view or file.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+To remove all the Selected Fields, placing them back in the Available
+Fields list, click Remove All. You also can remove fields one
+at a time by double-clicking a field in the Selected Fields list
+or by clicking on a field and then clicking Remove.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you want to add more than half of the fields from the Available Fields list, the quickest way is to click Add All to move them to the Selected Fields list. Then select the individual fields that you don't want to use, and send them back by clicking the Remove button.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The No Duplicates check box, in the Miscellaneous page, checks
+to see whether the value of every selected field remains the same
+from one record to the next. If so, VFP includes the record only
+once. If at least one value in one field differs from record to
+record, VFP includes the record.
+<H2><A NAME="OrderingtheResults"><FONT SIZE=5 COLOR=#FF0000>
+Ordering the Results</FONT></A></H2>
+<P>
+To see products alphabetically by description for each supplier,
+click the Order By tab. This tab, shown in Figure 6.8, provides
+options to customize the sort order of the results.
+<P>
+<IMG SRC="f6-8.gif"><B>Figure 6.8 : </B><I>Define the sort order of the query results
+by dragging fields to the Ordering Criteria list in the order
+in which you want to sort the query results</I>.</A>
+<P>
+This page displays two list boxes that contain fields. The left
+box contains only the Selected fields. After all, you cannot sort
+on a field that is not included in the results. To begin the sort
+with the supplier's company name, click it and then click Add.
+As with adding fields, this action moves the selected field to
+the right list box. Notice that a small up arrow appears next
+to the field name in the Ordering Criteria list. This arrow indicates
+that the current sort order for this field is ascending. Change
+the field sort order to descending by selecting the field and
+then clicking the Descending option in the Order Options area.
+You can also select the order option before moving the fields
+to the Ordering Criteria list.
+<P>
+To see products alphabetically for each supplier, double-click
+<TT>Product_Name</TT>. The order in which you select fields for
+the ordering criteria determines their sort order. If you use
+the mover button to put <TT>Product_Name</TT> before <TT>Company_Name</TT>,
+the query sorts the records first by product name. Then, if the
+product has more than one supplier, the query lists them alphabetically.
+<H2><A NAME="MiscellaneousTabOptions"><FONT SIZE=5 COLOR=#FF0000>
+Miscellaneous Tab Options</FONT></A></H2>
+<P>
+The Miscellaneous tab provides options for additional record-selection
+criteria:
+<UL>
+<LI>No Duplicates enables you to show or to exclude duplicate
+records from your selection.
+<LI>Cross-Tabulate outputs the result set into a cross-tabular
+format. It also automatically selects the Group and Order By fields.
+<LI>Top enables you to select all records, several records, or
+a percentage of records to be returned. If you want to show the
+top 10 sales items, a query ordered by the units sold and limited
+to the top 10 would provide your top 10 items. Changing the order
+option from ascending to descending provides the bottom 10 sales
+items.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The Top option on the Miscellaneous tab can be a little confusing. The <TT>top ##</TT> result is the <TT>top ##</TT> values for the <TT>ORDER BY</TT> clause. So, if you have top 10 sales of $1,000, $900, $800, $700, $500, $400, $300, $200, $100, and $50, and for each, you have three items, the top 10 sales give you a result of 30 records, representing the records with the top 10 sales amounts.
+<BR>
+Keep in mind that the <TT>top ##</TT> (including the percent option) is the <TT>top ##</TT> of the values and not the <TT>top ##</TT> of records.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="ViewingtheResults"><FONT SIZE=5 COLOR=#FF0000>
+Viewing the Results</FONT></A></H2>
+<P>
+To see the results of a query using the current query definition,
+click the Run button (the button with an exclamation point on
+it) in the toolbar. Visual FoxPro runs the query; gathers the
+records from the tables, based on the selection criteria; selects
+fields to display; and sorts the records. VFP then displays the
+results in Browse mode, as shown in Figure 6.9.
+<P>
+<IMG SRC="f6-9.gif"><B>Figure 6.9 : </B><I>Display a view of query results in Browse
+mode at any time by clicking the Run button in the standard toolbar</I>.</A>
+<P>
+Notice that columns in the result set appear in the order in which
+you selected the fields. If you do not like this order, you can
+change it. Click the column heading, and drag it left or right.
+As you move the mouse, the column heading follows. Simply release
+the mouse button when you are satisfied with the new position.
+<P>
+You also can adjust column widths to view more columns at one
+time. Place the mouse pointer over any vertical bar that separates
+two column headings. The mouse pointer changes to a thick vertical
+bar with a left and right arrow (see Figure 6.10). Click and drag
+this separator to resize the column. If you make the column smaller
+than necessary to display its values, VFP truncates the displayed
+values, not the actual data.
+<P>
+<IMG SRC="f6-10.gif"><B>Figure 6.10: </B><I>A split query window, with the Product
+Name column being resized</I>.</A>
+<P>
+Because query results appear in an actual Browse window, they
+have a few additional features. Perhaps you have noticed that
+when you press Tab or use the scrollbars to view additional columns,
+columns on the other side of the screen scroll out of view. Often,
+the first few columns include fields (such as ID or name fields)
+that identify the rows. Sometimes, a query has so many columns
+that by the time you scroll to the ones you need, you forget which
+row you are in. Although you could manually move these columns
+together (or redefine the query with the columns closer together),
+you might need to view so many columns that moving them would
+simply not be practical.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Clicking the arrows at the end of the horizontal scrollbars moves the view one field to the left or right. Clicking the arrows at the top and bottom of the vertical scrollbar moves up or down one record.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+To view all the columns that you need to view, no matter how far
+apart they are, split the Browse window by using the browse splitter.
+Initially, the browse splitter appears as a thin black box in
+the lower-left corner of the window. To split the window, click
+the splitter and drag it horizontally. Immediately, the query
+window splits into two partitions, each with its own set of scrollbars
+(refer to Figure 6.10).
+<P>
+After you split the window, use the scrollbars to move through
+records or columns in either window. When you move between fields
+by pressing the Tab key or by using the horizontal scrollbar,
+the fields scroll horizontally in one window but remain unaffected
+in the other. Using this method, you can keep key fields displayed
+in one window to identify the record while you view the remaining
+fields in the other one.
+<P>
+Initially, moving between rows in one window automatically moves
+the corresponding record pointer in the other window and also
+scrolls both windows, if necessary, because Visual FoxPro maintains
+a link between the two windows. To break this link, deselect the
+Link Partitions option in the Table menu. Now VFP still moves
+the pointer in both windows, but it no longer scrolls the other
+window as you move between records. This feature helps you view
+records that are scattered throughout the table. If you later
+turn Link Partitions back on, VFP resynchronizes the two windows
+to match the selected record in the active partition.
+<P>
+You can also change the view from browse style to edit style for
+the entire window or just one partition. To change a partition
+to edit view, click the desired partition and then choose View,
+Edit.
+<P>
+For a query, you cannot modify the results in either the browse
+or edit style view.
+<P>
+To remove the partitioned window, simply drag the splitter bar
+back to the far-left side of the main Query window. Whatever view
+mode exists in the partition on the right side of the window remains
+in effect.
+<H2><A NAME="UsingMultipleConditionFilters"><FONT SIZE=5 COLOR=#FF0000>
+Using Multiple-Condition Filters</FONT></A></H2>
+<P>
+In this section, you return to the Query Designer and add a second
+condition to the filter criteria. Rather than view all products
+from a supplier, you can limit the view to products on order.
+To do so, click the Filter tab, pull down the Field Name list,
+and click the <TT>Units_On_Order</TT> field to select it.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Fields used for filter criteria do not have to appear in the results.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+To limit selected records to those that have products on order,
+you should find records that have a <TT>Units_On_Order</TT> value
+greater than zero. Therefore, select <TT>&gt;</TT> (more than)
+as a <TT>Criteria</TT> and enter <TT>0</TT> in the <TT>Example</TT>
+field.
+<P>
+Suppose that you also want to see items that sell for less than
+25 percent above cost. First, move down to a new Filter Criteria
+line, and click the Field Name text area. At the bottom of the
+drop-down field list is an item called <TT>&lt;Expression...&gt;</TT>.
+This item opens the Expression Builder dialog box, in which you
+can create any valid FoxPro expression. Figure 6.11 shows the
+Expression Builder dialog box with the completed expression for
+profit margin. To complete these criteria, you want records that
+evaluate to <TT>&lt; .25</TT> (less than .25) because the profit-margin
+expression generates a fraction, not a percentage.
+<P>
+<IMG SRC="f6-11.gif"><B>Figure 6.11: </B><I>Calculate the profit margin of a product
+by building an expression with the Expression Builder</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If <TT>.25</TT> returns zero records in your record set, increase the fraction to <TT>.45</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Because the profit-margin expression includes division by one
+of the fields, you should eliminate records in which <TT>Unit_Cost</TT>
+is zero. You cannot lose money on a product that costs nothing
+unless you have to pay someone to take it. But more important,
+you cannot divide by zero. You accomplish this task with a separate
+filter criterion that selects only those records in which <TT>Unit_Cost</TT>
+is greater than zero. To get VFP to evaluate this expression before
+the profit-margin expression, place it before the profit-margin
+expression.
+<P>
+Notice that VFP evaluates criteria sequentially. If a potential
+result record fails an intermediate criterion, VFP does not evaluate
+the remaining criteria. Thus, check to see whether the unit cost
+is zero before you use it as a divisor in a later expression.
+<P>
+Figure 6.12 shows the completed Filter page. This query now has
+one join on the Join tab, and three filter conditions on the Filter
+tab. The join criteria and the three filter criteria must evaluate
+to true before VFP will include the record in the results table.
+<P>
+<IMG SRC="f6-12.gif"><B>Figure 6.12: </B><I>The completed Filter tab shows several
+criteria for selecting records</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Place expressions that are most likely to eliminate records near the beginning (top) of the selection criteria list so that FoxPro does not waste time going through the other criteria. In this example, test for a zero value of <TT>Unit_Cost</TT> before performing the profitability calculation.&nbsp;n
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Running this query results in six selected records. This result
+means that of the items on order, six of them have profit margins
+of less than 25 percent. Looking at the query results, the store
+manager might decide to discontinue stocking these items.
+<P>
+But what if you want to know how many items from the entire inventory
+had profit margins of less than 25 percent or were on reorder?
+To find out, you need to connect the last two expressions with
+<TT>OR</TT> instead of <TT>AND</TT>. Click the Logical drop-down
+list for the first Field Name-<TT>Products.units_on_order</TT>-and
+select <TT>OR</TT>. Rerunning the query retrieves 17 records.
+<P>
+Remember that the Query Designer merely checks the syntax of the
+criteria; it has no knowledge of what makes sense. You can easily
+define a meaningless set of conditions or a set that eliminates
+all records. You control the criteria's meaning.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Although you can easily define a query that uses legal FoxPro syntax, the query might be meaningless. FoxPro enables users to create any query, no matter how ridiculous, as long as it has valid syntax. For example, Visual FoxPro doesn't care if you make a query that has <TT>State = &quot;NY&quot; AND State = &quot;CA&quot;</TT> when any record can have only one state. In this case, Visual FoxPro faithfully returns no records as the result. Remember, you get what you ask for.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Adding <TT>OR</TT> in the middle of a series of conditions automatically groups the expressions that come before and after it. Only then does VFP compare the logical results of the groups. As long as one of the groups on either side of the <TT>OR</TT> evaluates to true, the query includes the record. This grouping ignores clauses that are used to join files.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Finally, the Insert and Remove buttons permit you to add or remove
+expressions from the Join tab and Filter tab criteria lists. To
+add a criterion to the bottom of the list, just use the empty
+Field Name box provided by the Query Designer. To insert a criterion
+between existing criteria, select the lower criterion and click
+the Insert button. Insert adds a blank line above the selected
+criterion. Alternatively, you could always add the criterion to
+the bottom of the list and move it up with the mover button.
+<H2><A NAME="RoutingtheQueryResults"><FONT SIZE=5 COLOR=#FF0000>
+Routing the Query Results</FONT></A></H2>
+<P>
+So far, all the examples in this chapter have written the query
+results to a Browse or Edit window onscreen. You might want to
+keep some query results around a little longer, perhaps saving
+them or using them in a report. To change the query destination
+from onscreen to a file or printer, click the Query Destination
+button in the Query toolbar.
+<P>
+FoxPro displays the Query Destination dialog box (see Figure 6.13),
+which includes the options shown in Table 6.7.
+<P>
+<IMG SRC="f6-13.gif"><B>Figure 6.13: </B><I>The Query Destination dialog box provides
+seven ways to display the query results</I>.</A><BR>
+<P>
+<CENTER><B>Table 6.7&nbsp;&nbsp;Query Destination Options</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>Destination</B></CENTER></TD><TD WIDTH=288><CENTER><B>Definition</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Browse</TD><TD WIDTH=288>View query results in a Browse window only
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Cursor</TD><TD WIDTH=288>Create a temporary table or cursor with query results
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Table</TD><TD WIDTH=288>Create a permanent table
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Graph</TD><TD WIDTH=288>Use query results to produce a graph with Microsoft Graph
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Screen</TD><TD WIDTH=288>Display results to screen only
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Report</TD><TD WIDTH=288>Use query results as a data source for a report
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96>Label</TD><TD WIDTH=288>Use query results as a data source for labels
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+By default, the Browse button is selected. When you generate results
+to a Browse window, FoxPro creates a temporary table that contains
+the query results (usually, in memory), opens the Browse window,
+and displays the table. As soon as you close the Browse window,
+Visual FoxPro erases the temporary table. If you need only a quick
+view of data that matches certain conditions, sending the query
+results to a Browse window is fine, and it saves a tree. You don't
+need to define anything else with this option because it is VFP's
+default and needs no special parameters.
+<H3><A NAME="OutputtoaCursor">
+Output to a Cursor</A></H3>
+<P>
+The next output-destination option in the Query Destination dialog
+box creates a cursor. Cursors are also temporary files, but they
+remain open and active for as long as you choose. When cursors
+are closed, however, Visual FoxPro deletes them. Other than in
+the actual process of creating a cursor, you cannot write to one
+created as output from a query. After a cursor is created, you
+cannot replace values or add or delete records.
+<P>
+Cursors have only one additional, required attribute: Despite
+their temporary status, cursors must have names. The Query Destination
+dialog box provides a suggested cursor name, based on the query
+name. You can accept the name or provide your own name. The assigned
+name then serves as an alias, allowing you to reference it from
+within a program or other command lines.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Cursor names are actually alias names; if Visual FoxPro needs a disk file to store the cursor, it assigns that file a unique name. The files for cursors are always stored in the <TT>temp</TT> directory for the computer on which the query was run. Because the cursor's name is its alias and FoxPro uses a unique filename, you need not concern yourself with unique names for cursors. You can use names that make sense in your program.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You might find it interesting to know where the word cursor comes from. It is an acronym for <B>CUR</B>rent <B>S</B>et <B>O</B>f <B>R</B>ecords.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="OutputtoaTable">
+Output to a Table</A></H3>
+<P>
+Sending query results to a table is similar to sending them to
+a cursor, with one major exception: A table, by definition, has
+a physical existence on your disk and, therefore, can exist after
+the current Visual FoxPro session. You can close and reopen tables.
+You can add, delete, and modify records in a table. When you select
+Table in the Query Destination dialog box, you can directly enter
+a table name or click the button containing an ellipsis (&#133;).
+This button opens the Open dialog box, in which you can select
+tables from any directory and drive. This action causes the query
+results to overwrite existing tables. You might want to open the
+directory to ensure that the table name that you enter does not
+already exist.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+In a networked environment, querying into a table requires that you supply a unique name for that table. Using a cursor instead of tables is recommended. The only limitation on a cursor from a query is that you cannot update it, but you can overcome that limitation by using views (which are discussed in <A HREF="ch07.htm" >Chapter 7</A>.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="OutputtoaGraph">
+Output to a Graph</A></H3>
+<P>
+To show the output, the query was changed (see Figure 6.14) to
+select only three fields from the Product file: <TT>Product_Id</TT>,
+<TT>Unit_Cost</TT>, and <TT>Unit_Price</TT>. Open the Query Destination
+dialog box, and select Graph. Finally, run the query.
+<P>
+<IMG SRC="f6-14.gif"><B>Figure 6.14: </B><I>This query on just the Products table extracts
+product information to display as a graph</I>.</A>
+<P>
+When the query runs, it opens the Graph Wizard to help define
+the graph. The query skips the first step of this wizard because
+the fields have already been selected in the query; it begins
+with the layout step. In this step, you assign fields to desired
+locations on a graph. In this example, you can use <TT>Product_Id</TT>
+as the axis variable. You also have two data series to plot: <TT>Unit_Cost</TT>
+and <TT>Unit_Price</TT>. Your Graph Wizard dialog box should look
+like Figure 6.15 after you make these selections.
+<P>
+<IMG SRC="f6-15.gif"><B>Figure 6.15: </B><I>Use the layout step of the Graph Wizard
+to assign fields to various graph locations</I>.</A>
+<P>
+Move to the next step by clicking Next or by choosing Step 3 from
+the step drop-down list. In this step, you can choose any of 12
+predefined graph styles, as shown in Figure 6.16. To select a
+style, click the button that displays a picture of the style that
+you want to use.
+<P>
+<IMG SRC="f6-16.gif"><B>Figure 6.16: </B><I>Choose one of the 12 available graph styles</I>.</A>
+<P>
+In the last step of the Graph Wizard, you can display null values,
+add a legend to the graph, and preview the graph before you click
+Finish. The legend identifies the data series with the field name.
+You also can enter a title to display at the top of the graph.
+Figure 6.17 shows these options.
+<P>
+<IMG SRC="f6-17.gif"><B>Figure 6.17:</B> <I>In the last step of the Graph Wizard, you
+can include a legend and graph title before saving the graph</I>.</A>
+<P>
+When you click Finish, the Graph Wizard prompts you for a table
+name under which to save the graph. After you save the graph,
+the Graph Wizard displays the result.
+<P>
+Before completing Step 4-Finish, you can click the Back button
+to change the features of your graph and then click the Preview
+option to see the results. This way, you can preview several graph
+styles before committing to a final one.
+<H3><A NAME="OutputtotheScreen">
+Output to the Screen</A></H3>
+<P>
+Figure 6.18 shows the options that are available when you output
+query results to the screen.
+<P>
+<IMG SRC="f6-18.gif"><B>Figure 6.18:</B> <I>The Query Destination dialog box displays
+options for outputting query results to the screen</I>.</A>
+<P>
+First, you can define a secondary output destination. Why? Because
+FoxPro does not retain the query results after writing them to
+the screen. Therefore, you can use a secondary output destination
+to create a more permanent copy by selecting To Printer or To
+Text File. When you are outputting to a printer, be aware that
+fields within a record wrap across multiple lines if they do not
+all fit on one line. When you select To Text File, you must also
+supply a filename, using the Open dialog box. If you know the
+fully qualified text-file name, you can enter it directly in the
+text box. Notice that you cannot choose both the printer and a
+text file as a secondary output destination.
+<P>
+Additional options include the capability to Suppress Column Headings
+and Pause Between Screens. To view the data, be sure to check
+the Pause Between Screens check box; otherwise, the data scrolls
+past faster than you can read it.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+During pauses between screens, output directed to a secondary source repeats the column headings every time Visual FoxPro starts a new screen.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="OutputtoaReport">
+Output to a Report</A></H3>
+<P>
+When you are outputting to a report, Visual FoxPro provides a
+wide selection of options, as shown in Figure 6.19.
+<P>
+<IMG SRC="f6-19.gif"><B>Figure 6.19:</B> <I>The Query Destination dialog box lists
+the options for sending query results to a report</I>.</A>
+<P>
+To use an existing report definition with the new query results,
+click the Open Report button, and select an existing report in
+the Open dialog box that appears. You can also use the Open dialog
+box to ensure that the report name that you supply does not currently
+exist if you intend to create a new report. If you know the report's
+filename without opening the Open dialog box, enter it directly
+in the text box.
+<P>
+The button on the right side of the dialog box that looks like
+a magic wand opens the Report Wizard. Use this wizard to create
+a new report in seconds.
+<P>
+If you click Page Preview, VFP outputs the report in a window
+for review. Notice that if you select Page Preview, you cannot
+simultaneously output the report to a secondary destination. This
+feature is best used for the following purposes:
+<UL>
+<LI>To test reports during development
+<LI>To view reports when you need to see a
+few results and do not keep a hard copy
+<LI>To review reports when you don't want
+to walk up three flights of stairs and down four halls to retrieve
+the report output from the only network printer
+<LI>To preview a report before printing to
+see how it will look and to decide whether you want to print it
+<LI>To view reports when you do not have access
+to a printer, either because it temporarily does not work or is
+busy printing past-due notices to clients
+</UL>
+<P>
+Console On echoes the report output to the current window, and
+Eject Page Before Report sends a page-eject command to the printer
+before beginning a report to ensure that the report starts at
+the top of the form.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Some printers store one or more lines of output in a buffer. This arrangement sometimes prevents the printer from printing the last line, or even the entire last page, until another print job starts. If that print job does not use a page eject at the beginning, it most likely appends to the end of the report. One solution to this problem is to use the Report Designer to add a page eject after the report as well.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+As you can see when you send output to the screen, you can define
+a secondary output destination. (The primary destination for a
+report is the screen.) Choose None, To Printer, or To Text File.
+When you choose the last option, Visual FoxPro displays the Open
+dialog box, in which you can enter or choose a file. If you select
+a file that already exists and <TT>SAFETY</TT> is <TT>OFF</TT>,
+VFP overwrites the old file automatically. When <TT>SAFETY</TT>
+is <TT>ON</TT>, VFP displays a warning and enables you to decide
+whether to overwrite the file. You can also enter a text-file
+name in the edit box next to the To Text File button.
+<P>
+In the Options area, you can choose Suppress Column Headings or
+create a report by choosing Summary Information Only. When you
+choose Summary Information Only, Visual FoxPro suppresses all
+detail lines and prints only Title, Group, Page, and Summary bands.
+<P>
+Finally, you can add a separate report heading that appears at
+the top of each page, in addition to any heading that is already
+in the Page Header band of the report. Clicking the Report Heading
+button opens the Expression Builder dialog box. Use this dialog
+box to define a heading that includes memory variables, table
+fields, and calculated results.
+<H3><A NAME="OutputtoaLabel">
+Output to a Label</A></H3>
+<P>
+Outputting options for labels are similar to those for reports,
+as shown in Figure 6.20.
+<P>
+<IMG SRC="f6-20.gif"><B>Figure 6.20: </B><I>The Query Destination dialog box lists
+the options for sending query results to a label</I>.</A>
+<P>
+To use an existing label definition with the new query results,
+click the Open Label button and select an existing label from
+the Open dialog box. You also can use the Open dialog box to ensure
+that the label name that you supply does not currently exist,
+if you intend to create a new label. If you know the label's filename
+without opening the Open dialog box, enter it in the text box.
+<P>
+When Page Preview is selected, Visual FoxPro outputs the label
+in a window for review. Notice that when you select Page Preview,
+you cannot simultaneously output the label to any other destination.
+This feature is best used for the following purposes:
+<UL>
+<LI>To test labels during development
+<LI>To ensure that the labels are correct
+before rerunning the query and sending the output to a printer
+</UL>
+<P>
+The Console On option echoes the label output to the screen when
+the label output is created.
+<P>
+As you can do with reports, you can define a secondary output
+destination. (The primary destination for a label is the screen.)
+Choose None, To Printer, or To Text File. If you choose the last
+option, Visual FoxPro displays the Open dialog box, in which you
+can enter or choose a file. If you select a file that already
+exists and <TT>SAFETY</TT> is <TT>OFF</TT>, VFP overwrites the
+old file automatically. When <TT>SAFETY</TT> is <TT>ON</TT>, VFP
+displays a warning and enables you to decide whether to overwrite
+the file. You also can enter a text-file name directly in the
+edit box next to the To Text File button.
+<H2><A NAME="UsingQueryDesignerVersusManuallyCreatedSQLSELECTStatements"><FONT SIZE=5 COLOR=#FF0000>
+Using Query Designer Versus Manually Created SQL SELECT Statements
+</FONT></A></H2>
+<P>
+By now, you have seen how easily you can query data by using the
+Query Designer. You might not realize that you have been creating
+SQL <TT>SELECT</TT> statements throughout this entire chapter.
+If you have been hesitant to write your own SQL statements because
+you thought they were too complex, continue reading to explore
+the world of SQL <TT>SELECT</TT> statements.
+<P>
+The simplest query grabs every field and every record from a single
+table and displays them in a Browse window. The following code
+shows this query command used in the <TT>CUSTOMER.DBF</TT> table
+(in the Tastrade example provided with Visual FoxPro):
+<BLOCKQUOTE>
+<PRE>
+USE \VFP\SAMPLES\ DATA\CUSTOMER
+SELECT * FROM TASTRADE!CUSTOMER<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If the table is part of a database that is not open, VFP uses the information in the table header to open the database. If the table is a free table, VFP opens the Open dialog box to allow you to select it.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The asterisk immediately after the <TT>SELECT</TT> keyword tells
+Visual FoxPro to get all fields in the table referenced by the
+<TT>FROM</TT> clause. If you do not want to see all the fields,
+list the ones that you do want to see, as in the following:
+<BLOCKQUOTE>
+<PRE>
+SELECT Customer_Id, Company_Name FROM TASTRADE!CUSTOMER
+</PRE>
+</BLOCKQUOTE>
+<P>
+Notice that commas separate the field names. To see the companies
+that begin with the letter <I>A</I>, add a <TT>WHERE</TT> clause,
+as shown in the following command (which assumes that <TT>SET
+ANSI</TT> is <TT>OFF</TT>):
+<BLOCKQUOTE>
+<PRE>
+SELECT Customer_Id, Company_Name FROM TASTRADE!CUSTOMER ;
+      WHERE Company_Name = 'A'
+</PRE>
+</BLOCKQUOTE>
+<P>
+To perform an exact search, use the <TT>==</TT> operator.
+<P>
+With that introduction, let's return to the SQL <TT>SELECT</TT>
+statements that were generated by FoxPro while using the Query
+Designer that we created earlier.
+<P>
+Any time while you are in the Query Designer, you can view the
+SQL that Visual FoxPro continuously builds in the background.
+Simply click the SQL button in the SQL toolbar. Actually, this
+button alternately shows and hides the SQL window. After you click
+it, the button stays down until you click it again or use the
+Window menu to switch the active window.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Add a comment to your SQL <TT>SELECT</TT> statement by choosing Query, Comments and entering text in the dialog box that appears.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+When you started the first query in this chapter, you selected
+two tables: <TT>PRODUCTS</TT> and <TT>SUPPLIER</TT>. A persistent
+relation on the field <TT>Supplier_Id</TT> joined those tables.
+You also selected several fields to display: <TT>PRODUCTS.Product_Id</TT>,
+<TT>PRODUCTS.Supplier_Id</TT>, <TT>PRODUCTS.Product_Name</TT>,
+and <TT>SUPPLIER.Company_Name</TT>. This information defines a
+simple query. If you click the Run button, a Browse window pops
+up and displays the query results. But what SQL <TT>SELECT</TT>
+statement did FoxPro actually use to produce this output? If you
+click the SQL button in the toolbar, you should see something
+similar to Figure 6.21.
+<P>
+<IMG SRC="f6-21.gif"><B>Figure 6.21: </B><I>Here is the SQL SELECT statement in which
+the inner join is used to create the relationship</I>.</A>
+<P>
+SQL <TT>SELECT</TT> commands begin with the <TT>SELECT</TT> keyword.
+You immediately follow <TT>SELECT</TT> with a list of fields to
+include in the results. Notice that Visual FoxPro qualifies each
+field with the alias name for the table. Strictly speaking, you
+do not need to qualify every field-only those fields that exist
+in both tables, such as <TT>Supplier_Id</TT>. Qualifying every
+field, however, helps you document the table to which the field
+belongs. When you are writing a SQL <TT>SELECT</TT> that uses
+a single table, you do not need to qualify the fields.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The examples used in this chapter prefix fields with their table name. You can also equate a field name to a local alias. Although this method makes the SQL a little more difficult to read, it might make entering the SQL a little easier by reducing the amount of typing. The following simple example shows you how to assign a one-letter alias:<BR>
+<PRE>
+SELECT Or.Customer_Id, Cu.Customer_Id ;
+      FROM TASTRADE!ORDERS Or, TASTRADE!CUSTOMER cu</PRE>
+<BR>
+Although local aliases can be a single character, using only one character is not recommended. Single-character local aliases can, under certain circumstances, conflict with Visual FoxPro's default work area aliases.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Although a SQL <TT>SELECT</TT> command is one line of code, you
+might want the <TT>SELECT</TT> statement to show on multiple lines
+of text. Just remember to end each line (except the last) with
+a semicolon. The field order in the SQL <TT>SELECT</TT> statement
+determines the field output order in the results table.
+<P>
+The SQL <TT>SELECT</TT> statement requires the <TT>FROM</TT> clause
+to identify the table or tables containing the fields. Notice
+that when a table belongs to a database, its name is preceded
+by the database name, separated by an exclamation point.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When you are creating a SQL <TT>SELECT</TT> statement in the Command window or a program, precede the database name with its full pathname so that the query will work from any directory.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+You can use a <TT>WHERE</TT> clause to limit the records included
+in the result set. The <TT>WHERE</TT> clause of the SQL <TT>SELECT</TT>
+statement corresponds to the filter criteria you supplied in the
+Query Designer.
+<P>
+After you define it, use the SQL <TT>SELECT</TT> statement in
+the Command window, or embed it in a program. No matter where
+you use it, the statement creates the same results as it does
+when you use it from the Query Designer.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Use the Query Designer to create SQL <TT>SELECT</TT> commands visually. Then copy the commands from the SQL window to the Command window or the program's Edit window, where you can customize them further or run them as they are. Alternatively, save the query and run the QPR file, using <TT>DO</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Figure 6.22 expands the <TT>SELECT</TT> statement to include more
+fields and conditions. First, notice the <TT>DISTINCT</TT> clause
+added after <TT>SELECT</TT>. This clause, which corresponds to
+the No Duplicates check box in the Miscellaneous tab, appears
+only at the beginning of the field list but applies to all fields.
+The clause means that if all selected fields have the same value
+as they did in the preceding record, the current record is not
+included in the results.
+<P>
+<IMG SRC="f6-22.gif"><B>Figure 6.22: </B><I>Add conditions to the SQL <TT>SELECT
+</TT>statement to filter and sort results</I>.</A><P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+In some situations, you know that your <TT>WHERE</TT> clause will allow only unique records into the result. In these cases, do not use the <TT>DISTINCT</TT> option, as it will slow down your <TT>SELECT</TT> considerably while Visual FoxPro searches for duplicates that do not exist.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+A second condition is added to the <TT>WHERE</TT> clause in Figure
+6.22. This expression examines the value of the field <TT>Units_On_Order</TT>
+in the <TT>PRODUCTS</TT> table and includes records only if this
+value is greater than zero. By default, Visual FoxPro connects
+all criteria with <TT>AND</TT>. This means that the records must
+pass all the criteria before they are added to the result set.
+In this example, VFP would create a result set of unprofitable
+products that are also on order. However, suppose that you want
+to see all the products that are on order or the unprofitable
+products. To do so, you need to add a logical <TT>OR</TT> operator.
+In other words, you want to see records for those products that
+have outstanding orders and for those that are unprofitable.
+<P>
+Finally, the <TT>ORDER BY</TT> clause defines a sort order for
+the results. In this case, you want to sort records first by company
+and then by product name. Each field in the <TT>ORDER BY</TT>
+clause can have a different sort direction. By default, the sort
+order is ascending. However, you can follow the field name with
+<TT>DESC</TT> to define a descending sort or <TT>ASC</TT> to ensure
+an ascending sort.
+<P>
+Now look at the SQL <TT>SELECT</TT> statement generated at the
+end of the Query Designer session (see Figure 6.23).
+<P>
+<IMG SRC="f6-23.gif"><B>Figure 6.23: </B><I>This is the final SQL SELECT created to
+select items with profit margins less than 25 percent</I>.</A>
+<P>
+This expression adds additional filter clauses to limit the on-order
+product list to products that have low profit margins. Notice
+that with the <TT>OR</TT> condition between the second and third
+condition, Visual FoxPro groups the last two expressions together,
+using parentheses. This result is exactly what you want because
+you should perform the profitability calculation only for records
+that have a unit cost greater than zero.
+<P>
+By default, VFP sends all queries to a Browse window. The <TT>INTO</TT>
+clause specifies where to redirect the query results. In Figure
+6.23, the results are output to a cursor named <TT>UNPROFIT</TT>.
+However, you can select several other destinations, including
+the following:
+<UL>
+<LI>An array (<TT>INTO ARRAY &lt;<I><TT>arrayname</TT></I>&gt;</TT>)
+<LI>A different cursor (<TT>INTO CURSOR
+&lt;<I><TT>cursorname</TT></I>&gt;</TT>)
+<LI>A table or <TT>.DBF</TT> file (<TT>INTO
+TABLE &lt;<I><TT>dbfname</TT></I>&gt;</TT>)
+<LI>A printer (<TT>TO PRINTER</TT>)
+<LI>The screen (<TT>TO SCREEN</TT>)
+<LI>A file (<TT>TO FILE &lt;<I><TT>filename</TT></I>&gt;</TT>)
+</UL>
+<P>
+The array option, which is not available from the Query Designer,
+adds the query results to a memory variable array. VFP does not
+create the array if the query does not return at least one record.
+Therefore, before you attempt to use the array variable, test
+how many records the query returned by checking the value of <TT>_TALLY</TT>.
+This system memory variable records the number of records processed
+by the most recent table command. The variable also works with
+the following commands:<BLOCKQUOTE>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>APPEND FROM</TT>
+</TD><TD WIDTH=164>
+<TT>PACK</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>AVERAGE</TT>
+</TD><TD WIDTH=164>
+<TT>REINDEX</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>CALCULATE</TT>
+</TD><TD WIDTH=164>
+<TT>REPLACE</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>COPY TO</TT>
+</TD><TD WIDTH=164>
+<TT>SELECT - SQL</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>COUNT</TT>
+</TD><TD WIDTH=164>
+<TT>SORT</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>DELETE</TT>
+</TD><TD WIDTH=164>
+<TT>SUM</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>INDEX</TT>
+</TD><TD WIDTH=164>
+<TT>TOTAL</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=153>
+<TT>JOIN</TT>
+</TD><TD WIDTH=164>
+<TT>UPDATE</TT>
+</TD></TR>
+</TABLE></BLOCKQUOTE>
+<P>
+<P>
+If <TT>_TALLY</TT> equals <TT>0</TT>, the query found no records.
+<P>
+When storing the query results to a cursor or table, VFP prompts
+you before overwriting existing tables with the same name if <TT>SET
+SAFETY</TT> is <TT>ON</TT>. The Alert dialog box displays the
+following text:
+<BLOCKQUOTE>
+<PRE>
+&lt;<I>filename</I>&gt;
+This file already exists
+Replace existing file?
+</PRE>
+</BLOCKQUOTE>
+<P>
+Click the Yes or No button to replace or not replace the existing
+file. When <TT>SET SAFETY</TT> is <TT>OFF</TT>, Visual FoxPro
+overwrites existing files automatically. In most programming environments,
+unless the user specifies the filename, you probably want <TT>SET
+SAFETY OFF</TT> to overwrite existing files.
+<P>
+Specifying <TT>TO FILE</TT> together with a filename is not the
+same as creating a cursor or table. Sending query results to a
+file creates an ASCII text file, not a table. You can print this
+file directly to the printer or screen from DOS by using the <TT>TYPE</TT>
+command. You can also append the file to other documents that
+read text files.
+<P>
+Another option, <TT>NOCONSOLE</TT>, suppresses echoing the query
+results to the screen. This capability is especially useful when
+you are directing output to a file or printer. Sending query results
+to a cursor or table never echoes the results to the screen; therefore,
+this option is not needed. <TT>PLAIN</TT> removes the column headings
+from the output. Use this option if you intend to send the query
+results to a file and later use that file as input to another
+program.
+<P>
+We hope that by seeing how the Query Designer sessions result
+in <TT>SELECT</TT> statements, you will not think of SQL statements
+as being difficult. Just remember to break the <TT>SELECT</TT>
+into individual clauses when you try to understand it.
+<H2><A NAME="GroupingRecordstoSummarizeData"><FONT SIZE=5 COLOR=#FF0000>
+Grouping Records to Summarize Data</FONT></A></H2>
+<P>
+Before you leave this introductory chapter on queries and SQL,
+return to the Query Designer one more time to see how to group
+records to provide summary information.
+<P>
+This example requires three tables from the Tastrade database:
+<TT>ORDERS</TT>, <TT>ORDER_LINE_ITEMS</TT>, and <TT>PRODUCTS</TT>.
+Using the previously defined persistent relations, notice that
+<TT>ORDERS</TT> relates to <TT>ORDER_LINE_ITEMS</TT> through the
+<TT>Order_Id</TT> field. Similarly, <TT>ORDER_LINE_ITEMS</TT>
+relates to <TT>PRODUCTS</TT> through the <TT>Product_Id</TT> field.
+Figure 6.24 shows the inner joins and the persistent relations.
+A separate filter that limits the result set to orders taken in
+a one-year period has been set in the Filter tab.
+<P>
+<IMG SRC="f6-24.gif"><B>Figure 6.24: </B><I>The inner joins used in the Query Designer
+to join ORDERS, PRODUCTS, and ORDER_LINE_ITEMS</I>.</A>
+<P>
+This report requires as output the product name, the quantity
+sold, and a price analysis. In fact, you want to see only one
+record for each product-a record that sums the number of units
+sold for that product. In a report, you would group the output
+records by product ID or product name, sum the quantity field
+for each detail record, and print the resulting sum after the
+last record for that product.
+<P>
+In the Query Designer, you accomplish something similar by using
+options in the Group By tab. Move the <TT>Product_Id</TT> field
+from the Available Fields list to the Grouped Fields list. This
+operation tells the Query Designer to output only a single record
+for each product ID. Figure 6.25 shows the Group By definition
+in the Query Designer.
+<P>
+<IMG SRC="f6-25.gif"><B>Figure 6.25: </B><I>Group selected records by Product_Id, using
+the Group By tab of the Query Designer</I>.</A>
+<P>
+When you are looking at the field values for a group of records
+for the same product ID, some values change, and others remain
+constant. If, as in this case, the product ID identifies the group,
+the ID value remains constant, but so do other fields, such as
+description. Do not worry about these fields. In the quantity
+field, however, each detail record represents a different transaction.
+Because you need to include this field in the query, you must
+tell Visual FoxPro what to do with it. Otherwise, VFP outputs
+to the results table the values in the last record that it processes
+for each group.
+<P>
+In this query, you can sum the quantity sold in each transaction.
+Going to the Fields tab, click the button to the right of the
+Functions and Expressions field. This button displays the Expression
+Builder. The grouping functions are listed in the Math drop-down
+list; Table 6.8 defines them.<BR>
+<P>
+<CENTER><B>Table 6.8&nbsp;&nbsp;Grouping Functions</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>Grouping Function</B></CENTER></TD>
+<TD WIDTH=288><CENTER><B>Description</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>COUNT()</TT></TD><TD WIDTH=288>Counts the number of records in a group
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>SUM()</TT></TD><TD WIDTH=288>Sums the field value for records in a group
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>AVG()</TT></TD><TD WIDTH=288>Averages the field value for records in a group
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>MIN()</TT></TD><TD WIDTH=288>Specifies the minimum field value for records in a group
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>MAX()</TT></TD><TD WIDTH=288>Specifies the maximum field value for records in a group
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>COUNT(DISTINCT)</TT></TD><TD WIDTH=288>Counts distinct records in a group
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>SUM(DISTINCT)</TT></TD><TD WIDTH=288>Sums the field value for distinct records in a group
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>AVG(DISTINCT)</TT></TD><TD WIDTH=288>Averages the field value for distinct records in a group
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Click <TT>SUM()</TT> to calculate the total quantity of a numeric
+field. Visual FoxPro immediately displays <TT>&quot;SUM(expN)&quot;</TT>
+in the Expression text area. Select <TT>Order_line_items</TT>
+from the From Table drop-down list. Then select <TT>ORDER_LINE_ITEMS.Quantity</TT>
+in the Fields list (see Figure 6.26). The required expression
+appears in the text area. Clicking OK adds the expression to the
+Functions and Expressions field. Finally, select the new function
+and add it to the Fields list by clicking the Add button.
+<P>
+<IMG SRC="f6-26.gif"><B>Figure 6.26: </B><I>Open the Fields tab of the Expression Builder
+to define a calculation method and a field for a query</I>.</A>
+<P>
+Because the selected data spans a year, you expect that prices
+will change at least for some products. Thus, although <TT>Unit_Price</TT>
+(stored in <TT>PRODUCTS</TT>) represents the current price, it
+might not equal the price for previous orders. Because the program
+saves the <TT>Unit_Price</TT> with each order in the order details
+file (<TT>ORDER_LINE_ITEMS</TT>), however, you can determine the
+minimum, maximum, and average price throughout the year. To retrieve
+these other prices for the report, use the Fields page of the
+Expression Builder. The new calculated fields for this query include
+the following:
+<UL>
+<LI><TT>SUM(ORDER_LINE_ITEMS.quantity)</TT>
+<LI><TT>MIN(ORDER_LINE_ITEMS.unit_price)</TT>
+<LI><TT>MAX(ORDER_LINE_ITEMS.unit_price)</TT>
+<LI><TT>AVG(ORDER_LINE_ITEMS.unit_price)</TT>
+</UL>
+<P>
+Figure 6.27 shows the SQL <TT>SELECT</TT> statement for the completed
+query.
+<P>
+<IMG SRC="f6-27.gif"><B>Figure 6.27: </B><I>Here is the complete query to analyze Tastrade
+product prices</I>.</A>
+<H2><A NAME="UsingQueriesinProgramsandForms"><FONT SIZE=5 COLOR=#FF0000>
+Using Queries in Programs and Forms</FONT></A></H2>
+<P>
+When you are using the Query Designer to create a query that you
+later want to use in a program or form, remember to save the query
+after testing it. Visual FoxPro saves the SQL <TT>SELECT</TT>
+statement in a file with the extension <TT>.QPR</TT>. You can
+execute the SQL directly from the Command window, program, or
+form by using a simple <TT>DO</TT> command, such as the following:
+<BLOCKQUOTE>
+<PRE>
+DO SALBYPRD.QPR
+</PRE>
+</BLOCKQUOTE>
+<P>
+Because the Query Designer does not automatically include drive
+or path prefixes for databases or tables, you must do one of the
+following things:
+<UL>
+<LI>Run the query from the directory that
+contains the databases or tables.
+<LI>Add a <TT>SET DEFAULT TO</TT> or
+<TT>SET PATH TO</TT> command to change to the directory that contains
+the data.
+<LI>Modify the query manually to contain the
+drive and path information.
+</UL>
+<P>
+The following <TT>SELECT</TT> statement shows a simple example:
+<BLOCKQUOTE>
+<PRE>
+      SELECT * ;
+        FROM C:\VFP\SAMPLES\ \DATA\TASTRADE!CUSTOMER
+</PRE>
+</BLOCKQUOTE>
+<P>
+From within a form control, simply attach a <TT>DO</TT> statement
+like the preceding one to the <TT>Click</TT> event. Visual FoxPro
+executes the query whenever someone clicks the control.
+<H2><A NAME="EditingtheGeneratedSQLTTSELECTTTStatement"><FONT SIZE=5 COLOR=#FF0000>
+Editing the Generated SQL <TT>SELECT</TT> Statement </FONT></A></H2>
+<P>
+The <TT>.QPR</TT> file is a text file. just like a <TT>.PRG</TT>.
+Therefore, you can edit it with either of the following commands:
+<BLOCKQUOTE>
+<PRE>
+MODIFY COMMAND SELBYPRD.QPR
+MODIFY FILE SELBYPRD.QPR
+</PRE>
+</BLOCKQUOTE>
+<P>
+Both commands open an Edit window and load <TT>SELBYPRD.QPR</TT>
+into it. The following are some additional reasons that you might
+edit the SQL <TT>SELECT</TT> statement directly, as opposed to
+using the Query Designer:
+<UL>
+<LI>Faster editing of minor changes, such
+as adding or deleting a field or changing a condition test value.
+<LI>Creating more complex queries. After all,
+the Query Designer is still an end user's tool and lacks the robustness
+available with direct creation of SQL <TT>SELECT</TT> statements.
+</UL>
+<H2><A NAME="CreatingComplexQueries"><FONT SIZE=5 COLOR=#FF0000>
+Creating Complex Queries</FONT></A></H2>
+<P>
+The first part of this chapter concentrated on using the Query
+Designer to create the SQL <TT>SELECT</TT> statements. The Query
+Designer has enough power for many basic queries, and it helps
+teach you query design in a visual environment in which you can
+concentrate on what you want to do, not on how to do it. If you
+plan to write your own SQL <TT>SELECT</TT> statements from scratch,
+you need to know the syntax. The following shows the complete
+syntax for creating SQL <TT>SELECT</TT> statements:
+<BLOCKQUOTE>
+<PRE>
+SELECT [ALL | DISTINCT] [TOP <I>nExpr</I> [PERCENT]]
+ [<I>Alias</I>.] <I>Select_Item</I> [AS <I>Column_Name</I>]
+ [, [<I>Alias</I>.] <I>Select_Item</I> [AS <I>Column_Name</I>] ...]
+FROM [FORCE] [<I>DatabaseName!]Table [LocalAlias]
+</I> [[INNER | LEFT [OUTER] | RIGHT [OUTER] | FULL [OUTER] JOIN]
+[, [<I>DatabaseName!]Table [Local_Alias]
+</I> [[INNER | LEFT [OUTER] | RIGHT [OUTER] | FULL [OUTER] JOIN] ...]
+ [ON [<I>DatabaseName!]Table [Local Alias] .Column_Name</I> =
+ [<I>DatabaseName!]Table [Local_Alias] .Column_Name]
+
+</I>[[INTO <I>Destination</I>]
+ | [TO FILE <I>FileName</I> [ADDITIVE] | TO PRINTER [PROMPT]
+ | TO SCREEN]]
+[PREFERENCE <I>PreferenceName</I>]
+[NOCONSOLE]
+[PLAIN]
+[NOWAIT]
+[WHERE <I>FilterCondition</I> [AND | OR <I>FilterCondition</I> ...]]]
+[GROUP BY <I>GroupColumn</I> [, <I>GroupColumn</I> ...]]
+[HAVING <I>FilterCondition</I>]
+[UNION [ALL] <I>SELECTCommand</I>]
+[ORDER BY <I>Order_Item</I> [ASC | DESC] [, <I>Order_Item</I> [ASC | DESC] ...]]
+</PRE>
+</BLOCKQUOTE>
+<P>
+Many of these clauses are described earlier in this chapter. As
+you can quickly tell, not all of these clauses appear in the Query
+Designer. Two primary clauses that are not included are the use
+of subqueries and <TT>UNION</TT>s. The balance of this chapter
+is devoted to subqueries. <A HREF="ch07.htm" >Chapter 7</A> &quot;Advanced Queries and
+Views,&quot; picks up with a discussion of <TT>UNION</TT>s.
+<H3><A NAME="UsingaTTBETWEENTTClausetoFilteraRangeofValues">
+Using a <TT>BETWEEN</TT>
+Clause to Filter a Range of Values</A></H3>
+<P>
+The <TT>BETWEEN</TT> clause enables you to define a value range
+for a field by using a single condition statement rather than
+two. However, you will experience very little difference in performance
+whether you use the <TT>BETWEEN</TT> clause or two separate conditions.
+Suppose that you want a list of order details for products that
+have product IDs between 10 and 19. You could write a two-condition
+<TT>SELECT</TT>, as follows:
+<BLOCKQUOTE>
+<PRE>
+SET ANSI ON
+SELECT * ;
+  FROM order_line_items ;
+ WHERE ALLTRIM(Product_Id) &gt;= '10' AND ALLTRIM(Product_Id) &lt;= '19'
+<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><TT><B>SET ANSI</B></TT><B> and SQL</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+<TT>SET ANSI</TT> determines the way that SQL commands compare strings connected with the <TT>=</TT> operator. The default is <TT>OFF</TT>, in which case SQL compares strings character for character until reaching the end of the shorter string. The following table provides examples of how <TT>SET ANSI</TT> affects comparisons:
+<BR>
+<TT><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ANSI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OFF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ON</B></TT>
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'10' = '1'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False</TT>
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'1' = '10'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False</TT>
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'' = '1'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False</TT>
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'1' = ''&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False</TT>
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'10' = '10'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True</TT>
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'10' == '101'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False</TT>
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'10' == '1'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False</TT>
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'10 ' == '10'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True</TT>
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'10' == '10 '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True</TT>
+<BR>
+With <TT>SET ANSI OFF</TT>, a single character matches any field value that begins with that character, and empty fields match everything. Although you can use <TT>==</TT> in place of the <TT>=</TT> operator to force an exact comparison, you cannot replace <TT>&gt;=</TT> with <TT>&gt;==</TT>. In these situations, you must exercise extra caution. One solution changes <TT>SET ANSI</TT> to <TT>ON</TT>, as shown in the preceding table. To see the effect with real data, run the preceding <TT>SELECT</TT> with <TT>SET ANSI OFF</TT>, and compare the results table to the one generated with <TT>SET ANSI ON</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When you are comparing a field (such as <TT>CAT_ID</TT>) to a character string, be aware of whether the field is left- or right-justified when the comparison values do not have to use all character positions. Use <TT>ALLTRIM</TT> on the field to prevent problems, or pad the comparison value to the full field size.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Combining these two conditions with <TT>BETWEEN</TT> results in
+the following statement:
+<BLOCKQUOTE>
+<PRE>
+SET ANSI ON
+SELECT * ;
+  FROM order_line_items ;
+ WHERE ALLTRIM(Product_Id) BETWEEN '10' AND '19'
+</PRE>
+</BLOCKQUOTE>
+<P>
+You will find little difference between the times that it takes
+these two statements to find 31,280 records out of 225,840 (in
+a modified version of the <TT>ORDER_LINE_ITEMS</TT> table). In
+fact, the first statement ran only slightly faster on the test
+machine, requiring 44.00 seconds, compared with 44.87 seconds
+for the second statement. Perhaps the difference is that the first
+statement eliminates some records that have only a single comparison
+expression. The difference is minimal, however.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>SQL Performance Testing</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The timings of different <TT>SELECT</TT> versions probably will vary on your system. Many factors affect the overall <TT>SELECT</TT> speed, including the system CPU, the storage medium that is being used for the file, the access rate for that storage medium, the controller card, and the transfer method for that storage medium. However, the basic overall pattern of which method is fastest should remain the same.
+<BR>
+Visual FoxPro attempts to keep Rushmore-related information about a completed <TT>SELECT</TT> in memory. Therefore, if you repeat the same or similar <TT>SELECT</TT>, the relative number of times decreases. One sure way to ensure that no residual Rushmore information exists in memory is to exit Visual FoxPro between tests.
+<BR>
+For many of the SQL examples used in this section, the files from Tastrade were artificially bloated to create files with more records. This procedure involved first copying a file to a new filename and then opening the new file and repeatedly appending the original table to it. This technique works for SQL tests that require extracting a subset of records based on a field value that extracts records based on a product ID range. If you need to test a SQL statement that joins two files, however, this technique might lead to unexpected and incorrect results, with multiple &quot;matches&quot; between the files.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Because the field used in this condition contains only digits,
+you could also write the condition as follows:
+<BLOCKQUOTE>
+<PRE>
+SET ANSI ON
+SELECT * ;
+  FROM products ;
+ WHERE VAL(Product_Id) BETWEEN 10 AND 19
+</PRE>
+</BLOCKQUOTE>
+<P>
+The performance of this query is significantly slower than that
+of the first two. Perhaps this fact reflects on the inefficiency
+of converting the string to a numeric value first before performing
+the comparison. This <TT>SELECT</TT> requires 47.35 seconds on
+the test system. The problem in each case is that the field criteria
+do not match an index definition. The index on the product ID
+uses no special functions. Therefore, the only way to obtain better
+performance from a query is to eliminate all functions used in
+the <TT>WHERE</TT> clauses. The following example, which carefully
+formats the test values as right-justified six-character fields,
+executes in 31.47 seconds (still a long time, but the query is
+retrieving 32,180 records out of 225,840):
+<BLOCKQUOTE>
+<PRE>
+SELECT * ;
+  FROM order_line_items ;
+  WHERE product_id &gt;= '    10' AND product_id &lt;= '    19'
+</PRE>
+</BLOCKQUOTE>
+<P>
+This procedure also averts any potential problems caused by having
+<TT>SET ANSI ON</TT> or <TT>OFF</TT>.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The preceding <TT>SELECT</TT> statement was tested after setting the order to the tag based on <TT>Product_Id</TT>. Many developers who think that they can help <TT>SELECT</TT> work faster by presetting the &quot;correct&quot; tag make this common mistake. In this case, the query required 32.35 seconds-almost a second longer, just because a tag was set.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You also can write the preceding <TT>SELECT</TT> command the following way with the same improvement in performance:
+<P>
+<TT>
+SELECT * ;
+  FROM order_line_items ;</TT>
+<P>
+ WHERE Product_id BETWEEN '10' AND '19'</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="UsinganTTINTTClausetoFilterSelectedValues">
+Using an <TT>IN</TT> Clause
+to Filter Selected Values</A></H3>
+<P>
+The <TT>IN</TT> clause enables you to specify a discrete set of
+values that do not constitute an inclusive range. Suppose that
+you want to see only the customers from Canada, Mexico, the United
+Kingdom, and the United States. <TT>CUSTOMER.DBF</TT> has a Country
+field that you can use, but testing for each country separately
+would be awkward, as in the following example:
+<BLOCKQUOTE>
+<PRE>
+SELECT Company_Name ;
+  FROM CUSTOMER ;
+  WHERE UPPER(Country) = 'CANADA' OR ;
+       UPPER(Country) = 'MEXICO' OR ;
+       UPPER(Country) = 'UK' OR ;
+       UPPER(Country) = 'USA' ;
+  ORDER BY Country, Company_Name
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can perform the same query faster by using an <TT>IN</TT>
+clause that lists the possible values, as follows:
+<BLOCKQUOTE>
+<PRE>
+SELECT Company_Name ;
+  FROM CUSTOMER ;
+  WHERE UPPER(Country) IN ('CANADA', 'MEXICO', 'UK', 'USA') ;
+  ORDER BY Country, Company_Name
+</PRE>
+</BLOCKQUOTE>
+<P>
+This second expression required less time than the first: 4.67
+seconds for the first versus 4.07 seconds for the second to find
+1,540 records out of 5,005. (An inflated version of <TT>CUSTOMER</TT>
+was used.) The performance difference becomes even greater the
+more values that Visual FoxPro needs to compare. This fact implies
+that if you need to compare a field with several values, using
+the <TT>IN</TT> clause is more efficient.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Another feature of this second query is that it includes <TT>Country</TT> in the sort order, even though it does not output this field in the results. SQL <TT>SELECT</TT> enables this sorting.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="DefiningSubqueries">
+Defining Subqueries</A></H3>
+<P>
+The filter conditions used in queries earlier in this chapter
+had this basic structure:
+<BLOCKQUOTE>
+<PRE>
+&lt;<I>field expression</I>&gt; &lt;<I>operator</I>&gt; &lt;<I>field expression or value</I>&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can create more complex conditions that use a subquery to
+limit the values. A subquery is simply a query within a query.
+You use subqueries primarily for two reasons:
+<UL>
+<LI>To define a set of values, of which a
+field must be a member, before including the record in the result
+table
+<LI>To determine whether a field value exists
+in another table
+</UL>
+<P>
+Suppose that you want to produce a list of customers who did not
+make any purchases during a given year, such as 1998. Producing
+a list of customers who did make purchases is easy. Simply enter
+the following command:
+<BLOCKQUOTE>
+<PRE>
+SELECT DISTINCT CUSTOMER.Company_Name ;
+  FROM CUSTOMER, ORDERS ;
+  WHERE CUSTOMER.Customer_Id = ORDERS.Customer_Id AND ;
+       YEAR(ORDERS.Order_Date) = 1998
+</PRE>
+</BLOCKQUOTE>
+<P>
+Notice that the <TT>DISTINCT</TT> clause prevents the company
+name from appearing more than one time. On a test system using
+Tastrade data, this query took 1.15 seconds to retrieve 87 records
+out of 91. To get those 87 records, the query had to examine 929
+order records.
+<P>
+You can also write this query using a subquery. The subquery creates
+a list of customer IDs for customers who placed orders in 1998.
+The main query retrieves the company name for customer IDs in
+the subquery list, as follows:
+<BLOCKQUOTE>
+<PRE>
+SELECT Company_Name ;
+  FROM CUSTOMER ;
+  WHERE Customer_Id IN (SELECT Customer_Id ;
+                    FROM ORDERS ;
+                    WHERE YEAR(Order_Date) = 1998)
+</PRE>
+</BLOCKQUOTE>
+<P>
+This complex query retrieves the same data as the preceding one,
+but it requires 5.11 seconds. Notice that a complex query takes
+more time than a simple one does. In almost all cases, a simple
+query outperforms a complex query.
+<P>
+The problem is that neither command answered the real question:
+What are the names of the customers who did not place orders?
+You would have trouble attempting to modify the first query to
+answer this request. You can modify the second query, however,
+by adding a single word, as follows:
+<BLOCKQUOTE>
+<PRE>
+SELECT Company_Name ;
+  FROM CUSTOMER ;
+  WHERE Customer_Id NOT IN (SELECT Customer_Id ;
+                    FROM ORDERS ;
+                    WHERE YEAR(Order_Date) = 1998)
+</PRE>
+</BLOCKQUOTE>
+<P>
+Adding <TT>NOT</TT> before <TT>IN</TT> changes the meaning of
+the query to answer the question correctly. In case you are interested,
+this query ran in 5.27 seconds.
+<P>
+Sometimes, writing a single SQL statement is just not convenient
+because SQL generates a results table with duplicated fields.
+Suppose that you want to retrieve only orders from outside the
+United States. You might write the following command:
+<BLOCKQUOTE>
+<PRE>
+SELECT * ;
+  FROM ORDERS, CUSTOMER ;
+  WHERE CUSTOMER.Customer_Id = ORDERS.Customer_Id AND ;
+       UPPER(CUSTOMER.Country) # 'USA'
+</PRE>
+</BLOCKQUOTE>
+<P>
+A problem occurs when SQL sees the potential for duplicated field
+names; it renames both fields by appending an underscore and letter
+to them. You could manually list each field that you want to be
+prefixed by its table name, thereby averting duplicate references,
+but for tables that have a large number of fields, this method
+requires a great deal of extra work.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+One way to get around the problem of duplicate field names is to use the <TT>AS</TT> clause. You could rename a field for the query by using the following clause:
+<P>
+<TT>
+SELECT id AS customer_id, name AS cust_name ...</TT>
+<P>
+You can even add &quot;new&quot; or calculated fields, such as the calculated tax amount based on the sales total and a tax rate, as follows:<P>
+<TT>
+SELECT order_amt, order_amt*.07 AS sales_tax, ;  order_amt*1.07 AS sale_total, ...</TT>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Another solution splits the query into two pieces. The inner query
+creates a list of customers who are not from the United States.
+The outer one retrieves records from <TT>ORDERS</TT> only if the
+inner query returns any records.
+<BLOCKQUOTE>
+<PRE>
+SELECT * ;
+  FROM ORDERS ;
+  WHERE EXISTS (SELECT Customer_Id FROM CUSTOMER ;
+                 WHERE CUSTOMER.Customer_Id = ORDERS.Customer_Id AND ;
+                       UPPER(CUSTOMER.Country) # 'USA')
+</PRE>
+</BLOCKQUOTE>
+<P>
+The second query takes longer than the first simple one (2.20
+seconds, compared with 1.65 seconds, for 931 records out of 1,080),
+but it has no problem with renamed fields.
+<P>
+This type of complex query is called an existence or correlated
+query. When executed, the inner query must reference a field from
+the outer query (<TT>ORDERS.Customer_Id</TT>, in this case). As
+a result, VFP performs the inner query for each record in the
+outer query, which slows performance.
+<P>
+Because <TT>EXISTS</TT> merely checks to see whether any records
+exist, it doesn't matter what fields it returns. <TT>EXISTS</TT>
+can even return all fields with an asterisk (<TT>*</TT>), although
+using a single field results in slightly better performance.
+<P>
+A better subquery than the preceding method uses <TT>IN</TT>.
+<TT>IN</TT> does not require re-executing the query for each row
+in the outer query; therefore, it is called a <I>noncorrelated
+subquery</I>. Because it uses a subquery, however, it does take
+longer (2.14 seconds) than a simple query.
+<BLOCKQUOTE>
+<PRE>
+SELECT * ;
+  FROM ORDERS ;
+  WHERE Customer_Id IN (SELECT Customer_Id FROM CUSTOMER ;
+                 WHERE UPPER(Country) # 'USA')<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Even though we have told you that subqueries are longer than simple <TT>WHERE</TT> clause that do the same thing, not all subqueries can be replaced by a simple <TT>WHERE</TT> clause.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The <TT>EXISTS</TT> clause compared a value in one <TT>SELECT</TT>
+against all values in another <TT>SELECT</TT>. Suppose that you
+want to find out which products, if any, have not been purchased
+since the last price increase posted in <TT>PRODUCTS.DBF</TT>.
+In this case, use an inner SQL <TT>SELECT</TT> to create a list
+of all product prices for orders by <TT>Product_Id</TT>. Then,
+using the outer <TT>SELECT</TT>, check to see whether the current
+unit price in <TT>PRODUCTS</TT> is greater than all values in
+the first list. The following query result displays the product
+name and ID of any such products:
+<BLOCKQUOTE>
+<PRE>
+SELECT DISTINCT PRODUCTS.Product_Name, PRODUCTS.Product_Id ;
+   FROM PRODUCTS, ORDER_LINE_ITEMS ;
+   WHERE PRODUCTS.Product_Id = ORDER_LINE_ITEMS.product_id AND ;
+        PRODUCTS.Unit_Price &gt; IN (SELECT DISTINCT Unit_Price ;
+             FROM ORDER_LINE_ITEMS ;
+             WHERE ORDER_LINE_ITEMS.Product_Id = PRODUCTS.product_id);
+  ORDER BY PRODUCTS.Product_Id
+</PRE>
+</BLOCKQUOTE>
+<P>
+Finally, use <TT>SOME</TT> or <TT>ANY</TT> to compare the value
+of a field in the outer query with at least one or more of the
+values selected by the inner query. Suppose that you want to know
+whether any products have a current price that is more than 50
+percent greater than that of their first order. Modify the preceding
+query by using <TT>SOME</TT>, as follows:
+<BLOCKQUOTE>
+<PRE>
+SELECT DISTINCT PRODUCTS.Product_Name, PRODUCTS.Product_Id ;
+   FROM PRODUCTS, ORDER_LINE_ITEMS ;
+  WHERE PRODUCTS.Product_Id = ORDER_LINE_ITEMS.Product_Id AND ;
+        PRODUCTS.Unit_Price/1.5 &gt; SOME (SELECT DISTINCT Unit_Price ;
+             FROM ORDER_LINE_ITEMS ;
+            WHERE ORDER_LINE_ITEMS.Product_Id = PRODUCTS.Product_Id);
+  ORDER BY PRODUCTS.Product_Id
+</PRE>
+</BLOCKQUOTE>
+<P>
+The point of all these examples was not only to show you some
+of the other clauses that SQL <TT>SELECT</TT> supports, but also
+to show you that different ways of expressing a query can lead
+to different query times. A method that might provide the best
+performance for small tables in which the selected records are
+relatively concentrated might not be the best when the tables
+become large and the data more scattered. The best advice is to
+experiment with various ways of writing the SQL <TT>SELECT</TT>
+statement to find out which method yields the best performance.
+<HR>
+<CENTER>
+
+<A HREF="ch05.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch07.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

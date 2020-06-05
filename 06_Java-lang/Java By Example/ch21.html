@@ -1,0 +1,1188 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 21 -- Scrollbar and Canvas Controls</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;21</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Scrollbar and Canvas Controls</FONT>
+
+</H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#Scrollbars">
+
+Scrollbars</A>
+
+<UL>
+
+<LI><A HREF="#ExampleCreatingaScrollbar">
+
+Example: Creating a Scrollbar</A>
+
+<LI><A HREF="#RespondingtoaScrollbar">
+
+Responding to a Scrollbar</A>
+
+<LI><A HREF="#ExampleUsingaScrollbarinanApplet">
+
+Example: Using a Scrollbar in an Applet</A>
+
+<LI><A HREF="#Canvases">
+
+Canvases</A>
+
+<LI><A HREF="#ExampleUsingaCanvasinanApplet">
+
+Example: Using a Canvas in an Applet</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+Next in the long list of Java controls are the scrollbar and canvas
+
+controls, which are represented by the <TT>Scrollbar</TT> and
+
+<TT>Canvas</TT> classes. Using a scrollbar, you can enable the
+
+user to choose values from a slider or even set up your own scrolling
+
+displays. The canvas control, on the other hand, enables you to
+
+draw and display graphics in an applet. In this chapter, you'll
+
+get a handle on both of these handy controls.
+
+<H2><A NAME="Scrollbars"><FONT SIZE=5 COLOR=#Ff0000>
+
+Scrollbars</FONT></A></H2>
+
+<P>
+
+Practically every application that runs under Windows supports
+
+scrollbars. In most cases, you use a scrollbar to move to different
+
+portions of a document. However, a good alternative use for these
+
+controls is selecting a value from a range. Although scrollbars
+
+are not as common in applets, Java does include a class for adding
+
+scrollbars to your programs. To create a scrollbar, you first
+
+call the <TT>Scrollbar</TT> class's constructor, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Scrollbar scrollbar = new Scrollbar(orientation,
+
+    start, page, min, max);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The constructor's five arguments are the scrollbar's orientation
+
+(can be <TT>Scrollbar.HORIZONTAL</TT> or <TT>Scrollbar.VERTICAL</TT>),
+
+the starting setting for the scrollbar, the scrollbar's page size
+
+(the amount the display scrolls when the user clicks above or
+
+below the scroll box), and the minimum and maximum values represented
+
+by the scrollbar.
+
+<P>
+
+After creating the scrollbar object, you add it to the applet
+
+by calling the <TT>add()</TT> method, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+add(scrollbar);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<H3><A NAME="ExampleCreatingaScrollbar">
+
+Example: Creating a Scrollbar</A></H3>
+
+<P>
+
+Suppose you need to create a scrollbar that'll enable the user
+
+to select a value from 1 to 100. You can create such a scrollbar
+
+like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Scrollbar scrollbar =
+
+    new Scrollbar(Scrollbar.HORIZONTAL, 50, 0, 1, 100);
+
+add(scrollbar);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The constructor's first argument tells Java that the scrollbar
+
+should be drawn horizontally on the display. The second argument
+
+tells Java that you want the scrollbar to start off set to the
+
+value of 50. The third argument is the page size, which represents
+
+the area in the slider covered by the scroll box. Finally, the
+
+fourth and fifth arguments give the scrollbar a minimum value
+
+of 1 and a maximum value of 100.
+
+<P>
+
+These settings enable the user to select a value from 1 to 100.
+
+So, why is the scrollbar's page size set to zero? Doing this forces
+
+the scroll box in the scrollbar to center on the selected value.
+
+It also enables the user to select the maximum value of 100. To
+
+understand why this is necessary, imagine that the scrollbar's
+
+scroll box represents the page of data that's currently displayed
+
+(such as in a word processor document). The scroll box then starts
+
+on the selected value and ends on the selected value plus the
+
+page size. Figure 21.1 illustrates this concept. The scrollbar
+
+in the figure was created like this:
+
+<P>
+
+<IMG SRC="f21-1.gif"><B> Figure 21.1 : </B><I>The scroll box covers an area from the selected value to the selected value plus the page size.
+
+
+
+</I></A><P>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Scrollbar scrollbar =
+
+    new Scrollbar(Scrollbar.HORIZONTAL, 50, 10, 1, 100);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Because the scrollbar's starting value is 50, and the scrollbar's
+
+page size is 10, the scroll box covers the area of the slider
+
+from 50 to 60. If the user were to drag the scroll box to its
+
+maximum value, the scroll box would cover the area in the slider
+
+from 90 to 100, as shown in Figure 21.2. In this case, the page
+
+size of 10 makes it impossible for the user to actually select
+
+the value of 100. This is because, if the user could select the
+
+value 100, the scrollbox would have to cover the slider area from
+
+100 to 110. But, the scrollbar's maximum value is 100.
+
+<P>
+
+<IMG SRC="f21-2.gif"><B> Figure 21.2 : </B><I>This maximum setting starts at 90 and goes to 90 plus the page size, which equals the maximum value <r>of 100.
+
+
+
+</I></A><P>
+
+<P>
+
+When using a scrollbar to select specific values rather than areas
+
+of a document, you can either set the page size to zero or set
+
+the maximum to the maximum you want plus the page size. Both of
+
+these scrollbars will operate the same way:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Scrollbar scrollbar =
+
+    new Scrollbar(Scrollbar.HORIZONTAL, 50, 10, 1, 110);
+
+Scrollbar scrollbar =
+
+    new Scrollbar(Scrollbar.HORIZONTAL, 50, 0, 1, 100);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Figure 21.3 shows the scrollbar produced by either of the above
+
+examples. Notice that the scroll box is now centered on 50. When
+
+the scrollbox is at its maximum position now, it indicates a value
+
+of 100.
+
+<P>
+
+<IMG SRC="f21-3.gif"><B> Figure 21.3 : </B><I>This scrollbar enables the user to select any value within its minimum and maximum range.
+
+
+
+</I></A><P>
+
+<H3><A NAME="RespondingtoaScrollbar">
+
+Responding to a Scrollbar</A></H3>
+
+<P>
+
+Because of the many different types of events a scrollbar generates,
+
+you need to capture its events in the class's <TT>handleEvent()</TT>
+
+method, rather than in <TT>action()</TT>, as you did with other
+
+controls. What's <TT>handleEvent()</TT>? Like <TT>action()</TT>,
+
+<TT>handleEvent()</TT> is a method that's defined in one of your
+
+applet's superclasses (in this case, <TT>Component</TT>). The
+
+<TT>handleEvent()</TT> method handles all the specific event messages
+
+that are generated by the typical windowing system. Table 21.1
+
+lists some of the events to which the <TT>handleEvent()</TT> method
+
+can respond.<BR>
+
+<P>
+
+<CENTER><B>Table 21.1&nbsp;&nbsp;Most Common Events That Can Be
+
+Handled by </B><I>handleEvent().</I></CENTER>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD WIDTH=190><I><B>Event Message</B></I></TD><TD WIDTH=350><I><B>Description</B></I>
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>ACTION_EVENT</TD><TD WIDTH=350>An event that can be handled by <TT>action()</TT>.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>GOT_FOCUS</TD><TD WIDTH=350>The component received the focus.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>KEY_PRESS</TD><TD WIDTH=350>A key on the keyboard was pressed.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>KEY_RELEASE</TD><TD WIDTH=350>A key on the keyboard was released.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>LIST_DESELECT</TD><TD WIDTH=350>An item in a list was deselected.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>LIST_SELECT</TD><TD WIDTH=350>An item in a list was selected.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>LOST_FOCUS</TD><TD WIDTH=350>The component lost the focus.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>MOUSE_DOWN</TD><TD WIDTH=350>The user pressed a mouse button.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>MOUSE_DRAG</TD><TD WIDTH=350>The user dragged the mouse pointer.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>MOUSE_ENTER</TD><TD WIDTH=350>The mouse pointer entered an area.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>MOUSE_EXIT</TD><TD WIDTH=350>The mouse pointer left an area.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>MOUSE_MOVE</TD><TD WIDTH=350>The user moved the mouse.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>MOUSE_UP</TD><TD WIDTH=350>The released a mouse button.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>SCROLL_ABSOLUTE</TD><TD WIDTH=350>The user moved a scrollbar's scroll box.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>SCROLL_LINE_DOWN</TD><TD WIDTH=350>The user clicked a scrollbar's down arrow.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>SCROLL_LINE_UP</TD><TD WIDTH=350>The user clicked a scrollbar's up arrow.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>SCROLL_PAGE_DOWN</TD><TD WIDTH=350>The user clicked in a scrollbar below the scroll box.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>SCROLL_PAGE_UP</TD><TD WIDTH=350>The user clicked in a scrollbar above the scroll box.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>WINDOW_DEICONIFY</TD><TD WIDTH=350>The window has been restored from an icon state.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>WINDOW_DESTROY</TD><TD WIDTH=350>The window has been destroyed.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>WINDOW_EXPOSE</TD><TD WIDTH=350>The window has been activated.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>WINDOW_ICONIFY</TD><TD WIDTH=350>The window has been reduced to an icon.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=190>WINDOW_MOVED</TD><TD WIDTH=350>The window has been moved.
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+As you can see from the list in Table 21.1, there are five event
+
+messages associated with a scrollbar. These messages are <TT>SCROLL_ABSOLUTE</TT>,
+
+<TT>SCROLL_LINE_DOWN</TT>, <TT>SCROLL_LINE_UP</TT>, <TT>SCROLL_PAGE_DOWN</TT>,
+
+and <TT>SCROLL_PAGE_UP</TT>. You can respond to these event messages
+
+when you want to customize how the scrollbar functions. (You learn
+
+how to handle event messages in <A HREF="ch25.html" >Chapter 25</A>, &quot;Mouse and Keyboard
+
+Events.&quot;) However, you don't need to get into such details
+
+when you just need to know where the user set the scrollbar. Instead,
+
+you can override <TT>handleEvent()</TT> and check for the scrollbar
+
+object in that method. If the user generates an event with the
+
+scrollbar, you can then call the scrollbar's methods to determine
+
+what change was made. Table 21.2 lists the most useful methods
+
+of the <TT>Scrollbar</TT> class:<BR>
+
+<P>
+
+<CENTER><B>Table 21.2&nbsp;&nbsp;Most Useful Methods of the Scrollbar
+
+Class.</B></CENTER>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD WIDTH=262><I><B>Method</B></I></TD><TD WIDTH=328><I><B>Description</B></I>
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>int getLineIncrement()</TT></TD><TD WIDTH=328>Returns the line increment.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>int getMaximum()</TT></TD><TD WIDTH=328>Returns the maximum value.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>int getMinimum()</TT></TD><TD WIDTH=328>Returns the minimum value.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>int getOrientation()</TT></TD><TD WIDTH=328>Returns the orientation.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>int getPageIncrement()</TT></TD><TD WIDTH=328>Returns the page increment.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>int getValue()</TT></TD><TD WIDTH=328>Returns the currently set value.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>int getVisible()</TT></TD><TD WIDTH=328>Returns the page size.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>setLineIncrement(int inc)</TT></TD><TD WIDTH=328>Sets the line increment.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>setPageIncrement(int inc)</TT></TD><TD WIDTH=328>Sets the page increment.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>setValue(int value)</TT></TD><TD WIDTH=328>Sets the selected value.
+
+</TD></TR>
+
+<TR VALIGN=TOP><TD WIDTH=262><TT>setValues(int value, int </TT></TD><TD WIDTH=328>Sets all the slider's values.pgsize, int min, int max)
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H3><A NAME="ExampleUsingaScrollbarinanApplet">
+
+Example: Using a Scrollbar in an Applet</A></H3>
+
+<P>
+
+Now that you know how to use a scrollbar, you can put together
+
+an applet that demonstrates the concepts involved. Listing 21.1
+
+is just such an applet. Called ScrollbarApplet, this applet enables
+
+you to manipulate a scrollbar with your mouse and see the results
+
+on the screen. Figure 21.4 shows the applet when it first starts
+
+up.
+
+<P>
+
+<IMG SRC="f21-4.gif"><B> Figure 21.4 : </B><I>This is ScrollbarApplet running under Appletviewer.
+
+</I></A><P>
+
+
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 21.1&nbsp;&nbsp;ScrollbarApplet.java: An Applet That
+
+Uses a Scrollbar.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class ScrollbarApplet extends Applet
+
+{
+
+    Scrollbar scrollbar;
+
+    String s;
+
+
+
+    public void init()
+
+    {
+
+        BorderLayout layout = new BorderLayout();
+
+        setLayout(layout);
+
+
+
+        scrollbar = new Scrollbar(Scrollbar.HORIZONTAL,
+
+            50, 0, 1, 100);
+
+        add(&quot;North&quot;, scrollbar);
+
+
+
+        s = &quot;50&quot;;
+
+        Font font = new Font(&quot;TimesRoman&quot;, Font.BOLD, 72);
+
+        setFont(font);
+
+        resize(200, 200);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(s, 60, 120);
+
+    }
+
+
+
+    public boolean handleEvent(Event evt)
+
+    {
+
+        if (evt.target instanceof Scrollbar)
+
+        {
+
+            scrollbar = (Scrollbar)evt.target;
+
+            int value = scrollbar.getValue();
+
+            s = String.valueOf(value);
+
+            repaint();
+
+            return true;
+
+        }
+
+        else
+
+        {
+
+            boolean result = super.handleEvent(evt);
+
+            return result;
+
+        }
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>ScrollbarApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the scrollbar and display string.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create and set the layout.<BR>
+
+        Create and add the scrollbar.<BR>
+
+        Initialize the display string, the font, and the applet
+
+size.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Draw the display string.<BR>
+
+    Override the <TT>handleEvent()</TT> method.<BR>
+
+            If the toolbar caused the event...<BR>
+
+            Cast the target object to a scrollbar.<BR>
+
+            Get the scrollbar's current setting.<BR>
+
+            Convert the setting to a string.<BR>
+
+            Force Java to redraw the applet's display area.<BR>
+
+            Tell Java that the event was handled.<BR>
+
+        Else if this is not a scrollbar event...<BR>
+
+            Send the event on to the superclass's <TT>handleEvent()</TT>.
+
+<BR>
+
+            Return the result.
+
+</BLOCKQUOTE>
+
+<P>
+
+There are two things that you should be sure to notice in ScrollbarApplet.
+
+First, notice that the scrollbar isn't just added to the applet.
+
+It is, instead, added to the applet after the applet's layout
+
+manager has been set. This is because the size of the control
+
+bar is dependent upon the active layout manager and how the control
+
+is added to the manager. (For more information on layout managers,
+
+see <A HREF="ch22.html" >Chapter 22</A>, &quot;Panels and the Layout Manager.&quot; By
+
+creating a BorderLayout manager and adding the horizontal scrollbar
+
+to the &quot;North&quot; position, you get a scrollbar the stretches
+
+across the top of the applet. Failure to place the scrollbar properly
+
+in an appropriate layout manager will result in a useless scrollbar
+
+like the one shown in Figure 21.5.
+
+<P>
+
+<IMG SRC="f21-5.gif"><B> Figure 21.5 : </B><I>The scrollbar in this applet was not placed properly in an appropriate layout manager.
+
+</I></A><P>
+
+
+
+<H3><A NAME="Canvases">
+
+Canvases</A></H3>
+
+<P>
+
+Canvases are nothing more than areas on which you can draw. You
+
+can combine canvases with other types of components, such as buttons,
+
+in order to build layouts that that are attractive, as well as
+
+functional. The first step in creating a canvas is to call the
+
+<TT>Canvas</TT> class's constructor, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Canvas canvas = new Canvas();
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>Canvas</TT> constructor requires no arguments.
+
+<P>
+
+Once you have the canvas created, you add it to your layout just
+
+as you would any other component, by calling the <TT>add()</TT>
+
+method:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+add(canvas);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<H3><A NAME="ExampleUsingaCanvasinanApplet">
+
+Example: Using a Canvas in an Applet</A></H3>
+
+<P>
+
+To end this chapter, take a look at Listing 21.2, which is an
+
+applet that creates a canvas class and uses the class to display
+
+a colored area on the screen. When you run the applet with Appletviewer,
+
+you see the window shown in Figure 21.6. The applet displays two
+
+components: a button at the top of the applet and a canvas below
+
+the button. When you click the button, the canvas changes color.
+
+<P>
+
+<IMG SRC="f21-6.gif"><B> Figure 21.6 : </B><I>This is CanvasApplet running under Appletviewer.
+
+
+
+</I></A><P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+Often, you'll want to derive your own custom canvas class from Java's <TT>Canvas</TT> class. Then, you can more easily control what's drawn in the canvas, by overriding the canvas's <TT>paint()</TT> method. This is the approach that's used in the 
+CanvasApplet applet.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 21.2&nbsp;&nbsp;CanvasApplet.java: An Applet That Displays
+
+a Canvas.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class CanvasApplet extends Applet
+
+{
+
+    CustomCanvas canvas;
+
+
+
+    public void init()
+
+    {
+
+        setLayout(new BorderLayout());
+
+
+
+        Button button = new Button(&quot;Color&quot;);
+
+        add(&quot;North&quot;, button);
+
+
+
+        canvas = new CustomCanvas();
+
+        add(&quot;Center&quot;, canvas);
+
+
+
+        resize(200, 250);
+
+    }
+
+
+
+    public boolean action(Event evt, Object arg)
+
+    {
+
+        if (arg == &quot;Color&quot;)
+
+            canvas.swapColor();
+
+
+
+        return true;
+
+    }
+
+}
+
+
+
+class CustomCanvas extends Canvas
+
+{
+
+    Color color;
+
+
+
+    public CustomCanvas()
+
+    {
+
+        color = Color.black;
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        Rectangle r = bounds();
+
+        g.setColor(color);
+
+        g.fillRect(0, 0, r.width, r.height);
+
+        g.setColor(Color.white);
+
+        g.drawString(&quot;CANVAS&quot;, 72, 90);
+
+    }
+
+
+
+    public void swapColor()
+
+    {
+
+        if (color == Color.black)
+
+            color = Color.red;
+
+        else if (color == Color.red)
+
+            color = Color.green;
+
+        else
+
+            color = Color.black;
+
+
+
+        repaint();
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>CanvasApplet</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare the custom canvas object.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create and set the layout.<BR>
+
+        Create and add the button.<BR>
+
+        Create and add the canvas.<BR>
+
+        Size the applet.<BR>
+
+    Override the <TT>action()</TT> method.<BR>
+
+        if the &quot;Color&quot; button was pressed...<BR>
+
+            Tell the canvas to change color.<BR>
+
+        Tell Java that the event was handled.<BR>
+
+Define the <TT>CustomCanvas</TT> class.<BR>
+
+    Declare the class's single data field.<BR>
+
+    Declare the class's constructor.<BR>
+
+        Set the initial canvas color.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Get the canvas's size.<BR>
+
+        Set the currently selected color.<BR>
+
+        Fill the canvas with the selected color.<BR>
+
+        Set the color for the text.<BR>
+
+        Display the text string.<BR>
+
+    Define the <TT>swapColor()</TT> method.<BR>
+
+        Set color to the next color.<BR>
+
+        Repaint the canvas with the new color.
+
+</BLOCKQUOTE>
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+Most often, you see scrollbars being used to manipulate such controls
+
+as scrolling lists and text areas. However, scrollbars also enable
+
+you to create a reasonable facsimile of a Windows 95 slider control,
+
+which enables the user to select a value from a given range. Remember
+
+that you need to use the appropriate layout manager in order for
+
+the scrollbar to be drawn properly. Unlike scrollbars, canvases
+
+aren't usually used to obtain input from the user (although they
+
+do generate some types of event messages). Instead, canvases enable
+
+you to create graphical areas in your applets.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>What are the <TT>Scrollbar</TT> constructor's five arguments?
+
+<LI>What is a canvas?
+
+<LI>What arguments are expected by the <TT>Canvas</TT> class's
+
+constructor?
+
+<LI>With a scrollbar, when would you use a page size of zero?
+
+<LI>What's the easiest way to respond to a scrollbar change?
+
+<LI>What are the five event messages that are generated by a scrollbar?
+
+<LI>How can you create a custom canvas component?
+
+<LI>How do you draw in a custom canvas?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Write an applet that displays a vertical scrollbar.
+
+<LI>Write an applet that displays a scrollbar along with three
+
+buttons. Clicking the buttons should set the scrollbar's values
+
+to its minimum, middle, and maximum values. (Hint: You can set
+
+the scrollbar's value with its <TT>setValue()</TT> method.)
+
+<LI>Modify CanvasApplet so that the display includes, besides
+
+the canvas, three buttons labeled &quot;Black,&quot; &quot;Green,&quot;
+
+and &quot;Red.&quot; Clicking a button should change the canvas
+
+to the appropriate color. You'll probably want to use a <TT>GridLayout</TT>
+
+object for this applet's layout manager. (For more information
+
+on using a <TT>GridLayout</TT> object, see <A HREF="ch22.html" >Chapter 22</A>, &quot;Panels
+
+and the Layout Manager.&quot; Figure 21.7 shows the resultant
+
+applet. (You can find the solution to this exercise in the CHAP21
+
+folder of this book's CD-ROM. It's called CanvasApplet2.)<BR>
+
+<IMG SRC="f21-7.gif"><B> Figure 21.7 : </B><I>This is CanvasApplet2 running under Appletviewer.
+
+
+
+</I></A><P>
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch20.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch22.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.ukcsharp/csharp_s12p8.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 08:09:40 GMT -->
+<HEAD>
+		<TITLE>C#.NET: Database Navigation Buttons</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-3.css">
+		<meta itemprop="name" content="Home and Learn">
+		<meta itemprop="description" content="Free C# .NET Course">
+		<meta itemprop="image" content="../logo5.jpg">
+		<link rel="publisher" href="https://plus.google.com/104045712242599534737" />
+		<link rel="author" href="https://plus.google.com/104045712242599534737" />
+		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="links-2.js"></SCRIPT>
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">C#.NET</SPAN> <SPAN class="Logo_Text">Course</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+<ul>
+<LI><a href="../index-3.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing-2.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2011.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord-2.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007-2.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel-2.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign-2.html">Web Design</a></LI>
+<LI><a href="../javascript/javascript-2.html">Javascript</a></LI>
+<LI><a href="../NET/vbNet-2.html">Visual Basic .NET</a></LI>
+<LI><a href="../php/php-2.html">Beginners PHP</a></LI>
+<LI><a href="csharp-2.html">C# .NET</a> <B>&lt; &lt;</B></LI>
+<LI><a href="../java/java-2.html">Java for Beginners</a></LI>
+</ul>
+		
+</NAV> <SECTION ID="Wrapper"> <ARTICLE> <HEADER> 
+<H1 ID="Article">Scrolling through the database</H1>
+</HEADER> <SECTION>
+<p align="center"> 
+  <script language="JavaScript">
+				writeImageCsharp()
+			</script>
+</p>
+<P>&nbsp;</P>
+<P>The first thing we'll do is to allow users to move forward through each record 
+  in our database. This is done with just a bit of programming logic, and manipulating 
+  the Row value in the Dataset.</P>
+<p>To make this work, we need to set up a few variables. So return to your coding 
+  window, and add the following two variables outside the form load event, just 
+  below the three you already have:</p>
+<p class="indent_big">int MaxRows = 0;<br>
+  int inc = 0;</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/con_code_5-2.gif" width="386" height="154" alt="A MaxRows variable in C# .NET"></p>
+<p>The MaxRows variable will hold how many Rows there are in the Dataset. This 
+  is so that we don't go past the last record when the Next Record button is clicked. 
+  If we try to go past the last record, the programme will crash! (We'll add the 
+  button shortly.)</p>
+<p>The <b>inc</b> variable will be used to change the current Row number. </p>
+<p>To get at the number of Rows in the DataSet, you can use the <b>Count</b> property 
+  of Rows. Add this code to your form load event, just below your call to NavigateRecords( 
+  ):</p>
+<p class="indent_small">MaxRows = ds1.Tables[&quot;Workers&quot;].Rows.Count;</p>
+<p>Instead of specifying a particular Row in square brackets, this time we type 
+  a dot, and then select <b>Count</b> from the IntelliSense list. This will return 
+  how many rows there are in this particular Dataset. </p>
+<p>When the form loads, then, MaxRows will contain a count of how many Rows are 
+  in the Dataset called <b>ds1</b>.</p>
+<p>For the NavigateRecords method, we need to make one slight change. At the moment, 
+  we have this code:</p>
+<p class="indent_small">DataRow dRow = ds1.Tables[&quot;Workers&quot;].Rows[0];</p>
+<p>But this will point to Row[0] all the time. We can use the <b>inc</b> variable 
+  here. What we'll do is to increment the value when the Next Record button is 
+  clicked, adding 1 to inc every time. </p>
+<p>Change the line to this:</p>
+<p class="indent_small">DataRow dRow = ds1.Tables[&quot;Workers&quot;].Rows[<i>inc</i>];</p>
+<p>The only change is in between the square brackets of Rows.</p>
+<p>Run your programme to test if it works. You should still see the first record 
+  displayed in your text boxes.</p>
+<p>Stop your programme and return to the design environment. Add a button to your 
+  form. Change the Text property to Next Record. Change the Name property to <b>btnNext</b>. 
+</p>
+<p>Double click your button to get at the coding window. For the code, we need 
+  to check what is inside of the MaxRows variable and make sure we don't go past 
+  it. We also need to increment the inc variable. It is this variable that will 
+  move us on to the next record.</p>
+<p>Add the following if statement to your button:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/con_code_6-2.gif" width="396" height="203" alt="Code to move forward through a dataset"></p>
+<p>The first line of the If Statement says &quot;If <b>inc</b> does not equal 
+  <b>MaxRows</b> minus 1&quot;. If it doesn't then we increment the inc variable 
+  and call NavigateRecords. But can you see why we need to say <b>MaxRows - 1</b>? 
+  It's because of the <b>Rows[inc]</b> line in our NavigateRecords method. The 
+  count for Rows starts at zero. So if we only have 4 records in the database, 
+  the count will be for 0 to 3. MaxRows, however, will be 4. If we don't deduct 
+  1, the programme will crash with an error: <b>IndexOutOfRange</b>.</p>
+<p>If the MaxRows is reached, then we can display a message for the user.</p>
+<p>Run your programme and test it out. You should be able to move forward through 
+  your database. Here's what your form should look like when the last record is 
+  reached:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/form_3-2.gif" width="378" height="223" alt="The last row in the dataset"></p>
+<p>&nbsp;</p>
+<h3>Move Backwards through the Database</h3>
+<p>We can use similar code to move backwards through the records in the database.<br>
+  Add another button to your form. Change the Text property to Previous Record. 
+  Change the Name property to btnPrevious.</p>
+<p>Double click your new button to get at the coding window. Now add the following:</p>
+<p class="indent_small">if (inc &gt; 0)<br>
+  {</p>
+<p class="indent_big">inc--;<br>
+  NavigateRecords();</p>
+<p class="indent_small">}<br>
+  else<br>
+  {</p>
+<p class="indent_big">MessageBox.Show(&quot;First Record&quot;);</p>
+<p class="indent_small">}</p>
+<p>The if statement is now only checking the <b>inc</b> variable. We need to check 
+  if it's greater than zero. If it is, we can deduct 1 from inc, and then call 
+  our <b>NavigateRecords</b> methods. When the form loads, remember, inc will 
+  be 0. So if we tried to move back one record after the form first loads the 
+  programme would crash. It would crash because we'd be trying to access Rows[-1].</p>
+<p>Run your programme and test it out. Click you Previous Record button and you 
+  should see this:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/form_4-2.gif" width="377" height="197" alt="The first row in the dataset"></p>
+<p>Click both of your buttons and make sure you can move back and forward through 
+  the records. You programme shouldn't crash!</p>
+<h3><br>
+  Jump to the Last Record in your Database</h3>
+<p>To move to the last record of your database, you only need to make sure that 
+  the inc variable and MaxRows have the same value.</p>
+<p>Add a new button to your form. Set the Text property as Last Record, and the 
+  Name property as btnLast. Double click, and add the following code:</p>
+<p class="indent_small">if (inc != MaxRows - 1)<br>
+  {</p>
+<p class="indent_big">inc = MaxRows - 1;<br>
+  NavigateRecords();</p>
+<p class="indent_small">}</p>
+<p>The If Statement again checks that inc is not equal to MaxRows minus 1. If 
+  it isn't, we have this:</p>
+<p class="indent_big">inc = MaxRows - 1;</p>
+<p>MaxRows minus 1 would equal 3 in our four record database. Because Rows[inc] 
+  goes from 0 to 3, this is enough to move to the last record after the call to 
+  NavigateRecords.</p>
+<p>&nbsp;</p>
+<h3></h3>
+<h3>Jump to the First Record in your Database</h3>
+<p>To move to the first record in the database, we only need to set inc to zero.</p>
+<p>Add another button to your form. Change the Text property to First Record. 
+  Change the Name property to btnFirst. Double click your new button and add the 
+  following code:</p>
+<p class="indent_small">if (inc != 0)<br>
+  {</p>
+<p class="indent_big">inc = 0;<br>
+  NavigateRecords();</p>
+<p class="indent_small">}</p>
+<p>This just checks to see if inc isn't already zero. If it isn't, we set the 
+  inc variable to 0. Then we call the NavigateRecords method.</p>
+<p>Run your programme and test it out. You should now be able to move through 
+  the records in your database without the programme crashing. What we'll do now 
+  is to allow the user to add a new record to the database. This is more complex 
+  than the navigation, so you may need to pay close attention!</p>
+<p></p>
+</SECTION></ARTICLE></SECTION><FOOTER> 
+<p align="right"><a href="csharp_s12p7-2.html">&lt;-- Pulling records from the Dataset</a> | <a href="csharp_s12p9-2.html">How to add a new record --&gt;</a></P>
+		<P><A HREF="csharp-2.html">Back to the C# NET Contents Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.ukcsharp/csharp_s12p8.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 08:09:40 GMT -->
+</HTML>
+

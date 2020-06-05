@@ -1,0 +1,2040 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Visual Basic in 12 Easy Lessons vel17.htm </TITLE>
+
+<LINK REL="ToC" HREF="index.htm">
+
+<LINK REL="Index" HREF="htindex.htm">
+
+<LINK REL="Next" HREF="vel18.htm">
+
+<LINK REL="Previous" HREF="velp08.htm"></HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+TEXT="#000000" LINK="#0000FF" VLINK="#800080">
+
+<A NAME="I0"></A>
+
+<H2>Visual Basic in 12 Easy Lessons vel17.htm</H2>
+
+<P ALIGN=LEFT>
+
+<A HREF="velp08.htm" TARGET="_self"><IMG SRC="purprev.gif" WIDTH = 32 HEIGHT = 32 BORDER = 0 ALT="Previous Page"></A>
+
+<A 
+HREF="index.htm" TARGET="_self"><IMG SRC="purtoc.gif" WIDTH = 32 HEIGHT = 32 BORDER = 0 ALT="TOC"></A>
+
+<A HREF="vel18.htm" TARGET="_self"><IMG SRC="purnext.gif" WIDTH = 32 HEIGHT = 32 BORDER = 0 ALT="Next Page"></A>
+
+
+<HR ALIGN=CENTER>
+
+<P>
+
+<UL>
+
+<UL>
+
+<UL>
+
+<LI>
+
+<A HREF="#E68E127" >What You'll Learn</A>
+
+<LI>
+
+<A HREF="#E68E128" >Needed: File Dialogs</A>
+
+<LI>
+
+<A 
+HREF="#E68E129" >The File Controls</A>
+
+<LI>
+
+<A HREF="#E68E130" >How FILESEL.MAK Manages the File Selection</A>
+
+<LI>
+
+<A HREF="#E68E131" >Homework</A>
+
+<UL>
+
+<LI>
+
+<A HREF="#E69E119" >General Knowledge</A>
+
+<LI>
+
+<A HREF="#E69E120" >Write Code 
+That...</A>
+
+<LI>
+
+<A HREF="#E69E121" >Extra Credit</A></UL></UL></UL></UL>
+
+<HR ALIGN=CENTER>
+
+<A NAME="E66E25"></A>
+
+<H1 ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=6 COLOR="#FF0000"><B>Lesson 9, Unit 17</B></FONT></CENTER></H1>
+
+<BR>
+
+<A NAME="E67E28"></A>
+
+<H2 
+ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=6 COLOR="#FF0000"><B>File Controls</B></FONT></CENTER></H2>
+
+<BR>
+
+<BR>
+
+<A NAME="E68E127"></A>
+
+<H3 ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=5 COLOR="#FF0000"><B>What You'll Learn</B></FONT></CENTER></H3>
+
+<BR>
+
+<UL>
+
+
+<LI>Needed: file dialogs
+
+<BR>
+
+<BR>
+
+<LI>The file controls
+
+<BR>
+
+<BR>
+
+<LI>How FILESEL.MAK manages the file selection
+
+<BR>
+
+<BR>
+
+</UL>
+
+<P>This lesson describes how to access files inside Visual Basic applications. The data stored in files is more 
+permanent than data stored in variables. The values of variables are too volatile. If you want to store a history of customer information, for 
+example, you must store that information on the disk. If you kept such information in arrays of variables, you 
+would never be able to exit Visual Basic or turn off the computer because you would lose all the information!
+
+<BR>
+
+<P>Data inside variables is needed for processing, calculating, printing, and storing, but not for long-term storage. Before you can access 
+data stored in files, you must be able to locate data stored on the disk. This unit teaches you how to build common 
+file-management dialog boxes that enable the user to select files stored on the disk. Depending on your application, you may need the user 
+to select a filename, and this unit's file dialog box discussion provides the tools that you'll need to display lists 
+of files from which the user can choose. After the user selects or enters a filename, you'll need to utilize the file I/O commands and 
+functions discussed in the next unit to access the data in the files.
+
+<BR>
+
+<BR>
+
+<A NAME="E68E128"></A>
+
+<H3 ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=5 COLOR="#FF0000"><B>Needed: File Dialogs</B></FONT></CENTER></H3>
+
+<BR>
+
+<P><FONT 
+COLOR="#FF8000"><B><I>Concept: </I></B></FONT>There are several ways to obtain filename information from the user. The most common way is to build a dialog box that enables the user to select a file, directory, and drive from lists that you 
+provide.
+
+<BR>
+
+
+<P>Figure 17.1 shows a common File Add dialog box that you'll see if you select File Add from Visual Basic. You've seen this and similar File Open dialog boxes in more than one Windows application. The great thing about file dialog boxes is that the user 
+
+can select from a list of filenames, directories, and drives. Although you could ask the user for a filename using an input box, allowing the user to select from a list means that the user can often find files quickly and more accurately.
+
+<BR>
+
+<P><B> <A 
+HREF="17vel01.gif">Figure 17.1. A dialog box that enables the user to select the filename, directory, and </B><B>drive.</A></B>
+
+<BR>
+
+<P>Dialog boxes are nothing more than secondary forms that you add to your application's primary Form window. The list 
+boxes, command buttons, and text boxes that you see on such dialog boxes are nothing more than controls that you place on those secondary 
+forms, just as you do on the primary Form window. We're going to have a small problem with the Visual Basic Primer 
+System, however, that comes with this book: The Visual Basic Primer doesn't allow for more than one form per application. It would seem at 
+first glance that we won't be able to add file-selecting dialog boxes to our applications.
+
+<BR>
+
+<P>Have no fear. 
+The frame control produces frames on which you can place file-selecting controls such as list boxes, command buttons, and text boxes. The frame control won't offer <I>exactly</I> the same kind of usability as a true dialog box because the 
+user can't 
+resize or move the frame. However, the frame does provide basically the same end result that allows us display file-selecting controls when needed.
+
+<BR>
+
+<BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<HR ALIGN=CENTER>
+
+<BR>
+
+<NOTE><B>Note: </B>Technically, you can write a 
+frame control with properties that enable the user to move the frame, but most of the time, the user shouldn't have that much power over controls. The user could easily hide other controls and mess up the 
+application's design.</NOTE>
+
+<BR>
+
+<HR 
+ALIGN=CENTER>
+
+</BLOCKQUOTE></BLOCKQUOTE>
+
+<P>Figure 17.2 shows the file selection frame that you'll learn how to create and use in this unit. As you can see, the frame offers the same functionality as the dialog box shown in Figure 17.1. After the user 
+selects a file, you can program the frame to 
+disappear from view just as file-selection dialog boxes disappear.
+
+<BR>
+
+<P><B> <A HREF="17vel02.gif">Figure 17.2. A file-selection frame that mimics a file-selection dialog box.</A></B>
+
+<BR>
+
+<P>Actually, 
+the frame file-selection dialog box is slightly easier to use than the standard file-selection dialog box because the frame combines the File Type box with the File Name text box. When the user enters a file pattern, such as *.frm in the File 
+Name text 
+box, the frame immediately updates the filename list box to reflect only files that match that pattern.
+
+<BR>
+
+<P><FONT COLOR="#FF8000"><B><I>Stop and Type: </I></B></FONT>Load and run the project named FILESEL.MAK that comes on one of this book's 
+companion disks (the disk that does not contain the Visual Basic Primer system). You'll see the application shown in 
+Figure 17.3. Select different drives and directories and notice how the file list updates to reflect the change. The rest of this unit 
+describes the important components of this application.
+
+<BR>
+
+<P><FONT COLOR="#FF8000"><B><I>Review: </I></B></FONT>Although you can't add additional forms to your Visual Basic Primer applications, you can simulate the additional forms by using the frame 
+control to hold sets of controls that mimic dialog boxes. This 
+unit devotes itself to explaining the FILESEL.MAK project so that you'll know how to build such file-selecting frames for your user, and you'll know how to access the selected information 
+after the user finishes selecting a file.
+
+<BR>
+
+<P><B> <A HREF="17vel03.gif">Figure 17.3. This book's FILESEL.MAK project with the file-selecting frame on the </B><B>screen.</A></B>
+
+<BR>
+
+<P>The next section, &quot;The File Controls,&quot; explains how 
+to use the file controls. Each of the file controls produces a different kind of file-access list box. Figure 17.3 includes callouts to the three list boxes produced by the file controls that 
+you'll learn about in the next section.
+
+<BR>
+
+<P><FONT 
+COLOR="#FF8000"><B><I>Analysis: </I></B></FONT>The FILESEL.MAK application demonstrates how you might implement a file-selection frame. The application does nothing more than display the file-selection frame when the user clicks the Display File 
+command 
+button, and when the user selects a file, the application erases the frame and displays a new command button labeled You Selected... so that the user can see the file, path, and drive of the file selected from the frame earlier.
+
+<BR>
+
+<P>This particular 
+application allows the user to select files but not enter new filenames. In other words, this application forms the basis for a frame that enables the user to open files that already exist. If you wanted to give the user the ability to 
+enter a name not in 
+the list, you would have to modify the application to look in the File Name text box for a new and valid file name.
+
+<BR>
+
+<P>The FILESEL.MAK program uses the frame's Visible property, setting the property to True for displaying the frame and to False when 
+the frame must not appear on the screen.
+
+<BR>
+
+<BR>
+
+<A NAME="E68E129"></A>
+
+<H3 ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=5 COLOR="#FF0000"><B>The File Controls</B></FONT></CENTER></H3>
+
+<BR>
+
+<P><FONT COLOR="#FF8000"><B><I>Concept: </I></B></FONT>Visual Basic 
+includes three file controls that you manage from a file-selection frame.
+
+<BR>
+
+<P>Figure 17.4 shows the Toolbox window showing the location of the three file controls. As you know, selecting a file consists not only of choosing a filename but also 
+choosing a directory and a drive. When you place these file controls on a frame, 
+remember that you must draw each control by dragging with the mouse (explained more fully in Lesson 6's second unit, &quot;Checks, Options, and Control Arrays&quot;) so that 
+each control stays with the frame when code moves, hides, or displays the frame.
+
+<BR>
+
+<P><B> <A HREF="17vel04.gif">Figure 17.4. The file controls on the Toolbox window.</A></B>
+
+<BR>
+
+<P>Using the file-related controls requires that you tie them together 
+through code. In other words, when the user changes the drive name, both the path name and the file list must change also to show the paths and files on the newly selected drive.
+
+<BR>
+
+<P>Table 17.1 lists the properties that appear in the Properties 
+window for the drive list box control. The properties are similar to the ones that you've learned for other controls. The drive list box control contains a list of disk drives that are 
+available on the system running the program. As with any list box 
+control, the user selects from the drive list box at runtime, so you can't set a default drive in the list until runtime.
+
+<BR>
+
+<BR>
+
+<P ALIGN=CENTER>
+
+<CENTER>
+
+<FONT COLOR="#000080"><B>Table 17.1. The drive list box properties.</B></FONT></CENTER>
+
+<BR>
+
+
+
+
+<TABLE  BORDERCOLOR=#000040 BORDER=1 CELLSPACING=2 WIDTH="100%" CELLPADDING=2 >
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+<I>Property</I>
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+<I>Description</I></FONT>
+
+<TR>
+
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+BackColor
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the drive list box's background color, chosen as a hexadecimal color code or from the color palette.</FONT>
+
+<TR>
+
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+DragIcon
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains the icon that appears when the user drags the drive list box around on the form. (You'll only rarely allow the user to 
+move a drive list box, so the Drag... property settings aren't usually relevant.)</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+DragMode
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds either 1 for manual mouse 
+dragging requirements (the user can press and hold the mouse button while dragging the control) or 0 (the default) for automatic mouse dragging, meaning that the user can't drag the drive list box but that you, through code, 
+can initiate the dragging if 
+needed.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Enabled
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Determines whether the drive list box can respond to events. If set to True (the default), the drive list 
+box can respond to events. Otherwise, Visual Basic halts event processing for that particular control.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontBold
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True 
+(the default) if the drive are to display in boldfaced characters; False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontItalic
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if 
+the drive names are to display in italicized characters; False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontName
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains the name of the drive list box 
+drive name's styles. Typically, you'll use the name of a Windows TrueType font.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontSize
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the size, in points, of the 
+font used for the drive names.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontStrikethru
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if the drive names are to display in strikethru 
+letters (characters with dashes through them); False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontUnderline
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if the drive names 
+are to display in underlined letters; False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+ForeColor
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the color of the letters in the drive 
+names.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Height
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains the height, in twips, of the drive list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT 
+COLOR=#000080>
+
+HelpContextID
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If you add advanced, context-sensitive help to your application, the HelpContextID provides the identifying number for the help text.</FONT>
+
+<TR>
+
+<TD 
+VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Index
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If the drive list box is part of a control array, the Index property provides the numeric subscript for each particular drive list 
+box. (See Lesson 6.)</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Left
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains the number of twips from the left edge of the Form window to the left edge of the drive 
+list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+MousePointer
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the shape that the mouse cursor changes to if the user moves the mouse cursor over the drive 
+list box. The possible values are from 0 to 12 and represent a range of different shapes that the mouse cursor can take. (See Lesson 12.)</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Name
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF 
+><FONT COLOR=#000080>
+
+Contains the name of the control. By default, Visual Basic generates the names Drive1, Drive2, and so on as you add subsequent drive list boxes to the form.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+
+TabIndex
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Determines whether the focus tab order begins at 0 and increments every time you add a new control. You can change the focus order by changing the controls' TabIndex to other values. 
+No two controls on the same form can have the same TabIndex value.</FONT>
+
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+TabStop
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If True, determines whether the user can press 
+Tab to move the focus to this drive list box. If False, the drive list box can't receive the focus.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Tag
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Unused by Visual 
+Basic. This is for the programmer's use for an identifying comment applied to the drive list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Top
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the number of 
+twips from the top edge of a drive list box to the top of the form.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Visible
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True or False, indicating whether the 
+user can see (and, therefore, use) the drive list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Width
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the number of twips wide that the drive list box 
+consumes.</FONT>
+
+</TABLE><P>At runtime, you can set the drive list box's Drive property. The Drive property will contain the name of the drive as well as the volume label on the drive. If you want only the drive letter, use the Left$() function to pick 
+off the drive letter 
+from the left of the drive's Drive property.
+
+<BR>
+
+<P>Table 17.2 lists the properties that appear in the Properties window for the file list box control. Many of the properties are similar to the ones that you've learned for other 
+controls, but a few are important file-specific properties that you'll 
+control using Visual Basic code.
+
+<BR>
+
+<BR>
+
+<P ALIGN=CENTER>
+
+<CENTER>
+
+<FONT COLOR="#000080"><B>Table 17.2. The file list box properties.</B></FONT></CENTER>
+
+<BR>
+
+
+
+<TABLE  
+BORDERCOLOR=#000040 BORDER=1 CELLSPACING=2 WIDTH="100%" CELLPADDING=2 >
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+<I>Property</I>
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+<I>Description</I></FONT>
+
+<TR>
+
+<TD 
+VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Archive
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If True (the default), specifies that the file list contains files whose internal archive (backed up) properties are set. If False, 
+files whose archive bits are not set are not displayed.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+BackColor
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains the file list box's background color, chosen as 
+a hexadecimal color code or from the color palette.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+DragIcon
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the icon that appears when the user drags the file list 
+box around on the form. (You only rarely allow the user to move a file list box, so the Drag... property settings aren't usually relevant.)</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+DragMode
+
+</FONT>
+
+<TD VALIGN=top  
+BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Either contains 1 to indicate manual mouse dragging requirements (the user can press and hold the mouse button while dragging the control) or 0 (the default) for automatic mouse dragging, meaning that the user can't 
+drag the file list box but that you, 
+through code, can initiate the dragging if needed.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Enabled
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If set to True (the 
+default), determines whether the file list box can respond to events. Otherwise, Visual Basic halts event processing for that particular control.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontBold
+
+</FONT>
+
+<TD VALIGN=top  
+BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if the file names are to display in boldfaced characters; False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontItalic
+
+</FONT>
+
+<TD VALIGN=top  
+BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if the file names are to display in italicized characters; False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontName
+
+</FONT>
+
+<TD VALIGN=top  
+BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains the name of the file list box filename's styles. Typically, you'll use the name of a Windows TrueType font.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontSize
+
+</FONT>
+
+<TD 
+VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the size, in points, of the font used for the filenames.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontStrikethru
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT 
+COLOR=#000080>
+
+Holds True (the default) if the filenames are to display in strikethru letters (characters with dashes through them); False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontUnderline
+
+</FONT>
+
+<TD 
+VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if the filenames are to display in underlined letters; False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+ForeColor
+
+</FONT>
+
+<TD VALIGN=top  
+BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the color of the letters in the filenames.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Height
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the height, in 
+twips, of the file list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+HelpContextID
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If you add advanced, context-sensitive help to your application, the 
+HelpContextID provides the identifying number for the help text.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Hidden
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If True, specifies that the file list contains 
+files whose internal hidden properties are set. If False (the default), files whose hidden properties are not set are displayed.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Index
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT 
+COLOR=#000080>
+
+If the file list box is part of a control array, the Index property provides the numeric subscript for each particular file list box. (See Lesson 6.)</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Left
+
+</FONT>
+
+<TD 
+VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the number of twips from the left edge of the Form window to the left edge of the file list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+MousePointer
+
+</FONT>
+
+<TD 
+VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains the shape that the mouse cursor changes to if the user moves the mouse cursor over the file list box. The possible values are from 0 to 12 and represent a range of different shapes that the mouse 
+cursor can take. (See Lesson 12.)</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+MultiSelect
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If MultiSelect contains 0-None (the default), the user can select only one 
+filename. If 1-Simple, the user can select more than one filename by clicking with the mouse or by pressing the spacebar over filenames in the list. If 2-Extended, the user can 
+select multiple filenames using the Shift+click and Shift+arrow to extend the 
+selection from a previously selected filename to the current filename, and Ctrl+click either selects or deselects a filename from the list.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Name
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF 
+><FONT COLOR=#000080>
+
+Holds the name of the control. By default, Visual Basic generates the names File1, File2, and so on as you add subsequent file list boxes to the form.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Normal
+
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If the Normal contains True (the default), the file list contains files whose internal normal properties are set. If False, files whose archive bits are not set to normal are not 
+displayed.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Pattern
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains a wildcard pattern of files. * in the pattern indicates all files, and ? means all characters. 
+*.txt means all files whose extensions are txt, and sales??.dat means all files whose first five letters are sales, the sixth and seventh letters of the 
+filenames can be anything, and the extension must be dat.</FONT>
+
+<TR>
+
+<TD VALIGN=top  
+BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+ReadOnly
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains True (the default) if the file list is to contain files whose internal read-only properties are set. Therefore, the file list displays 
+on those files that can't be changed. If contains False, files whose read-only properties are not set are not 
+displayed.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+System
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT 
+COLOR=#000080>
+
+Holds True if the file list contains files whose internal system properties are set. If False (the default), files whose system properties are not set are displayed.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+
+TabIndex
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the focus tab order begins at 0 and increments every time that you add a new control. You can change the focus order by changing the controls' TabIndex to other values. No 
+two controls on the same form can have the same TabIndex value.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+TabStop
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains True if the user can press Tab to move 
+the focus to this file list box. If False, the file list box can't receive the focus.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Tag
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Unused by Visual Basic. This is 
+for the programmer's use for an identifying comment applied to the file list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Top
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the number of twips from the 
+top edge of a file list box to the top of the form.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Visible
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains either True or False, indicating whether the user can 
+see (and, therefore, use) the file list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Width
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the number of twips wide that the file list box consumes.</FONT>
+
+
+</TABLE><P>Table 17.3 lists the properties that appear in the Properties window for the directory list box control. Many of the properties are similar to the ones that you've learned for other controls. As with the file list control, you can set and select 
+
+values from directory list boxes at runtime.
+
+<BR>
+
+<BR>
+
+<P ALIGN=CENTER>
+
+<CENTER>
+
+<FONT COLOR="#000080"><B>Table 17.3. The directory list box properties.</B></FONT></CENTER>
+
+<BR>
+
+
+
+<TABLE  BORDERCOLOR=#000040 BORDER=1 CELLSPACING=2 WIDTH="100%" 
+CELLPADDING=2 >
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+<I>Property</I>
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+<I>Description</I></FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+BackColor
+
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the directory list box's background color, chosen as a hexadecimal color code or from the color palette.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+DragIcon
+
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the icon that appears when the user drags the directory list box around on the form. (You'll only rarely let the user move a directory list box, so the Drag... property settings 
+aren't usually relevant.)</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+DragMode
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains either 1 for manual mouse dragging requirements (the user can press and hold 
+the mouse button while dragging the control) or 0 (the default) for automatic mouse dragging, meaning that the user can't drag the directory list box but you, through 
+code, can initiate the dragging if needed.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF 
+><FONT COLOR=#000080>
+
+Enabled
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies that the directory list box can respond to events if set to True (the default). If set to False, Visual Basic halts event processing for that 
+particular control.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontBold
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if the directory names are to display in boldfaced characters; False 
+otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontItalic
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if the directory names are to display in italicized characters; False 
+otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontName
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains the name of the directory list box directory name's styles. Typically, you'll use the name of 
+a Windows TrueType font.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontSize
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the size, in points, of the font used for the directory names.</FONT>
+
+<TR>
+
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontStrikethru
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if the directory names are to display in strikethru letters (characters with dashes through 
+them); False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+FontUnderline
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True (the default) if the directory names are to display in underlined 
+letters; False otherwise.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+ForeColor
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the color of the letters in the directory names.</FONT>
+
+<TR>
+
+<TD 
+VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Height
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the height, in twips, of the directory list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+
+HelpContextID
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If you add advanced, context-sensitive help to your application, the HelpContextID provides the identifying number for the help text.</FONT>
+
+<TR>
+
+<TD VALIGN=top  
+BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Index
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If the directory list box is part of a control array, the Index property provides the numeric subscript for each particular directory list box. 
+(See Lesson 6.)</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Left
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the number of twips from the left edge of the Form window to the left edge of the directory 
+list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+MousePointer
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies the shape that the mouse cursor changes to if the user moves the mouse cursor over the 
+directory list box. The possible values are from 0 to 12 and represent a range of different shapes that the mouse cursor can take. (See Lesson 12.)</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Name
+
+</FONT>
+
+<TD VALIGN=top  
+BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Contains the name of the control. By default, Visual Basic generates the names Dir1, Dir2, and so on as you add subsequent directory list boxes to the form.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT 
+COLOR=#000080>
+
+TabIndex
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Specifies that the focus tab order begins at 0 and increments every time you add a new control. You can change the focus order by changing the controls' TabIndex to 
+other values. No two controls on the same form can have the same TabIndex value.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+TabStop
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+If True, specifies that the user 
+can press Tab to move the focus to this directory list box. If False, the directory list box can't receive the focus.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Tag
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+
+Unused by Visual Basic. This is for the programmer's use for an identifying comment applied to the directory list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Top
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+
+Holds the number of twips from the top edge of a directory list box to the top of the form.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Visible
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds True or False, 
+indicating whether the user can see (and, therefore, use) the directory list box.</FONT>
+
+<TR>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Width
+
+</FONT>
+
+<TD VALIGN=top  BGCOLOR=#80FFFF ><FONT COLOR=#000080>
+
+Holds the number of twips wide 
+that the directory list box consumes.</FONT>
+
+</TABLE><BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<HR ALIGN=CENTER>
+
+<BR>
+
+<NOTE><B>Note: </B>At runtime, you can set the directory list box's Path property. The Path property contains the name of the disk drive as well as 
+the full path.</NOTE>
+
+<BR>
+
+<HR ALIGN=CENTER>
+
+</BLOCKQUOTE></BLOCKQUOTE>
+
+<P>Most of the file-related controls are common and control the placement, size, and look of controls. However, you'll have to constantly update the values of key properties for 
+these file-related controls as the user selects different values from the 
+controls.
+
+<BR>
+
+<P>For example, when the user selects a different drive name, you'll have to update both the directory control's list of directories as well as the file list 
+control's list of filenames. When the user selects a different directory, you'll have to update 
+the file list control's list of filenames but not change the drive list control. Keeping these file controls in sync is the only unusual requirement for using 
+these controls. The next section explains how the FILESEL.MAK application uses code to tie 
+together its file controls.
+
+<BR>
+
+<BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<HR ALIGN=CENTER>
+
+<BR>
+
+<NOTE><B>Note: </B>The events available for the file controls are extremely 
+similar to those that you've seen. The most commonly coded event procedures are Click and DblClick. In addition, the drive and directory list boxes support the Change event 
+procedure that executes when the user changes the drive or directory in some 
+way.</NOTE>
+
+<BR>
+
+<HR ALIGN=CENTER>
+
+</BLOCKQUOTE></BLOCKQUOTE>
+
+<P><FONT COLOR="#FF8000"><B><I>Review: </I></B></FONT>Although many properties for the file-related controls are similar to those that you know from other controls, there are a few key 
+properties that determine the selection from which the user can select 
+filenames. The following properties are especially critical:
+
+<BR>
+
+<UL>
+
+<LI>The drive list box control's Drive property
+
+<BR>
+
+<BR>
+
+<LI>The directory list box control's Path 
+property
+
+<BR>
+
+<BR>
+
+<LI>The filename list box control's Pattern property
+
+<BR>
+
+<BR>
+
+</UL>
+
+<P>The next section shows how the FILESEL.MAK application keeps these controls in synchronization while the user selects among drives, directories, and files.
+
+
+<BR>
+
+<BR>
+
+<A NAME="E68E130"></A>
+
+<H3 ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=5 COLOR="#FF0000"><B>How FILESEL.MAK Manages the File Selection</B></FONT></CENTER></H3>
+
+<BR>
+
+<P><FONT COLOR="#FF8000"><B><I>Concept: </I></B></FONT>When one file selection 
+control changes, such as the drive list box control, that change usually affects the other file controls. You must learn how to code file controls to keep them all pointing to 
+the same drive, directory, and file.
+
+<BR>
+
+<P>When the user clicks the Display 
+Files command button, the Click event procedure in Listing 17.1 executes to set up the default drive and path.
+
+<BR>
+
+<P>
+
+<FONT COLOR="#000080"><B>Listing 17.1. The initial code for the file-selection frame's display.</B></FONT>
+
+<BR>
+
+<PRE>
+
+<FONT 
+COLOR="#000080">1: Sub cmdDisp_Click ()
+
+2: ' Set default values
+
+3: drvDrive.Drive = &quot;c:&quot;
+
+4: dirList.Path = &quot;c:\&quot; ' Root directory
+
+5: 
+
+6: ' Display the file-selection frame
+
+7: lblDirs.Caption = dirList.Path
+
+8: txtFiles.Text = 
+&quot;*.txt&quot;
+
+9: fraFile.Visible = True
+
+10: ' Select the first file
+
+11: ' in the list of files
+
+12: filFile.ListIndex = 0
+
+13: End Sub</FONT></PRE>
+
+<P>By setting the Drive and Path properties of the drive list box and the directory list box in 
+lines 3 and 4, the command button sets up a default listing for the C: drive and the root directory on the C: drive. Line 7 initializes the label that shows the 
+selected directory name above the directory box (directly beneath the Directories: label). 
+Line 8 initializes the File Name text box with a default file pattern. A common filename extension for text files is txt, so the initial pattern is set to *.txt.
+
+<BR>
+
+<P>Line 9 does the work of displaying the frame to the user. During the FILESEL.MAK's 
+development, the frame's Visible property was set to False, so the user doesn't see the frame or its controls until the user presses the command button. Finally, line 12 
+selects the first item in the file list box so that a filename is always selected in 
+the list upon the initial display of the frame. If no files exist for the given drive, directory, and pattern, line 12 has no effect on the program.
+
+<BR>
+
+<BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<HR ALIGN=CENTER>
+
+<BR>
+
+<NOTE><B>Tip: </B>Manage the drive change 
+first.</NOTE>
+
+<BR>
+
+<HR ALIGN=CENTER>
+
+</BLOCKQUOTE></BLOCKQUOTE>
+
+<P>When writing a file-selection frame, always code the drive change event procedure before anything else. When the user changes the drive, you must ensure that the directory list changes 
+as well. Listing 17.2 contains the Change event procedure for the 
+drive.
+
+<BR>
+
+<P>
+
+<FONT COLOR="#000080"><B>Listing 17.2. Code that executes when the user selects a different drive.</B></FONT>
+
+<BR>
+
+<PRE>
+
+<FONT COLOR="#000080">1: Sub drvDrive_Change 
+()
+
+2: dirList.Path = drvDrive.Drive
+
+3: End Sub </FONT></PRE>
+
+<P>The drvDrive_Change() event procedure may not seem to do much. Actually, the purpose of the procedure is to trigger <I>another</I> event. As soon as the user changes the drive, Listing 17.2 
+works to update the path of the directory to the new drive's 
+directory (the current default directory that's selected on the newly chosen drive). Therefore, when the user selects a new drive, Listing 17.2 acts to update the directory list, <I>which 
+</I><I>in turn</I> triggers the directory's Change event procedure 
+shown in Listing 17.3.
+
+<BR>
+
+<P>
+
+<FONT COLOR="#000080"><B>Listing 17.3. When the directory changes, so must the file list.</B></FONT>
+
+<BR>
+
+<PRE>
+
+<FONT COLOR="#000080">1: Sub 
+dirList_Change ()
+
+2: ' The selection of the directory
+
+3: ' list box changed
+
+4: filFile.Path = dirList.Path
+
+5: ' Make sure that one file is selected
+
+6: If (filFile.ListCount &gt; 0) Then
+
+7: ' Select the first file
+
+8: ' in the list of files
+
+9: 
+filFile.ListIndex = 0
+
+10: End If
+
+11: 
+
+12: lblDirs.Caption = dirList.Path
+
+13: End Sub</FONT></PRE>
+
+<P>Line 4 updates the file list box to reflect the path of the new directory chosen. Lines 5 through 10 ensures that a file is selected, even if the user 
+didn't select one. Line 9 assigns the selection to the first file in the file list. Line 12 updates 
+the pathname caption that appears beneath the Directories label showing the current directory. The chain reaction is now tied together so that a change in 
+the drive changes both the directory and the file list. If the user changes only the directory and 
+not the drive, the change in the directory (due to the dirList_Change() event procedure) changes also.
+
+<BR>
+
+<P>There is one Change event that's not tied 
+to this chain-reaction of drive-directory-file change, but one that's important to maintain in all your applications. If the user wants to see a different set of files in the current directory, the user can 
+enter a new file pattern in the File Name text 
+box. As soon as the user enters a new pattern, the Change event procedure shown in Listing 17.4 executes.
+
+<BR>
+
+<P>
+
+<FONT COLOR="#000080"><B>Listing 17.4. The user just changed the filename pattern.</B></FONT>
+
+<BR>
+
+<PRE>
+
+<FONT COLOR="#000080">1: Sub 
+txtFiles_Change ()
+
+2: filFile.Pattern = txtFiles.Text
+
+3: End Sub</FONT></PRE>
+
+<P>Any change in the File Name text box produces an immediate corresponding change in the list of files shown. Therefore, as soon as the user changes the default pattern from 
+*.txt to *.exe, for example, the filename list box updates to show only those 
+files whose extensions are .exe.
+
+<BR>
+
+<P>The user is allowed to close the file-selection dialog using any of the following three methods:
+
+<BR>
+
+<UL>
+
+<LI>Click the OK command 
+button
+
+<BR>
+
+<BR>
+
+<LI>Double-click a filename
+
+<BR>
+
+<BR>
+
+<LI>Click the Cancel command button
+
+<BR>
+
+<BR>
+
+</UL>
+
+<P>Listing 17.5 contains the Click event procedure for the OK command button. When the user closes the file-selection frame, several things 
+must take place. The highlighted filename needs to be saved. Line 3 saves the highlighted filename by placing that 
+filename in the File Name text box. Even though the frame will be hidden (as well as all controls on the frame, including the text box) by 
+line 5, the text box will be available to the program, and any routine in the application can access txtFiles.Text to 
+see what filename the user selected. In addition, the drive and directory controls will still hold their selected values, even though the 
+user won't be able to see these controls.
+
+<BR>
+
+<P>
+
+<FONT COLOR="#000080"><B>Listing 17.5. The OK closing routine.</B></FONT>
+
+<BR>
+
+<PRE>
+
+<FONT COLOR="#000080">1: Sub cmdFileOK_Click ()
+
+2: ' Save the file selected by the user
+
+3: txtFiles.Text = 
+filFile.List(filFile.ListIndex)
+
+4: ' Hide the file selection frame
+
+5: fraFile.Visible = False
+
+6: ' Tell surrounding code that Cancel was not pressed
+
+7: DidCancel = False ' User didn't press Cancel
+
+8: ' Show the &quot;You Selected&quot; command button
+
+
+9: cmdSel.Visible = True
+
+10: End Sub</FONT></PRE>
+
+<P>There is a module variable named DidCancel, defined in the form module's (general) procedure, that holds either True or False, depending on whether the user clicks Cancel. If Listing 17.5 executes, the 
+user selected OK, not Cancel, so line 7 sets the 
+DidCancel variable to False in case any application using this frame needs to know whether Cancel was pressed. Line 9 closes out the event procedure by hiding the file selection frame and all its controls.
+
+
+<BR>
+
+<P>If the user double-clicks a filename, the one-line DblClick event procedure shown in Listing 17.6 executes. The DblClick event procedure does nothing more than call the OK command button's Click event procedure because the same result occurs: the 
+file 
+selected by the user becomes the requested file and the frame disappears from the user's view.
+
+<BR>
+
+<P>
+
+<FONT COLOR="#000080"><B>Listing 17.6. The user selected a file by double-clicking the filename.</B></FONT>
+
+<BR>
+
+<PRE>
+
+<FONT 
+COLOR="#000080">1: Sub filFile_DblClick ()
+
+2: ' Double-clicking a selected filename
+
+3: ' does the same thing as selecting a
+
+4: ' file and pressing the OK button.
+
+5: ' Therefore, call the OK button's Click event.
+
+6: Call cmdFileOK_Click
+
+7: End 
+Sub</FONT></PRE>
+
+<P>If the user clicks the Cancel command button, nothing should change in the program except that the frame disappears and the DidCancel variable should be set to True. Therefore, if you add this frame and its event procedures to your own 
+applications, the 
+DidCancel variable tells you whether the user pressed Cancel. Listing 17.7 shows the Cancel command button's Click procedure.
+
+<BR>
+
+<P>
+
+<FONT COLOR="#000080"><B>Listing 17.7. The user clicked Cancel to close the file-selection 
+frame.</B></FONT>
+
+<BR>
+
+<PRE>
+
+<FONT COLOR="#000080">1: Sub cmdCancel_Click ()
+
+2: ' Used pressed the Cancel button
+
+3: ' Hide the frame and inform the program
+
+4: DidCancel = True
+
+5: fraFile.Visible = False
+
+6: End Sub</FONT></PRE>
+
+<P><FONT 
+COLOR="#FF8000"><B><I>Review: </I></B></FONT>The code behind the file selection frame describes how the file controls work in conjunction with each other. A user's change to one of the file controls can affect the other file controls. Use code to 
+control 
+those additional changes so that a drive or directory change updates a corresponding file list box.
+
+<BR>
+
+<P>Please remember that if you adopt this file-selection frame for your own application, the disk drive appears at the start of the pathname. 
+Therefore, you don't have to read the drive list box as long as you use the full path supplied by the path list 
+box's Path property.
+
+<BR>
+
+<BR>
+
+<A NAME="E68E131"></A>
+
+<H3 ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=5 
+COLOR="#FF0000"><B>Homework</B></FONT></CENTER></H3>
+
+<BR>
+
+<BR>
+
+<A NAME="E69E119"></A>
+
+<H4 ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=4 COLOR="#FF0000"><B>General Knowledge</B></FONT></CENTER></H4>
+
+<BR>
+
+<OL>
+
+<LI>Which is considered more long-term: Data in 
+variables or data in files?
+
+<BR>
+
+<BR>
+
+<LI>Why is using a dialog to get a filename from the user safer than using an input box to request the filename?
+
+<BR>
+
+<BR>
+
+<LI>What is a dialog box?
+
+<BR>
+
+<BR>
+
+<LI>How do you implement dialog boxes using the 
+Visual Basic Primer system?
+
+<BR>
+
+<BR>
+
+<LI>How do you mimic the display and disappearance of dialog boxes when you use frames?
+
+<BR>
+
+<BR>
+
+<LI>How many controls on the toolbox work with files?
+
+<BR>
+
+<BR>
+
+<LI>When can you set a default drive list box: 
+at design time or runtime?
+
+<BR>
+
+<BR>
+
+<LI>What does the Pattern file list control property contain?
+
+<BR>
+
+<BR>
+
+<LI>Why must you maintain synchronization with a frame's file controls?
+
+<BR>
+
+<BR>
+
+<LI>When a frame contains the file controls, which 
+file-related control should you manage first when writing code to keep the controls in sync?
+
+<BR>
+
+<BR>
+
+<LI>Which file controls should change when the user clicks the drive list box?
+
+<BR>
+
+<BR>
+
+<LI>Which file controls should change when the user clicks 
+the directory list box?
+
+<BR>
+
+<BR>
+
+<LI>How does a calling application determine whether the user pressed the FILESEL.MAK file frame's Cancel button?
+
+<BR>
+
+<BR>
+
+<LI>Which event procedure keeps a file list current when the user changes the selected 
+pattern of files?
+
+<BR>
+
+<BR>
+
+<LI>True or false: When you hide a frame, all controls on that frame disappear also.
+
+<BR>
+
+<BR>
+
+</OL>
+
+<BR>
+
+<A NAME="E69E120"></A>
+
+<H4 ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=4 COLOR="#FF0000"><B>Write Code 
+That...</B></FONT></CENTER></H4>
+
+<BR>
+
+<OL>
+
+<LI>Write a file list pattern than displays all files whose filenames begin with ACCT.
+
+<BR>
+
+<BR>
+
+<LI>Write a file list pattern that displays all files whose filenames end with the extension ex1, ex2, ex3, 
+and so on.
+
+<BR>
+
+<BR>
+
+<LI>Write the code that sets a drive list named drvDisk to point to all files on the D: drive and that sets a directory list named direng to all files in the VBPRIMER directory.
+
+<BR>
+
+<BR>
+
+</OL>
+
+<BR>
+
+<A NAME="E69E121"></A>
+
+<H4 
+ALIGN=CENTER>
+
+<CENTER>
+
+<FONT SIZE=4 COLOR="#FF0000"><B>Extra Credit</B></FONT></CENTER></H4>
+
+<BR>
+
+<P>Change the FILESEL.MAK to enable the user to select from files that already exist or enter a new file name. You'll have to add to the frame's closing 
+code so that the program checks the text box entry against the selected file list.
+
+<BR>
+
+<P ALIGN=LEFT>
+
+<A HREF="velp08.htm" TARGET="_self"><IMG SRC="purprev.gif" WIDTH = 32 HEIGHT = 32 BORDER = 0 ALT="Previous Page"></A>
+
+<A HREF="#I0" 
+TARGET="_self"><IMG SRC="purtop.gif" WIDTH = 32 HEIGHT = 32 BORDER = 0 ALT="Page Top"></A>
+
+<A HREF="index.htm" TARGET="_self"><IMG SRC="purtoc.gif" WIDTH = 32 HEIGHT = 32 BORDER = 0 ALT="TOC"></A>
+
+<A HREF="vel18.htm" TARGET="_self"><IMG SRC="purnext.gif" 
+WIDTH = 32 HEIGHT = 32 BORDER = 0 ALT="Next Page"></A>
+
+
+</BODY></HTML>
+
+
+
+
+
+
+

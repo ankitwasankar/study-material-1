@@ -1,0 +1,654 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 25 -- Versioning</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;25</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Versioning</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#VersionResources">
+Version Resources</A>
+<LI><A HREF="#VersionCompatibility">
+Version Compatibility</A>
+<UL>
+<LI><A HREF="#InsideBinaryCompatibility">
+Inside Binary Compatibility</A>
+<LI><A HREF="#CreatingNewInterfaces">
+Creating New Interfaces</A>
+<LI><A HREF="#Conclusion">
+Conclusion</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+Windows 3.0. Windows 3.1. Windows 95. Windows NT 3.51. Windows
+NT 4.0. Visual Basic 1.0. Visual Basic 2.0. Visual Basic 3.0.
+Visual Basic 4.0. Visual Basic 5.0.
+<P>
+We are well accustomed to dealing with different versions of software
+packages. As consumers we look at each version number as a package
+with a new set of features. This used to be the way developers
+would look at software packages, but that is no longer the case.
+<P>
+A typical Windows application depends on many different components.
+It uses functions provided by dynamic link libraries that are
+part of the operating system. It uses functions provided by dynamic
+link libraries that are part of the operating system's implementation
+of OLE. It uses standard window classes that are provided by additional
+dynamic link libraries, such as the common control library and
+the common dialog library. It uses system services, such as Mail
+and Winsock, that are implemented by other dynamic link libraries.
+It may use ActiveX controls, each of which is implemented by a
+dynamic link library (typically with the .OCX extension). A Visual
+Basic application always requires the Visual Basic run-time DLL
+and may also depend upon additional run-time DLLs used by the
+various ActiveX controls. And now, your program will also be dependent
+on any new ActiveX components or controls that you create for
+use in the application.
+<P>
+That is a lot of dependencies. And each and every one of those
+components has its own version, which is completely independent
+of the version number of the application. When you create your
+application, you build and test it based on a particular set of
+components. If you try to run your application on a system where
+any single one of those components is obsolete, your program may
+not run correctly. This is a fundamental problem with component-based
+software, and it is a very serious problem indeed.
+<P>
+In this chapter you'll find out how to deal with it, both with
+regard to developing components and with regard to distributing
+them.
+<H2><A NAME="VersionResources"><FONT SIZE=5 COLOR=#FF0000>
+Version Resources</FONT></A></H2>
+<P>
+An obvious necessity for dealing with the problem of component
+versions is the ability to mark each component with a version
+number. Windows allows each executable or dynamic link library
+to be embedded with a version resource. This resource contains
+both the version number and descriptive string information.
+<P>
+Figure 25.1 shows the Project Make dialog box for the project
+properties settings. You can set descriptive strings including
+the company name, file description, product name, and copyright
+and trademark information. But you should always set the version
+number.
+<P>
+<A HREF="f25-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f25-1.gif"><B>Figure 25.1 :</B> <I>The Project Make dialog box</I>.</A>
+<P>
+In fact, the very first thing you should do is to select the Auto
+Increment checkbox. This insures that every time you build your
+component, it will have an updated version number.
+<P>
+Why is this important? Because the version resource is almost
+universally used by installation programs to prevent newer components
+from being overwritten by older components. You see, version resources
+mark a component or executable, but there is nothing in the system
+or in Visual Basic that automatically verifies that dependent
+components are present and correct when an application is run.
+Worse yet, it is often impossible to detect that a problem was
+caused by a component-related issue. For example: a component
+error that prevents a control or ActiveX document from loading
+might simply cause a trapped run-time error, which is then reported
+by the container as an HTML or scripting error.
+<P>
+It is possible for a component to be overwritten by an older component
+in several ways. Some installation programs signal when they are
+about to overwrite a newer component and allow the user to do
+so if they wish. Some installation programs do not check version
+numbers correctly. Sometimes individuals simply copy files from
+one system to another.
+<P>
+Keep in mind that with OLE technology, the component used depends
+on the contents of the system registry. Any application can register
+an older version of a component and thus effectively replace a
+newer version without overwriting it. The old solution of keeping
+components in a private directory no longer works.
+<P>
+All of these scenarios illustrate that it is possible for obsolete
+components to appear on a system at any time. Then, they can interfere
+with the correct operation of your application, even if your application
+was installed correctly. There are several approaches you can
+take to deal with this situation:
+<UL>
+<LI>Reinstall your application any time it starts exhibiting unusual
+behavior or fails to run correctly.
+<LI>Have your component or application perform its own dependency
+verification. The Win32 API has a number of functions that allow
+you to read version information from any executable or component
+that has a version resource.
+<LI>Use a component verification toolkit such as Desaware's VersionStamper.
+It can be used to add dependency verification to your component
+or application, including the ability to update components via
+the Internet or corporate intranet.
+<LI>Ignore the problem and expect to spend quite a bit of time
+dealing with support calls when problems occur.
+</UL>
+<P>
+You should decide which of these strategies you wish to use in
+distributing your own component-based applications. The problem
+is not as serious for controls and components that are downloaded
+by Web pages. This is because the browser is essentially filling
+the role of an installation program, downloading the latest components
+each time they are needed. But regardless of the approach you
+take for distributing your components, it is clear that as a component
+developer you have a responsibility to your users to make sure
+that your components are marked correctly.
+<H2><A NAME="VersionCompatibility"><FONT SIZE=5 COLOR=#FF0000>
+Version Compatibility</FONT></A></H2>
+<P>
+Consider the following scenario. You have created an application
+that uses version 1.0 of control xyz.ocx. The vendor who developed
+the xyz.ocx control releases a new version numbered 2.0. However,
+the developer removed one of the control's properties, figuring
+that it was not particularly useful.
+<P>
+Your application continues to run correctly, because you are still
+shipping version 1.0 of the control. However, one day you install
+a different application that uses version 2.0 of the control.
+The installation program for that application detected version
+1.0 on your system and replaced it with the upgraded version.
+Next time you run your application, it uses version 2.0 of the
+control. However, as soon as it tries to access the missing property,
+the control will fail, probably with a memory exception.
+<P>
+The version number in the version resource is just an identifier.
+It has no functionality. There is nothing to guarantee that version
+2.0 of a component will successfully run with an application that
+was compiled using version 1.0 of a component. Yet the entire
+system of component upgrades assumes that a later version of a
+component will support all of the features of the earlier version.
+<P>
+It is absolutely critical that you, as a component developer,
+make certain that your upgraded components are backward compatible
+with previous versions. This means that an upgraded component
+must do the following:
+<UL>
+<LI>Have the same CLSID component identifiers and type library
+identifiers as the earlier version.
+<LI>Support all previous properties, methods, and events.
+<LI>All properties, methods, and events must have the same Dispatch
+ID number (procedure ID).
+<LI>All properties, methods, and events must have the same parameters
+and parameter types.
+<LI>All properties, methods, and events must exhibit the same
+functionality as the earlier version.
+</UL>
+<P>
+Now we'll return to a discussion of how to accomplish this in
+a moment.
+<P>
+If you decide to abandon backward compatibility, you should do
+the following:
+<UL>
+<LI>Change the project name using the General tab of the Project
+Properties dialog box.
+<LI>Turn off compatibility by setting the No Compatibility option
+in the Components tab of the Project Properties dialog box.
+<LI>Rebuild the project, changing the name of the executable file
+or DLL.
+</UL>
+<P>
+You have seen how Microsoft handled this situation in the history
+of Visual Basic. When switching from version 3 to version 4, the
+run-time file used by Visual Basic was changed from VBRUN300.DLL
+to VB40032.DLL. But when they did a minor upgrade to Visual Basic
+4.0 called version 4.0A, they kept backward compatibility with
+the previous VB40032.DLL and just changed the version number in
+the resource file.
+<P>
+How do you maintain backward compatibility? Keeping the same properties,
+members, and events and their parameters is easy. But Visual Basic
+hides the assignment of CLSID values and procedure identifiers.
+This means there must be a way to tell Visual Basic you want to
+keep the previous values. This is accomplished using the Components
+tab of the Property Procedures dialog box. It provides three possible
+types of compatibility:
+<UL>
+<LI>No compatibility
+<LI>Project compatibility
+<LI>Binary compatibility
+</UL>
+<P>
+No compatibility is obvious. Visual Basic redefines the type library
+identifier and all interface and procedure identifiers every time
+the project is built. Project compatibility is not really compatible
+at all. The only thing it does is reuse the current type library
+identifier. It's convenient because you don't have to keep reestablishing
+references to the component, but Visual Basic does nothing to
+check that the project is, in fact, backward compatible.
+<P>
+Selecting binary compatibility is a way to tell Visual Basic that
+you want to make sure the newly compiled component will be backward
+compatible with a previous version of the component. Visual Basic
+will continue to use the same type library identifier and will
+continue to support existing interface and procedure identifiers.
+If you make a change that might break backward compatibility,
+Visual Basic will warn you. Take those warnings seriously! Accepting
+changes in this case is effectively the same as choosing the no-compatibility
+option. Visual Basic can preserve compatibility of the interface
+and procedure definitions, but it is still your job to ensure
+functional compatibility.
+<P>
+Here's a true story from about five years ago that illustrates
+what I mean. Desaware's first product was the Custom Control Factory,
+a flexible button control that supports multiple states and animation.
+We licensed a subset of the control called the animated button
+to Microsoft for inclusion with Visual Basic. This control had
+a property called Frame, which could be set to the current animation
+frame to display. If you tried to set the property to a negative
+number, it would simply ignore the setting and would not raise
+an error. In hindsight, we should have raised an error in that
+case. Keep in mind, though, that the control was written in the
+early days of VBX technology. We were still getting accustomed
+to the whole idea of custom controls and Visual Basic, so the
+conventions we observe today were not yet clearly defined.
+<P>
+During one of the upgrades-I think it was from version 1 to version
+2-Microsoft asked us to add an error test to the property and
+raise an error if it was set to a negative number. I protested
+this, saying that in the unlikely event some program actually
+did set a negative number, the change could break backward compatibility.
+But they insisted I make the change. By this time it was well
+established that errors should be raised in cases such as this.
+Besides, any program that did set the Frame property to a negative
+number had a bug in it anyway, so it would really be their fault
+if a problem occurred.
+<P>
+Under the terms of the license, they were paying for the work
+and had the right to dictate things like that, so I did make the
+change to their version of the control. However, I kept the existing
+behavior in the full Custom Control Factory product, just in case.
+Well, wouldn't you know it. Turns out that a program out there
+had a bug in it that sometimes set the property to a negative
+number. It was one of the early versions of Microsoft Encarta.
+Go figure!
+<P>
+The moral of this story is clear: Visual Basic's binary compatibility
+mode will do its best to make sure that your interfaces and registry
+information support backward compatibility. But maintaining functional
+compatibility is equally important, and that is entirely up to
+you.
+<H3><A NAME="InsideBinaryCompatibility">
+Inside Binary Compatibility</A></H3>
+<P>
+Let's take a closer look at what happens when you specify Binary
+Compatibility.
+<P>
+The gtpComp.vbp project in the <A HREF="ch25.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch25.htm" >Chapter 25</A> sample directory on
+your CD-ROM was used to generate the examples that follow. It
+contains the final version of the project. You can follow its
+creation step by step. However the explanation that follows should
+prove sufficiently clear without your having to go through the
+process of verifying it for yourself.
+<P>
+The gtpComp.vbp is an ActiveX DLL project that contains a single
+class called gtpComp. The class module is initially defined as
+follows:
+<BLOCKQUOTE>
+<PRE>
+Public Sub A()
+   Debug.Print &quot;A called&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+When compiled, the following type library is produced:
+<BLOCKQUOTE>
+<PRE>
+'===============================================================
+' Type Library: gtpCompatibility, Library Version 1.000
+' GUID: {3A33201F-7F29-11D0-93A2-00AA0036005A}
+' LCID: 0X00000000
+' Documentation: (o vial)Tx ie *tt' Help: (o vial)Tx ie *tt
+'===============================================================
+
+'===============================================================
+' Type Info: _gtpComp, TypeInfo Version 1.000
+' GUID: {3A33201D-7F29-11D0-93A2-00AA0036005A}
+' LCID: 0X00000000
+' TypeKind: dispinterface
+'---------------------------------------------------------------
+
+' Function: QueryInterface
+' 
+Declare Sub QueryInterface (ByRef riid As Variant, ByRef ppvObj As Variant)
+
+' Function: AddRef
+' 
+Declare Function AddRef () As ULONG
+
+' Function: Release
+' 
+Declare Function Release () As ULONG
+
+' Function: GetTypeInfoCount
+' 
+Declare Sub GetTypeInfoCount (ByRef pctinfo As Variant)
+
+' Function: GetTypeInfo
+' 
+Declare Sub GetTypeInfo (ByVal itinfo As UINT, ByVal lcid As ULONG, ByRef pptinfo_
+As Variant)
+
+' Function: GetIDsOfNames
+' 
+Declare Sub GetIDsOfNames (ByRef riid As Variant, ByRef rgszNames As Variant,
+_ ByVal cNames As UINT, ByVal lcid As ULONG, ByRef rgdispid As Variant)
+
+' Function: Invoke
+' 
+Declare Sub Invoke (ByVal dispidMember As Long, ByRef riid As Variant, ByVal lcid
+As ULONG, ByVal wFlags As USHORT, ByRef pdispparams As Variant, ByRef pvarResult
+As Variant, ByRef pexcepinfo As Variant, ByRef puArgErr As Variant)
+
+' Function: A
+' 
+Declare Sub A ()
+
+'===============================================================
+' Type Info: gtpComp, TypeInfo Version 1.000
+' GUID: {3A33201E-7F29-11D0-93A2-00AA0036005A}
+' LCID: 0X00000000
+' TypeKind: coclass
+'---------------------------------------------------------------
+</PRE>
+</BLOCKQUOTE>
+<P>
+Note that the actual GUID values that appear in this listing may
+not match those for the components on the CD-ROM.
+<P>
+I encourage you to turn your attention to several parts of the
+type library. The GUID specifies the type library identifier.
+_gtpComp is the name of the main interface for the class. The
+class is an automation-compatible interface, as you can tell by
+the fact that it has the standard IDispatch members, including
+GetTypeInfoCount, GetTypeInfo, GetIDsOfNames, and Invoke. It also
+includes subroutine A.
+<P>
+Next, make a reference copy of the compiled DLL. This will be
+version 1. Bring up the Components tab of the Project Properties
+dialog box and set binary compatibility to the version 1 reference.
+<P>
+Go ahead and recompile the project as many times as you wish.
+The type library will remain the same. This means you can safely
+change the code without impacting the type library information.
+You should, of course, make sure that the code changes remain
+compatible with earlier versions. You should increment the version
+number in the resource so installation programs will know to replace
+earlier versions of your component with the improved versions.
+<P>
+Now, change the class code by adding a new procedure B. Unregister
+the current DLL using the regsvr32 command with the /u option.
+This cleans up the registry so we know we are starting with a
+clean slate with this application. Now recompile and look at the
+type library.
+<BLOCKQUOTE>
+<PRE>
+'===============================================================
+' Type Library: gtpCompatibility, Library Version 1.001
+' GUID: {3A33201F-7F29-11D0-93A2-00AA0036005A}
+' LCID: 0X00000000
+' Documentation: (o vial)Tx ie *tt' Help: (o vial)Tx ie 
+*tt'===============================================================
+
+'===============================================================
+' Type Info: _gtpComp, TypeInfo Version 1.001
+' GUID: {3A332029-7F29-11D0-93A2-00AA0036005A}
+' LCID: 0X00000000
+' TypeKind: dispinterface
+'---------------------------------------------------------------
+
+' Function: QueryInterface
+' 
+Declare Sub QueryInterface (ByRef riid As Variant, ByRef ppvObj As Variant)
+
+' Function: AddRef
+' 
+Declare Function AddRef () As ULONG
+
+' Function: Release
+' 
+Declare Function Release () As ULONG
+
+' Function: GetTypeInfoCount
+' 
+Declare Sub GetTypeInfoCount (ByRef pctinfo As Variant)
+
+' Function: GetTypeInfo
+' 
+Declare Sub GetTypeInfo (ByVal itinfo As UINT, ByVal lcid As ULONG, ByRef pptinfo_
+As Variant)
+
+' Function: GetIDsOfNames
+' 
+Declare Sub GetIDsOfNames (ByRef riid As Variant, ByRef rgszNames As Variant,_
+ByVal cNames As UINT, ByVal lcid As ULONG, ByRef rgdispid As Variant)
+
+' Function: Invoke
+' 
+Declare Sub Invoke (ByVal dispidMember As Long, ByRef riid As Variant, ByVal lcid_
+As ULONG, ByVal wFlags As USHORT, ByRef pdispparams As Variant, ByRef pvarResult_
+As Variant, ByRef pexcepinfo As Variant, ByRef puArgErr As Variant)
+
+' Function: A
+' 
+Declare Sub A ()
+
+' Function: B
+' 
+Declare Sub B ()
+
+'===============================================================
+' Type Info: gtpComp, TypeInfo Version 1.001
+' GUID: {3A33201E-7F29-11D0-93A2-00AA0036005A}
+' LCID: 0X00000000
+' TypeKind: coclass
+'---------------------------------------------------------------
+</PRE>
+</BLOCKQUOTE>
+<P>
+The type library version has been increased to version 1.001.
+Let me stress an important point at this time: The type library
+version number bears absolutely no relationship to the version
+number specified in the version resource. None whatsoever. Despite
+the change in type library version number, the type library GUID
+remains the same. However, the _gtpComp interface has a new interface
+identifier. How then, can existing versions of the program use
+the interface?
+<P>
+The answer is that both interfaces are preserved. If you look
+in the registry for the interfaces, you will find an entry for
+both interfaces in the HKEY_CLASSES_ROOT/Interfaces key. First,
+the original version 1.0 interface is defined as follows:
+<BLOCKQUOTE>
+<PRE>
+Key Name:          Interface\{3A33201D-7F29-11D0-93A2-00AA0036005A}
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   2/4/97 - 11:55 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            gtpComp
+ 
+ 
+Key Name:          Interface\{3A33201D-7F29-11D0-93A2-00AA0036005A}\Forward
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   2/4/97 - 11:55 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            {3A332029-7F29-11D0-93A2-00AA0036005A}
+</PRE>
+</BLOCKQUOTE>
+<P>
+This interface has an entry marked Forward, which indicates that
+an updated version of the interface is available. This interface
+is shown here:
+<BLOCKQUOTE>
+<PRE>
+Key Name:          Interface\{3A332029-7F29-11D0-93A2-00AA0036005A}
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   2/4/97 - 11:55 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            gtpComp
+ 
+ 
+Key Name:          Interface\{3A332029-7F29-11D0-93A2-00AA0036005A}\TypeLib
+Class Name:        &lt;NO CLASS&gt;
+Last Write Time:   2/4/97 - 11:55 PM
+Value 0
+  Name:            &lt;NO NAME&gt;
+  Type:            REG_SZ
+  Data:            {3A33201F-7F29-11D0-93A2-00AA0036005A}
+ 
+Value 1
+  Name:            Version
+  Type:            REG_SZ
+  Data:            1.1
+</PRE>
+</BLOCKQUOTE>
+<P>
+Applications that were compiled to use the earlier component can
+request the original _gtpComp interface and still work correctly.
+Newer applications will always get the later interface.
+<P>
+If you refer back to the type library listing, you'll see that
+the new subroutine has been added to the end of the list of procedures
+for the interface. This means that from a coding point of view,
+an application using the interface is fully compatible with the
+new one, even if it used early binding to call those functions
+directly. Older applications simply will not see the new B function.
+<P>
+There are two additional points to learn from this example:
+<UL>
+<LI>Every time you create a new release that redefines an interface,
+you increase the overhead of your application because Visual Basic
+must store the additional type library information and register
+both versions of the interface.
+<LI>If you try to run a new application with an old component,
+any number of problems can occur. The most likely one is that
+Visual Basic will report a run-time error when it finds that the
+desired interface is missing. Other run-time errors will occur
+if you are using late binding. This is the type of problem that
+was discussed in the Version Resource section at the start of
+this chapter.
+</UL>
+<P>
+The sequence for creating upgraded components that was described
+here is exactly what you should do in your own applications. A
+newly created project will have No Compatibility specified. The
+first time that you compile the application, you should select
+Project compatibility and set the project to be compatible with
+the newly compiled file. This allows you to reuse the type library
+identifiers. When you first release the component for use by other
+applications, you should compile the component and make a reference
+copy somewhere. You should then choose Binary Compatibility and
+set it to the reference copy, not the original.
+<P>
+You can now rebuild the component as many times as you wish with
+confidence that the type library and interface information will
+remain compatible with the reference copy. You will not accumulate
+multiple interface versions in your component, because you are
+basing compatibility on the reference. Let's say that the reference
+version is type library version 1.0. You then build version 1.1.
+If you were to base binary compatibility on the newly built component,
+the next build would be version 1.2. However, by basing it on
+the reference copy, your next build will again be 1.1.
+<P>
+Now try changing the declaration of the procedure A in the gtpComp
+class to include a parameter, for example:
+<BLOCKQUOTE>
+<PRE>
+Public Sub A(param As Integer)
+   MsgBox &quot;A Called&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+When you try to compile the project, Visual Basic will warn you
+that you are breaking backward compatibility of your component.
+Don't do it.
+<H3><A NAME="CreatingNewInterfaces">
+Creating New Interfaces</A></H3>
+<P>
+Why does Visual Basic go to the trouble of defining a new interface
+identifier for the updated interface, even though they are functionally
+compatible? To see the answer, you can go back to the original
+discussions of the Component Object Model in Chapters 3 and 4.
+An interface was defined as a contract. Once you define an interface
+to contain a certain set of properties, methods, and their parameters,
+you are not allowed to change it.
+<P>
+When you add properties or methods to an interface, you are in
+effect creating a new interface. It may be compatible in that
+the newer interface can fully support the older one. It may also
+have the same name, but it is nonetheless a different interface
+and thus has a unique interface identifier.
+<P>
+This serves to emphasize the importance of preserving backward
+compatibility. If you allow a member of an interface or its parameters
+to change, not only are you breaking backward compatibility in
+your component, you are violating one of the cardinal principles
+on which COM is based.
+<P>
+But this also brings up another approach to preserving backward
+compatibility. Instead of letting Visual Basic add new interface
+identifiers using binary compatibility, you can create your own
+alternate interfaces using the Implements statement. This situation
+was discussed in <A HREF="ch4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch4.htm" >Chapter 4</A> which described the example of the
+IViewObject interface, which is used by containers to display
+ActiveX objects. When Microsoft needed to add functionality to
+the interface, they defined a new interface called IViewObject2.
+You can take this approach as well.
+<P>
+If you do take this approach, be careful not to change any of
+the interfaces you are using with the Implements statement in
+other classes. Even with binary compatibility, changing the base
+class members will change the interface identifier and cause compatibility
+problems with any object that uses the Implement statement to
+aggregate that interface. Binary compatibility only works with
+the default interface of a class. It won't detect if an interface
+being implemented has changed.
+<H3><A NAME="Conclusion">
+Conclusion</A></H3>
+<P>
+The Visual Basic documentation relating to version compatibility
+is quite thorough, and I encourage you to review it. Among other
+things, it goes into some grizzly discussions of what can happen
+if you allow version trees by basing versions of your component
+on more than one reference point.
+<P>
+In this chapter you've learned how version compatibility works
+internally and what happens in both the type library and registry
+as you upgrade components. Most of all, I would like to stress
+two issues: Interface compatibility is indeed important, but do
+not neglect functional compatibility. In some ways it is deserving
+of even more attention than interface compatibility because Visual
+Basic provides no help or tools to help insure that your components
+are functionally backward compatible with previous versions. This
+is not a fault in Visual Basic; it's your code, and no other language
+does better in this area.
+<P>
+Second, don't neglect distribution issues. Making sure that your
+component-based application runs reliably goes beyond making sure
+that it is installed correctly. You also need a mechanism to detect
+when component problems and conflicts occur on the target system
+even after installation. And you need a strategy for dealing with
+those situations.
+<HR>
+
+<CENTER><P><A HREF="part5.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/part5.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch26.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch26.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

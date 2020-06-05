@@ -1,0 +1,1352 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 6 -- Simple Input and Output</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;6</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Simple Input and Output</FONT>
+
+</H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#WindowsandGraphics">
+
+Windows and Graphics</A>
+
+<LI><A HREF="#DisplayingTextinanApplet">
+
+Displaying Text in an Applet</A>
+
+<UL>
+
+<LI><A HREF="#ExampleCreatingandRunningApplet">
+
+Example: Creating and Running Applet1</A>
+
+<LI><A HREF="#HowAppletWorks">
+
+How Applet1 Works</A>
+
+</UL>
+
+<LI><A HREF="#GettingInputfromtheUser">
+
+Getting Input from the User</A>
+
+<UL>
+
+<LI><A HREF="#HowAppletWorks1">
+
+How Applet2 Works</A>
+
+<LI><A HREF="#ExampleRetrievingtextfromaITextFieldIcontrol">
+
+Example: Retrieving text from a <I>TextField</I> control</A>
+
+<LI><A HREF="#HowAppletWorks2">
+
+How Applet3 Works</A>
+
+</UL>
+
+<LI><A HREF="#DisplayingNumericalValues">
+
+Displaying Numerical Values</A>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+In the previous chapter, you learned how you can store various
+
+types of values in your Java programs. It may have occurred to
+
+you that it doesn't do much good to store data in a computer's
+
+memory if you have no way of actually seeing that data. Also,
+
+you need a way to request and receive data from users of your
+
+programs. Both of these tasks-displaying and retrieving data-are
+
+accomplished through simple input and output, or I/O (as it's
+
+commonly called). In this chapter, you'll learn how Java enables
+
+you to perform simple I/O in your applets.
+
+<H2><A NAME="WindowsandGraphics"><FONT SIZE=5 COLOR=#Ff0000>
+
+Windows and Graphics</FONT></A></H2>
+
+<P>
+
+Because you'll be writing your applets for a graphical user interface
+
+(GUI) such as Windows, you can't use the same kinds of data input/output
+
+that you may have been accustomed to using under another operating
+
+system, such as MS-DOS. This is because, under a system such as
+
+Windows, everything that appears on the screen is graphical (unlike
+
+MS-DOS, which displays plain old text).
+
+<P>
+
+Still, displaying graphical text doesn't require a whole lot of
+
+work, as long as you're not concerned with things like fonts and
+
+the size of the text string you want to display. You have to remember,
+
+though, that almost all graphical text is proportional, meaning
+
+that each letter in a line of graphical text takes up a different
+
+amount of space. Under an operating system like MS-DOS, most text
+
+output uses non-proportional characters. The difference is illustrated
+
+in Figure 6.1.
+
+<P>
+
+<IMG SRC="f6-1.gif"><B> Figure 6.1 : </B><I>In a proportional font, each character takes <r>up only as much space as it needs.
+
+
+
+</I></A><P>
+
+<P>
+
+Look at the letter &quot;I&quot; in the proportional font. You
+
+can see that it takes up much less space than other letters in
+
+the word. On the other hand, the letter &quot;I&quot; in the non-proportional
+
+font, as well as the hyphen, takes up exactly the same amount
+
+of space as every other letter.
+
+<P>
+
+The point is that, because of the different fonts that are used
+
+to print text in a graphical user interface, you can't assume
+
+much about the size of the text that'll be used. There are ways
+
+to figure out the actual size of a text string, but you don't
+
+have to be concerned with these details for now. Just be aware
+
+that text output in your applets is going to be graphical.
+
+<H2><A NAME="DisplayingTextinanApplet"><FONT SIZE=5 COLOR=#Ff0000>
+
+Displaying Text in an Applet</FONT></A></H2>
+
+<P>
+
+The easiest thing to display is a line of text. But because the
+
+text output will be graphical, you need to use one of Java's graphical-text
+
+functions. The most commonly used is <TT>drawString()</TT>, which
+
+is part of the <TT>Graphics</TT> class contained in the <TT>awt</TT>
+
+package. Listing 6.1 shows a simple applet that uses this method
+
+to display a single line of text. Figure 6.1 shows what the applet
+
+looks like when viewed with the Appletviewer application. Finally,
+
+Listing 6.2 is an HTML document that tests the Applet1 applet.
+
+
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+A <I>package</I> is nothing more than a collection of related classes. The <TT>awt</TT> (abstract windows toolkit) package contains all the classes that handle graphical windows. You'll learn a lot more about classes, packages, and the <TT>awt</TT> later 
+in this book.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 6.1&nbsp;&nbsp;Applet1.java: An Applet That Displays
+
+a Single Line of Text.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class Applet1 extends Applet
+
+{
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(&quot;Hello from Java!&quot;, 60, 75);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the program uses classes in the <TT>awt</TT> package.
+
+<BR>
+
+Tell Java that the program uses classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>Applet1</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Override the <TT>Applet</TT> class's <TT>paint()</TT> method.
+
+<BR>
+
+       Draw a text string on the applet's surface.
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<IMG SRC="f6-2.gif"><B> Figure 6.2 : </B><I>When you run the Applet1 applet, you'll see a single line of text in the applet's display.
+
+
+
+</I></A><P>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 6.2&nbsp;&nbsp;APPLET1.htmlL: An HTML Document for Testing
+
+Applet1.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+&lt;title&gt;Applet Test Page&lt;/title&gt;
+
+&lt;h1&gt;Applet Test Page&lt;/h1&gt;
+
+&lt;applet
+
+    code=&quot;Applet1.class&quot;
+
+    width=200
+
+    height=150
+
+    name=&quot;Applet1&quot;&gt;
+
+&lt;/applet&gt;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H3><A NAME="ExampleCreatingandRunningApplet">
+
+Example: Creating and Running Applet1</A></H3>
+
+<P>
+
+In the next section, you'll see exactly how the Applet1 applet
+
+works. But before you get too much farther, you need to know how
+
+to create and run the many applets that you'll find in this book.
+
+All the applets that follow use the same sort of procedure. This
+
+procedure involves creating the applet's source code, compiling
+
+the code, and then writing the HTML document that demonstrates
+
+the applet. Follow the steps below to get the Applet1 applet up
+
+on your screen.
+
+<OL>
+
+<LI>Create a folder called CLASSES on the root directory of your
+
+hard drive.
+
+<LI>Type Listing 6.1 and save it in the CLASSES folder as an ASCII
+
+file. Name the file <TT>Applet1.java</TT>. (Use uppercase and
+
+lowercase letters exactly as shown for the program's file name.)
+
+Note that you can also copy the listing from this book's CD-ROM,
+
+if you don't want to type it.
+
+<LI>Start an MS-DOS session by selecting Start/Programs/MS-DOS
+
+Prompt. If the MS-DOS screen takes over the entire screen, press
+
+Alt+Enter to display the MS-DOS session in a window.
+
+<LI>If you haven't added the JAVA\BIN path to your AUTOEXEC.BAT
+
+file, type <TT>PATH=JAVA\BIN</TT> at the MS-DOS prompt. This ensures
+
+that the system will be able to find Java's executables.
+
+<LI>Type <TT>cd c:\classes</TT> to move to your CLASSES folder.
+
+<LI>Type <TT>javac Applet1.java</TT> to compile the Applet1 applet.
+
+You should receive no error messages, as shown in Figure 6.3.
+
+If you do receive error messages, carefully check your typing
+
+of Listing 6.1. Also, make sure you typed the command line <TT>javac
+
+Applet1.java</TT> properly. When the compiler finishes, you'll
+
+have the file <TT>Applet1.class</TT> in your CLASSES directory.
+
+This is the applet's byte-code file.<BR>
+
+<IMG SRC="f6-3.gif"><B> Figure 6.3 : </B><I>The Applet1.class file must compile with no errors.
+
+
+
+</I></A><P>
+
+<LI>Type Listing 6.2 and save it as an ASCII file to your CLASSES
+
+folder. Name the file APPLET1.htmlL. (This time, the case of the
+
+letters doesn't matter.)
+
+<LI>At the MS-DOS prompt, type <TT>appletviewer applet1.htmll</TT>
+
+(case doesn't matter). When you do, Appletviewer will load and
+
+display the applet.
+
+</OL>
+
+<P>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+Java insists that the name of a Java source-code file is the same name as the class contained in the file. If you try to use different names, even if the difference is only the case of a letter or two, the Java compiler will complain and refuse to compile 
+the program.</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H3><A NAME="HowAppletWorks">
+
+How Applet1 Works</A></H3>
+
+<P>
+
+By now, you have the source code for Applet1 properly typed and
+
+compiled. You've even run the applet using Appletviewer. You know
+
+that the call to the <TT>drawString()</TT> method prints a string
+
+as graphical text in the applet's display area. But what are the
+
+values between <TT>drawString()</TT>'s parentheses? And how does
+
+the program know when to execute the call to <TT>drawString()</TT>?
+
+<P>
+
+First, look at the <TT>paint()</TT> method. Java calls <TT>paint()</TT>
+
+whenever the applet's display area (or canvas, as it's often called)
+
+needs to be redrawn. The <TT>paint()</TT> method always gets called
+
+when the applet first appears on the screen, which is exactly
+
+what's happening in Applet1. You run the applet, Java calls <TT>paint()</TT>
+
+when the applet appears, and <TT>paint()</TT> calls <TT>drawString()</TT>,
+
+which displays the text string &quot;Hello from Java.&quot;
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+The Java compiler is case-sensitive, meaning that it can differentiate between upper- and lowercase letters. For this reason, you have to be extra careful to type method names properly. For example, if you type <TT>Paint()</TT> instead of 
+<TT>paint()</TT>, Java will not recognize the method and will not call it when the applet needs to be redrawn.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+What's that &quot;g&quot; followed by a period in front of the
+
+call to <TT>drawString()</TT>? Remember that I said <TT>drawString()</TT>
+
+is a method of the <TT>Graphics</TT> class. If you look at the
+
+first line of the <TT>paint()</TT> method, you'll see <TT>Graphics
+
+g</TT> in the parentheses. This means that Java is sending an
+
+object of the <TT>Graphics</TT> class to the <TT>paint()</TT>
+
+method and that object is called <TT>g</TT>. Whenever you need
+
+to call an object's method, you must preface the method's name
+
+with the object's name followed by a period. So, the line
+
+<BLOCKQUOTE>
+
+<PRE>
+
+g.drawString(&quot;Hello from Java!&quot;, 60, 75);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+tells Java to call the <TT>g</TT> object's <TT>drawString()</TT>
+
+method. The values in the parentheses are called arguments, which
+
+are values that you need to send to the method. The arguments
+
+in the above call to <TT>drawString()</TT> tell Java to draw the
+
+text &quot;Hello from Java!&quot; at column 60 and row 75 of the
+
+display area. (The position is measured in pixels, not characters.
+
+A pixel is the smallest dot that can be displayed on the screen.)
+
+To display the text at a different location, just change the second
+
+and third arguments. For example, Figure 6.4 shows the text positioned
+
+at 25,25.
+
+<P>
+
+<IMG SRC="f6-4.gif"><B> Figure 6.4 : </B><I>Here, Applet1 displays the text at position 25,25.
+
+
+
+</I></A><P>
+
+<H2><A NAME="GettingInputfromtheUser"><FONT SIZE=5 COLOR=#Ff0000>
+
+Getting Input from the User</FONT></A></H2>
+
+<P>
+
+Again, because you are now programming in a graphical environment,
+
+getting input from the user isn't as easy as just calling an input
+
+command. You must first create an area of the screen in which
+
+the user can type and edit his response to your request. There
+
+are several ways to do this, but one of the easiest is to add
+
+a control of the <TT>TextField</TT> class in your applet. A <TT>TextField</TT>
+
+control is much like the edit boxes you see when using Windows.
+
+You might, for example, see a number of edit controls in a dialog
+
+box. Listing 4.3 shows how to include a <TT>TextField</TT> control
+
+in your applet. Figure 6.5 shows the Applet2 applet in action.
+
+<P>
+
+<IMG SRC="f6-5.gif"><B> Figure 6.5 : </B><I>The Applet2 applet displays an area in which you can type.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 6.3&nbsp;&nbsp;Applet2.java: Getting Input from the
+
+User.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class Applet2 extends Applet
+
+{
+
+    TextField textField;
+
+
+
+    public void init()
+
+    {
+
+        textField = new TextField(20);
+
+        add(textField);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the program uses classes in the <TT>awt</TT> package.
+
+<BR>
+
+Tell Java that the program uses classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>Applet2</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare <TT>textField</TT> as an object of the <TT>TextField</TT>
+
+class.<BR>
+
+    Override the <TT>Applet</TT> class's <TT>init() </TT>method.
+
+<BR>
+
+        Create the new <TT>TextField</TT> object.<BR>
+
+        Add the <TT>TextField</TT> object to the applet's display.
+
+</BLOCKQUOTE>
+
+<P>
+
+To run the Applet2 applet yourself, you'll need to type and save
+
+the source code, naming it <TT>Applet2.java</TT>. (You can copy
+
+the source code from the CD-ROM, if you like, and thus save on
+
+typing. Of course, you won't learn as much that way.) Then compile
+
+the source code (type <TT>javac Applet2.java</TT> at the MS-DOS
+
+prompt), which gives you the <TT>Applet2.class</TT> file. Next,
+
+create a new HTML document from the one shown in Listing 6.2,
+
+changing all instances of Applet1 to Applet2. You can then run
+
+Applet2 by typing <TT>appletviewer applet2.htmll</TT> at the DOS
+
+prompt.
+
+<H3><A NAME="HowAppletWorks1">
+
+How Applet2 Works</A></H3>
+
+<P>
+
+Applet2 looks quite a bit different from Applet1. First, it declares
+
+a data field named <TT>textField</TT> as an object of the <TT>TextField</TT>
+
+class, which represents a control very much like a standard Windows
+
+edit box. The program declares the control like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+TextField textField;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Notice that the <TT>textField</TT> object is declared just as
+
+you would declare any other kind of data object such as an integer
+
+or a floating-point value. Next, notice that, although the name
+
+of the class and the name of the object are spelled identically,
+
+the object's name starts with a lowercase letter. This makes all
+
+the difference in the world to Java, which is a case-sensitive
+
+language.
+
+<P>
+
+Another difference between Applet1 and Applet2 is that Applet2
+
+has an <TT>init()</TT> method instead of <TT>paint()</TT>. The
+
+<TT>Init()</TT> method is another of those methods that Java calls
+
+automatically-in this case, as soon as you run the Applet2 applet.
+
+Because Java calls <TT>init()</TT> almost immediately, it's a
+
+great place to initialize the applet. (Guess that's why they called
+
+it <TT>init()</TT>, huh?)
+
+<P>
+
+In Applet2, when <TT>init()</TT> gets called, <TT>textField</TT>
+
+has already been declared as an object of the <TT>TextField</TT>
+
+class, but <TT>textField</TT> hasn't yet been assigned a value.
+
+The first line of code in <TT>init()</TT> creates the <TT>TextField</TT>
+
+object and assigns it to <TT>textField</TT>, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+textField = new TextField(20);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+After Java executes this line, <TT>textField</TT> refers to an
+
+actual <TT>TextField</TT> object. The value in the parentheses
+
+is the width of the <TT>TextField</TT> control; the larger this
+
+number, the wider the control. Keep in mind that a <TT>textField</TT>
+
+control can hold more text than its width allows. If you type
+
+past the end of the control's text box, the text scrolls horizontally.
+
+<P>
+
+The next step is to add the object to the applet's display area,
+
+like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+add(textField);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>add()</TT> method's single argument is the control you
+
+want to add to the applet.
+
+<P>
+
+After creating the control and adding it to the applet, the control
+
+will automatically appear when Java draws the applet. You don't
+
+need a <TT>paint()</TT> method to draw a control, because the
+
+control can take care of itself.
+
+<P>
+
+Once the <TT>TextField</TT> control is on the screen, you can
+
+type in it. First, click the control to give it the focus, then
+
+type and edit to your heart's content.
+
+<H3><A NAME="ExampleRetrievingtextfromaITextFieldIcontrol">
+
+Example: Retrieving text from a <I>TextField</I> control</A></H3>
+
+<P>
+
+In the Applet2 applet, you can type all you like in the <TT>TextField</TT>
+
+control, but how do you get the text out of the control and actually
+
+do something with it? Follow the steps below to create Applet3,
+
+a new version of Applet2 that can retrieve and display any text
+
+entered into the <TT>TextField</TT> control.
+
+<OL>
+
+<LI>Type Listing 6.4 and save it in the CLASSES folder as an ASCII
+
+file. Name the file <TT>Applet3.java</TT>. Note that you can copy
+
+the listing from this book's CD-ROM if you don't want to type
+
+it.
+
+</OL>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 6.4&nbsp;&nbsp;Applet3.java: Source Code for the Applet3
+
+Applet.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class Applet3 extends Applet
+
+{
+
+    TextField textField;
+
+
+
+    public void init()
+
+    {
+
+        textField = new TextField(20);
+
+        add(textField);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        String s = textField.getText();
+
+        g.drawString(s, 40, 50);
+
+    }
+
+
+
+    public boolean action(Event event, Object arg)
+
+    {
+
+        repaint();
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the program uses classes in the <TT>awt</TT> package.
+
+<BR>
+
+Tell Java that the program uses classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>Applet3</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare <TT>textField</TT> as an object of the <TT>TextField</TT>
+
+class.<BR>
+
+    Override the <TT>Applet</TT> class's <TT>init()</TT> method.
+
+<BR>
+
+        Create the new <TT>TextField</TT> object.<BR>
+
+        Add the <TT>TextField</TT> object to the applet's display.
+
+<BR>
+
+    Override the <TT>Applet</TT> class's <TT>paint()</TT> method.
+
+<BR>
+
+        Get the text string from the <TT>TextField</TT> control.
+
+<BR>
+
+        Display the text in the applet's display area.<BR>
+
+    Override the <TT>Applet</TT> class's <TT>action()</TT> method.
+
+<BR>
+
+        Force the applet to redraw its display area.<BR>
+
+        Tell Java that the <TT>action()</TT> method finished successfully.
+
+</BLOCKQUOTE>
+
+<OL>
+
+<LI>Start an MS-DOS session by selecting Start/Programs/MS-DOS
+
+Prompt. If the MS-DOS screen takes over the entire screen, press
+
+Alt+Enter to display the MS-DOS session in a window.
+
+<LI>Type <TT>cd c:\classes</TT> to move to your CLASSES folder.
+
+<LI>Type <TT>javac Applet3.java</TT> to compile the Applet3 applet.
+
+You should receive no error messages. If you do receive error
+
+messages, carefully check your typing of Listing 6.4. Also, make
+
+sure you typed the command line <TT>javac Applet3.java</TT> properly.
+
+<LI>Modify Listing 6.2 by replacing all occurrences of Applet1
+
+with Applet3 and save it as an ASCII file to your CLASSES folder.
+
+Name the file APPLET3.htmlL.
+
+<LI>At the MS-DOS prompt, type <TT>appletviewer applet3.htmll</TT>.
+
+When you do, Appletviewer will load and display the applet.
+
+</OL>
+
+<P>
+
+When you run Applet3, go ahead and type some text into the <TT>TextField</TT>
+
+control. When you press Enter, the text appears in the applet's
+
+display area, right below the control (Figure 6.6).
+
+<P>
+
+<IMG SRC="f6-6.gif"><B> Figure 6.6 : </B><I>Applet3 can display the text you type into the TextField control.
+
+
+
+</I></A><P>
+
+<H3><A NAME="HowAppletWorks2">
+
+How Applet3 Works</A></H3>
+
+<P>
+
+If you look at the Applet3 program code, you can see that you've
+
+added a <TT>paint()</TT> method. This is where the text that the
+
+user types into the <TT>TextField</TT> control gets displayed.
+
+First, <TT>paint()</TT> extracts the text from the control, like
+
+this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+String s = textField.getText();
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This line declares a variable called <TT>s</TT> to be an object
+
+of the <TT>String</TT> class, and then it sets <TT>s</TT> equal
+
+to the text string in the control. (The <TT>String</TT> class
+
+is another of Java's built-in classes that you'll learn more about
+
+later. For now, just know that this class represents text strings.)
+
+You can see in this line that you're calling the <TT>textField</TT>
+
+object's <TT>getText()</TT> method, because of the object and
+
+method name separated by the dot. The <TT>getText()</TT> method
+
+simply returns the text string that's stored in the <TT>textField</TT>
+
+control.
+
+<P>
+
+Displaying the string is as easy as calling on your old friend
+
+<TT>drawString()</TT>, as follows:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+g.drawString(s, 40, 50);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+One big difference between Applet2 and Applet3 is the <TT>action()</TT>
+
+method. Java calls this method whenever the user performs some
+
+action with controls in the applet. In this case, the action that
+
+<TT>action()</TT> responds to is the user's pressing Enter after
+
+typing text. In Applet3, the <TT>action()</TT> method does nothing
+
+more than call the applet's <TT>repaint()</TT> method, which tells
+
+Java that you want to redraw the applet's display area. (You'll
+
+learn more about using the <TT>action()</TT> method later in the
+
+book.) This causes Java to call the <TT>paint()</TT> method, which
+
+very neatly displays the control's string.
+
+<H2><A NAME="DisplayingNumericalValues"><FONT SIZE=5 COLOR=#Ff0000>
+
+Displaying Numerical Values</FONT></A></H2>
+
+<P>
+
+In the previous chapter, you learned to declare and define a number
+
+of different variable types, including <TT>int</TT>, <TT>byte</TT>,
+
+<TT>short</TT>, <TT>float</TT>, and other numerical values. The
+
+problem with numerical values in a computer is that you can't
+
+display them without first converting them to text strings. Luckily,
+
+this task is pretty easy to perform. You need only call the <TT>String</TT>
+
+class's <TT>valueOf()</TT> method, as shown in Listing 6.5. Figure
+
+6.7 shows Appletviewer running Applet4.
+
+<P>
+
+<IMG SRC="f6-7.gif"><B> Figure 6.7 : </B><I>The Applet4 applet converts and displays an integer value.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 6.5&nbsp;&nbsp;Applet4.java: The Source Code for Applet4.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class Applet4 extends Applet
+
+{
+
+    public void paint(Graphics g)
+
+    {
+
+        int x = 10;
+
+        String s = String.valueOf(x);
+
+        g.drawString(s, 40, 50);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the program uses classes in the <TT>awt</TT> package.
+
+<BR>
+
+Tell Java that the program uses classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>Applet4</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Override the <TT>Applet</TT> class's <TT>paint()</TT> method.
+
+<BR>
+
+        Declare the integer x and set its value to 10.<BR>
+
+        Convert x to a string.<BR>
+
+        Display the string that represents x's value.
+
+</BLOCKQUOTE>
+
+<P>
+
+As you can see in Listing 6.5, the <TT>String</TT> class has a
+
+method called <TT>valueOf()</TT> that can convert numerical values
+
+to strings. The method's single argument is the value you want
+
+to convert, which can be any of Java's numerical data types.
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+All computer programs must deal with some form of I/O. At the
+
+very least, a program must be able to display information to the
+
+user, as well as retrieve data from the user. Java has several
+
+ways to handle this basic form of I/O, a couple of which you learned
+
+in this chapter. As you dig deeper into the art of writing Java
+
+applets, you'll see other ways to perform I/O.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>What is graphical text?
+
+<LI>What's the difference between proportional and non-proportional
+
+fonts?
+
+<LI>What are arguments?
+
+<LI>Describe the three arguments used with the <TT>drawString()</TT>
+
+method.
+
+<LI>What does the <TT>paint()</TT> method do?
+
+<LI>Describe one way to get user input in your applets.
+
+<LI>Describe how the <TT>init()</TT> method works.
+
+<LI>Describe how the <TT>action()</TT> method works.
+
+<LI>How can you convert a numerical value to a text string?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Modify Applet1 so that it displays the text string &quot;Out
+
+to lunch!&quot; at position 30, 50 in the applet's display area.
+
+<LI>Modify Applet2 so that it displays a <TT>TextField</TT> control
+
+half as wide as the one displayed in the original program.
+
+<LI>Write an applet that displays the days of the week in a column
+
+down the center of the applet's display area.
+
+<LI>Using Applet3 as a model, write a new applet called NameApplet
+
+that asks the user for her name and age and then prints the answers
+
+in the applet's display area. The finished applet should look
+
+like Figure 6.8. (This one's tough, so, if you get stumped, check
+
+out the file NameApplet.java in the CHAP06 folder of this book's
+
+CD-ROM. First try to solve the problem yourself, though.)<BR>
+
+<IMG SRC="f6-8.gif"><B> Figure 6.8 : </B><I>This is what the NameApplet applet should look like when it is run with Appletviewer.
+
+
+
+</I></A><P>
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch5.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch7.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

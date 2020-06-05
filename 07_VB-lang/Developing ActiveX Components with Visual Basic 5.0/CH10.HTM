@@ -1,0 +1,1849 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 10 -- Code and ClassesóBeyond the Manuals</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;10</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>Code and Classes-Beyond the Manuals</FONT>
+</H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#MethodsandProperties">
+Methods and Properties</A>
+<UL>
+<LI><A HREF="#GetSetLetGo">
+Get, Set, Let-Go!</A>
+<LI><A HREF="#MoreonProperties">
+More on Properties</A>
+<LI><A HREF="#IsItaPropertyorIsItaMethod">
+Is It a Property or Is It a Method?</A>
+<LI><A HREF="#ParameterizedProperties">
+Parameterized Properties</A>
+<LI><A HREF="#PropertiesThatAreObjects">
+Properties That Are Objects</A>
+<LI><A HREF="#OverloadedPropertiesandFunctions">
+Overloaded Properties and Functions</A>
+<LI><A HREF="#ASlightlyQuirkyWayofOverloadingProperties">
+A Slightly Quirky Way of Overloading Properties</A>
+<LI><A HREF="#EvilTypeCoercion">
+Evil Type Coercion</A>
+<LI><A HREF="#OptionExplicit">
+Option Explicit</A>
+<LI><A HREF="#MoreaboutVariants">
+More about Variants</A>
+<LI><A HREF="#OptionalParametersandParameterArrays">
+Optional Parameters and Parameter Arrays</A>
+<LI><A HREF="#ParametersThatHandleLargeBlocksofDataArraysandUserDefinedTypes">
+Parameters That Handle Large Blocks of Data: Arrays and User-Defined
+Types</A>
+</UL>
+<LI><A HREF="#ProcedureAttributes">
+Procedure Attributes</A>
+<UL>
+<LI><A HREF="#Description">
+Description</A>
+<LI><A HREF="#HelpContextID">
+Help Context ID</A>
+<LI><A HREF="#ProcedureID">
+Procedure ID</A>
+<LI><A HREF="#HideThisMember">
+Hide This Member</A>
+</UL>
+<LI><A HREF="#ObjectProceduresPublicPrivateandFriend">
+Object Procedures: Public, Private, and Friend</A>
+<UL>
+<LI><A HREF="#PublicIsAsPublicDoes">
+Public Is As Public Does</A>
+<LI><A HREF="#ScopingRules">
+Scoping Rules</A>
+</UL>
+<LI><A HREF="#SelectedTopics">
+Selected Topics</A>
+<UL>
+<LI><A HREF="#Enums">
+Enums</A>
+<LI><A HREF="#ToWizorNotToWiz">
+To Wiz or Not To Wiz</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+You know about functions and subs. You've seen property procedures
+and methods. You're familiar with the techniques of building classes.
+You've taken the course or read the manual. In other words, you're
+not a beginner anymore.
+<P>
+I won't trouble you with the material any novice already knows,
+at least not with more than a quick introduction here and there.
+Instead, here you'll find commentary, illustration, and even an
+opinion or two. Consider this chapter an exploration of selected
+topics related to coding and constructing classes.
+<H2><A NAME="MethodsandProperties"><FONT SIZE=5 COLOR=#FF0000>
+Methods and Properties</FONT></A></H2>
+<P>
+Let's start out by exploring some topics related to class methods
+and properties, or is that functions and subs?
+<P>
+Sample code for this section can be found in the Misc1.vbp sample
+in the <A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A> sample directory on your CD-ROM.
+<H3><A NAME="GetSetLetGo">
+Get, Set, Let-Go!</A></H3>
+<P>
+A class module interface is made up of functions, subs, and properties.
+<P>
+But wait a minute. A function and a sub are really the same thing
+except for the fact that one returns a value and the other doesn't-not
+a great difference. In fact, both are commonly referred to by
+the term <I>method</I>.
+<P>
+And you already know from earlier in the book that a property
+is internally implemented by two methods, one to set the property
+and one to retrieve the property value.
+<P>
+So, really, when you come right down to it, functions, subs, methods,
+and properties are really all the same thing. They only differ
+in the language syntax used to call them and to implement them.
+<P>
+This is perhaps why it can be so tricky to figure out whether
+to implement a particular operation as a method or property. They
+are so similar. Even the syntax to define them is similar:
+<BLOCKQUOTE>
+<PRE>
+Public Sub mysubroutine(<I>Parameter list</I>)
+Public Function myfunction (<I>Parameter list</I>) As <I>ReturnType
+</I>Public Property Get T(Parameter list) As Variant
+Public Property Set T(Parameter list, ByVal vNewValue As Variant)
+Public Property Let T(<I>Parameter list, </I>ByVal vNewValue As Variant)
+</PRE>
+</BLOCKQUOTE>
+<P>
+You may be wondering: what is a parameter list doing in property
+procedures? Visual Basic does support parameterized properties,
+though you don't see them very often. We'll get to that in a moment,
+but first&#133;
+<H3><A NAME="MoreonProperties">
+More on Properties</A></H3>
+<P>
+A property can be implemented in two ways: by simply declaring
+a public variable in a form or by implementing separate property
+procedures. The Get property procedure returns the value of the
+property. The Let property procedure is used to assign a value
+to the property. The Set property procedure is used to set an
+object reference to the property.
+<P>
+In most cases you will want to use property procedures. This is
+because property procedures allow you to add data validation,
+error checking, and other functionality to the process of accessing
+a property. Even if you are sure that you will never need this
+additional functionality, it's a good idea to use property procedures
+just in case you change your mind in the future. Keep in mind
+that Visual Basic implements a property internally with property
+procedures, even if you declare it as a public variable.
+<P>
+You can make a property read-only by not writing a Property Set
+or Property Let method for the property. You can make it write-only
+by leaving out the Property Get method.
+<H3><A NAME="IsItaPropertyorIsItaMethod">
+Is It a Property or Is It a Method?</A></H3>
+<P>
+The Microsoft documentation presents four arguments to help you
+decide whether to implement an interface item as a method or a
+property. In brief they are the following.
+<H4>The Data versus Action Argument</H4>
+<P>
+Properties should be used to access data in an object, methods
+to perform an operation. For example: The Color or Caption attributes
+of an object are properties-they relate directly to the object
+data. The Move or Show operations are methods-they do something.
+<H4>The Syntax Argument</H4>
+<P>
+The syntax of assigning the results of a function is identical.
+Take these two implementations for a method/property called ErrorResult.
+<BLOCKQUOTE>
+<PRE>
+Public Function ErrorResult() As Long
+       ErrorResult = 5
+End Function
+
+Property Get ErrorResult() As Long
+       ErrorResult = 5
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+Both can be assigned as follows:
+<BLOCKQUOTE>
+<PRE>
+Myresult = AnObject.ErrorResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+However, the reverse direction is not true. You can add a Property
+Let function for ErrorResult such as this:
+<BLOCKQUOTE>
+<PRE>
+Property Let ErrorResult(vNewValue As Long)
+      ' some internal operation that is appropriate for this property
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+And now perform the assignment:
+<BLOCKQUOTE>
+<PRE>
+AnObject.ErrorResult = somenumber
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can't do this with a method. You would instead have to come
+up with a separate method, perhaps one called SetErrorResult,
+which accepted the &quot;somenumber&quot; value as a parameter.
+<H4>The Property Window Argument</H4>
+<P>
+This one is directly applicable to ActiveX controls but can serve
+a useful tool for deciding between methods and properties on other
+components as well. Would you want this property to appear in
+the property sheet for the control? If so, it is definitely a
+property. If not-well, there are still many cases where you would
+want it to be a property. This argument can help resolve the issue
+for some properties, but is useless for others.
+<H4>The Sensible Error Argument</H4>
+<P>
+Trying to assign a value to a read-only property produces the
+error: &quot;Can't assign to read-only property.&quot;
+<P>
+Trying to assign a value to a function (assuming the function
+does not return a variant or object that can be a target for assignment)
+produces the error &quot;Function call on left-hand side of assignment
+must return Variant or Object.&quot; Choosing between the two
+based on an error statement sounds almost like an act of desperation,
+but not as desperate as the next argument.
+<H4>The Argument of Last Resort</H4>
+<P>
+Flip a coin.
+<P>
+The truth is, all of these arguments are good. There are many
+cases where it is extremely difficult to decide whether something
+should be a property or a method. Allow me, however, to add a
+few additional &quot;rules&quot; that might help.
+<H4>The VBX Consistency Argument</H4>
+<P>
+The old VBX technology did not allow custom control designers
+to define their own methods. As a result, we were forced to sometimes
+use properties in creative ways. You can see this with the common
+dialog control that has an Action property. Assigning a value
+to this property brings up the requested common dialog box.
+<P>
+Based on the Data vs. Action argument, Action should clearly be
+a method. Better yet, there should be separate methods to bring
+up the different common dialog boxes.
+<P>
+Yet if you were rewriting this control using Visual Basic 5.0,
+I would recommend strongly that you keep the Action property simply
+because people are already familiar with it and preserving it
+would minimize the changes required to use this control in existing
+projects. Of course, you could also implement a new set of methods
+in addition to this property for use in new projects.
+<H4>The Parameter List Argument</H4>
+<P>
+You saw earlier that properties do, in fact, support multiple
+parameters in addition to simple assignments. Except for very
+rare situations where an array effect is desired, if you find
+yourself wanting to use parameters, you should implement a method
+rather than a property.
+<P>
+Speaking of parameterized properties&#133;
+<H3><A NAME="ParameterizedProperties">
+Parameterized Properties</A></H3>
+<P>
+Let's say, for example, that you want your object to expose a
+property as an array. You might want to declare it as follows:
+<BLOCKQUOTE>
+<PRE>
+Public T(8) As Variant
+</PRE>
+</BLOCKQUOTE>
+<P>
+But if you do so, Visual Basic will report that it does not support
+public arrays. Fortunately, you can easily implement this functionality
+using a parameterized array as follows:
+<BLOCKQUOTE>
+<PRE>
+Private m_t(8) As Variant
+
+Public Property Get T(idx As Integer) As Variant
+   T = m_t(idx)
+End Property
+
+Public Property Let T(idx As Integer, ByVal vNewValue As Variant)
+   m_t(idx) = vNewValue
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The following code can be used to verify this property:
+<BLOCKQUOTE>
+<PRE>
+   Dim tx As New clsMisc1
+   tx.T(1) = 5
+   tx.T(2) = 6
+   Debug.Print tx.T(1)
+   Debug.Print tx.T(2)
+</PRE>
+</BLOCKQUOTE>
+<P>
+It will print 5 and 6 in the Immediate window.
+<P>
+You could implement a two-dimensional array by including two index
+parameters and so on. This will work as long as the parameter
+lists for the Get and Let properties are identical. By the way,
+in a real application you might want to add some error checking
+to test for a valid idx parameter.
+<P>
+Now that you know about parameterized properties, try to forget
+about them. In most cases where parameters are required you should
+use a function or sub. More on this later.
+<H3><A NAME="PropertiesThatAreObjects">
+Properties That Are Objects</A></H3>
+<P>
+Earlier in this book you saw that the Set operation differs from
+a normal assignment because it performs an object reference rather
+than a simple variable assignment. This applies to properties
+that are objects as well. 
+<P>
+The Misc1.vbp project includes class clsMisc2 that contains the
+following property:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get ClassName() As String
+   ClassName = &quot;clsMisc2&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+This is the default property for the class, so if you have object
+obj of type clsMisc2 and perform the operation 
+<BLOCKQUOTE>
+<PRE>
+Debug.print obj
+</PRE>
+</BLOCKQUOTE>
+<P>
+the word clsMisc2 will be printed to the Immediate window. An
+Object property in clsMisc1 that holds a clsMisc2 object can be
+defined as follows:
+<BLOCKQUOTE>
+<PRE>
+Private m_Object As clsMisc2
+' Example of object property
+Public Property Get O1() As clsMisc2
+   Set O1 = m_Object
+End Property
+Public Property Set O1(ByVal vNewValue As clsMisc2)
+   Set m_Object = vNewValue
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The following code can be used to verify this property:
+<BLOCKQUOTE>
+<PRE>
+   Dim tx As New clsMisc1
+   Dim tobj As New clsMisc2
+   Set tx.O1 = tobj
+   Debug.Print tx.O1
+</PRE>
+</BLOCKQUOTE>
+<P>
+This will print clsMisc2 to the Immediate window. Note that the
+tx.O1 property must be assigned using the Set operator.
+<H3><A NAME="OverloadedPropertiesandFunctions">
+Overloaded Properties and Functions</A></H3>
+<P>
+You are probably aware of variants, that super-duper amazing magical
+variable type that can hold just about any type of data. I'll
+have more to say about variants in a moment, but I thought that
+before I tell you how terrible they are, I should show you something
+good you can do with them.
+<P>
+There is a concept often used in C++ and other object-oriented
+languages that is rarely discussed in the context of Visual Basic.
+It's the ability of an object to have several different functions
+with the same name that are distinguished by the type of data.
+<P>
+For example: An object might have two Print functions, one that
+takes a string and the other that takes a bitmap object as a parameter.
+If your code calls Print<I>(</I>&quot;mystring&quot;), the string
+printing function will be called and the string will be printed.
+If it calls Print(BitmapObjectHandle), the other function will
+be called and it will print a bitmap instead.
+<P>
+A C++ programmer actually implements two separate functions. The
+compiler determines at compile time which Print function to call
+depending on the type of parameter passed to the function.
+<P>
+Visual Basic does not support this functionality at design time,
+but it can handle a slightly limited form of overloading at runtime
+through the use of variants. Since a variant can hold almost any
+type of data and you can tell at runtime what type of data is
+contained in a variant, it is relatively easy to execute code
+based on the type of parameter.
+<P>
+But what if you decide to create a variant property that may contain
+either an object or another data type, such as the code below.
+Would this code work? No. 
+<BLOCKQUOTE>
+<PRE>
+Public Property Get V1() As Variant
+   V1 = m_Variant
+End Property
+
+Public Property Let V1(ByVal vNewValue As Variant)
+   m_Variant = vNewValue
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Why not? Because while it will work fine for most variant types,
+it will fail with object types that require an assignment using
+the Set command. Instead, you need to base the operation on the
+type of variant. If the variant parameter contains an object,
+you need to use the Set command. The following code works:
+<BLOCKQUOTE>
+<PRE>
+' Example of variant property
+Public Property Get V1() As Variant
+   If VarType(m_Variant) = vbObject Then
+      Set V1 = m_Variant
+   Else
+      V1 = m_Variant
+   End If
+End Property
+Public Property Let V1(ByVal vNewValue As Variant)
+   If VarType(vNewValue) = vbObject Then
+      Set m_Variant = vNewValue
+   Else
+      m_Variant = vNewValue
+   End If
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can test this property using the following code:
+<BLOCKQUOTE>
+<PRE>
+   Dim tv As New clsMisc1
+   Dim obj As New clsMisc2
+   tv.V1 = 5
+   Debug.Print tv.V1
+   tv.V1 = obj
+   Debug.Print tv.V1
+</PRE>
+</BLOCKQUOTE>
+<P>
+This will print 5 and clsMisc2 into the Immediate window.
+<P>
+The principle shown here for handling object and other data types
+differently can be extended to any variant data types. For example:
+the Remove method of a collection can take a string or a number
+as a parameter. If it's a string, the parameter is interpreted
+as a key. If it is an integer, the parameter is interpreted as
+an index in the collection. While I obviously haven't seen Microsoft's
+source code for the collection object, I'll lay odds they use
+exactly this technique.
+<P>
+By the way, if you did try implementing a variant property in
+the first way shown here (without the overloading), this particular
+example would still seem to work correctly (go ahead and try it).
+But it really isn't doing what you might expect. What happens
+in this function when you actually try to assign the v1 property
+with the obj object?
+<BLOCKQUOTE>
+<PRE>
+Public Property Let V1(ByVal vNewValue As Variant)
+   m_Variant = vNewValue
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+During the m_Variant = vNewValue assignment, the object is <I>not</I>
+assigned to the m_Variant variable. Instead, the default property
+of the object is accessed (in this case, the ClassName property)
+and the m_Variant variable is loaded with a string containing
+the current value of that property. To verify this, try changing
+the test code to access a property on the object instead of relying
+on the default property. This kind of side effect is one of the
+reasons I tend to discourage use of default properties.
+<H3><A NAME="ASlightlyQuirkyWayofOverloadingProperties">
+A Slightly Quirky Way of Overloading Properties</A></H3>
+<P>
+The clsMisc1 contains a second property, V2, which demonstrates
+yet another way to overload a property. But in this case the technique
+only applies to distinguishing between variable assignment and
+object assignment. The approach begins with the question: What
+happens if a Class property has both a Property Let and a Property
+Set method?
+<BLOCKQUOTE>
+<PRE>
+Public Property Get V2() As Variant
+End Property
+Public Property Let V2(ByVal vNewValue As Variant)
+   MsgBox &quot;I'm in Let V2&quot;
+End Property
+
+Public Property Set V2(ByVal vNewValue As Variant)
+   MsgBox &quot;I'm in Set V2&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Try the following test code:
+<BLOCKQUOTE>
+<PRE>
+   Dim tv As New clsMisc1
+   Dim obj As New clsMisc2
+   tv.V2 = 5
+   tv.V2 = obj
+   Set tv.V2 = obj
+</PRE>
+</BLOCKQUOTE>
+<P>
+The first two assignments are identical to the prior case. In
+both situations, the value (5 or obj) is converted into a variant
+and passed to the Property Let procedure. In the third assignment,
+obj is still converted into a variant, but it is passed to the
+Property Set procedure instead.
+<P>
+One can't help but wonder if there isn't a way to avoid the variant
+conversion. It turns out there is:
+<BLOCKQUOTE>
+<PRE>
+Public Property Set V2(vNewValue As Object)
+   MsgBox &quot;I'm in Set V2&quot;
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+This is definitely more efficient than the variant approach. In
+fact, vNewValue can be defined to any object type as well (such
+as clsMisc2 in this case) and still work fine.
+<P>
+But doesn't this violate the rule that the type of data returned
+from a property must match the type while setting the property?
+It turns out that the Property Set function makes its own rules.
+The parameter to a Property Set function can be any object type
+regardless of the type of the property (the type returned by the
+Property Let). This makes the following property possible:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get T() As Integer
+End Property
+
+Public Property Let T(ByVal vNewValue As Integer)
+End Property
+
+Public Property Set T(x As Object)
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+Yes, you are reading this correctly. T is an integer property
+that can also be set to an object! Given an object containing
+this property, named myobj, the following are both valid:
+<BLOCKQUOTE>
+<PRE>
+obj.T = 5
+Set obj.T = obj  ' or any other object
+</PRE>
+</BLOCKQUOTE>
+<P>
+Now that you know this is possible, don't do it. It serves no
+practical purpose (that I can see) and creates code guaranteed
+to confuse anyone else working with the code.
+<P>
+Another thing you might notice in these test programs is that
+assigning an object to a variant property does not require an
+explicit Set operation. This is because Visual Basic is smart
+enough to convert the object into a variant when passing it as
+a parameter. Of course, sometimes Visual Basic can be too smart
+for its own good.
+<H3><A NAME="EvilTypeCoercion">
+Evil Type Coercion</A></H3>
+<P>
+What do you think will print with this code?
+<BLOCKQUOTE>
+<PRE>
+   Dim s$
+   s$ = &quot;1&quot;
+   s$ = s$ + 5
+   Debug.Print s$
+   Debug.Print s$ + 8
+   Debug.Print s$ + &quot;8&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+15, 158, 158 perhaps?
+<P>
+If you run this under Visual Basic 3.0 you'll get an error message
+indicating a type mismatch. That's right-VB3 will not let you
+add a string and a number. It says this operation doesn't make
+sense. You would first have to explicitly convert the number to
+a string, for example: s$ = s$ + str$(5).
+<P>
+In Visual Basic 4.0 and 5.0 this will print: 6, 14, 68. In other
+words, Visual Basic will attempt to coerce variables to different
+types if necessary to make an operation work.
+<P>
+Now there is a bit of a philosophical difference here. Personally,
+I was taught in school that strong type checking is a good thing.
+It's just barely possible that statement s$ = s$ + 5 is exactly
+what I want, but it is far more likely that this represents a
+bug in my code. True, Microsoft would suggest that I use the concatenation
+operator &amp; to append strings, but that's just ducking the
+issue; it just makes it more likely that the above is a bug in
+my code. Visual Basic will happily convert other data types as
+well.
+<P>
+As a professional programmer, I want the compiler to detect as
+many bugs as possible. Take a look at the following code:
+<BLOCKQUOTE>
+<PRE>
+   Dim I As Integer
+   I = 55.5
+   Debug.Print I
+</PRE>
+</BLOCKQUOTE>
+<P>
+This will print 56. From one perspective (Microsoft's), this is
+a good thing. Obviously the programmer who is assigning a floating
+point variable to an integer knows what he or she is doing and
+will be glad that the language automatically performs the necessary
+conversion.
+<P>
+Personally, if I want to assign a floating point value to an integer
+variable, I don't mind performing an explicit conversion by calling
+a conversion function such as CInt. If you saw this code in one
+of my applications, chances are very good that it represents a
+programming error on my part. Perhaps I intended it to be a floating
+point variable? If the compiler caught this as a type mismatch,
+I would have the opportunity to catch the problem and either perform
+my own conversion or fix the problem. As things stand, I risk
+having the bug remain uncaught until someone notices that I've
+lost some precision in my calculations, possibly long after the
+program ships.
+<P>
+This is a fundamental difference in philosophy. I've often heard
+the current situation called Evil Type Coercion. (If you know
+who coined this name, I'd love to hear about it.) Quite a few
+programmers along with myself have been pleading with Microsoft
+not to eliminate the current way of doing things but to add an
+option to the environment that enables a stricter form of type
+checking (much as they added the Option Explicit functionality
+after Visual Basic 1.0).
+<P>
+If you agree with this point of view, I would like to invite you
+at this point to contact Microsoft directly and send them the
+following message (or better yet, your own message): &quot;I support
+adding a strict data type checking option to future versions of
+Visual Basic.&quot; Feel free to refer to this book in your message.
+Send the message via e-mail to vbwish@microsoft.com, or via their
+Web site at <A HREF="javascript:if(confirm('http://www.microsoft.com/vbasic/vbinfo/vbfeed.htm.  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.microsoft.com/vbasic/vbinfo/vbfeed.htm.'" tppabs="http://www.microsoft.com/vbasic/vbinfo/vbfeed.htm.">http://www.microsoft.com/vbasic/vbinfo/vbfeed.htm.
+</A><P>
+Naturally, if you disagree with this point of view, I would encourage
+you to keep it to yourself.
+<P>
+Aside: I suppose some readers might feel this type of commentary
+is out of line. How dare I air a criticism about VB in such a
+public way in a book that, if anything, is supposed to be telling
+you how great Visual Basic is? How dare I proclaim what is so
+obviously a personal opinion in a serious technical book, which
+by its very nature should be objective? If you feel this way,
+then I am sorry, but not sympathetic. I warned you during the
+introduction that this book would take the form of a commentary
+to the documentation, not a replacement. This is a technical book,
+and it's a serious one (more or less), but I never promised objectivity,
+except, perhaps, when it comes to the facts.
+<H3><A NAME="OptionExplicit">
+Option Explicit</A></H3>
+<P>
+On the same theme: the very first thing you should do after installing
+Visual Basic is bring up the Options dialog box through the Tools
+menu, look at the Editor tab code settings, and make sure that
+Require Variable Declaration is checked. This ensures that if
+you mistype a variable name the compiler will at least warn you
+about it instead of automatically creating a new variable under
+the incorrect name.
+<H3><A NAME="MoreaboutVariants">
+More about Variants</A></H3>
+<P>
+You've just seen that variants can be useful for overloading functions
+and properties. They can also be useful when you need to hold
+a variable but are not certain at design time what the variable
+type will be or when a list of variables may need to contain different
+types of data. It's possible there are a few other situations
+where variants are useful.
+<P>
+Now here's the most important thing to know about variants. Except
+for those specific cases where you clearly must use a variant
+to accomplish a task that cannot be performed otherwise, you should
+<I>never use them</I>. Why?
+<UL>
+<LI>They are slow.
+<LI>They are slow and inefficient.
+<LI>They are slow and waste memory.
+<LI>They lead to extra data conversions, many of which are out
+of your control and slow down your application.
+<LI>They impose additional testing requirements when used as function
+parameters (the function must be able to handle any type as well
+as any value).
+</UL>
+<P>
+The Visual Basic documentation and environment does not really
+stress this enough, especially considering that:
+<UL>
+<LI>If you dimension a variable or parameter without specifying
+a type, Visual Basic defaults to using variants.
+<LI>If you forget to specify a return type for a function, Visual
+Basic defaults to using variants.
+<LI>When you use the Tools, Add Procedure command to add a new
+property procedure, VB defaults to a variant property.
+</UL>
+<P>
+So fight back for code efficiency! Remember to specify types for
+all of your variables and function parameters. Change properties
+to the actual type you need. At the very least, add a Def&#133;
+command at the start of each module to change the default variable
+type from variant.
+<P>
+This is especially true now that Visual Basic supports native
+code compilation, since native code can handle some data types
+(like integers and longs) extremely efficiently.
+<P>
+The VarTest.vbp project in the <A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A> directory demonstrates
+a simple comparison between variant and native data type performance.
+It measures the time it takes to repeatedly execute the following
+two subroutines:
+<BLOCKQUOTE>
+<PRE>
+Public Sub LongTest()
+   Dim l As Long
+   Dim ctr As Long
+   l = 100
+   For ctr = 1 To 1000
+      l = l + 1
+   Next ctr
+End Sub
+
+Public Sub VariantTest()
+   Dim v As Variant
+   Dim ctr As Variant
+   v = 100
+   For ctr = 1 To 1000
+      v = v + 1
+   Next ctr
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Is this a fair test? Of course not. Who knows what data type the
+Variant test is using in its loop. It could well be a floating
+point type.
+<P>
+The results are telling. On my tests I found that within the Visual
+Basic environment, the VariantTest function was 2.2 times slower
+than the LongTest function. In a compile P-code executable, the
+factor rose to 2.7 times. And when compiled to native code, the
+VariantTest function took 45 times as long as the LongTest function.
+<P>
+This is not surprising. The variant functions are part of OLE
+and the VariantTest subroutine probably uses the Visual Basic
+runtime as well. Even when compiled to native code, those functions
+must be called, so there is little difference between native code
+and P-code in the functions' performance. (This is additional
+evidence for the suggestion made in the last chapter that in many
+cases native code compilation will buy you little if any benefit.)
+On the other hand, the LongTest function is precisely the kind
+of computationally intensive operation that native code compilation
+is best at. This is not an obscure example-loops are one of the
+most common constructs in any programmer's toolkit.
+<P>
+The conclusions:
+<UL>
+<LI>If you have counter loops in your application, always use
+long or integer variables if possible.
+<LI>If you have many of these loops or they are relatively long,
+your application may gain more than most from native code compilation.
+There is certainly no harm in trying.
+<LI>Unless you have an overriding clear need to use variants,
+don't.
+</UL>
+<H3><A NAME="OptionalParametersandParameterArrays">
+Optional Parameters and Parameter Arrays</A></H3>
+<P>
+It's worthwhile to take a brief look at two other features supported
+by Visual Basic with regard to function parameters: optional parameters
+and parameter arrays. These features are demonstrated in the Misc2.vbg
+project group that consists of two projects: Misc2.vbp and Misc2tst.vbp.
+<P>
+You can make function parameters optional by preceding them with
+the keyword &quot;optional.&quot; One or more optional parameters
+may be included in a function's parameter list. However, no non-optional
+parameter may follow an optional parameter. In other words, all
+optional parameters must appear at the end of the list.
+<P>
+Optional parameters may be of any data type. However, there is
+a difference between the way Visual Basic handles Variant data
+types and other data types. When an optional parameter has the
+variant data type, the IsMissing function can be used to determine
+whether the parameter was passed as a parameter. This is demonstrated
+in the Optional1 sample, where the clsMisc2 function Optional1
+appears as follows:
+<BLOCKQUOTE>
+<PRE>
+Public Function Optional1(Optional vr As Variant) As Variant
+   If IsMissing(vr) Then
+      Debug.Print &quot;Variable vr is missing&quot;
+   Else
+      Debug.Print &quot;Variable vr is present&quot;
+   End If
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+It is tested using the cmdOptional1_Click command in the Misc2tst
+main form code:
+<BLOCKQUOTE>
+<PRE>
+Private Sub cmdOptional1_Click()
+   Dim obj As New clsMisc2B
+   Debug.Print &quot;Calling with no parameter&quot;
+   obj.Optional1
+   Debug.Print &quot;Calling with parameter&quot;
+   obj.Optional1 &quot;Hello&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The situation changes when a different data type is used, as shown
+in the Optional2 and cmdOptional2_Click code shown here:
+<BLOCKQUOTE>
+<PRE>
+Public Function Optional2(Optional vr As String) As Variant
+   If IsMissing(vr) Then
+      Debug.Print &quot;Variable vr is missing&quot;
+   Else
+      Debug.Print &quot;Variable vr is: &quot; &amp; vr
+   End If
+End Function
+
+' IsMissing doesn't work with non-variant types
+Private Sub cmdOptional2_Click()
+   Dim obj As New clsMisc2B
+   Debug.Print &quot;Calling with no parameter&quot;
+   obj.Optional2
+   Debug.Print &quot;Calling with parameter&quot;
+   obj.Optional2 &quot;Hello&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+In this case you will never get the &quot;Calling with no parameter&quot;
+message in the Immediate window. The optional parameter is instead
+initialized with the default value for the parameter type in question
+(for example: number 0 or an empty string).
+<P>
+Visual Basic 5.0 also introduced default parameter values as illustrated
+in the Optional3 and cmdOptional3_Click function shown here:
+<BLOCKQUOTE>
+<PRE>
+' With default values
+Public Function Optional3(Optional vr As String = &quot;A Default Value&quot;) As Variant
+   If IsMissing(vr) Then
+      Debug.Print &quot;Variable vr is missing&quot;
+   Else
+      Debug.Print &quot;Variable vr is: &quot; &amp; vr
+   End If
+End Function
+
+
+' Demonstration of default parameter values
+Private Sub cmdOptional3_Click()
+   Dim obj As New clsMisc2B
+   Debug.Print &quot;Calling with no parameter&quot;
+   obj.Optional3
+   Debug.Print &quot;Calling with parameter&quot;
+   obj.Optional3 &quot;Hello&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+In this case, if you do not pass the string parameter to the function,
+the string will be initialized with the default value specified
+in the function declaration.
+<P>
+You may find it tempting to make extensive use of optional parameters.
+I discourage you from doing so. Optional parameters are most useful
+when you have a function that is typically called with certain
+parameters and only rarely with the optional parameters. Large
+numbers of optional parameters tend to make code harder to understand
+and support. You've already seen that variant parameters are best
+avoided if possible.
+<P>
+One place where you sometimes see large numbers of optional parameters
+is with public methods from applications such as Microsoft Word
+that expose the functionality of a complex dialog box. Each parameter
+corresponds to a field or control in the dialog box. In most cases
+a better approach would be to expose a new object that corresponds
+to the dialog box and expose properties that correspond to the
+dialog box fields. You can then have a few methods to actually
+invoke the dialog box functionality.
+<P>
+Visual Basic also supports parameter arrays, in which you may
+pass any number of parameters of any type to a function (ParamArray
+arguments must be variants). This is demonstrated in the ParamArrayDemo
+class method and cmdparamArray_Click function shown here:
+<BLOCKQUOTE>
+<PRE>
+Public Function ParamArrayDemo(ParamArray vr())
+   Debug.Print &quot;Parameters range from: &quot; &amp; LBound(vr) &amp; &quot; to &quot; &amp; UBound(vr)
+End Function
+
+' Demonstration of paramarray
+Private Sub cmdparamArray_Click()
+   Dim obj As New clsMisc2B
+   obj.ParamArrayDemo &quot;Hello&quot;, 1, 2.5
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+If optional parameters impair the readability of a function, parameter
+arrays are surely worse. At the very least, you should try to
+make sure that parameters are related. For example: if you are
+going to perform a database sort operation, you might allow the
+programmer to specify a list of zero or more keys as a parameter
+list.
+<H3><A NAME="ParametersThatHandleLargeBlocksofDataArraysandUserDefinedTypes">
+Parameters That Handle Large Blocks of Data: Arrays and User-Defined
+Types</A></H3>
+<P>
+On occasion you may find yourself in a situation where you need
+fast access to large blocks of data that are encapsulated by an
+object. After all, the whole idea of an object is that it encapsulates
+data behind a clearly defined interface. The only way to access
+the object's internal data is through the methods and properties
+of the interface.
+<P>
+But what if the object contains a lot of data? Perhaps a large
+image or multimedia file? What if it has hundreds of different
+properties rather than a few dozen?
+<P>
+The simple case of an image or multimedia file that can be represented
+by an array of a standard data type (such as a Byte array) is
+relatively easy. You could expose a byte parameter that accepts
+an index value (parameterized array) and copy the data one byte
+at a time, but the overhead in calling the method for each byte
+is significant-disastrous if the object exists in another process
+space (as with an ActiveX EXE server). Fortunately, Visual Basic
+allows you to use arrays as function parameters and to transfer
+them to and from properties (the array can be held by a variant).
+<P>
+The <A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A> misc2.vbg group described earlier contains the
+following method in its clsMisc2 class:
+<BLOCKQUOTE>
+<PRE>
+Public Function ArrayParam(param() As Byte)
+   Debug.Print &quot;Param() range is: &quot; &amp; LBound(param) &amp; &quot; to &quot; &amp; UBound(param)
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+The method is called using the following test code in the frmMisc2
+form in the misc2tst.vbp project:
+<BLOCKQUOTE>
+<PRE>
+' Demonstration of array parameter
+Private Sub cmdArray_Click()
+   Dim obj As New clsMisc2B
+   Dim x(5) As Byte
+   obj.ArrayParam x()
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+As you will see, the method correctly detects the lower and upper
+bound of the array, proving that it is passed correctly.
+<P>
+But what happens when the object's data is more complex? For example,
+let's say the object represents a piece of test equipment that
+has 250 settings that are all contained internally in a single
+user-defined structure that can be read by the equipment's driver.
+Or instead of an array of bytes, the object's data is contained
+in an array of user-defined structures? In these cases the need
+to access hundreds of properties or items may severely impact
+performance, especially if the object is in a different process.
+And Visual Basic does not allow you to use user-defined types
+as method parameters or properties in a public object.
+<P>
+Before rushing to use the technique I'm about to show you (which
+is somewhat advanced), be sure you consider the following possibilities:
+<UL>
+<LI>Is it possible to break up the object into multiple objects?
+Could you replace the array of user-defined structures with an
+array of objects (which can be passed both in an array and as
+part of a collection)?
+<LI>Do you really need to access the data? Perhaps the object
+itself can perform the desired operation. One classic example
+of this is loading or saving the data to a disk file, which is
+best implemented in the object's own code.
+<LI>Does access to the data have to be public? If you can remain
+with the context of a project, you can use a Friend function,
+which is able to handle user-defined types as parameters to properties
+and methods.
+<LI>Do you really need block access? In-process property calls
+are, after all, very fast.
+</UL>
+<P>
+In other words, the need to expose large blocks of data may be
+an indication of poor design.
+<P>
+But there are cases where accessing block data is critical. It
+can significantly improve the speed of copying an object. It may
+be necessary when a high performance driver requires fast access
+to an object using block data in a particular format. It can be
+useful when working with the larger Windows API data structures.
+<P>
+One approach is truly a hack. It involves obtaining the address
+of the data within the object and returning it as a long variable.
+You can obtain the address of a variable using the agGetAddressForObject
+function included in the apigid32.dll library included with this
+book. There are also other third-party tools that can do this.
+Once you have the address, you can copy the data to or from another
+variable (user-defined structure, array, or any other data type
+that corresponds to the data format within the object itself)
+using a memory copy function such as agCopyData, which is also
+included in apigid32.dll.
+<P>
+The one catch with this technique is that, with one exception,
+it only works when the object is in process. The exception is
+if you use a cross-process memory copy routine that supports cross-process
+memory allocation. Examples of these routines include ReadProcessMemory,
+WriteProcessMemory, and the cross process memory functions included
+in Desaware's SpyWorks package.
+<P>
+A more reliable approach is shown in the misc2 project. This example
+shows the assignment of block data to and from a property that
+has the variant data type. This mimics the way a user-defined
+type property might work. Both the DLL server and the test program
+have the following definitions:
+<BLOCKQUOTE>
+<PRE>
+Private Declare Sub agCopyData Lib &quot;apigid32.dll&quot; (source As Any, dest As Any, ByVal count As Long)
+
+Private Type usertype
+   x(20) As Byte
+   y As Integer
+End Type
+</PRE>
+</BLOCKQUOTE>
+<P>
+The agCopyData function copies data from any source to any destination.
+You should call this function with great caution, because if you
+make any mistake (such as adding or forgetting a ByVal call as
+appropriate), you can cause a memory exception that will crash
+your program (and possibly the system if you are using Windows
+95 instead of NT).
+<P>
+The object has a single internal variable defined to hold the
+data for this property:
+<BLOCKQUOTE>
+<PRE>
+Private m_UserType As usertype
+</PRE>
+</BLOCKQUOTE>
+<P>
+The property Let and Set functions are shown here:
+<BLOCKQUOTE>
+<PRE>
+' This process converts a user defined type into an array
+' and returns the array
+Public Property Get UserTypeEquiv() As Variant
+   Dim TempArray() As Byte
+   ReDim TempArray(Len(m_UserType))
+   m_UserType.y = 77 ' New value for demo purposes
+   agCopyData m_UserType, TempArray(0), Len(m_UserType)
+   UserTypeEquiv = TempArray()
+End Property
+
+' This process receives an array, and
+' converts it into the user type
+Public Property Let UserTypeEquiv(ByVal vNewValue As Variant)
+   Dim TempArray() As Byte
+   If VarType(vNewValue) &lt;&gt; vbArray + vbByte Then
+      MsgBox &quot;Invalid data type&quot;
+      Exit Property
+   End If
+   TempArray() = vNewValue 'Must do this - see text
+   agCopyData TempArray(0), m_UserType, Len(m_UserType)
+   Debug.Print &quot;UserTypeEquiv set: Y = &quot; &amp; m_UserType.y
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+The trick on the Get side is to copy the private user-defined
+structure into a byte array and return that array as the property
+value. This is possible because variants can hold arrays. On the
+Let side, after you verify that the parameter is, in fact, a byte
+array, you must still copy the data into a temporary array. This
+is because a variant does not necessarily copy all of the array
+data into a buffer when you pass the first byte of the data as
+a ByRef parameter. It can make a temporary copy of the byte value,
+pass the temporary variable to the DLL function, then copy the
+data back on return. The DLL function cannot assume that the byte
+it receives is, in fact, the first byte of the actual array.
+<P>
+The following code in the Misc2tst.vbp project demonstrates how
+to access the UserTypeEquiv property.
+<BLOCKQUOTE>
+<PRE>
+' Faking it with user defined types
+Private Sub cmdUserType_Click()
+   Dim obj As New clsMisc2B
+   Dim TempArray() As Byte
+   Dim TempUserType As usertype
+   TempUserType.y = 55  ' Test value
+   ReDim TempArray(Len(TempUserType))
+   agCopyData TempUserType, TempArray(0), Len(TempUserType)
+   obj.UserTypeEquiv = TempArray()
+   TempArray() = obj.UserTypeEquiv
+   agCopyData TempArray(0), TempUserType, Len(TempUserType)
+   Debug.Print &quot;User Type Y value is &quot; &amp; TempUserType.y
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+There are some limitations to watch with this approach:
+<UL>
+<LI>The structure cannot hold dynamically allocated strings or
+arrays.
+<LI>Any fixed length strings will be converted from Unicode into
+ANSI.
+<LI>You may run into problems with string conversions of string
+variables within structures that are themselves in arrays.
+<LI>The Len function may not return the correct length if the
+fields within the structure do not fall on their natural alignment
+points (integers on 16-bit boundaries, longs on 32-bit boundaries).
+In these cases you should calculate for yourself the array size
+needed or use one of the User Defined Type (UDT) packing and unpacking
+functions that are included in Desaware's SpyWorks package or
+other third-party tools.
+<LI>You must be absolutely certain that the layout of the data
+within the array is identical for every client that uses this
+object. Visual Basic packs structures and performs string conversions
+when the user-defined type is passed to the agCopyData function,
+as it does any time a user-defined structure is passed to a DLL
+function. All applications that use these properties must expect
+the data in that format. This is trivial with Visual Basic, since
+it will simply reverse the process when copying in the other direction,
+but it may be more complex with other applications. It is especially
+critical when going between operating systems, where even the
+byte order may be reversed.
+</UL>
+<P>
+The good news is that these limitations apply relatively infrequently.
+The better news is that since the data is actually being transferred
+as a byte array, you need not worry about whether the object is
+in process or out of process. OLE knows how to marshal byte arrays
+between processes.
+<P>
+There clearly is overhead in this approach. The need to copy the
+data into temporary byte buffers may be prohibitive in some cases.
+Keep in mind, however, that the copying is taking place in the
+process that contains the data. In many cases where objects are
+implemented in EXE servers, the overhead will be minimal compared
+to the overhead involved in multiple cross-process calls.
+<P>
+The subjects of data organization within arrays and user-defined
+types, as well as how Visual Basic manages structures during DLL
+calls, string conversions, and data alignment within structures
+are somewhat complex and beyond the scope of this book. For more
+detailed information refer to <I>Dan Appleman's Visual Basic 5.0
+Programmer's Guide to the Win32 API</I>, ZD Press, 1997, Chapters
+3 and 15.
+<H2><A NAME="ProcedureAttributes"><FONT SIZE=5 COLOR=#FF0000>
+Procedure Attributes</FONT></A></H2>
+<P>
+Visual Basic 5.0 allows you to set a variety of attributes for
+methods and properties in a class, form, or ActiveX control or
+document. Actually it allows you to set them for functions in
+modules as well, but since these attributes mean nothing to methods
+outside of modules that support COM objects, it's rather pointless
+to do so other than for documentation purposes. These attributes
+are set using the Procedure Attributes dialog box shown in Figure
+10.1. It is found through the Tools, Procedure Attributes command.
+Figure 10.1 shows the advanced attributes.
+<P>
+<A HREF="f10-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f10-1.gif"><B>Figure 10.1 :</B> <I>Procedure Attributes dialog box</I>.</A>
+<P>
+Many of the attributes (especially the advanced attributes) only
+apply to ActiveX controls. Those will be covered in Part 3 of
+this book.
+<H3><A NAME="Description">
+Description</A></H3>
+<P>
+You should set a description for every public method and procedure.
+It's not a bad idea to set the descriptions for private methods
+and procedures as well, especially for very large classes. The
+description appears in the object browser and the Properties window
+(for ActiveX controls).
+<H3><A NAME="HelpContextID">
+Help Context ID</A></H3>
+<P>
+Set this to the context identifier for this method or property
+in the component's help file, if one exists. This help context
+ID will be used by the object browser and the Properties window
+(for ActiveX controls).
+<H3><A NAME="ProcedureID">
+Procedure ID</A></H3>
+<P>
+In <A HREF="ch4.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch4.htm" >Chapter 4</A>we discussed the way that dispatch interfaces work.
+You may recall that each method or property in a dispatch interface
+has an identifier called a Dispatch ID, Dispatch identifier, or
+Procedure ID. This Dispatch ID is used by the Invoke method of
+the interface to determine which method or property to call. Keep
+in mind that while the numbers must be unique within an interface,
+there is no rule that says the numbers must be sequential or have
+any particular values.
+<P>
+OLE defines a number of standard dispatch interface numbers that
+have special meanings. Use of these numbers does not affect the
+way you access methods and properties in an object. However, object
+containers do have the ability to take special action for these
+standard dispatch interfaces if they so choose.
+<P>
+One example of this is the dispatch identifier number zero. Whichever
+method or property has this identifier will be considered by Visual
+Basic (and many other containers) to be the default method or
+property of the object. This means that if you try to access the
+object without specifying a method or property name, the language
+will use the default.
+<P>
+If you have object OBJ that has property Myprop, you would normally
+access this by:
+<BLOCKQUOTE>
+<PRE>
+MyVariable = OBJ.Myprop.
+</PRE>
+</BLOCKQUOTE>
+<P>
+If Myprop is the default property you can just use:
+<BLOCKQUOTE>
+<PRE>
+MyVariable = OBJ
+</PRE>
+</BLOCKQUOTE>
+<P>
+Many developers, including the Microsoft documents, stress the
+importance of choosing a default property that is logical. For
+example: the default property for a text control is the Text property.
+The default property for the Label control is the Caption property.
+<P>
+While I cannot in good conscience tell you not to choose a default
+property for your objects, I generally recommend against using
+default properties in your applications. The reason is purely
+one of readability and support.
+<P>
+When you see a line of code that takes the form MyVariable = MyObject,
+it requires extra effort on your part to understand which property
+is being read. You need to either know it by heart or look it
+up. In either case, this requires extra thought.
+<P>
+On the other hand, for the code MyVariable = MyObject.SpecificProperty,
+no extra thought is required. You know exactly which property
+is being accessed. The slight additional time it takes to add
+the property name (and it is slight indeed with VB5's new Quick-Info
+feature in the editor) is more than justified by the improved
+readability of the resulting code.
+<P>
+Additional procedure IDs will be covered in Part 3 in the context
+of their use with ActiveX controls.
+<H3><A NAME="HideThisMember">
+Hide This Member</A></H3>
+<P>
+This option sets a special flag in the type library for an object
+that causes the member or property to be hidden. This means that
+the method or property will not be shown in the object browser
+and, in the case of ActiveX controls, will not appear in the Property
+window. However, your code can access the method or property.
+<P>
+This option is generally used to provide some security for an
+object. Only people who have documentation for hidden properties
+and methods can write programs that use them. It is also sometimes
+used for private methods and properties that your applications
+use but that you do not want available to the rest of the world.
+<P>
+The remaining advanced options will be covered in Part 3 in the
+context of their use with ActiveX controls.
+<H2><A NAME="ObjectProceduresPublicPrivateandFriend"><FONT SIZE=5 COLOR=#FF0000>
+Object Procedures: Public, Private, and Friend</FONT></A></H2>
+<P>
+The word <I>public</I> is almost as much fun in Visual Basic as
+is the word object. Its meaning depends a great deal on the context.
+Are you talking about a DLL declaration? A variable declaration?
+A class module? In this section we'll take a look at how the Visual
+Basic language handles issues relating to the visibility of object
+methods and properties, along with some of the scoping rules relating
+to variables within an application.
+<H3><A NAME="PublicIsAsPublicDoes">
+Public Is As Public Does</A></H3>
+<P>
+In <A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm" >Chapter 8</A> you found out about the difference between private
+objects and public objects. The type of object is set using the
+Instancing property of the class module that implements the class.
+<P>
+The use of the terms public and private in this context controls
+the visibility of the methods and properties of the class module
+to clients that are not part of the component project itself.
+In other words: If a class module has its Instancing property
+set to any of the public types, the object implemented by the
+class may be used by other applications. One or more of the properties
+of that object <I>may</I> be usable by other applications as well.
+If a class module has its Instancing property set to private,
+the object implemented by the class may not be used by other applications.
+<P>
+The Instancing property can be thought of as an overriding setting
+that determines whether the object is useable outside of the project.
+It has <I>nothing</I> to do with using the object within a project.
+A project may create and use any objects implemented by classes
+that are part of the project, regardless of the setting of the
+Instancing property.
+<H4>Methods and Properties</H4>
+<P>
+The keywords Public or Private may be used with a method or property
+declaration in a module. (This includes class modules, standard
+modules, and form modules.). These functions control the visibility
+of the method or property through the application. 
+<P>
+The rule is simple: If the method/property/function is public,
+it can be accessed by other modules in your application. If private,
+it can be accessed only within the same module.
+<P>
+This fairly simple rule has one side effect that some Visual Basic
+programmers, especially those who have been using Visual Basic
+for a long time, are not aware of. Because this rule applies to
+forms as well, it is possible for a form to expose public methods
+and properties. This allows one form to load a second form and
+set custom properties for the form (or call methods on the form)
+before it is shown. Public methods and properties for forms were
+not supported on earlier versions of Visual Basic, and some programmers
+never noticed when they were added. An example of this feature
+can be seen in the Misc3.vbp project that can be found in the
+<A HREF="ch10.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch10.htm" >Chapter 10</A> directory on the CD-ROM.
+<P>
+This simple rule defines the visibility of functions within a
+project, but what about outside of the project? If the method
+or property is in a class module and the Instancing property of
+the class is any of the public types, the method or property is
+also visible to the outside world-those clients using the component.
+<P>
+This poses an interesting problem with regard to public classes:
+What if you want a class method or property to be visible within
+the project but hidden by clients using the object? In other words:
+how do you make a method or property of a class private to the
+component itself accessible to any module within the component
+but unavailable to other applications?
+<P>
+This is accomplished using a function type new to Visual Basic
+5.0: the Friend type. Figure 10.2 illustrates the visibility of
+Public, Private, and Friend methods and properties in public and
+private classes.
+<P>
+<A HREF="f10-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f10-2.gif"><B>Figure 10.2 :</B> <I>Visibility control for methods and properties</I>.</A>
+<P>
+One interesting technique you can use with properties is to make
+the Property Let or Property Set function a Friend function while
+making the Property Get function public. This allows you to create
+properties that can be read by other applications but can be set
+only within your component.
+<P>
+There is one catch to defining methods and properties as Friends:
+Access to these functions must be early bound. This means, for
+example, that you cannot access a Friend function through a variable
+declared As Object. You must use a variable declared as the object
+type you are referencing.
+<H4>Variables</H4>
+<P>
+The visibility rules for variables are very similar to those of
+methods and properties. Public variables are visible throughout
+the project. Private variables are visible only within the module
+in which they exist. Public variables within a public class are
+exposed to other applications (Visual Basic automatically creates
+hidden Property Get and Property Let/Set methods for the variable).
+There is no such thing as a Friend variable, however.
+<H4>Privacy Is Golden</H4>
+<P>
+A key part of the design of any object model is to determine which
+method and properties should be public. Generally speaking, you
+should maintain as much privacy as possible.
+<P>
+Consider a class which has function MyFunction that takes several
+parameters.
+<P>
+Let's say the function is private and is called several times
+within the class. In this case you can base the implementation
+of the function and your testing program on the way the function
+is used. If you only call the function with certain parameter
+values, you don't have to waste time and code with error handling
+for other parameter values. You can get away with just documenting
+any parameter restrictions or requirements for those who will
+be supporting the code in the future.
+<P>
+If the function is public within a project (public in a private
+class or a friend within a public class), the same situation applies,
+but on a slightly larger scale. You still maintain full code over
+how the function is called, so as long as you can eliminate bugs
+in your design and the way the function is called, you can be
+sure the function will always work and do not need to implement
+extensive error checking in the function code.
+<P>
+But when the function is a public method of a class, all bets
+are off. Any application using your component can call it with
+any type supported by the function and any value available to
+that type. This means that variant properties need to be tested
+both for type and value. Other properties need to be tested for
+any possible value. Your function must be able to correctly handle
+anything the calling application can throw at it.
+<P>
+Reduce the visibility of the variables, functions, and properties
+in your application as much as you can. It will make your code
+more modular, more reliable, and more supportable.
+<H3><A NAME="ScopingRules">
+Scoping Rules</A></H3>
+<P>
+Visibility is one of the attributes of a function or variable
+that fall under the label <I>scope</I>. Visibility defines from
+where the function or variable can be accessed. If it is accessible,
+it is visible. The scope of a variable or function refers to both
+its visibility and its lifetime, which is the time during which
+the variable exists.
+<P>
+You've already seen that visibility is at least in part determined
+by the use of the Public or Private keyword in the variable declaration.
+Visibility for variables is also determined by the location of
+the variable declaration. Variable declarations within functions
+or function parameters override variables of the same name declared
+at the module level. To see this, consider the following trivial
+program:
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+
+Private x As Integer
+
+Private Sub Command1_Click()
+   Dim x As Integer
+   x = 6	' This has no effect on the module level variable
+   Debug.Print x
+End Sub
+
+Private Sub Command2_Click()
+   Debug.Print x
+End Sub
+
+Private Sub Form_Load()
+   x = 5
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Is the value of variable x 5 or 6? In the Command1_Click function,
+it is 6. This is because within this function, the variable defined
+by the Dim statement within the function is visible. Because it
+has the same name as the module level x variable, it hides that
+variable, making it invisible within the subroutine. The variable
+may be set to 6, but this has no effect on the value of the module
+variable. The Command2_Click function does not have another x
+variable defined, so there is nothing to hide the module variable;
+it remains visible.
+<P>
+You've also seen that the visibility affects object methods and
+properties as well and is primarily determined by the Public,
+Private, and Friend keywords, and the Instancing property of the
+class module containing the method. Visibility of object methods
+and some application level (or Global) commands and constants
+can also be determined by the order of type library references
+in use by the application. This subject was covered in Chapter
+9.
+<H4>Lifetime</H4>
+<P>
+The lifetime of a variable determines how long a variable exists.
+Lifetime is not the same as visibility, though they are related.
+For example, it is obvious that an object that no longer exists
+cannot be visible. Lifetime is also determined by the use of the
+Visual Basic <I>static</I> keyword. C and C++ programmers take
+note: While the Visual Basic static keyword does exhibit some
+of the behaviors of the C/C++ static keyword, it has major differences.
+<P>
+Normally, variables declared within procedures exist for the duration
+of a single procedure call. The variable is allocated on the stack,
+and when the function exits, the memory is reclaimed by the system.
+<P>
+When a variable is declared as static within a procedure, it is
+allocated in the data segment for the application instead of on
+the stack. The value of the variable is thus preserved from one
+call of the function to the next. When a procedure is declared
+as static, all local variables within the procedure are declared
+as static variables.
+<P>
+Table 10.1 summarizes the lifetimes of variables based on where
+they are declared and the use of the static keyword in either
+a variable or function declaration.<BR>
+<P>
+<CENTER><B>Table 10.1:&nbsp;Lifetime of Variables</B></CENTER>
+<P>
+<CENTER>
+<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD WIDTH=144><B>Declaration</B></TD><TD WIDTH=144><B>Location of the Declaration</B>
+</TD><TD WIDTH=144><B>Lifetime</B></TD><TD WIDTH=144><B>Creation</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Module Level-No static keyword</TD><TD WIDTH=144>Standard module
+</TD><TD WIDTH=144>Life of the application or thread*</TD><TD WIDTH=144>One per application*
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=144>Form module</TD><TD WIDTH=144>Life of the form
+</TD><TD WIDTH=144>One per form </TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=144>Class module</TD><TD WIDTH=144>Life of the class object
+</TD><TD WIDTH=144>One per class object</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Module Level-Static keyword</TD><TD WIDTH=144>Not allowed
+</TD><TD WIDTH=144>N/A</TD><TD WIDTH=144>&nbsp;</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Within non-static procedure-No static keyword. Includes procedure parameters.
+</TD><TD WIDTH=144>Any module type</TD><TD WIDTH=144>Single procedure call
+</TD><TD WIDTH=144>One per procedure call</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Within non-static procedure using static keyword, or within static procedure
+</TD><TD WIDTH=144>Standard module</TD><TD WIDTH=144>Life of the application or thread*
+</TD><TD WIDTH=144>One per application*</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=144>Form module</TD><TD WIDTH=144>Life of the form
+</TD><TD WIDTH=144>One per form</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>&nbsp;</TD><TD WIDTH=144>Class module</TD><TD WIDTH=144>Life of the class object
+</TD><TD WIDTH=144>One per class object</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=4 WIDTH=576>*Special circumstances apply when implementing a multithreading server. See <A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch14.htm" >Chapter 14</A>.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The lifetime of global variables is typically the life of the
+application. However, special rules apply when implementing a
+multithreading server. (These cases are indicated in the table
+with an asterisk.) These are discussed in <A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch14.htm" >Chapter 14</A> during the
+discussion of multithreading.
+<P>
+When you define a procedure as static, all of the local variables
+within the procedure are defined as static. The problem with this
+is that you are no longer able to create dynamic variables in
+that procedure. Worse (static procedures are so uncommon that
+other people supporting your code later are likely to become confused),
+programmers are so used to procedure declared variables being
+dynamic. 
+<P>
+In over five years of Visual Basic programming, I don't think
+I have ever created a static procedure. I have, however, often
+used static variables within procedures. Static variables provide
+a mechanism to create a variable that is effectively private to
+a particular procedure. It is much better than using a global
+variable in this case because it eliminates the possibility that
+some other function in the project might accidentally change the
+value of the variable. You see, while the static keyword does
+promote the lifetime of the variable to the level of a module
+variable, the visibility of the variable remains limited to the
+procedure in which it is defined.
+<P>
+The lifetime of an object also suggests when the specified variable
+is created. A variable declared in a non-multithreading standard
+module is created when the application loads and exists for the
+life of the application. 
+<P>
+When declared in a form module, a new instance of the variable
+is created with each form object. Each form object has a unique
+instance of the variable. But both variables may be visible! Let's
+say a form has a public variable named ThisFormName and you have
+two global form objects in a standard module that reference the
+same type of form: MyForm1 and MyForm2. This can be accomplished
+using the following code from the Misc4.bas module in the Misc4.vbp
+application:
+<BLOCKQUOTE>
+<PRE>
+' Guide to Perplexed - Misc4 sample
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Public MyForm1 As frmMisc4
+Public MyForm2 As frmMisc4
+
+Sub Main()
+   ' Set initial object variables
+   Set MyForm1 = New frmMisc4
+   Set MyForm2 = New frmMisc4
+   MyForm1.ThisFormName = &quot;MyForm1&quot;
+   MyForm2.ThisFormName = &quot;MyForm2&quot;
+   ' Now show both forms
+   MyForm1.Show
+   MyForm2.Show
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The project is set to run SubMain first. ThisFormName is a public
+module level variable of the form. The public keyword makes the
+visibility of the variable application wide. Declaring the variable
+at the module level of the form (the declaration section) makes
+its lifetime the life of the form, with a new variable created
+for each form object (as shown in Table 10.1).
+<P>
+The form has a single command button and the following code:
+<BLOCKQUOTE>
+<PRE>
+' Guide to Perplexed - Misc4 sample
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Public ThisFormName As String
+
+Private Sub Command1_Click()
+   Debug.Print &quot;Clicked&quot; &amp; ThisFormName
+   Debug.Print MyForm1.ThisFormName
+   Debug.Print MyForm2.ThisFormName
+End Sub
+
+Private Sub Form_Load()
+   Caption = ThisFormName
+End Sub
+
+' Clean up the global variables when the forms
+' are closed
+Private Sub Form_Unload(Cancel As Integer)
+   If MyForm1 Is Me Then Set MyForm1 = Nothing
+   If MyForm2 Is Me Then Set MyForm2 = Nothing
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+When you click on the command button, the ThisFormName variable
+by default refers to the one in the current form. Each form has
+a hidden object reference called Me referring to the form on which
+the code is acting. Specifying ThisFormName without an object
+reference results in an implied call to Me.ThisFormName. But because
+ThisFormName is public, it is possible to reference the variable
+for any form object as you can see in this example. The lifetime
+of the variable is per form, and the visibility is project wide.
+<P>
+You can duplicate the identical effect with class objects. Just
+create a public variable in a class, and create class objects
+instead of form objects. Next, try accessing the object variables
+both from within the standard module and within methods of the
+class module. You will achieve the same results.
+<P>
+What if you want a variable that is private to a class, but public
+to all instances of a class? In other words, one whose visibility
+is limited to a specific class, but which is created once and
+whose lifetime is the life of the application. With this type
+of variable, data can easily be shared among any objects belonging
+to a class. This can be accomplished in C or C++ by using the
+static keyword at the module level (class declaration level),
+but it is not possible directly in Visual Basic. Instead, you
+simply create a public global variable in a standard module and
+be careful not to use it anywhere except within the class module.
+It's not an ideal solution because it remains possible for code
+elsewhere in your project to modify the variable, but if you are
+careful to use a unique variable name, you can minimize the chances
+of this happening.
+<P>
+Keep in mind that a variable declared in a non-static procedure
+is created each time a procedure is called and exists until the
+procedure exits. This also applies to parameters to the procedure,
+which are treated as if they were allocated locally and initialized
+by the calling routine. This applies also to ByRef parameters-they
+may refer to a variable in the calling function but the reference
+variable itself is passed on the stack and is thus local to the
+procedure. In either case, if a function calls itself (a technique
+called recursion), you may find yourself creating a large number
+of variables.
+<P>
+A classic demonstration of recursion is shown in the listing that
+follows. The Debug.Print statement lets you track the creation
+and deletion of the procedure level variable (the function parameter).
+<BLOCKQUOTE>
+<PRE>
+' Guide to Perplexed - Recursion example
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+
+Private Sub cmdCalculate_Click()
+   Dim N As Integer
+   Dim result As Double
+   N = Val(txtValue.Text)
+   result = Factorial(N)
+   lblResult.Caption = &quot;Factorial of &quot; &amp; N &amp; &quot; is &quot; &amp; Str$(result)
+End Sub
+
+' Factorial N is N * (N-1) * (N-2), etc.
+' i.e. Factorial 5 is 5 * 4 * 3 * 2 * 1
+Public Function Factorial(ByVal N As Integer) As Double
+   Debug.Print &quot;N is created with value &quot; &amp; N
+   If N &lt;= 1 Then
+      Factorial = 1
+   Else
+      Factorial = CDbl(N) * Factorial(N - 1)
+   End If
+   Debug.Print &quot;N with value &quot; &amp; N &amp; &quot; is about to be destroyed &quot;
+End Function
+</PRE>
+</BLOCKQUOTE>
+<H2><A NAME="SelectedTopics"><FONT SIZE=5 COLOR=#FF0000>
+Selected Topics</FONT></A></H2>
+<P>
+&quot;Selected Topics&quot; is a nice way of describing something
+that I want to write about but isn't big enough to deserve its
+own chapter and doesn't seem to fit anywhere else.
+<H3><A NAME="Enums">
+Enums</A></H3>
+<P>
+This is the first place in the book where I will mention Enums,
+a new feature to Visual Basic 5.0. You'll see more about Enums
+in Part 3, where they will be discussed in relation to ActiveX
+control properties.
+<P>
+Enums are in some ways a very cool technology, and in other ways
+are totally useless. You see, they don't really do anything when
+used in code components. And while they do have a practical use
+with ActiveX controls, they suffer from some serious limitations,
+as you will see later. First some background.
+<P>
+You've seen that ActiveX components can publish information about
+objects so they can be used by other applications. This information
+includes the methods and properties of the object, as well as
+such items as the object's programmatic name and GUID. You've
+also learned that the way that this information is published is
+by writing information about the component into your system registry
+(which occurs when a component is registered). Part of the information
+in the registry is the location of the type library for the component,
+which is the resource that defines all of the properties and methods
+for the component. This resource is automatically added by Visual
+Basic to your component's executable file (EXE, DLL or OCX, depending
+on component type).
+<P>
+It turns out, however, that a type library is not limited to describing
+just methods and properties. It can expose constants as well.
+For example, if you create the following Enum:
+<BLOCKQUOTE>
+<PRE>
+Public Enum TestEnum
+      Test1 = 1
+      Test2 = 2
+End Enum
+</PRE>
+</BLOCKQUOTE>
+<P>
+Any application that has referenced your component can use Test1
+and Test2 to represent the values 1 and 2. More important, you
+can create properties that have the Enum type, for example:
+<BLOCKQUOTE>
+<PRE>
+Public Property Get TestEnumProp() As TestEnum
+
+End Property
+
+Public Property Let TestEnumProp(ByVal vNewValue As TestEnum)
+
+End Property
+</PRE>
+</BLOCKQUOTE>
+<P>
+You might be thinking this is very cool-a property that automatically
+restricts itself to the values in an enumeration. But you would
+be wrong.
+<P>
+You see, enumerations allow you to define constants. That's all.
+Each Enum value is a 32-bit-long value, so the TestEnumProp property
+has effectively been defined as a long property. Visual Basic
+does no range checking. Given an object called myObject, where
+the object contains the above code, both of the following lines
+will work:
+<BLOCKQUOTE>
+<PRE>
+myObject.TestEnumProp = Test1
+myObject.TestEnumProp = 528249
+</PRE>
+</BLOCKQUOTE>
+<P>
+So why are Enums useful? They are useful because if you have the
+VB environment's Auto List Members feature enabled (Look for it
+in the Tools-Options dialog box under the Editor tab), when you
+type the code &quot;myObject.TestEnumProp=&quot;, VB will automatically
+display all of the elements in the enumeration so that you can
+easily select one without looking it up.
+<P>
+In other words, when it comes to ActiveX components, Enums are
+useful to improve code readability and programming efficiency.
+But they don't really do anything.
+<P>
+So use them, but don't forget to implement range error checking
+on your public properties that have an enumeration type.
+<P>
+Here are a few other things that you should know about Enums.
+<UL>
+<LI>In ActiveX components you can precede an Enum name with an
+underscore to make it hidden. I see no practical use for this,
+however. Example:  [_Test1] = 1.
+<LI>Use brackets to create enumerations that violate variable
+naming rules (have illegal characters or spaces). Example: [My
+Enumerated Value]= 5.
+<LI>Enumerations do not have to be consecutive values. This makes
+enumerations useful for exposing constants of all types.
+<LI>Different elements in an enumeration do not have to have unique
+values. For example: Test1=1: Test2=1 is legal.
+<LI>Beware of creating Enum constant names that are used by other
+components or by Visual Basic itself. In case of such conflict,
+Visual Basic will use the one that is in the type library that
+is first on the reference list. Microsoft recommends preceding
+each Enum name with a consistent prefix to help differentiate
+constants. Thus most constants used by VB or VBA have the prefix
+vb, as in vbArrow.
+</UL>
+<H3><A NAME="ToWizorNotToWiz">
+To Wiz or Not To Wiz</A></H3>
+<P>
+Visual Basic 5.0 comes with a number of wizards including a Class
+Builder Wizard. Whether you choose to use wizards or not is really
+a matter of personal preference. I've found that the Class Builder
+Wizard has some value in making in possible to get an overview
+of the methods, properties, and events in my object, but that
+it is generally more hassle than it's worth. Classes are straightforward
+enough so that code generated by the wizard is not substantial,
+and much of the time I find I end up deleting the wizard-generated
+code because it doesn't perform the task that I'm looking for
+it to perform. I'd rather build from scratch than have to go back
+and clean up after a wizard. But let me stress that this is a
+personal preference and not a recommendation. Try it both ways
+and see what you like.
+<P>
+The ActiveX Control Wizard, which is used to help create ActiveX
+controls, is far more useful. It is especially handy for implementing
+standard properties, and it's a great way to see how certain common
+techniques can be implemented. You'll read more about this in
+Part 3.
+<HR>
+
+<CENTER><P><A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch11.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch11.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

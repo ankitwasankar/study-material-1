@@ -1,0 +1,1244 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 10 - Creating Reports</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch09.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch11.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;10</H1>
+<H1>Creating Reports</H1>
+
+<UL>
+<LI><A HREF="#TypesofReports">
+Types of Reports</A>
+<LI><A HREF="#CreatingReportsviaQuickReport">
+Creating Reports via Quick Report</A>
+<LI><A HREF="#TheReportDesigner">
+The Report Designer</A>
+<UL>
+<LI><A HREF="#WorkingwithControlsontheReportCanvas">
+Working with Controls on the Report Canvas</A>
+<LI><A HREF="#WorkingwithShapesandText">
+Working with Shapes and Text</A>
+</UL>
+<LI><A HREF="#WorkingwithPicturesandGraphics">
+Working with Pictures and Graphics</A>
+<LI><A HREF="#FormattingReportControls">
+Formatting Report Controls</A>
+<UL>
+<LI><A HREF="#Alignment">
+Alignment</A>
+<LI><A HREF="#Size">
+Size</A>
+<LI><A HREF="#Spacing">
+Spacing</A>
+<LI><A HREF="#Group">
+Group</A>
+<LI><A HREF="#SnaptoGridandGridScale">
+Snap to Grid and Grid Scale</A>
+<LI><A HREF="#TextOptions">
+Text Options</A>
+<LI><A HREF="#TheFillandPenOptions">
+The Fill and Pen Options</A>
+<LI><A HREF="#ReportBands">
+Report Bands</A>
+</UL>
+<LI><A HREF="#OrderingandGroupingYourReports">
+Ordering and Grouping Your Reports</A>
+<LI><A HREF="#TakingAdvantageofDataEnvironmentsandDataSessions">
+Taking Advantage of Data Environments and Data Sessions</A>
+<UL>
+<LI><A HREF="#WorkingwithRelationshipsintheDataEnvironmentDesigner">
+Working with Relationships in the Data Environment Designer
+</A>
+</UL>
+<LI><A HREF="#DesignStrategies">
+Design Strategies</A>
+<LI><A HREF="#CreatingaReportwiththeReportWizards">
+Creating a Report with the Report Wizards</A>
+<LI><A HREF="#RunningReports">
+Running Reports</A>
+<UL>
+<LI><A HREF="#ChoosingaDestination">
+Choosing a Destination</A>
+</UL>
+<LI><A HREF="#ReportsAFinalWord">
+Reports: A Final Word</A>
+</UL></UL>
+
+<HR>
+<P>
+You've seen that Visual FoxPro provides a powerful tool for creating
+forms to give your users a way to put information <I>into</I>
+a database application. Not surprisingly, Visual FoxPro offers
+a number of ways to get data <I>out</I> of a system. Savvy users
+might learn a few simple Visual FoxPro commands for showing data:
+They could <TT>List</TT> the contents of a table, open simple
+<TT>Browse</TT> windows, maybe even execute basic <TT>SELECT</TT>
+statements. They might use ODBC technology to open Visual FoxPro
+data in another application. But most of your users will rely
+on reports to gather and present information.
+<P>
+Visual FoxPro's Report Designer is a visually oriented interface
+for manually designing reports and mailing labels. You create
+a report by placing different objects, such as fields, text, graphics,
+and expressions, onto the report wherever you want. The Quick
+Report menu option can speed the process by creating a default
+layout for the report. And the Report Wizards, like the Form Wizards,
+can help you quickly prototype and produce reports that you can
+later modify yourself.
+<H2><A NAME="TypesofReports"><FONT SIZE=5 COLOR=#FF0000>
+Types of Reports</FONT></A></H2>
+<P>
+Reports in Visual FoxPro can present information in a number of
+ways. Data can be aligned into distinct columns, in a format reminiscent
+of spreadsheets or grids (see Figure 10.1). Or data for one record
+can be shown from top to bottom, much as a user might see it on
+a form (see Figure 10.2). Data can be presented as is, without
+much fanfare, or information can be grouped, totaled, and subtotaled.
+Any available font can be used. Graphics can be included to represent
+data, and different graphics can even be swapped out to represent
+different values. Your reports can be run off underlying tables,
+views, queries, or cursors. You could go so far as to include
+calculated fields on a report, or for that matter, you might insert
+the results of user-defined functions.
+<P>
+<IMG SRC="f10-1.gif"><B>Figure 10.1 : </B><I>A column-style report presents lines of
+information one after another, in a style reminiscent of a spreadsheet</I>.</A>
+<P>
+<IMG SRC="f10-2.gif"><B>Figure 10.2 : </B><I>A row-style report presents the various
+pieces of information for each record on separate lines and starts
+over with each new record</I>.</A>
+<H2><A NAME="CreatingReportsviaQuickReport"><FONT SIZE=5 COLOR=#FF0000>
+Creating Reports via Quick Report</FONT></A></H2>
+<P>
+Visual FoxPro's Quick Report option provides you with a quick
+way to create simple reports, letting Visual FoxPro handle most
+of the initial design decisions for you. Using Quick Report is
+easy:
+<OL>
+<LI>Open the table with the data you want to include on the report
+(Choose File, Open and select the table name in the dialog box,
+or use the <TT>USE <I>tablename</I></TT>
+syntax in the command window).
+<LI>From the system menu bar, choose File, New, and then click
+Report. Then click New File. (Alternatively, you can enter <TT>Create
+Report</TT> in the command window.)
+<LI>Select Report, Quick Report. The Quick Report dialog box appears
+(see Figure 10.3).
+<LI>Choose the field layout you prefer, and click any other desired
+options for your report (see the following description). Then
+click OK.
+</OL>
+<P>
+<IMG SRC="f10-3.gif"><B>Figure 10.3 : </B><I>In the Quick Report dialog box, you can
+specify the style for your report</I>.</A>
+<P>
+The Quick Report dialog box includes several major reporting layout
+options. The Field Layout buttons enable you to choose between
+a column-style layout, with data across the page, and a row-style
+layout, with data running from top to bottom for each record.
+<P>
+The Titles<I> </I>check box includes the field name above or beside
+each field (depending on the field layout). On most reports, you
+will want some identifying marker for each field and should keep
+this box checked. But, for instance, if your report is a simple
+list of names and addresses, you might not need field definitions.
+<P>
+The Add Alias<I> </I>check box indicates whether alias names are
+automatically added to the expressions for each field. In other
+words, this option indicates whether the field name should be
+listed as <TT>lastname</TT> or <TT>mytable.lastname</TT>. You
+will probably want the alias names turned on, particularly if
+you plan to run reports against a set of related tables. On the
+other hand, if you do not add an alias, you could later use the
+same report against any table with a field called <TT>lastname</TT>.
+<P>
+The Add table to Data Environment option adds the current table
+to the Data Environment window. You'll learn more about the Data
+Environment in the section titled &quot;Taking Advantage of Data
+Environments and Data Sessions.&quot;
+<H2><A NAME="TheReportDesigner"><FONT SIZE=5 COLOR=#FF0000>
+The Report Designer</FONT></A></H2>
+<P>
+Even if you use the Quick Report option, you will still probably
+make extensive use of the Report Designer in your applications.
+You've already learned about creating a report as a part of using
+the Quick Report feature. But you can create a new report in several
+ways. Here are the most common:
+<UL>
+<LI>Choose File, New. Click the Report button, and then click
+New Report.
+<LI>From the Project Manager, click the Documents tab, select
+the Report icon in the document list, and click on the New button.
+Then select New Report.
+<LI>From the command window, type <TT>Create Report</TT> or <TT>Modify
+Report<I> newname</I></TT>.
+<LI>Use the Report Wizards to create a report, and then save it
+to return to and modify.
+</UL>
+<P>
+You'll learn about using the Report Wizards in the section titled
+&quot;Creating a Report with the Report Wizards.&quot; In the
+meantime, let's explore Visual FoxPro's Report Designer.
+<P>
+No matter how you create your new report, Visual FoxPro will launch
+the Report Designer (see Figure 10.4). The Report Designer has
+several components:
+<P>
+<IMG SRC="f10-4.gif"><B>Figure 10.4 : </B><I>The Report Designer here is in its most
+basic mode</I>.</A>
+<UL>
+<LI>The <I>report canvas </I>is the visual representation of the
+report you are designing, the area onto which you place fields,
+labels, or graphics.
+<LI>The <I>Report Designer toolbar </I>enables you easy access
+to all the report toolbars and several important functions.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The Visual FoxPro Report toolbars have ToolTips attached to them to help you remember each bar's purpose. Hold the mouse cursor over the toolbar for just a moment, and a short explanation appears.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<UL>
+<LI>The <I>Report Controls toolbar</I> enables you to drop any
+of six types of controls or objects onto your report: labels,
+fields, lines, rectangles, rounded rectangles, and ActiveX/OLE
+bound picture controls.
+<LI>The <I>Color palette </I>enables you to specify colors for
+the background or foreground of any control.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Be careful when you assign colors to your report. Not all users have color printers, and even those who do might rather have a quicker-printing report than one with a lime green background. On the other hand, judicious use of color can visually represent important points or notes.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<UL>
+<LI>The <I>Layout palette</I> enables you to align or size one
+or more controls (see &quot;Formatting Report Controls&quot;).
+<LI>The <I>Data Grouping </I>and <I>Data Environment </I>buttons
+give you quick control over the presentation of your data. You'll
+learn more about these controls throughout this chapter.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can dock toolbars by dragging them onto the area just below the FoxPro menu. You can also stretch them (within limits) to suit your own taste by resting your mouse cursor over the edges and dragging to the size you want.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="WorkingwithControlsontheReportCanvas">
+Working with Controls on the Report Canvas</A></H3>
+<P>
+The Report Designer supports three types of objects, or controls:
+text objects, field objects, and graphics objects. These objects
+are analogous to certain form controls, but they do differ in
+some important ways. Report controls cannot be derived from subclasses.
+They include a much more limited set of formatting and data properties.
+They cannot be referenced in code. And, by nature, they are not
+interactive: Users cannot enter text into a report.
+<P>
+Report objects are relatively easy to work with but flexible enough
+to enable for the design of sophisticated and professional reports.
+Text objects contain text that you type directly onto the Report
+Designer. Field objects are used to display data stored in fields
+or data supplied by calculations, expressions, or user-defined
+functions. Graphics objects are pictures, lines, or rectangles.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro report pictures can be stored in a table's general fields or on disk in any number of graphics formats: <TT>.BMP</TT>, <TT>.ICO</TT>, <TT>.ANI</TT>, <TT>.JPG</TT>, <TT>.GIF</TT>, or <TT>.CUR</TT>. This capability is a great improvement over earlier versions of the software, which supported only Windows Paintbrush <TT>.BMP</TT> files.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+As you add objects to the report canvas, you can manipulate them
+in different ways.
+<P>
+<B>Selecting a Report Object&nbsp;&nbsp;</B>To select an object,
+make sure the Select Objects button (the upward-pointing arrow)
+is selected in the Report Controls toolbar. Then point to and
+click on the desired type of object. The object will be highlighted
+with small rectangles, or handles.
+<P>
+Click on the spot on the canvas where you want the object to appear
+(or, more accurately, click on the spot where you want the upper-left
+corner of the object to appear). The object will start out with
+a default size assigned by Visual FoxPro; you can then resize
+as necessary. However, you could drop the object and resize it
+all in one step. To do so, click on the object you want to add
+to the canvas and resize. Drag the mouse across the canvas to
+create the right size rectangle, and then release the mouse. The
+control will be added to fit the area you've just highlighted.
+<P>
+<B>Deleting a Report Object&nbsp;&nbsp;</B>To delete an object,
+select the object on the report canvas and then press the Delete
+key or choose Edit, Cut. Note that this procedure also works for
+multiple selected items.
+<P>
+<B>Copying a Report Object</B>&nbsp;&nbsp;To duplicate an object,
+select the object on the report canvas, choose Edit, Copy (or
+Ctrl+C), and then choose Edit, Paste (or Ctrl+V). When you do
+so, a copy of the object appears near its original location. You
+can click the object and, using the arrow keys or the mouse, move
+it to a new location.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The easiest way to resize a report object is to select the object, hold down the Shift key, and press an arrow key. With each arrow keypress, the object expands or contracts by one pixel or scale unit. You can also hold down the Shift key and use the mouse to resize an object, though being very precise is difficult when you use this technique.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<B>Working with Fields&nbsp;&nbsp;</B>Text and graphics objects
+are quite powerful and important, but odds are that your users
+are really looking for the <I>data</I> included on your reports.
+To show data on a report, use the text box object to add a field,
+a variable, an expression, or a user-defined function.
+<P>
+To add a field to the report canvas, select the textbox/field
+control from the Report Controls toolbar. When you click on the
+report canvas to add the control, the Report Expression dialog
+box appears, as shown in Figure 10.5. Note that you can also access
+this dialog box at any later time by right-clicking on a field
+control and selecting Properties from the shortcut menu.
+<P>
+<IMG SRC="f10-5.gif"><B>Figure 10.5 : </B><I>In the Report Expression dialog box, you
+can enter or build an expression that will evaluate to the data
+shown in the report</I>.</A>
+<P>
+In the Report Expression dialog box, you can specify several key
+properties, described in the following sections.
+<P>
+<B>Changing Field Expressions&nbsp;&nbsp;</B>The Expression<I>
+</I>text box includes the expression, field name, or function
+call that will evaluate to the data you want to show. You can
+type a field or expression into the box yourself, or you can use
+the ellipsis at the right to bring forward the Expression Builder
+(see Figure 10.6). The Expression Builder includes a number of
+tools for helping you add data to your report, including a list
+of available fields, Visual FoxPro functions, and Visual FoxPro
+system variables.
+<P>
+<IMG SRC="f10-6.gif"><B>Figure 10.6 : </B><I>The Expression Builder enables you to select
+from currently available fields or system variables or insert
+your own expression</I>.</A>
+<P>
+You can include any variable name or function call in the Expression
+entry, but remember, these variables and functions <I>must be
+in scope </I>when the report is running; otherwise, an error results.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can also include immediate <TT>If</TT> statements in the following format in the expression text box:
+<P>
+<TT>
+IIF(condition,result if true, result if not true)</TT>
+<P>
+These statements can be remarkably useful. You can change the <TT>True</TT> or <TT>False</TT> of a logical field, for instance, into something more informative or eye-catching with the following expression:
+<BR>
+<PRE>
+<TT>IIF(situation = .T.,&quot;Absolutely!&quot;,&quot;No way, Jack!&quot;)</TT>.
+</PRE>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Changing Field Formats&nbsp;&nbsp;</B>In the Format field of
+the Report Expression dialog box, you can enter formatting guidelines
+for the resulting text or numeric data. Clicking the ellipsis
+for this property accesses the Format dialog box shown in Figure
+10.7. You can use this dialog box to quickly format the data you
+are showing on your report and then return to the Report Expression
+dialog box.
+<P>
+<IMG SRC="f10-7.gif"><B>Figure 10.7 : </B><I>In the Format dialog box, you can format
+the information that's shown on your report</I>.</A>
+<P>
+Field Position indicates where you want the field to lie in reference
+to its band. You can choose to have the field float, which means
+that its position is relative to other fields in the band. Or
+you can have the field position remain relative to the top or
+bottom of the detail band, which means that it is always some
+fixed distance from one of the band borders, despite the sizes
+of any other fields.
+<P>
+The Stretch with Overflow<I> </I>check box indicates whether the
+field control should grow large vertically enough to accommodate
+all text from the field or variable. Otherwise, only a portion
+of the expression result will print. This option is especially
+useful when you're printing data from memo fields.
+<P>
+The Calculations<I> </I>button enables you to specify a subtotal
+or a calculation. To create a subtotal for a field, click on this
+button, and then, in the Subtotal or Calculate Field dialog box,
+indicate the type of calculation and the scope of the calculation.
+In Figure 10.8, for instance, we are requesting a sum of the field
+to occur at the bottom of each page. We would then place this
+control in the Page Footer band.
+<P>
+<IMG SRC="f10-8.gif"><B>Figure 10.8 : </B><I>In the Calculate Field dialog box, you
+can choose from a number of different numeric calculations</I>.</A>
+<P>
+The Print When<I> </I>button in the Report Expression dialog box
+enables you to limit when the field prints on the report. Clicking
+this button opens the Print When dialog box (see Figure 10.9).
+By default, an object is printed whenever the contents of its
+band are printed, but you can change the default. For example,
+you can choose not to print values that repeat, or in a report
+with grouping, you can choose to print the field only when the
+basis for the group changes. The Print Only When Expression Is
+True<I> </I>text box enables you to define another expression
+that determines whether the field prints. You could use this field,
+for instance, to limit printing some fields to certain security
+levels. Or you might print the results of a memo field only when
+some other field in the data source is set to <TT>True</TT>.
+<P>
+<IMG SRC="f10-9.gif"><B>Figure 10.9 : </B><I>In the Print When dialog box, you can specify
+the conditions under which the report expression will actually
+appear</I>.</A>
+<P>
+You can use the Comment portion of the Report Expression dialog
+box to enter comments for your own reference or to store notes
+to other programmers or developers. The comments do not appear
+anywhere in the report.
+<P>
+<B>Working with Report Variables&nbsp;&nbsp;</B>You can define
+variables to be used in your reports by selecting Report, Variables
+(see Figure 10.10). Why use report variables? Well, you might
+want to keep running tallies that extend beyond the scope of the
+field calculations.
+<P>
+<IMG SRC="f10-10.gif"><B>Figure 10.10: </B><I>In the Report Variables dialog box, you
+can create and use memory variables in your report</I>.</A>
+<P>
+If you select the Release After Report check box in the dialog
+box, the Report variables are scoped privately (which means that
+any user-defined function you call can access them). If you don't
+check this box, the variables will remain in memory as public
+variables. It's unlikely you would ever need to retain the variables
+in such a global scope.
+<H3><A NAME="WorkingwithShapesandText">
+Working with Shapes and Text</A></H3>
+<P>
+You can easily add a shape or a line of text to a Visual FoxPro
+report: Just select it and drop it, as you would any of the controls.
+But you can also determine the behaviors of shapes and text on
+a report (just as you can determine field properties).
+<P>
+Double-click on a text object in a report, and the Text dialog
+box appears (see Figure 10.11).
+<P>
+<IMG SRC="f10-11.gif"><B>Figure 10.11: </B><I>In the Text dialog box, you can control
+the style and behavior of a text object in a report</I>.</A>
+<P>
+Clicking the Print When button opens the Print When dialog box
+(shown earlier in Figure 10.9). Using this dialog box, you can
+exert the same control over text and shapes as you have over fields.
+The same is true of a text or shape control's object position:
+Use the Object Position option group to determine these properties.
+<P>
+The Rectangle and Line controls have a few additional options
+above and beyond those present for text objects (see Figure 10.12).
+If you double-click a line in a report, you can also indicate
+how the line stretches relative to the band it is in. The No Stretch
+option restricts vertical lines or rectangles from stretching.
+The Stretch Relative to Tallest Object in Group option enables
+a vertical line or rectangle to stretch to the height of the tallest
+object in the group, and the Stretch Relative to Height of Band
+option enables the vertical line or rectangle to stretch in relation
+to the height of its band.
+<P>
+<IMG SRC="f10-12.gif"><B>Figure 10.12: </B><I>In the Rectangle/Line dialog box, you
+can control the style and behavior of rectangles and lines on
+your report</I>.</A>
+<P>
+The Round Rectangle control has a similar dialog box, but it also
+contains five different buttons that indicate various styles (see
+Figure 10.13).
+<P>
+<IMG SRC="f10-13.gif"><B>Figure 10.13: </B><I>In the Round Rectangle dialog box, you
+can control the style and behavior of rounded rectangles on your
+report</I>.</A>
+<H2><A NAME="WorkingwithPicturesandGraphics"><FONT SIZE=5 COLOR=#FF0000>
+Working with Pictures and Graphics</FONT></A></H2>
+<P>
+Adding text and shape objects is useful, but when you really want
+to spruce up your report, attract attention to a particular piece
+of information, or just include a company logo, you can turn to
+full-fledged graphics. You can add graphics to a report from the
+general field of a Visual FoxPro table or from a file on disk.
+For example, Figure 10.14 shows a report with a special feature
+in the title: Everyone's favorite logo.
+<P>
+<IMG SRC="f10-14.gif"><B>Figure 10.14: </B><I>Visual FoxPro reports can include graphics</I>.</A>
+<P>
+You can easily add a picture to a report by following these steps:
+<OL>
+<LI>Select the Picture / OLE Bound Control icon in the Report
+Controls toolbar.
+<LI>Click at the starting point for the graphic, and drag until
+the frame reaches the desired size for the picture. When you release
+the mouse, the Report Picture dialog box appears (see Figure 10.15).
+<BR>
+<IMG SRC="f10-15.gif"><B>Figure 10.15: </B><I>In the Report Picture dialog box, you
+can set options for embedded pictures</I>.</A>
+<LI>Set the options (discussed in the following paragraphs) to
+tell Visual FoxPro where to find the picture and how to size it
+relative to the band it's in.
+<LI>Click OK. The picture then appears right in the report's design.
+</OL>
+<P>
+The Picture From area of the dialog box includes File and Field
+buttons and corresponding fields to enter the source of the picture.
+To include a single picture from a file in your report, click
+the File button. Then click the ellipsis to open a dialog box,
+and point to your file. You can also type the name directly into
+the text box. To base the picture on the contents of a table's
+general field, click the Field box, which you can use to select
+the field.
+<P>
+The If Picture and Frame Are Different Sizes area has three options:
+Clip Picture; Scale Picture, Retain Shape; and Scale Picture,
+Fill the Frame. When the picture is larger than the frame you
+added to the report, the Clip Picture option tells Visual FoxPro
+to clip the picture at the right and bottom as necessary to fit
+the picture. The Scale Picture, Retain Shape option tells Visual
+FoxPro to show the entire picture, filling as much of the frame
+as possible while keeping the relative proportions of the bitmap
+picture. The Scale Picture, Fill the Frame option shows the picture,
+filling the frame completely even if doing so distorts the picture.
+<P>
+The Center Picture check box is used with pictures stored in a
+table's general fields. Pictures in files on disk are not affected
+by this option. If the picture from the field is smaller than
+the frame, checking this box will center it within the frame.
+<P>
+The Print When button works similarly with pictures as it works
+with the other controls. You can choose to show a picture only
+when certain criteria are met. For instance, many developers add
+two pictures to a report, aligned one atop the other, with a logical
+flag determining which is printed. In this way, you can graphically
+indicate the value of a variable.
+<P>
+The Object Position area of the dialog box has three options:
+Fix Relative to Top of Band, Fix Relative to Bottom of Band, and
+Float. The Fix Relative to Top of Band option maintains the text's
+position in relation to the top of the band and does not enable
+field stretching to accommodate a different size picture. The
+Fix Relative to Bottom of Band <I>will</I> enable field stretching
+to accommodate lengthy data but will maintain the picture's position
+in relation to the bottom of the band. The Float option enables
+the text to float in relation to the bands' position.
+<P>
+You can use the Comment portion of the dialog box to add comments
+about the picture, for your own reference or for your fellow programmers.
+Comments do not affect the printed report.
+<H2><A NAME="FormattingReportControls"><FONT SIZE=5 COLOR=#FF0000>
+Formatting Report Controls</FONT></A></H2>
+<P>
+When you are working in the Report Designer, a new menu option
+appears: Reports. In addition, certain options on other menus
+are enabled or take on a special meaning. Some of these options
+are also available through toolbar choices. For instance, the
+Format menu includes several tools to align and size data, which
+duplicate the functionality of the Layout toolbar.
+<H3><A NAME="Alignment">
+Alignment</A></H3>
+<P>
+To align a series of text boxes, for instance, start by multiselecting
+the text boxes (you can do so by holding down the Ctrl key as
+you click or holding down the mouse key and drawing a rectangular
+area around the controls you want to select). Then, while the
+controls are still selected, choose Format, Align. You can choose
+how you want to align the select controls: left, right, top, bottom,
+centered vertically, or centered horizontally. This alignment
+process has no effect on the alignment of text within each control.
+Instead, it determines how the controls sit in reference to each
+other.
+<P>
+Visual FoxPro tries to take its best guess at exactly where you
+want the newly aligned group of controls to reside, but if you
+align controls that start out quite far apart, FoxPro might end
+up placing them a few pixels away from where you want them to
+be. In that case, while the controls are still multiselected,
+you can move them together by using either the mouse or the arrow
+keys.
+<H3><A NAME="Size">
+Size</A></H3>
+<P>
+The Format menu also includes a number of Size options, which
+enable the developer to easily size multiple controls to each
+other or to the grid line settings in the Report Designer. Choosing
+Format, Size, To Grid snaps one or more controls to the same dimensions
+as the nearest Report Designer grid lines. The other options determine
+the size of multiple controls based on the tallest, shortest,
+widest, or most narrow selected control.
+<H3><A NAME="Spacing">
+Spacing</A></H3>
+<P>
+The Format, Spacing options enable you to space three or more
+controls equal distances apart, either vertically or horizontally.
+You might not notice if a series of text boxes in a report are
+a few pixels more or less apart from each other. But an accountant
+who is proofing data with a ruler most certainly will. Try to
+use all the Format features at every opportunity. Doing so will
+only make your reports all the more attractive and professional.
+<H3><A NAME="Group">
+Group</A></H3>
+<P>
+The Format, Group option lets you treat two or more controls as
+one single control. This capability is particularly useful when
+you're centering controls. If you multiselect controls in the
+Report Designer and select one of the centering features, each
+and every control is centered, which means that they will all
+end up overlapping one another. But if you first group these items
+and then center them, you will get the result you probably were
+looking for: The controls, as a group, will be centered on the
+page.
+<P>
+If you select a control that has already been grouped, this option
+changes to Ungroup.
+<H3><A NAME="SnaptoGridandGridScale">
+Snap to Grid and Grid Scale</A></H3>
+<P>
+The View, Grid Lines option fills in the report canvas with horizontal
+and vertical grid aligns, enabling you to better gauge distances.
+Two options under Format-Snap to Grid and Grid Scale-enable you
+to change the length and width of the grid areas, and to snap
+a control to the nearest horizontal or vertical line.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro enables for very precise placement of objects on a report. In addition to snapping objects to grids and aligning them through the menu or toolbar options, you can use the arrow keys to move them very slightly. Click the object, and then press the arrow keys. Every keypress moves the object 1/100th of an inch in the direction of the arrow.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="TextOptions">
+Text Options</A></H3>
+<P>
+The Format, Font option enables you to specify a font for a control
+or a group of controls. You can use any available Windows font.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Sometimes a report you've designed looks just fine on your own machine, but when you send it to a client, certain letters are out of alignment or even missing. Keep in mind that your report will only print the way you designed it when it is run on a PC with all the necessary fonts available. Otherwise, the appearance will range anywhere from &quot;off just a bit&quot; to &quot;bearing no resemblance whatsoever.&quot; For that reason, sticking to basic and widely used fonts such as Arial, Times Roman, or Courier is safest, unless you have acquired the legal rights to distribute a font with your applications or are certain that all your customers already have a particular font installed.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Text alignment determines the text alignment within a control.
+The Format, Align options determine the positioning of the controls
+relative to one another. The text alignment options let you justify
+the text to the right, left, or center. The Reading Order option
+is available only in BIDI versions of Visual FoxPro.
+<H3><A NAME="TheFillandPenOptions">
+The Fill and Pen Options</A></H3>
+<P>
+The Fill and Pen options provide a quick mechanism for changing
+the internal (fill) or border (pen) patterns and sizes. The Fill
+option displays a submenu (see Figure 10.16) that includes hatched
+and crosshatched patterns, or a default setting of no fill pattern.
+The Pen option launches a submenu of pen widths (from hairline
+to 6 point) and types of outlines (no outline, dotted lines, dashed
+lines, and combinations).
+<P>
+<IMG SRC="f10-16.gif"><B>Figure 10.16: </B><I>Using the Fill menu, you can specify the
+background of a control</I>.</A>
+<P>
+The Mode option determines whether a control's background is transparent
+or opaque. It affects only text objects, rectangles, and rounded
+rectangles that have been assigned fill patterns.
+<H3><A NAME="ReportBands">
+Report Bands</A></H3>
+<P>
+Visual FoxPro's Report Designer uses the <I>band-oriented</I>
+approach that has become so popular among report-writing products
+in recent years. Different <I>bands</I> represent different sections
+of the report, some of which repeat at different intervals than
+others.
+<P>
+<B>The Major Report Bands&nbsp;&nbsp;</B>Nearly every report you
+design will have a <I>detail band</I>, which contains the data
+that prints in the main portion of the report. The controls in
+this section probably represent the &quot;heart&quot; of the report.
+Controls placed in this band will print once for each record in
+the underlying data source (or, more accurately, each record included
+after any filters, keys, and the like are applied). So, including
+a &quot;lastname&quot; control in this band means that Visual
+FoxPro will print the <TT>lastname</TT> field from every record
+in this area, fitting as many as it can on a page, given the font
+and spacing you have used and the sizes of the other bands.
+<P>
+Controls in the <I>title band </I>are printed only once, on the
+first page of the report, whereas controls in the summary band
+will appear only at the end of the report. Title bands are commonly
+used for titles and such report-level information as the current
+data and time. Summary bands are used for summary information
+such as grand totals of numeric fields, counts of the number of
+records included in the report, or &quot;for more information&#133;&quot;
+style report trailers.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Unlike many database and reporting products, Visual FoxPro enables you to drag controls from one band into another. In other words, if you've added a field to the title band and then realize that you must instead show it on every page, just drag it to the page header band.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The <I>page header band </I>will print on the top of each and
+every page, and the <I>page footer band</I> should include only
+those objects that you want to appear on the bottom of each page.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Page footers are a good place for page numbers, dates, report names, location codes, or any other information that users might need if pages of a report become loose or are stored out of order.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Other Report Bands&nbsp;&nbsp;</B>If you choose to group your
+data, you will also be able to place information in the <I>group
+header</I> and <I>group footer</I> bands. Group header and group
+footer bands let you arrange reports by groups, and to indicate
+information about those groups. For example, you might sort a
+list of hospital patients by type of health insurance. One option
+would be to list each name and insurance type, but a better option
+might be to group the data, listing the insurance type only once
+for many names (compare Figures 10.17 and 10.18).
+<P>
+<IMG SRC="f10-17.gif"><B>Figure 10.17: </B><I>An ungrouped report includes details of
+information without any summary information</I>.</A>
+<P>
+<IMG SRC="f10-18.gif"><B>Figure 10.18: </B><I>A grouped report presents summary information
+as well as details</I>.</A>
+<P>
+In Figure 10.18, the insurance types are listed once for each
+group, so we have placed that control in the group header band.
+The title of the report appears only once, so we have dropped
+that field control onto the title band. The <TT>Insurance</TT>,
+<TT>Firstname</TT>, and <TT>Lastname</TT> titles appear on each
+page, so we have placed them in the page header band. The real
+heart of the report, of course, is the list of patient names,
+which appear under each insurance type. They are placed in the
+detail band.
+<P>
+See Figure 10.19 for a look at the design of the report from Figure
+10.18.
+<P>
+<IMG SRC="f10-19.gif"><B>Figure 10.19: </B><I>Designing a grouped report is easy</I>.</A>
+<P>
+If you choose to create a multiple column report, you might also
+include column headers and footers. To create a report with multiple
+columns, select File, Page Setup and enter the number of columns
+in the dialog box, as well as the width of the columns and the
+space between them. This dialog box (see Figure 10.20) also includes
+a number of other useful items, detailed in Table 10.1.
+<P>
+<IMG SRC="f10-20.gif"><B>Figure 10.20: </B><I>You can specify the number of columns
+on a report through the File, Page Setup options</I>.</A><BR>
+<P>
+<CENTER><B>Table 10.1&nbsp;&nbsp;Page Setup Dialog Box Controls</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>Control</B></CENTER></TD><TD WIDTH=432><CENTER><B>Description</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Number spinner</TD><TD WIDTH=432>Use this spinner to increase or decrease the number of columns in your report. You can change the value by clicking the spinner's up and down arrows or by typing the number in the text box.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Width spinner</TD><TD WIDTH=432>Use this spinner to set the width of the columns. You can change the value by clicking the spinner's up and down arrows or by typing the value in the text box.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Spacing spinner</TD><TD WIDTH=432>Use this spinner to set the width of the space between columns. You can change the value by clicking the spinner's up and down arrows or by typing the value in the text box.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Print Area options</TD><TD WIDTH=432>Use these options to determine how printer margins are handled in the report. If you select Printable Page, the printed area of the page is determined according to the default printer specifications and is shown in the Page Layout area of the dialog box. If you select Whole Page, your report fills the whole page.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Print Setup button</TD><TD WIDTH=432>Use this button to open the Windows Print Setup dialog box, where you can change the default printer setup for the printer installed under Windows.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Print Order buttons</TD><TD WIDTH=432>Use these buttons to determine whether vertical columns are filled from top to bottom beginning at the left side of the page or whether horizontal rows are filled from left to right starting at the top of the page.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Left Margin spinner</TD><TD WIDTH=432>Use this spinner to set the width of the left margin. You can change the value by clicking the spinner's up and down arrows or by typing the value in the text box.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="OrderingandGroupingYourReports"><FONT SIZE=5 COLOR=#FF0000>
+Ordering and Grouping Your Reports</FONT></A></H2>
+<P>
+The data in your reports will print in the order of the underlying
+data source. You cannot set a distinct order for printing data
+in a report, but instead, you should set the order or index tag
+of the underlying table, cursor, or view.
+<P>
+With most column-oriented reports, you should subdivide the data
+into groups. For example, in the preceding example, we grouped
+the records by the type of insurance.   To group data in your
+reports, order the data based on the grouping criteria, and then
+select Report, Data Grouping to add your groupings (see Figure
+10.21).
+<P>
+<IMG SRC="f10-21.gif"><B>Figure 10.21: </B><I>Use the Data Grouping dialog box to specify
+the different groups on your report</I>.</A>
+<P>
+You can add a group by clicking the Insert button. Type the expression
+into the text box, or click the ellipsis button to open Visual
+FoxPro's Expression Builder. When groups are used, the report
+begins a new group each time the basis of the group expression
+changes. For this reason, the underlying data source must be ordered
+according to the grouping criteria: Visual FoxPro cannot jump
+around the data source and collect all records relevant to a group.
+As soon as the result of the grouping expression changes, any
+group subtotals are made, the group bands print, and a new group
+begins.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The Group expression will often be a field, but it can also be a variable or a user-defined function. In fact, it can also be a concatenated expression, combining two fields (such as <TT>lastname + firstname</TT>).
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The Group Properties area indicates the behavior on each group
+change. If your report has more than one column, the Start Group
+on New Column box starts a new column each time the group expression
+changes. Start Each Group in a New Page inserts a page break whenever
+the group expression changes. Reset Page Number to 1 for Each
+Group indicates that the page count will restart with each new
+group. This capability is useful if a report is to be split and
+sent to several different recipients. The Reprint Group Header
+on Each Page box, when checked, tells Visual FoxPro to reprint
+the group header on each page spanned by the group.
+<P>
+The Start Group on New Page When Less Than spinner control helps
+prevent a group header showing up too close to the bottom of a
+page. Use the spinner to choose the minimum distance from the
+bottom of the page that a group header should print. The default
+setting of zero means that the header will print as far down on
+the page as it ends up situated.
+<P>
+When you are done defining groups, click OK to close the dialog
+box. The bands for the new groups will appear in the report. However,
+by default, they occupy no space. You will need to increase the
+width of the new bands to the spacing you want by clicking and
+dragging them. Changing the width will enable you to drop any
+controls such as column headers or footer subtotals.
+<H2><A NAME="TakingAdvantageofDataEnvironmentsandDataSessions"><FONT SIZE=5 COLOR=#FF0000>
+Taking Advantage of Data Environments and Data Sessions</FONT></A></H2>
+<P>
+In <A HREF="ch09.htm" >Chapter 9</A> &quot;Creating Forms,&quot; I discussed the use
+of Data Environments and private data sessions in forms. Fortunately,
+these tools are available in the Report Designer as well. To open
+the Report Designer Data Environment window, choose View, Data
+Environment, or right-click on the report canvas and select Data
+Environment from the shortcut menu.
+<P>
+Either way, you will be shown a visual representation of the Data
+Environment for the form, as shown in Figure 10.22, and you can
+choose to add tables, cursors, or views as you want. Each of them
+is added as a cursor object, complete with its own set of properties,
+events, and methods. You can visually set relations between cursor
+objects, or access the properties, events, and methods of tables,
+cursors, or relations via the Properties and Code windows.
+<P>
+<IMG SRC="f10-22.gif"><B>Figure 10.22: </B><I>The Report Designer Data Environment enables
+you to specify and save the sources of information for your report</I>.</A>
+<P>
+To add tables or views to the Data Environment, select Data Environment,
+Add, or right-click on the Data Environment designer and select
+Add. If a database is already open, that database and its tables
+or views will appear in the Add Table or View dialog box (see
+Figure 10.23). If no database is currently opened, or if you choose
+Other, a GetFile dialog box will appear for you to choose a table.
+If you select a table that is a member of a database that is not
+yet open, Visual FoxPro backlinks the table to the database and
+opens the database automatically.
+<P>
+<IMG SRC="f10-23.gif"><B>Figure 10.23: </B><I>In the Add Table or View dialog box, you
+can add different tables or views to the Report Designer Data
+Environment</I>.</A>
+<P>
+If you want to work against a view instead of a table, select
+the View option button, and the list of tables will be replaced
+by a list of views in the database.
+<P>
+Once the table or view has been added to the Data Environment,
+you can browse it by right-clicking on the table or view and selecting
+Browse from the shortcut menu. You can also select Data Environment,
+Browse from the system menu, but only if the table or view has
+already been selected (select it by clicking it). From there,
+you can drag and drop fields onto the report canvas.
+<P>
+After a table or view has been added to the Data Environment,
+you can access its properties through a Properties window, just
+as if it were part of a class or form. And, the data source will
+be opened automatically whenever the report is called, rather
+than requiring the programmer to re-create the area.
+<H3><A NAME="WorkingwithRelationshipsintheDataEnvironmentDesigner">
+Working with Relationships in the Data Environment Designer
+</A></H3>
+<P>
+Creating a relationship between cursor objects in the Data Environment
+is easy. Select the relation field from the parent data source,
+and drag it onto the child cursor. The child table must have an
+index on this field. If it doesn't, Visual FoxPro offers to create
+one for you.
+<P>
+Just as the Data Environment makes running your report easier,
+private data sessions make cleaning up after your report a virtual
+nonissue. When a report runs, it moves record pointers in the
+underlying table. In pre-Visual FoxPro days, running a report
+meant having to keep track of record numbers, index tags, and
+relationships, and resetting them after you were done. But now,
+none of that is necessary. A private data session is a small,
+relatively well-protected area of your application, allowing a
+report to change record pointers, index orders, relations, or
+any other setting without affecting the current form or environment.
+<P>
+You can easily assign a report its own data session. Just choose
+Report, Private Data Session from the system menu. Doing so toggles
+the private data session setting on or off.
+<H2><A NAME="DesignStrategies"><FONT SIZE=5 COLOR=#FF0000>
+Design Strategies</FONT></A></H2>
+<P>
+Proper planning can help you save wasted time and avoid reports
+that don't give users the needed information. When you design
+reports, your job is to take the raw data provided by a table
+or a query and transform it into a printed report that provides
+the information in a way that makes sense to the user. Here are
+some suggested steps for designing a report:
+<UL>
+<LI>Discuss the layout with your users, and
+if possible, acquire copies of existing or similar reports.
+<LI>Design the layout on paper, and make note
+of any grouping, subtotaling, or formatting questions.
+<LI>Decide whether you can use a Data Environment
+and private data session, or if you will create a cursor in the
+current area before calling the report.
+<LI>Design the report in Visual FoxPro.
+<LI>Preview or print the report, and get feedback.
+</UL>
+<H2><A NAME="CreatingaReportwiththeReportWizards"><FONT SIZE=5 COLOR=#FF0000>
+Creating a Report with the Report Wizards</FONT></A></H2>
+<P>
+The Visual FoxPro Report Wizards provide an automated way to create
+a report in any of a number of common styles. To start the Report
+Wizard process, select Tools, Wizards, Report. The dialog box
+shown in Figure 10.24 will appear.
+<P>
+<IMG SRC="f10-24.gif"><B>Figure 10.24: </B><I>In the Wizard Selection dialog box, you
+can select the desired Report Wizard</I>.</A>
+<P>
+One-to-many reports are used to create relational reports, showing
+one record from the primary table along with any associated records
+from the secondary, or child, table. The standard one-source report
+brings in data as it appears on a single underlying data source.
+<P>
+Click the OK button or double-click to choose the type of report
+you want to create, and the dialog box shown in Figure 10.25 appears.
+<P>
+<IMG SRC="f10-25.gif"><B>Figure 10.25: </B><I>The first step of the Report Wizard lets
+you choose the fields for your report</I>.</A>
+<P>
+Select the desired database and associated table under the Databases
+and Tables options on the left. You will then see a list of available
+fields. You can click on the right-arrow command button to move
+the fields you want into the Selected fields list, in any order
+you like. The double right-arrow button will move all available
+fields into the Selected fields list.
+<P>
+The next dialog box, shown in Figure 10.26, enables you to group
+records on the report, up to three levels. In the Grouping Intervals
+dialog box shown in Figure 10.27, you can decide how closely something
+needs to match in order to be included in the same group: an absolute
+match of the entire field, the first digit, the first five digits,
+or anything in between.
+<P>
+<IMG SRC="f10-26.gif"><B>Figure 10.26: </B><I>The second step of the Report Wizard lets
+you group records for your report</I>.</A>
+<P>
+<IMG SRC="f10-27.gif"><B>Figure 10.27: </B><I>In the Grouping Intervals dialog box,
+you can specify the precision of your data groupings</I>.</A>
+<P>
+Using the Summary Options button on the Wizard's Step 2 dialog
+box, you can request one or more types of calculations on one
+or more of your report fields (see Figure 10.28).
+<P>
+<IMG SRC="f10-28.gif"><B>Figure 10.28: </B><I>The Summary Options button lets you request
+one or more types of calculation for your report fields</I>.</A>
+<P>
+In the next dialog box, you can select a style for your report
+from five common templates (see Figure 10.29). My favorite part
+of this box is the magnifying glass in the upper-left corner:
+As you select different styles, it changes to show you what the
+resulting report will look like.
+<P>
+<IMG SRC="f10-29.gif"><B>Figure 10.29: </B><I>The third step of the Report Wizard lets
+you specify the style of your report</I>.</A>
+<P>
+The Define Report Layout step (see Figure 10.30) lets you define
+whether a report is to be printed in landscape or portrait, how
+many columns the report should include, and whether the field
+layout is by rows or columns.
+<P>
+<IMG SRC="f10-30.gif"><B>Figure 10.30: </B><I>The fourth step of the Report Wizard lets
+you define the page layout of the report, including the number
+of columns</I>.</A>
+<P>
+In the Step 5 dialog box, you can select the order for your report
+(see Figure 10.31). You can choose up to three nested layers of
+orders. Remember that your order must correspond to your group
+criteria if the grouping feature is to work correctly.
+<P>
+<IMG SRC="f10-31.gif"><B>Figure 10.31: </B><I>The fifth step of the Report Wizard lets
+you specify the order of the underlying data source</I>.</A>
+<P>
+The last dialog box asks whether you want to save the report,
+save the report and immediately run it, or save the report and
+immediately begin modifying it (see Figure 10.32). You can also
+decide whether you want fields to wrap if they do not fit in the
+allowed space. If your source tables are database tables rather
+than free tables, you can also decide to use the display settings
+stored in the database.
+<P>
+<IMG SRC="f10-32.gif"><B>Figure 10.32: </B><I>When you finish using the Report Wizard,
+you can run the report immediately, save it, or modify it</I>.</A>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The Report Wizard can be a useful tool for creating a simple form, prototyping a form, or just learning more about Report Designer objects and how they work. I often use the wizard to get up and running with a general field layout and style and then modify the report extensively afterward.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="RunningReports"><FONT SIZE=5 COLOR=#FF0000>
+Running Reports</FONT></A></H2>
+<P>
+You can print a completed report by using any of the following
+methods:
+<UL>
+<LI>From the Project Manager, click the Document tab, click and
+highlight a report, and then click the Print button from the Standard
+toolbar.
+<LI>From the command window (or from program code), use the <TT>Report
+Form</TT> command. This command has the following basic syntax:
+</UL>
+<BLOCKQUOTE>
+<PRE>
+REPORT FORM <I>reportname</I> TO PRINT | PREVIEW | TO <I>filename</I> | FOR <I>filter expression</I>
+</PRE>
+</BLOCKQUOTE>
+<P>
+Keep in mind that your reports will be formatted for the currently
+installed printer. If you run the same reports later to a different
+printer, some alignment and spacing might be off. Visual FoxPro
+generally does a good job of resolving differences, if the printers
+used are both relatively standard and not very different from
+one another. However, you will want to test your reports from
+your users' printers if possible.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You might want to run your reports against an underlying cursor, which has already been filtered based on some programmer or user-defined criteria. Visual FoxPro also lets you filter data through a number of optional clauses of the <TT>Report Form</TT> command. The following commands will limit the data that is printed to the scope specified:
+<BR>
+<PRE>
+REPORT FORM MyReport TO PRINT FOR LastName = &quot;Miller&quot;
+<TT>REPORT FORM MyOtherReport TO PRINT While Losses &lt; 10</TT>
+</PRE>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you plan to distribute your reports as individual files, separate from your <TT>.EXE</TT> or <TT>.APP</TT> (many developers choose to do so), be sure to respect the network operating system's rules on file naming. Specifically, you might need to limit your names to an 8.3 format instead of using long filenames.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="ChoosingaDestination">
+Choosing a Destination</A></H3>
+<P>
+Using the <TT>Report Form</TT> command, you can direct your output
+to one of several destinations. Most likely, you will want to
+print your report, in which case your command will look something
+like this:
+<BLOCKQUOTE>
+<PRE>
+REPORT FORM MyReport TO PRINT
+</PRE>
+</BLOCKQUOTE>
+<P>
+You might want to preview the report, instead of sending it directly
+to a printer:
+<BLOCKQUOTE>
+<PRE>
+REPORT FORM MyReport TO PRINT PREVIEW
+</PRE>
+</BLOCKQUOTE>
+<P>
+Of course, you might want to save the text of the report to an
+ASCII file. That's easy, too:
+<BLOCKQUOTE>
+<PRE>
+REPORT FORM MyReport TO FILE MyFile.txt ASCII<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+ASCII output loses most of the formatting and styles that you have specified but has the major benefit of enabling your users to access the resulting information through most word processing applications.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+By default, report results echo to the screen while being generated.
+To prevent this from happening, attach the optional <TT>NOCONSOLE</TT>
+keyword.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Sometimes, a report will print with extra blank pages between each &quot;real&quot; page. This can happen when the length or width of a report exceeds the printable area. Visual FoxPro tries in such a case to print onto an additional page whatever portion of the report it couldn't fit on the first page. Then the actual page break fires. To resolve this problem, open the Report Designer and pull in the right and bottom edges of the report canvas as much as possible. Also, choose File, Page Setup and make sure that the margins are correct for your paper size-or try adjusting the margins.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="ReportsAFinalWord"><FONT SIZE=5 COLOR=#FF0000>
+Reports: A Final Word</FONT></A></H2>
+<P>
+To many users, the most important aspect of a database application
+is its reports. In fact, if you're designing an application for
+a large company, reports might be the <I>only </I>part of your
+system that the President or CEO will ever see.
+<P>
+Visual FoxPro's Report Designer allows you to create slick, powerful,
+graphically rich reports. Your report strategy might vary by application,
+but odds are that you'll include several Visual FoxPro reports
+in your final product.
+<P>
+Many developers augment Visual FoxPro's native Report Form capabilities
+by exposing report cursors to outside report writing products
+or by using ODBC technology to provide direct access to tables.
+If you and your users are comfortable with some approaches, then
+by all means pursue them. But don't overlook the capabilities
+of the Visual FoxPro Report Designer. More than once I've watched
+programmers take a second look at the Report Designer and comment
+that they might have spent too much time learning a third-party
+tool when there wasn't much need to do so after all.
+<HR>
+<CENTER>
+
+<A HREF="ch09.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch11.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,343 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 7 -- ActiveX Components: Whatís in a Name?</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;7</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>ActiveX Components: What's in a
+Name?</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#ActiveXControlsandDocuments">
+ActiveX Controls and Documents</A>
+<UL>
+<LI><A HREF="#ActiveXControls1">
+ActiveX Controls</A>
+<LI><A HREF="#ActiveXDocuments">
+ActiveX Documents</A>
+</UL>
+<LI><A HREF="#ActiveXTradeoffs">
+ActiveX Trade-offs</A>
+<UL>
+<LI><A HREF="#Classes">
+Classes</A>
+<LI><A HREF="#ActiveXDLLsCodeComponentsInProcess">
+ActiveX DLLs (Code Components) (In Process)</A>
+<LI><A HREF="#ActiveXEXEServersOutofProcess">
+ActiveX EXE Servers (Out of Process)</A>
+<LI><A HREF="#ActiveXControls2">
+ActiveX Controls</A>
+<LI><A HREF="#ActiveXDocumentsDocObjects">
+ActiveX Documents (Doc Objects)</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+I was considering folding the material in this chapter into Chapter
+6. But once again it struck me that sometimes the size of a chapter
+is better measured by its importance than word count.
+<P>
+With the variety of ActiveX component types available, the question
+arises: Which type should you use? Fortunately, now that you are
+an expert on ActiveX and COM technology, you'll find it relatively
+easy to understand the trade-offs involved in choosing the right
+type of object for your needs.
+<P>
+But let me make one thing clear from the outset. Neither I nor
+any other author can tell you how to solve your particular programming
+problems. All I can hope to do is help you ask the right questions
+and teach you what you need to know to answer them yourself.
+<H2><A NAME="ActiveXControlsandDocuments"><FONT SIZE=5 COLOR=#FF0000>
+ActiveX Controls and Documents</FONT></A></H2>
+<P>
+So far we have focused on three types of ActiveX components: classes
+within an application, DLL servers, and EXE servers. Let's ignore
+classes within an application for the moment, since they are the
+fundamental building block for all of the other types of ActiveX
+components. The primary difference between DLL and EXE servers
+is whether they run in process or out of process, although there
+are a number of other differences that will be covered later.
+<P>
+In many cases these are referred to as ActiveX Code Components,
+because the objects that are exposed by these components are typically
+treated by your application as object or function libraries. In
+our loan application, for example, each loan type was a component
+that was accessed from the loan program-from code that you write.
+The components did not have a visual interface and could not be
+manipulated directly by the user.
+<P>
+Now, in truth, code components can have a user interface as well.
+They can bring up their own forms or message boxes. In practice
+this is not very common except in the case of an application exposing
+its object model for programming by other applications. There
+are a number of reasons for this:
+<UL>
+<LI>One of the major reasons for creating an ActiveX code component
+is to allow you to reuse code. In most cases this means designing
+the component to be somewhat generic and avoid features that are
+likely to be specific to a particular application. There are many
+situations where the user interface would not fall into this category.
+<LI>ActiveX code components under Visual Basic 5.0 support multithreading
+in certain situations, but only if you turn off all user interface
+features for the component. This will be covered later in this
+book.
+<LI>Forms brought up by ActiveX code components are not contained
+in the forms of the calling application. In the case of an EXE
+server, they don't even exist in the task of the calling application.
+This can make the user interface rather awkward.
+<LI>Visual Basic 4.0 did not handle forms within DLL servers particularly
+well. Those problems seem to have been solved, but it's not clear
+that the technique will suddenly catch on now that it is properly
+supported.
+</UL>
+<P>
+ActiveX code components are not really intended to have an extensive
+user interface, but, as you might expect, there are technologies
+that fall under the term &quot;ActiveX&quot; that do support user
+interaction.
+<P>
+The first and best known of these technologies is ActiveX controls
+(previously known as OLE controls).
+<H3><A NAME="ActiveXControls1">
+ActiveX Controls</A></H3>
+<P>
+In <A HREF="ch2.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch2.htm" >Chapter 2</A>you read a little bit about what happens when you
+embed a spreadsheet or other object into a word processing document.
+An Excel spreadsheet is in-place editable, a concept we addressed
+in <A HREF="ch2.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch2.htm" >Chapter 2</A> This means that you can double-click on the object
+in the Word document and have Excel take over the window so that
+you can edit the spreadsheet directly. Excel's menus appear instead
+of Word's as long as you are editing the spreadsheet object. This
+type of in-place editing involves a great deal of overhead, in
+part because Excel spreadsheets are quite complex, and in part
+because Excel runs in another process space.
+<P>
+ActiveX controls are a special type of in-place editable object.
+They run in-process, and they are activated as soon as you select
+them. In addition to properties and methods, ActiveX controls
+can raise events. The Visual Basic environment integrates ActiveX
+controls seamlessly into the environment.
+<P>
+Like other ActiveX components, ActiveX controls are built up of
+COM objects. The code that implements these COM objects is contained
+within dynamic link libraries that typically have the extension
+.OCX. Let me stress this point: an OCX file is a DLL-it just has
+a different extension.
+<P>
+ActiveX controls are currently the most important form of reusable
+component available to Visual Basic programmers. Curiously enough,
+with the ability of code components to support events, it is quite
+likely that many applications that previously required ActiveX
+controls will now be implemented using code components instead.
+<H3><A NAME="ActiveXDocuments">
+ActiveX Documents</A></H3>
+<P>
+Visual Basic 5.0 also supports creation of objects called ActiveX
+documents, previously known as DocObjects.
+<P>
+To understand ActiveX documents, let's first consider a more familiar
+document type-a word processing document. Microsoft Word uses
+documents that have the extension .DOC. You know that you can
+work with .DOC files by opening Word and using it to open the
+document. The data is contained in the .DOC file, and the code
+to view and edit the document is in the Word program.
+<P>
+You may also know that you can edit a .DOC file by opening it
+or double-clicking on it using the Windows Explorer. When you
+do this, Word is automatically launched and instructed to load
+the document. Explorer can do this because there is an entry in
+the system registry that tells the system that files with the
+extension .DOC should be opened using Microsoft Word-this presumes
+that you have Word on your system. If you do not, the .DOC extension
+may be associated with some other word processor that is able
+to read the .DOC file format.
+<P>
+Let's extend this idea to a new type of document. This document
+will be of a type called mydoc, which has a unique GUID. 
+<P>
+A VB program called mydocserver.exe has the ability to read and
+edit this type of document. The mydoc document data will be stored
+in a file with the extension .VBD. This file will also contain
+within it a GUID that identifies the type of object. This way,
+the .VBD extension can be used for any type of object, and the
+GUID can be used to identify the correct object server to use.
+<P>
+When a container that supports ActiveX documents attempts to open
+the mydoc document, it reads the GUID from the .VBD file, then
+loads the server. The server has the ability to display the document
+within the container application, in much the same way a Visual
+Basic form displays an ActiveX control. The server can display
+additional forms as needed.
+<P>
+ActiveX documents are currently being promoted as a way to distribute
+&quot;smart&quot; documents across the Internet. Your browser
+can download the server and the .VBD file, which can then be viewed
+within the browser window.
+<P>
+Perhaps the most interesting aspect of ActiveX documents is that
+they provide an easy way to distribute Visual Basic applications
+across a network. Think about it: You can take a VB form and quickly
+turn it into an ActiveX document, which will appear identical
+under an Internet browser. That could just about eliminate the
+need for HTML; Internet scripting languages, such as Java Script
+or VB Script; and Java Applets all in one bold stroke, at least
+for Windows platforms and those that support ActiveX documents.
+<P>
+But will this catch on? Will ActiveX documents become common on
+the Internet or on corporate intranets? Is there a practical use
+for ActiveX documents outside of Internet browser applications?
+(The MS Office binder supports them, but does anyone use it?)
+I don't know.
+<P>
+But I would like to. So if you find that you are actually making
+good use of ActiveX documents, please take a moment and let me
+know about it. (And no, you don't count if you're a Microsoft
+employee; your choice of technologies is too likely to be biased.)
+<H2><A NAME="ActiveXTradeoffs"><FONT SIZE=5 COLOR=#FF0000>
+ActiveX Trade-offs</FONT></A></H2>
+<P>
+Let's take a quick look at the trade-offs involved in choosing
+different types of ActiveX components.
+<H3><A NAME="Classes">
+Classes</A></H3>
+<P>
+The advantages are excellent performance and no registration issues.
+<P>
+The disadvantages are twofold:
+<UL>
+<LI>Code is compiled into the application. If you use a class
+in many applications, this duplication can be wasteful.
+<LI>If you find a bug in a class module, you must recompile every
+application that uses the class in order to correct the problem.
+To distribute the fix, you must distribute every executable and
+component that uses the class.
+</UL>
+<P>
+In summary, classes are ideal for objects that are specific to
+an application and do not need to be reused.
+<H3><A NAME="ActiveXDLLsCodeComponentsInProcess">
+ActiveX DLLs (Code Components) (In Process)</A></H3>
+<P>
+The advantages with DLLs are:
+<UL>
+<LI>Code can be easily shared among applications.
+<LI>They offer excellent performance due to the in-process nature
+of the component.
+<LI>Fixing a bug in a DLL Implement object only requires distributing
+an updated DLL. All applications using the DLL are immediately
+fixed.
+<LI>They can be used by any OLE automation client, including all
+VBA-based applications (such as Microsoft Office) and other Windows
+development languages.
+</UL>
+<P>
+The disadvantages are:
+<UL>
+<LI>If an updated DLL is incompatible with its predecessor, you
+can break every application that uses the DLL.
+<LI>It does not support multithreaded objects in VB 5.0.
+<LI>It increases the complexity of deploying an application. 
+<LI>It requires registration, version checking, and component
+verification for safe distribution.
+</UL>
+<P>
+In summary, it is ideal for implementing standard objects that
+you may wish to reuse or share among applications. It is also
+ideal for defining interfaces to be implemented by other objects.
+And it is the preferred way to create high-performance objects
+that do not have a user interface.
+<H3><A NAME="ActiveXEXEServersOutofProcess">
+ActiveX EXE Servers (Out of Process)</A></H3>
+<P>
+The advantages here are:
+<UL>
+<LI>Objects can execute in their own thread.
+<LI>Objects can be created and used both by client applications
+and by running the server as a stand-alone application.
+</UL>
+<P>
+Disadvantages are that:
+<UL>
+<LI>Performance is considerably worse than ActiveX DLLs or classes.
+<LI>There is a higher system overhead due to the necessity of
+launching a separate task to support the object.
+<LI>The complexity of deploying an application is increased. 
+<LI>Registration, version checking, and component verification
+are required for safe distribution.
+</UL>
+<P>
+In summary, a server is ideal for exposing an application model
+to other programs. It is also useful for implementing objects
+that can run in the background (separate threads) asynchronously
+to your main application.
+<H3><A NAME="ActiveXControls2">
+ActiveX Controls</A></H3>
+<P>
+There are many advantages to ActiveX controls:
+<UL>
+<LI>Good performance. ActiveX controls always run in process.
+However, there is additional overhead involved in using an ActiveX
+control that does not occur with an ActiveX DLL server. This will
+be discussed further in Part 3.
+<LI>Controls are compatible with many containers, including Microsoft
+Office applications and Internet browsers.
+<LI>Controls offer seamless integration into the VB environment.
+<LI>Property pages allow design time user interface, as well as
+runtime interface within Visual Basic.
+<LI>Controls have the ability to persist design time properties
+in most containers. 
+</UL>
+<P>
+Disadvantages are:
+<UL>
+<LI>Controls are considerably faster than ActiveX EXE servers,
+but somewhat slower than ActiveX DLL servers due to the ActiveX
+overhead.
+<LI>There is some complexity involved in creating good quality
+controls.
+<LI>Controls increase the complexity of deploying an application.
+<LI>Registration, version checking, and component verification
+are required for safe distribution.
+</UL>
+<P>
+In summary, controls are ideal for implementing reusable objects
+that have a user interface. They are useful in many cases for
+improving the modularity of an application.
+<H3><A NAME="ActiveXDocumentsDocObjects">
+ActiveX Documents (Doc Objects)</A></H3>
+<P>
+Advantages here are:
+<UL>
+<LI>A doc object associates data in a document file with a user
+interface object. This allows distribution of arbitrarily complex
+data across the Internet and across intranets.
+<LI>Doc objects may provide an effective way to distribute software
+across the Internet. They offer a potential alternative to VBScript
+and Java for some applications.
+<LI>A doc object makes it easy to convert stand-alone Visual Basic
+applications to applications that run across a network.
+</UL>
+<P>
+There are two disadvantages:
+<UL>
+<LI>Features vary considerably from container to container.
+<LI>It's not clear at this time if the idea will really catch
+on.
+</UL>
+<P>
+In summary, this may be a good way to create applications that
+run across the Internet and intranets.
+<HR>
+
+<CENTER><P><A HREF="ch6.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch6.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="part2.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/part2.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

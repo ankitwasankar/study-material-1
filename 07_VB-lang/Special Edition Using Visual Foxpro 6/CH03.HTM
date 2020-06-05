@@ -1,0 +1,2930 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+
+ var fullURL = document.location;
+
+ var textURL = fullURL.toString();
+
+ var URLlen = textURL.length;
+
+ var lenMinusPage = textURL.lastIndexOf("/");
+
+ lenMinusPage += 1;
+
+ var fullPath = textURL.substring(0,lenMinusPage);
+
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+
+ figDoc= popUpWin.document;
+
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+
+ zhtm += '</head>';
+
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+
+ zhtm += '<P><B>' + pPage + '</B>';
+
+ zhtm += '</BODY></HTML>';
+
+ window.popUpWin.document.write(zhtm);
+
+ window.popUpWin.document.close();
+
+ // Johnny Jackson 4/28/98
+
+ }
+
+//-->
+
+</SCRIPT>
+<META>
+
+	<META NAME="Author" Content="Steph Mineart">
+	<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 3 - Defining Databases, Tables, and Indexes</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<P ALIGN="CENTER"><IMG SRC="que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0">
+<H1 ALIGN="CENTER">Special Edition Using Visual FoxPro 6</H1>
+<CENTER>
+<P><A HREF="ch02.htm"><IMG SRC="previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" BORDER="0"></A> <A HREF="index.htm"><IMG SRC="contents.gif"
+WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" BORDER="0"></A> <A HREF="ch04.htm"><IMG
+SRC="next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1>Chapter&nbsp;3</H1>
+<H1>Defining Databases, Tables, and Indexes</H1>
+
+<UL>
+	<LI><A HREF="#CreatingTablesforanApplication">Creating Tables for an Application</A>
+	<UL>
+		<LI><A HREF="#DeterminingtheDataCategoriesNeeded">Determining the Data Categories
+		Needed</A>
+		<LI><A HREF="#NamingEachDataFact">Naming Each Data Fact</A>
+		<LI><A HREF="#AssigningDataTypes">Assigning Data Types</A>
+		<LI><A HREF="#UsingtheTableDesigner">Using the Table Designer</A>
+		<LI><A HREF="#UsingNulls">Using Nulls</A>
+	</UL>
+	<LI><A HREF="#ModifyingTableStructures">Modifying Table Structures</A>
+	<UL>
+		<LI><A HREF="#AddingFields">Adding Fields</A>
+		<LI><A HREF="#DeletingFields">Deleting Fields</A>
+		<LI><A HREF="#RenamingFields">Renaming Fields</A>
+		<LI><A HREF="#RedefiningFields">Redefining Fields</A>
+		<LI><A HREF="#DefiningOrderinaTable">Defining Order in a Table</A>
+		<LI><A HREF="#ExaminingStandaloneVersusStructuralandNonstructuralIndexes">Examining
+		Standalone Versus Structural and Nonstructural Indexes</A>
+		<LI><A HREF="#DefiningNormalandUniqueIndexes">Defining Normal and Unique Indexes</A>
+		<LI><A HREF="#DefiningCandidateandPrimaryKeys">Defining Candidate and Primary Keys</A>
+		<LI><A HREF="#IndexingonComplexExpressions">Indexing on Complex Expressions</A>
+		<LI><A HREF="#SelectinganActiveIndexatRuntime">Selecting an Active Index at Runtime</A>
+	</UL>
+	<LI><A HREF="#AppendingRecords">Appending Records</A>
+	<UL>
+		<LI><A HREF="#AddingRecordsThroughTTBROWSETTorTTEDITTTScreens">Adding Records Through
+		<TT>BROWSE</TT> or <TT>EDIT</TT> Screens</A>
+		<LI><A HREF="#AddingRecordsProgrammatically">Adding Records Programmatically</A>
+		<LI><A HREF="#AppendingDatafromOtherTables">Appending Data from Other Tables</A>
+	</UL>
+	<LI><A HREF="#CreatingaDatabase">Creating a Database</A>
+	<UL>
+		<LI><A HREF="#AddingExistingTablestotheDatabase">Adding Existing Tables to the Database</A>
+		<LI><A HREF="#UsingPrimaryandCandidateKeys">Using Primary and Candidate Keys</A>
+		<LI><A HREF="#ChangingTablePropertiesProgrammatically">Changing Table Properties
+		Programmatically</A>
+	</UL>
+	<LI><A HREF="#ExaminingCompatibilityIssues">Examining Compatibility Issues</A>
+	<UL>
+		<LI><A HREF="#SharingTableswithFoxProx">Sharing Tables with FoxPro 2.x</A>
+		<LI><A HREF="#RemovingaTablefromtheDatabase">Removing a Table from the Database</A>
+	</UL>
+</UL>
+
+<P>
+<HR>
+
+<H2><A NAME="CreatingTablesforanApplication"></A><FONT SIZE="5" COLOR="#FF0000">
+Creating Tables for an Application</FONT></H2>
+<P>Suppose that you want to track orders for a small business. After thinking about
+what information you collect when taking an order, you might create the following
+initial information list:
+
+<UL>
+	<LI>Order date
+	<LI>Customer name
+	<LI>Customer address
+	<LI>List of items purchased
+	<LI>Quantity of each item purchased
+	<LI>Unit price of each item purchased
+	<LI>Tax on each item purchased
+	<LI>Extended order amount
+	<LI>Method of payment
+</UL>
+
+<P>This list uses at least four obvious data categories to store information about
+an order. The first category pertains to customer information. The second category
+tracks information common to orders but not specific to individual items ordered,
+such as the order date, the total order amount, the method of payment, and so on.
+The third category contains the order details. In this category, you can envision
+one record for each item purchased in each order. Finally, the fourth category stores
+details on each product, such as product identification, description, and price.
+<H3><A NAME="DeterminingtheDataCategoriesNeeded"></A>Determining the Data Categories
+Needed</H3>
+<P>A logical question to ask at this point is exactly what information about the
+customer you need. Could you use more than a name and address? What happens if you
+need to back-order an item? Can you telephone the customer to pick up the order when
+you receive it? Does the customer have multiple shipping addresses but a central
+billing location? If so, which address do you enter? What are the customer's sales
+to date? Do you want to offer discounts to frequent customers? Have all the customer's
+outstanding bills been paid? Should you mail new orders to customers who have not
+paid their bills?</P>
+<P>There might be even more questions, but the point is that now-during system and
+table design-is the time to ask these questions, not after the program has been created.</P>
+<P>Suppose that after asking these questions (and for the sake of keeping this example
+fairly simple), you decide to track the following customer information:
+
+<UL>
+	<LI>Company name
+	<LI>Contact name
+	<LI>Address
+	<LI>Telephone number
+	<LI>Fax number
+	<LI>Outstanding bills total
+	<LI>Purchases YTD (year to date)
+	<LI>Standard payment method
+	<LI>Credit card number
+	<LI>Credit card expiration date
+	<LI>Preferred shipper
+	<LI>Date of last purchase
+</UL>
+
+<P>A review of the customer information, using the preceding list, could reveal several
+problems.</P>
+<P>You have several orders from large corporate customers that have different shipping
+and billing locations. You further realize that simply storing the customer contact
+name might not be the easiest way to search the file if you know only a last name.
+Therefore, you need to break the name into first- and last-name fields. Similarly,
+an address consists of several components, including one or more street address lines,
+city, state or province, and postal code. Each of these components needs a separate
+field. Even a telephone number might not be sufficient detail for customers that
+have extension numbers.</P>
+<P>What you are accomplishing with this task is <I>atomizing</I> the customer's information.
+Each atom defines a single element that further defines the customer. The following
+list shows the results:
+
+<UL>
+	<LI>ID (a unique identifier for a customer)
+	<LI>Company name
+	<LI>Contact first name
+	<LI>Contact last name
+	<LI>Billing street address
+	<LI>Billing city
+	<LI>Billing state/province
+	<LI>Billing postal code
+	<LI>Shipping street address
+	<LI>Shipping city
+	<LI>Shipping state/province
+	<LI>Shipping postal code
+	<LI>Telephone number
+	<LI>Telephone extension number
+	<LI>Fax number
+	<LI>Outstanding bills total
+	<LI>Purchases YTD
+	<LI>Standard payment method
+	<LI>Credit card number
+	<LI>Credit card expiration date
+	<LI>Preferred shipper
+	<LI>Date of last purchase
+</UL>
+
+<P>In your customer system, you might require even more fields. However, the preceding
+fields serve to show you how to create a table.
+<H3><A NAME="NamingEachDataFact"></A>Naming Each Data Fact</H3>
+<P>Now you need to define a field name for each data element. Traditionally, FoxPro
+limited field names to 10 characters. The first character was restricted to an alphabetic
+character; thereafter, FoxPro accepted any characters with the exception of a space.
+With Visual FoxPro, however, you can define field names with up to 128 characters,
+but only if the field is in a table defined in a database. If you initially define
+a standalone table, called a free table, you must follow the 10-character limit.</P>
+<P>Many field-naming conventions have been devised in previous versions of FoxPro
+to help make programs more readable. The conventions differentiate variables by type,
+by scope, and by whether they are memory or table variables. One common method defines
+fields in a table beginning with a two-character prefix followed by an underscore.
+This prefix identifies the table and is unique in the application. Using table identifiers,
+however, can become unacceptable in a couple of cases:
+
+<UL>
+	<LI>If you plan to implement your own data dictionary, you will have fields that
+	have common data descriptions and definitions between tables. In this case, you want
+	to keep the same field name in each table.
+	<LI>If you plan to transfer data between tables using memory variables created with
+	<TT>SCATTER</TT>, you cannot have table identifier prefixes in the field names for
+	<TT>GATHER</TT> to successfully replace the proper values. In the examples for this
+	chapter, you will not use the table identifiers for these reasons.
+</UL>
+
+<P>Today, the generally recommended convention is to start each field name with a
+single character that identifies its field type.</P>
+<P>In this naming convention, memory variables also begin with two characters: the
+first represents its scope and the second represents its type. The third character
+could be an underscore; however, the use of underscores is no longer encouraged.
+Table 3.1 shows possible character prefixes.</P>
+<CENTER>
+<B>Table 3.1&nbsp;&nbsp;Memory Variable Naming Convention Prefix Parameters</B></CENTER>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="192">
+			<P ALIGN="CENTER"><B>First Character</B>
+		</TD>
+		<TD WIDTH="192">
+			<P ALIGN="CENTER"><B>Second Character</B>
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="192">G (Global)</TD>
+		<TD WIDTH="192">C (Character)</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="192">L (Local)</TD>
+		<TD WIDTH="192">D (Date)</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="192">P (Private)</TD>
+		<TD WIDTH="192">L (Logical)</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="192">&nbsp;</TD>
+		<TD WIDTH="192">N (Numeric)</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="AssigningDataTypes"></A>Assigning Data Types</H3>
+<P>Deciding what information to save in a table is only half the battle in planning
+a new table structure. Next, you need to examine each data item and determine whether
+you should store it as <TT>Character</TT>, <TT>Numeric</TT>, <TT>Date</TT>, or some
+other data type. Furthermore, for <TT>Character</TT> and <TT>Numeric</TT> fields,
+you need to determine the number of required characters.</P>
+<P>You can begin by looking at the available data types provided by Visual FoxPro.</P>
+<P><TT>Character</TT><B>&nbsp;&nbsp;</B><TT>Character</TT> is the most common data
+type in most tables. Character fields store 1 to 254 characters, consisting of printable
+characters such as letters, numbers, spaces, and punctuation marks. Certain characters,
+such as <TT>CHR(0)</TT>, cannot appear in a regular <TT>Character</TT> field. You
+must define fields that require more characters as memos.</P>
+<P><TT>Character</TT> fields have a fixed size. If you define a field such as <TT>Address</TT>
+with 35 characters, it consumes 35 characters in every record, even if <TT>Address</TT>
+equals 15 Main Street. Although this might sound trivial, the difference of 5 characters
+in a 300,000-record file is more than 1.4MB. On the other hand, if <TT>Address</TT>
+requires more than 35 characters, Visual FoxPro stores only the first 35 and truncates
+the rest.</P>
+<P>You can even use <TT>Character</TT> fields that consist entirely of numbers. For
+example, you should store ZIP codes, telephone numbers, and even customer IDs as
+character fields, for several reasons. First, numeric fields truncate leading zeros.
+Therefore, if you save a ZIP code such as 01995, Visual FoxPro would store it as
+1995. Second, you might want to format a telephone number field as (215)084-1988.
+Finally, you might need to combine a field such as a customer ID with another field
+to form an index. Usually, you can combine fields into a single index expression
+only by concatenating character strings.</P>
+<P>Perhaps a better way to determine whether to make a field <TT>Character</TT> or
+<TT>Numeric</TT> is to ask, &quot;Will I ever perform calculations on this field?&quot;
+If you answer yes, you might want to store it as <TT>Numeric</TT>; otherwise, store
+it as a <TT>Character</TT>. An exception is a numeric ID field. Even though you might
+need to increase the size of the ID field incrementally for new records, it works
+best as a right-justified character field with blank or zero padding to the left
+to fill the field. For example, you would zero-pad ZIP codes in a five-character
+field. You might also zero-pad customer ID numbers. Listing 3.1 shows one method
+of enlarging a zero-padded character customer ID.<BR>
+
+<HR>
+</P>
+<P><B>Listing 3.1&nbsp;&nbsp;<TT>03CODE01.PRG</TT>-Enlarging a Zero-Padded Character
+Customer ID</B>
+
+
+<BLOCKQUOTE>
+	<PRE>SELECT CUSTOMER
+
+APPEND BLANK
+
+REPLACE cCustomerId WITH INCR_ID()
+
+
+
+FUNCTION INCR_ID
+
+*********************************************************
+
+*
+
+* FUNCTION INCR_ID Increments a character ID that contains
+
+*                  only digits
+
+*
+
+* Designed specifically for CUSTOMER..cCustomerId
+
+*
+
+**********************************************************
+
+LOCAL pnCurDec, pnCurRec, pcCurTag, pcNewId
+
+* Capture current position in file, # of decimals, and tag
+
+  pnCurDec = SYS(2001, 'DECIMAL')
+
+  pnCurRec = RECNO()
+
+  pcCurTag = TAG()
+
+  SET DECIMALS TO 0
+
+
+
+* Get last customer id used
+
+  SET ORDER TO TAG CUSTID
+
+  GOTO BOTTOM
+
+
+
+* Calculate the next available ID
+
+  pcNewId = PADL(VAL(cCustomerId)+1, 6, '0')
+
+
+
+* Reset file position and tag, return next available id
+
+  SET ORDER TO TAG (m.pcCurTag)
+
+  SET DECIMAL TO EVAL(m.pnCurDec)
+
+  GOTO pnCurRec
+
+RETURN m.pcNewId
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+<HR>
+</P>
+<P>Enlarging an alphanumeric ID is more difficult, but Listing 3.2 finds the numeric
+portion of a field and expands it incrementally. <BR>
+
+<HR>
+</P>
+<P><B>Listing 3.2&nbsp;&nbsp;<TT>03CODE02.PRG</TT>-This File Locates the Numeric
+Portion of a Field and Expands It Incrementally </B>
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUSTOMER
+
+APPEND BLANK
+
+REPLACE cCustomerId WITH INCR_ID2()
+
+
+
+FUNCTION INCR_ID2
+
+*********************************************************
+
+*
+
+* FUNCTION INCR_ID2 finds the numeric portion of an id
+
+*                   embedded in an alphanumeric field
+
+*
+
+* Designed specifically for CUSTOMER.cCustomerId
+
+*
+
+**********************************************************
+
+LOCAL pnCurDec, pnCurRec, pnStartNum, pnEndNum, ;
+
+      pnIdNum,  pcCurTag, pcNewId
+
+* Capture current position in file and current tag
+
+  pnCurDec = SYS(2001, 'DECIMAL')
+
+  pnCurRec = RECNO()
+
+  pcCurTag = TAG()
+
+  SET DECIMALS TO 0
+
+  STORE 0 TO pnStartNum, pnEndNum
+
+
+
+* Get last customer id used
+
+  SET ORDER TO TAG custid
+
+  GOTO BOTTOM
+
+
+
+* Find start and end of numeric portion of field
+
+  FOR i = 1 TO LEN(cCustomerId)
+
+    IF ISDIGIT(SUBSTR(cCustomerId, i, 1)) AND ;
+
+               pnStartNum = 0
+
+pnStartNum = i
+
+    ENDIF
+
+    IF NOT ISDIGIT(SUBSTR(cust_id, i, 1)) AND ;
+
+      pnStartNum&gt;0 AND ;
+
+      pnEndNum = 0
+
+      pnEndNum = i
+
+    ENDIF
+
+  ENDFOR
+
+
+
+* Check if there is a numeric portion
+
+  IF m.pnStartNum = 0
+
+    = MESSAGEBOX('There is no numeric portion to this id')
+
+    RETURN cCustId
+
+  ELSE
+
+  * If no alpha suffix, fix end of number position
+
+    IF m.pnEndNum = 0
+
+      pnEndNum = LEN(cCustomerId) + 1
+
+    ENDIF
+
+  ENDIF
+
+
+
+* Extract numeric portion of last id
+
+  pnIdNum = SUBSTR(cCustomerId, m.pnStartNum, ;
+
+             m.pnEndNum - m.pnStartNum)
+
+
+
+* Calculate the next available customer id
+
+  pcNewId = PADL(VAL(m.pnIdNum) + 1, ;
+
+             m.pnEndNum - m.pnStartNum, '0')
+
+
+
+* Reconstruct entire id
+
+* Add alpha prefix
+
+  IF m.pnStartNum = 1
+
+    pcNewId = m.pcNewId
+
+  ELSE
+
+    pcNewId = SUBSTR(cCustomerId, 1, m.pnStartNum - 1) + ;
+
+              m.pcNewId
+
+  ENDIF
+
+* Add alpha suffix
+
+  IF m.pn_endnum &lt;= LEN(cCustomerId)
+
+    pcNewId = m.pcNewId + SUBSTR(cCustomerId, m.pnEndNum, ;
+
+              LEN(cCustomerId) - m.pnEndNum + 1)
+
+  ENDIF
+
+
+
+* Reset file position and tag, return next available id
+
+  SET ORDER TO TAG (m.pcCurTag)
+
+  SET DECIMALS TO EVAL(m.pnCurDec)
+
+  GOTO m.pnCurRec
+
+RETURN m.pcNewId
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+<HR>
+</P>
+<P><B><TT>Currency</TT>&nbsp;&nbsp;</B>To store dollar amounts, consider using a
+special numeric type called <TT>Currency</TT>. As a maximum amount, <TT>Currency</TT>
+can store a little more than $922 trillion. <TT>Currency</TT> defaults to a maximum
+of four decimal places and requires a fixed eight bytes of storage in a table.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+For those who love details, currency values range from -922,337,203,685,477.5807
+			to 922,337,203,685,477.5807.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<B><TT>Date</TT> and <TT>DateTime</TT>&nbsp;&nbsp;</B>These two field types are similar
+in that they both store dates. Both types require eight bytes to store a date in
+the form <TT>YYYYMMDD</TT>, regardless of whether <TT>SET CENTURY</TT> is <TT>ON</TT>
+or <TT>OFF</TT>. <TT>DateTime</TT> uses a compressed format to store time stored
+as <TT>HHMMSS</TT>, with <TT>HH</TT> recorded by a 24-hour clock. If you convert
+a <TT>Date</TT> field to a <TT>DateTime</TT> field, the time defaults to 12:00:00AM.</P>
+<P>There has been a lot of publicity in the media about the so-called year 2000 bug.
+Supposedly, when the clock turns over to the year 2000, some or all computers in
+the world that are not prepared will resort back to the year 1900 or other strange
+happenings will occur, causing chaos all over the world. Most of the problems associated
+with this factor will be rectified by the fact that most computers being built at
+present will work when we reach that spectacular date. Other companies and developers
+have been working on the problem and by the time the problem occurs, all should be
+solved. If you own an older personal computer, the safest solution is to upgrade
+or purchase a new one before that year. Most developers will already have the solution
+and most normal users will not have to worry about it.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Dates range from 01/01/100 to 12/31/9999, and times range from 12:00:00AM to 11:59:59PM.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>TIP</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+You can stamp a record that has a <TT>DateTime</TT> field with the current date and
+			time by using the <TT>DATETIME()</TT> function.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</P>
+</CENTER>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Just as you can add 1 to a <TT>Date</TT> field to increase it incrementally by one
+			day, you can increase a <TT>DateTime</TT> field by seconds. Because there are 86,400
+			seconds in a day, you need to add 86,400 to a <TT>DateTime</TT> field to increase
+			it by one day.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<B><TT>Double</TT>&nbsp;&nbsp;</B><TT>Double</TT> fields are floating-point fields
+that store up to 18 digits in a compressed format that uses exactly eight bytes.
+In fact, no matter how many digits you use, the number of bytes remains fixed at
+eight. The only decision that you make is the number of decimal places.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Double values range from -4.94065648541247E-324 to 1.79769313486232E			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<B><TT>Float</TT> and <TT>Numeric</TT>&nbsp;&nbsp;</B>Both of these field types support
+up to 20 digits with a maximum of 19 decimal places, but each digit requires one
+storage byte. FoxPro treats both types identically, which results in the same degree
+of accuracy. However, providing both fields maintains compatibility with dBASE IV,
+which differentiates between them.</P>
+<P>Unlike <TT>Double</TT> fields, <TT>Float</TT> and <TT>Numeric</TT> fields enable
+you to specify the number of bytes required, because FoxPro stores the ASCII code
+for each digit in a separate byte. Therefore, if a field value always uses integer
+values less than 100,000, a field width of <TT>6</TT> with zero decimal places will
+suffice. To optimally size a <TT>Numeric</TT> field, try to determine the largest
+and smallest values possible. Sizing a field too small for the values that are being
+stored forces FoxPro to store asterisks in the field.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Float values range from -.9999999999E-19 to .9999999999E+20.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>TIP</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+When sizing fields, remember that negative values need a character position to store
+			the minus sign.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>CAUTION</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+If you store a calculation result in a field that has a fixed number of decimal places,
+			FoxPro truncates the value to match the field definition, which can adversely affect
+			the precision of the value. Subsequent calculations that use this truncated field
+			might lead to apparent rounding errors.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<B><TT>General</TT>&nbsp;&nbsp;</B>The most common use for <TT>General</TT> fields
+is to store graphics. A <TT>General</TT> field is a specialized <TT>Memo</TT> field.
+FoxPro stores a <TT>General</TT> field in the same <TT>.FPT</TT> file used by other
+<TT>Memo</TT> fields in the table, but you cannot use it the same way. It is primarily
+used to store references to bound OLE objects.</P>
+<P><B><TT>Logical</TT>&nbsp;&nbsp;</B><TT>Logical</TT> fields store binary information
+in the form of <TT>.T.</TT> or <TT>.F.</TT>. <TT>Logical</TT> fields store information
+with only two states, such as taxable versus nontaxable, male versus female, and
+shipped versus back-ordered. Forms often use <TT>Logical</TT> fields as the source
+for check boxes.</P>
+<P><B><TT>Memo</TT>&nbsp;&nbsp;</B><TT>Memo</TT> fields not only store large character
+strings (greater than 254 characters), but they also provide a variable amount of
+storage per record based on block size. A <I>block</I> is a fixed number of characters
+that FoxPro reserves for a <TT>Memo</TT>. By default, FoxPro uses 64 bytes per block.
+This means that each group of 64 characters in a text string requires an additional
+block. If you have a string of 72 bytes, the extra eight bytes require a second block
+of 64 characters.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>TIP</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+From its 64 bytes, each block in a <TT>Memo</TT> allocates eight bytes to two 4-byte
+			pointers. (These pointers tell Visual FoxPro how to find the preceding or following
+			block.) Strictly speaking, the memo block has only 56 bytes.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+You can change the block size by using the <TT>SET BLOCKSIZE</TT> command, which
+sets the number of bytes from 33 to 511 bytes. For larger blocks, use an integer
+from 1 to 32 to allocate blocks in multiples of 512 bytes. With the introduction
+of Visual FoxPro, you can also set block size to <TT>0</TT>, which causes VFP to
+allocate space one byte at a time, resulting in no wasted space. However, performance
+will not be as good as when you use larger block sizes.</P>
+<P>You must use <TT>SET BLOCKSIZE</TT> before adding the first record with a memo.
+When you add the first memo, FoxPro embeds the current block size in the memo file.
+To change the block size of an existing memo file, you must rewrite each <TT>Memo</TT>
+field. However, regardless of the block size, remember that the first block reserves
+eight bytes for the pointers.</P>
+<P>Why should you worry about the block size? The larger the block size, the more
+wasted space memos consume if they vary greatly in length. On the other hand, the
+more blocks FoxPro needs to store a memo, the less efficiently it retrieves the memo.
+The practice sounds more like art than science, but in general, you want to define
+the block size as the most likely memo length.</P>
+<P>FoxPro stores memos in a file, separate from the <TT>.DBF</TT>, that has the extension
+<TT>.FPT</TT>. Whether you have one <TT>Memo</TT> field or several in a table, FoxPro
+stores all memos in this one <TT>.FPT</TT> file. In fact, if you have <TT>General</TT>
+fields, FoxPro stores them in the same file as memos. Pointers from the <TT>.DBF</TT>
+file keep track of what information belongs to each record and field.</P>
+<P>Because memo pointers point only one way-from the <TT>.DBF</TT> to the <TT>.FPT</TT>-you
+need to ensure that <TT>.DBF</TT> and <TT>.FPT</TT> files never get separated. How
+can this happen? Perhaps you have a table that contains a <TT>Memo</TT> field on
+two or more machines. If you copy (by accident, it is assumed) the <TT>.DBF</TT>
+from one machine to another without also copying the <TT>.FPT</TT> file, the copy
+could be out of synchronization with the current <TT>.FPT</TT>. If this happens and
+you add records before realizing the problem, you might find that the memo text no
+longer corresponds with the proper records. It is almost impossible to fix this problem
+without manually resetting the pointers from the <TT>.DBF</TT> to the <TT>.FPT</TT>.
+Third-party tools are available to perform this very complex task.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+One solution stores the record key with the memo just in case the unthinkable happens.
+			If you have more than one <TT>Memo</TT> field per record, also store the field name
+			with the key.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+Don't worry about records without memos; FoxPro does not reserve additional storage
+space in the memo file for them. However, every memo in every record requires a four-byte
+pointer in the <TT>.DBF</TT> file, even if it is blank.</P>
+<P>The following are typical uses for <TT>Memo</TT> fields:
+
+<UL>
+	<LI>Character fields that only occasionally contain text
+	<LI>Character fields that vary greatly in length or whose length cannot be predicted
+	<LI>Text files, such as resum&eacute;s, letters, and historical archiving of program
+	versions
+</UL>
+
+<H3><A NAME="UsingtheTableDesigner"></A>Using the Table Designer</H3>
+<P>Suppose that today is the start of a new project and you want to use the Project
+Manager to organize your files. You need to create a project first. As is true of
+most functions, FoxPro provides several methods of performing this task, such as
+using VFP commands, menu-driven options, or the Project Wizard.</P>
+<P>To start, choose File, New from the main system menu. The New dialog box appears
+(see Figure 3.1).</P>
+<P><IMG SRC="f3-1.gif"><B>Figure 3.1 : </B><I>Create a new project
+using the New dialog box</I>.</A></P>
+<P>Choose Project as the file type, and click New File. Because FoxPro requires a
+name to identify any file, it first opens the Create dialog box to request a project
+filename (see Figure 3.2). FoxPro uses the same dialog box for all filename requests.</P>
+<P><IMG SRC="f3-2.gif"><B>Figure 3.2 : </B><I>Name a new project
+file using the Create dialog box</I>.</A></P>
+<P>The Create dialog box displays the current or default directory. If you already
+have projects defined in this directory, they appear dimmed in the list box so that
+you cannot select them. They serve as a reminder not to use the same project name
+twice. You can switch to another directory or drive to store the project, but after
+you select a directory, you must enter the new project filename manually.</P>
+<P>If you prefer a more direct method when creating tables and don't mind typing,
+enter the filename in the Command window as follows:
+
+
+<BLOCKQUOTE>
+	<PRE>     CREATE PROJECT PTOFSALE
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>Using a command is quicker, but you must learn basic command syntax and you must
+already have a valid name and directory under which to store the project.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+If you open a project and close it immediately, Visual FoxPro prompts you to delete
+			the project file or retain it without adding any files.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+Having created a project, FoxPro automatically opens it. Projects have page frames.
+Each page represents a different file type, identified by a tab across the top of
+the page. To select a page, click its tab. To create a table, click the Data page.
+Currently, this project has no defined tables (see Figure 3.3). Create a free table
+by selecting Free Tables and clicking New. VFP will then give you the option of using
+a wizard or the Table Designer to create the table.</P>
+<P><IMG SRC="f3-3.gif"><B>Figure 3.3 : </B><I>Create a new free
+table by selecting the Data page in Project Manager and clicking New</I>.</A></P>
+<P>VFP next prompts you for a filename, this time for the table. For this example,
+call the table <TT>CUST.DBF</TT>.</P>
+<P>Finally, FoxPro displays the Table Designer dialog box. This form has a page-frame
+object with three pages. The first page defines the table structure, the second one
+defines the indexes, and the third shows the status of the table. The table structure
+page should appear by default. If not, you need only click the Table page, as shown
+in Figure 3.4.</P>
+<P><IMG SRC="f3-4.gif"><B>Figure 3.4 : </B><I>The Table Designer
+displays completed field definitions for CUST.DBF</I>.</A></P>
+<P>To define the table structure, enter the field information shown in Table 3.2,
+which includes field types, widths, and decimals. Notice that each customer is identified
+by a unique customer ID. Type the customer ID in the first field.</P>
+<CENTER>
+<B>Table 3.2&nbsp;&nbsp;Suggested File Structure for Fields in CUST.DBF</B></CENTER>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="144">
+			<P ALIGN="CENTER"><B>10-Character<BR>
+			Field Names</B>
+		</TD>
+		<TD WIDTH="144">
+			<P>
+			<P ALIGN="CENTER"><B>Field Type</B>
+		</TD>
+		<TD WIDTH="96">
+			<P>
+			<P ALIGN="CENTER"><B>Field Width</B>
+		</TD>
+		<TD WIDTH="96">
+			<P>
+			<P ALIGN="CENTER"><B>Decimals</B>
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>CcUSTID</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;4
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>CcOMPANY</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">30
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cFIRST</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">10
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cLAST</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">20
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cBADDR</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">20
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cBCITY</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">20
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cBSTATE</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;2
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cBZIP</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">10
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cSADDR</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">20
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cSCITY</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">20
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cSSTATE</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;2
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cSZIP</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">10
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cPHONE</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">13
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cEXTENSN</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;4
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cFAXPHON</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">13
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>nBILLDUE</TT></TD>
+		<TD WIDTH="144"><TT>Numeric</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;9
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">2
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>nYTDORDR</TT></TD>
+		<TD WIDTH="144"><TT>Numeric</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;9
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">2
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cPAYMETH</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;2
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cCRDCARD</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">16
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>dCCEXPIR</TT></TD>
+		<TD WIDTH="144"><TT>Date</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;8
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>cPRFSHIP</TT></TD>
+		<TD WIDTH="144"><TT>Character</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">10
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="144"><TT>dLASTPUR</TT></TD>
+		<TD WIDTH="144"><TT>Date</TT></TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;8
+		</TD>
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">&nbsp;
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+FoxPro does not require a file's unique field to appear first. However, some people
+			prefer to list index fields-especially unique fields-first because that practice
+			makes browsing and listing the table easier. Also, if you use the file in a list
+			box to select customers, you can define it more easily if the unique fields appear
+			first in the file.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+When you enter field names in a free table, FoxPro prevents you from entering more
+than 10 characters. If you attempt to enter a duplicate field name, FoxPro generates
+an error message. For now, use the structured 10-character field names listed in
+Table 3.2.</P>
+<P>Pressing Tab moves you to the Type field, which defaults to <TT>Character</TT>.
+This field uses a drop-down list. If you click the down arrow to the right of the
+field, a drop-down list appears showing possible values. For this example, simply
+accept the default type: <TT>Character</TT>.</P>
+<P>Specify how many characters to reserve for this field. <TT>Character</TT> fields
+default to 10, but you can use the spinner to change that setting to any value from
+1 to 254. Alternatively, you can edit the number directly. A nice feature of the
+spinner is that it starts slowly and picks up speed as you continue to click the
+arrow.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+If you are not familiar with them, spinners enable users to click either an up or
+			down arrow to increase or decrease the displayed value. Spinners modify only numeric
+			fields. However, you can combine a spinner control with other controls to simulate
+			spinning any variable type, such as dates or index field values. Narrow the spinner
+			control until just the arrows without space between are displayed. Then add code
+			to the <TT>Click</TT> event of the spinner to modify the <TT>value</TT> property
+			of the non-numeric control.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<TT>Numeric</TT> fields use the decimal column to define the number of decimal places
+to reserve to the right of the decimal point. In fact, FoxPro activates this column
+only for <TT>Numeric</TT> fields. For a <TT>Numeric</TT> field such as <TT>nBillDue</TT>,
+you need two decimal places.</P>
+<P>The next column displays the index direction, if an index exists, for the field.</P>
+<P>The last column in the structure determines whether the current field allows null
+values. Null use is discussed later in this chapter, so you can skip this column
+for now.</P>
+<P>After you enter the structure of the <TT>CUST</TT> file, the Table Designer dialog
+box should match the one shown in Figure 3.4. You can see only nine fields at a time,
+but by using the vertical scrollbar, you can move through all the table fields.</P>
+<P>The buttons to the left of the field names enable you to rearrange the default
+field order when issuing a <TT>Browse</TT> or <TT>List</TT> command for the table.
+To make <TT>cFirst</TT> appear before <TT>cLast</TT>, click the button to the left
+of <TT>cFirst</TT> and drag the field up. While you hold down the mouse button, FoxPro
+displays a dotted box at the proposed new position of the field. When the field is
+in the desired position, simply release the mouse button; all subsequent fields adjust
+their positions.</P>
+<P>When you have entered the complete table structure, click OK to exit the Table
+Designer and save the table. Because this table is new, FoxPro asks whether you want
+to input data records now. FoxPro assumes that because you created a table, you probably
+want to store data in it, but that is not always true. You might want to append data
+into a new table from an existing one, or you might want to add data by using a form.
+For now, click No and return to the Project Manager.</P>
+<P>The name of the table that you just created now appears in Free Tables in Project
+Manager. To see it, click the plus sign to the left of the Free Tables line. The
+table has two symbols before it: a plus sign and a circle with a slash through it.
+In the Project Manager, the plus sign indicates additional levels that are currently
+hidden or rolled into the current line. If you click the plus sign next to a table
+name, Project Manager rolls out the table's fields. Notice that the plus sign changes
+to a minus sign. This change indicates that all levels are currently open. FoxPro
+uses the second symbol (the circle with the slash through it) during compilation
+to indicate that it should not include this file in the compilation. Project Manager
+should now look like Figure 3.5.</P>
+<P><IMG SRC="f3-5.gif"><B>Figure 3.5 :</B><I>The Project Manager
+shows the fields in CUST listed below the table name</I>.</A>
+<H3><A NAME="UsingNulls"></A>Using Nulls</H3>
+<P>In earlier versions of FoxPro, you could not determine whether a user intentionally
+left a field blank or merely forgot it. FoxPro interprets an empty field as being
+an empty character string, a numeric zero, or a logical <TT>False</TT>, depending
+on the field type. Any of these values could be legitimate entries for the field.
+If an employee file contains a field for the employee's middle initial, for example,
+does a blank mean that the employee did not enter his middle initial or that he does
+not have one? With numeric data, would a year-to-date field with a value of zero
+indicate that the customer had no transactions or that the sum of purchases and returns
+exactly canceled each other? Finally, with <TT>Logical</TT> fields, you cannot determine
+whether the user actually selected a false value or merely skipped the field. Suppose
+that John Smith missed the question &quot;Are you married?&quot; for which <TT>False</TT>
+represents <TT>NO</TT>? Mrs. Smith might have a question or two about that.</P>
+<P>To use null tokens in a field (any field type), you must do two things. First,
+you must specify <TT>SET NULL ON</TT> in the Command window or in the program. Second,
+you must modify the structure and click the Null column button for each field that
+allows nulls. If you do not do this, FoxPro displays an error when you append a record
+with <TT>APPEND FROM</TT> or <TT>INSERT SQL</TT> and do not include a value for this
+field. FoxPro places the token <TT>.NULL.</TT> in fields that allow nulls and contain
+no values.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+If you use <TT>SET NULL ON</TT> and do not select the Null check box for these fields,
+			FoxPro will not allow nulls or blanks in primary or candidate key fields. (For more
+			information, see the section &quot;Using Primary and Candidate Keys&quot; later in
+			this chapter.)			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>CAUTION</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+FoxPro's default disallows nulls. If you enter <TT>SET NULL ON</TT>, you will not
+			be able to skip a field without entering something in that field.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+Remember the following rules when you use nulls:
+
+<UL>
+	<LI>By default, <TT>APPEND BLANK</TT> does not trigger a null token in all fields
+	of a new table record.
+	<LI>When you are changing a <TT>Character</TT> field from a non-null field to allow
+	nulls, blank fields remain blank.
+	<LI>When you are changing a <TT>Numeric</TT> field from a non-null field to allow
+	nulls, fields with values of zero remain zero.
+	<LI>When you are changing a <TT>Character</TT> field from a null field to disallow
+	nulls, a blank string is placed in the field.
+	<LI>When you are changing a <TT>Numeric</TT> field from a null field to disallow
+	nulls, a zero is placed in the field.
+</UL>
+
+<H2><A NAME="ModifyingTableStructures"></A><FONT SIZE="5" COLOR="#FF0000"> Modifying
+Table Structures</FONT></H2>
+<P>At some point in every project's life, you can expect to modify a table's structure.
+The severity of a modification can be classified by how much it changes the table
+and index files.</P>
+<P>Adding a field, for example, is a small change because it has no impact on existing
+fields, although it does require rewriting the entire <TT>.DBF</TT>. Renaming a field
+also requires only a minimal change; in fact, it usually does nothing more than modify
+the <TT>.DBF</TT> header. However, if you rename a field that appears in an index,
+that index or tag must also be updated. Deleting fields, as long as they are not
+part of an index or tag, requires rewriting the entire <TT>.DBF</TT> but little else.
+On the other hand, modifying field sizes or the number of decimal places forces FoxPro
+to rewrite the entire <TT>.DBF</TT>, and can result in the loss of data. When you
+are changing the field type, FoxPro attempts to automatically convert the data to
+the new type, but it can also automatically trash the data if it does not know what
+to do or if the conversion does not make sense.</P>
+<P>The following section examines various changes that you can make to table structures
+and explains the effects of those changes.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>CAUTION</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Before making any table structure changes, make a backup of the data file (<TT>.DBF</TT>)
+			and all indexes.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="AddingFields"></A>Adding Fields</H3>
+<P>Adding new fields to an existing table is one of the safest changes you can make.
+In fact, problems occur only if you attempt to use the same field name twice. Even
+in that situation, FoxPro responds automatically.</P>
+<P>FoxPro will not enable you to exit the name column if it is a duplicate of an
+existing field name. Rather, FoxPro displays an information box with the message
+<TT>Invalid or duplicate field name</TT> and enables you to edit it.
+<H3><A NAME="DeletingFields"></A>Deleting Fields</H3>
+<P>At some point, one or more fields in a table might become obsolete. Rather than
+waste space, you might decide to remove them from the table. To delete a field, simply
+display the table in the Table Designer dialog box (refer to Figure 3.4), highlight
+the obsolete field, and click the Delete button.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>CAUTION</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+you delete a field and save the structure, it is gone forever, including any indexes
+			that reference the deleted field. Make a backup copy of your <TT>.DBF</TT> before
+			deleting a field.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="RenamingFields"></A>Renaming Fields</H3>
+<P>Renaming fields might require only rewriting the <TT>.DBF</TT> header with the
+new field name. To change a field name, simply open the Table Designer dialog box,
+highlight the name, edit the name, and then save the structure.</P>
+<P>As long as an open index does not reference the field, FoxPro renames the field
+when you save the structure. If the renamed field appears in an open index, FoxPro
+displays the warning shown in Figure 3.6.</P>
+<P><IMG SRC="f3-6.gif"><B>Figure 3.6 : </B><I>This alert box appears
+when you are saving the modified structure and renaming a field used in an index</I>.</A></P>
+<P>When you click OK in this alert box, Visual FoxPro returns you to the Index page
+of the Table Designer to correct the index expression. You can redefine the expression
+by renaming the field name in the index expression. VFP does not automatically rename
+the field in the index expression when you rename a field used in it. Why isn't FoxPro
+smart enough to simply substitute the new field name for the old one in all the tags?
+FoxPro probably doesn't know whether you really mean to rename a field or to replace
+it with a new field.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>TROUBLESHOOTING</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+
+			<BLOCKQUOTE>
+			<P><B>I need to reverse the names of two fields in a single table, but issuing the
+			<TT>modify structure</TT> command won't let me change the names.</B> The Table Designer
+			does prohibit you from renaming a table field with the name of another existing field
+			in the table. However, you can accomplish this name switch by using an intermediate
+			name, as described in the following steps:
+			<OL>
+				<LI>Rename the first field to any name that is not currently being used.
+				<LI>Rename the second field to the first field's original name.
+				<LI>Rename the first field to the second field's original name.
+			</OL>
+			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="RedefiningFields"></A>Redefining Fields</H3>
+<P>Redefining field types, widths, or decimal places can be simple or complex depending
+on the change. For example, you can open the Table Designer dialog box, highlight
+a field, and increase the size of the field with no problem at all; FoxPro rewrites
+the <TT>.DBF</TT> to expand the field size. However, <TT>Character</TT> fields merely
+get blanks appended to them, and <TT>Numeric</TT> fields have more available digits
+to use. You can even change the size of an indexed field without any problems. Visual
+FoxPro regenerates the index when you close the Table Designer.</P>
+<P>On the other hand, decreasing the size of the field or number of decimals can
+cause data loss. FoxPro accepts the change and asks whether you want to update the
+table structure when you leave the Table Designer dialog box. If you continue, FoxPro
+resizes the fields as requested. <TT>Character</TT> fields are shortened by truncating
+existing text to the new field size. Numeric data can lose decimal places or digits
+when it is shortened. Reducing the number of digits in the integer portion of the
+number can cause some values to be replaced by asterisks, thereby causing you to
+lose the entire number. On the other hand, VFP happily truncates decimal places.</P>
+<P>Some changes in field types are more likely to cause disaster than others are.
+Changing a <TT>Numeric</TT> field to a <TT>Character</TT> field simply converts the
+number to a string, as though FoxPro used the <TT>STR</TT> function when it rewrote
+the table. Similarly, changing a <TT>String</TT> to a <TT>Numeric</TT> field appears
+to use the <TT>VAL</TT> function. Converting strings with leading numbers results
+in the numbers being saved to a <TT>Numeric</TT> field. FoxPro converts strings that
+begin with alpha characters (other than blanks) to zero when they are converted to
+numeric values.</P>
+<P>Similarly, you can convert <TT>Date</TT> fields to <TT>Character</TT> strings
+by changing their type. FoxPro appears to transform the data by using the <TT>DTOC</TT>
+function. You can even change character-formatted dates back into true <TT>Date</TT>
+fields.</P>
+<P>Most other conversions result in a loss of data. Again, the need to make a backup
+copy of a table before making any structural change cannot be emphasized enough.
+<H3><A NAME="DefiningOrderinaTable"></A>Defining Order in a Table</H3>
+<P>No one would expect users to enter data in a sorted order (unless they key the
+entries in from a telephone book). Certainly, customers don't arrive at a business
+in alphabetical order or buy products sequentially by product ID. Wouldn't it be
+nice if they did? Because they don't, you must add records in random order, although
+you probably will want to view them sorted by one or more fields.</P>
+<P>You can use the <TT>SORT</TT> command to reorder the records in a table. <TT>SORT</TT>
+takes an existing table and creates a new one sorted by a field or a combination
+of fields. The following command creates a new table called <TT>CUSTLIST</TT> that
+is sorted by the customer's last name:
+
+
+<BLOCKQUOTE>
+	<PRE>SORT TO CUSTLIST ON Last
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>A more complex <TT>SORT</TT> creates a new table called <TT>CURCUST</TT>, which
+contains customers (sorted in descending customer ID order) who have made purchases
+this year. The following is the appropriate command to create the new table.
+
+
+<BLOCKQUOTE>
+	<PRE>SORT TO CURCUST ON cCustId /D FOR Goods_Ytd&gt;0
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>This method has two flaws. First, every new sort order duplicates the entire original
+table or filtered portion thereof. If you need several sort orders for a large table,
+you can quickly run out of disk space. Second (and more important), having more than
+one copy of a table inevitably leads to data inconsistencies. If you do not update
+all tables simultaneously, you soon will have several tables, each of which has some,
+but not all, of the recent updates.</P>
+<P>Sorting does have its place. If you have a rarely changed table that has one preferred
+sort order, you might want to keep a sorted version of it. However, indexes provide
+a more effective way to enable users to view and retrieve data from a table in an
+orderly manner. Because a table can have more than one index, you can define different
+indexes for different views or reports.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>TIP</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Even with indexes, a table sorted by the same fields as the index performs just a
+			bit faster.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="ExaminingStandaloneVersusStructuralandNonstructuralIndexes"></A>Examining
+Standalone Versus Structural and Nonstructural Indexes</H3>
+<P>When indexes were first developed for database systems, they required a separate
+index for each index definition. To index the <TT>CUST</TT> table on both the customer
+number and their last name, for example, you would create two indexes, as shown in
+the following example:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUST
+
+INDEX ON cCustId TO CUSTID
+
+INDEX ON cLast TO CUSTNAME
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>These statements would create two index files: <TT>CUSTID.IDX</TT> and <TT>CUSTNAME.IDX</TT>.
+These files are now referred to as <I>standalone indexes</I>, because each index
+file contains a single index entry and is independent of the others. You can have
+any number of standalone indexes defined for a given table, limited only by the <TT>FILES</TT>
+statement in <TT>CONFIG.SYS</TT>. When you open the table, you might open all indexes,
+as in the following example:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUST INDEX CUSTID, CUSTNAME
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>Alternatively, you can open the table with only a single index:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUST INDEX CUSTID
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>In both cases, the first index after the keyword <TT>INDEX</TT> controls the order
+in which FoxPro accesses the table records. In the first example, FoxPro updates
+and maintains both indexes if you add, delete, or modify records. In the second case,
+FoxPro maintains only <TT>CUSTID.IDX</TT>; in this case, FoxPro has no knowledge
+of <TT>CUSTNAME</TT>. If you make changes to <TT>CUST.DBF</TT>, <TT>CUSTNAME</TT>
+can lose synchronization with the table. In other words, the index might no longer
+point to the right records.</P>
+<P>Finally, you can open each index separately by using the <TT>SET INDEX</TT> statement
+as follows:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUST
+
+SET INDEX TO CUSTID
+
+SET INDEX TO CUSTNAME ADDITIVE
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>Now FoxPro opens both indexes, and <TT>CUSTID</TT> controls the access order.
+Notice the keyword <TT>ADDITIVE</TT> in the second <TT>SET INDEX</TT> statement.
+If you did not include that keyword, FoxPro would close <TT>CUSTID</TT> before opening
+<TT>CUSTNAME</TT>.</P>
+<P>The problems with standalone indexes should be obvious. Because the names usually
+have no relation to their <TT>.DBF</TT>, you can easily forget which indexes belong
+to each table. In fact, your directories can soon become littered with obsolete and
+forgotten indexes that you no longer need, and no one remembers to which tables the
+indexes belong.</P>
+<P>Furthermore, if you do not open all the indexes when you edit the table, FoxPro
+does not update the missing indexes. The indexes might point to the wrong records
+or even beyond the end of the table after you pack deleted records.</P>
+<P>With the introduction of FoxPro, you now have structural and nonstructural indexes,
+also called <I>compound indexes</I>. These files are special index files that can
+contain several index definitions in one physical file. Now you can store all index
+definitions for one <TT>.DBF</TT> in a single file. You no longer need to worry about
+forgetting to open an index file or encountering nonsynchronized index pointers.</P>
+<P>You define a compound index as shown in the following example:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUST
+
+INDEX ON cCustId TAG CUSTID OF CUSTSORT
+
+INDEX ON cLast TAG CUSTNAME OF CUSTSORT
+
+USE CUST INDEX CUSTSORT
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>The <TT>USE</TT> statement opens the <TT>CUST</TT> table, along with a nonstructural
+index called <TT>CUSTSORT</TT>. FoxPro calls a compound index <I>nonstructural</I>
+when its base name differs from the <TT>.DBF</TT>-in this case, <TT>CUSTSORT</TT>
+versus <TT>CUST</TT>. You can make the index <I>structural</I> by giving it the same
+base name as the <TT>.DBF</TT>, as in the following example:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUST
+
+INDEX ON cCustId TAG CUSTID OF CUST
+
+INDEX ON cLast TAG CUSTNAME OF CUST
+
+USE CUST
+
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<CENTER>
+<P>
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>TIP</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Omitting the <TT>OF</TT> clause in <TT>INDEX ON</TT> automatically creates or adds
+			the index definition to a structural index.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</P>
+</CENTER>
+<P>In this case, you did not include the <TT>INDEX</TT> clause of the <TT>USE</TT>
+statement, but the index-<TT>CUST.CDX</TT>-opens anyway. When the structural index
+exists, FoxPro automatically opens it when you open the table. There is no way to
+forget to open the indexes if you store index expressions as tags in a structural
+index. Structural indexes should never get out of synchronization, although that
+is possible: one way would be to accidentally copy a different version of the <TT>.DBF</TT>
+or <TT>.CDX</TT> to the current directory.
+<H3><A NAME="DefiningNormalandUniqueIndexes"></A>Defining Normal and Unique Indexes</H3>
+<P>To create indexes for <TT>CUST.DBF</TT>, return to the Table Designer dialog box.
+Click the Indexes page to switch to the index definition page (see Figure 3.7).</P>
+<P><IMG SRC="f3-7.gif"><B>Figure 3.7 : </B><I>The index definition
+screen displays four index definitions in the Table Designer</I>.</A></P>
+<P>Four indexes are already defined. Index definitions begin with the tag name on
+the left, followed by the index type (accept the default, Regular), the tag expression,
+and a filter. Notice that FoxPro automatically assumes that you want to create a
+structural index. If you want to create a standalone index or a nonstructural index,
+you need to enter the syntax described in the preceding section into the Command
+window.</P>
+<P>The arrows to the left of the names indicate whether the index is in ascending
+(up arrow) or descending (down arrow) order. To change the direction, select the
+row and click the button that appears with the arrow to toggle between ascending
+and descending.</P>
+<P>A regular index type means that FoxPro stores the value generated by the index
+expression for each table record in the index. If more than one record has the same
+expression, FoxPro stores the expression multiple times with separate pointers to
+each record.</P>
+<P>In the <TT>CUST</TT> table, the last name might not uniquely identify every record
+in the table. You might have customers Bill Jones and Kevin Jones. Therefore, an
+index on the last name has repeated values, but you can use it as a regular index.</P>
+<P>By clicking the down arrow next to Type, you can see another index type called
+Unique. Unique includes only unique expressions in the index. If more than one record
+generates the same index expression value, Unique stores only the first one encountered.
+If you define a unique index on <TT>Last</TT> in the <TT>CUST</TT> table, you cannot
+include every record in the index. Therefore, either Bill Jones or Kevin Jones would
+appear, but not both.
+<H3><A NAME="DefiningCandidateandPrimaryKeys"></A>Defining Candidate and Primary
+Keys</H3>
+<P>The third index type, called candidate, creates a unique index, but the index
+includes every record in the table. Candidate indexes prohibit duplicate expression
+values for any two records in the table. What if you decide to change an existing
+regular index to candidate? After making the change, VFP prompts you to save the
+structure modification. Also appearing in the dialog box is a check box for checking
+data against the index. Whether you choose to or not, if you currently have duplicate
+data corresponding to the index definition, VFP warns you of this uniqueness error
+and changes the index back to regular. Your data will have to be modified before
+making this change.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>CAUTION</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Records marked for deletion are not ignored when a primary or candidate index tests
+			for duplicate values. Therefore, when you try to add a new record that has the value
+			in a field used in a primary or candidate index definition, a uniqueness error occurs
+			and you will not be able to add the record until you pack the table.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+A free table can have a candidate index, but only tables within a database container
+can have a primary index. <TT>CUSTOMER.DBF</TT> in the <TT>PTOFSALE</TT> database
+includes a field named <TT>cCustomerId</TT>; it's defined as a single field that
+uniquely identifies each record. Because indexing on this field generates a unique
+index that includes every record, it is a candidate index, but in this case, it is
+also the primary index. Occasionally, a single table can have more than one field
+that uniquely identifies each record. Each such index is a candidate index and qualifies
+as a potential primary key. However, any one table can only have one primary index.
+Primary keys often form relationships between multiple files and serve as lookup
+values in a referenced table.
+<H3><A NAME="IndexingonComplexExpressions"></A>Indexing on Complex Expressions</H3>
+<P>FoxPro does not restrict index expressions to single fields. In fact, any combination
+of fields can serve as an index expression. Beware of making an expression overly
+complex just to make it a candidate index. You might include <TT>Last_Name</TT> and
+<TT>First_Name</TT> to make a candidate index. But what if you have customers Jim
+T. Kirk and Jim C. Kirk? You might want to add another field to the index for the
+customer's middle initial. But such an index does not guarantee uniqueness. Some
+programs attempt to combine portions of a customer's last name with the last four
+digits of their phone number plus their ZIP code (maybe even age, sex, and title
+of their favorite <I>Star Trek</I> movie). It's easier to just assign a sequential
+customer ID to a new customer.</P>
+<P>To build a complex expression, click the button to the right of the Expression
+text box in the Table Designer dialog box. FoxPro displays the Expression Builder
+dialog box (see Figure 3.8).</P>
+<P><IMG SRC="f3-8.gif"><B>Figure 3.8 : </B><I>Use the Expression
+Builder dialog box to create complex index expressions</I>.</A></P>
+<P>FoxPro uses the Expression Builder dialog box with many operations to help build
+complex expressions. The Functions section provides access to FoxPro's built-in functions,
+which are divided into four groups: Date, Logical, Math, and String. Click the arrow
+button to the right of a function field to display a drop-down list of functions.
+To select a function, highlight it and then press Enter or simply click it. FoxPro
+displays the selected function in the function list box and the expression text area.
+For a function, FoxPro automatically places the insert cursor inside the parentheses.
+Now you can enter the parameters.</P>
+<P>Below the Expression list box, FoxPro lists the fields in the current table. You
+can choose a field to be added to the insert position of the expression; just highlight
+the field and press Enter. To select a field from a different table, click the arrow
+to the right of the From Table text box. Only open tables that appear in this list.
+If you need to reference a table that is not currently open, exit the Expression
+Builder dialog box, open the table in a new work area, and then reenter the Expression
+Builder dialog box. You can create indexes on fields from other tables, although
+that practice is not recommended. However, you do need the capability to access other
+tables in other situations that use the Expression Builder.</P>
+<P>Finally, the Variables list box contains the current memory and system variables.
+This feature generally does not apply to defining indexes, but remember that FoxPro
+uses the Expression Builder dialog box in many places.</P>
+<P>Figure 3.8 shows an index that alphabetically displays companies that have outstanding
+bills using <TT>cCompanyName</TT> and <TT>nOutstandingBillsTotal</TT>. Because <TT>cCompanyName</TT>
+is a <TT>Character</TT> field and <TT>nOutstandingBillsTotal</TT> is <TT>Numeric</TT>,
+you cannot simply combine them with a plus sign. To combine two or more fields of
+different data types, you must convert one or more of them to a common type-usually,
+<TT>Character</TT>. Use the <TT>STR</TT> function to convert <TT>nOutstandingBillsTotal</TT>
+to a string before concatenating it to <TT>cCompanyName</TT>.</P>
+<P>Finally, before you click OK and accept an expression, FoxPro provides a utility
+that verifies the syntax. The Verify button checks the syntax and displays an error
+message if it cannot interpret the expression. Common reasons for invalid expressions
+include mismatched parentheses or a missing comma. For valid expressions, a message
+appears in the status bar telling you that the expression is valid.</P>
+<P><B>Including User-Defined Functions&nbsp;</B>ot only can you use FoxPro's predefined
+functions, you can also define your own. A <I>user-defined function</I> is any group
+of statements stored as a separate file or as a separate procedure or function in
+a program.</P>
+<P>Suppose that you want to create an index based on sales regions. First, you need
+a separate table that relates ZIP codes to regions. Then you create a small function,
+similar to the one shown in Listing 3.3, to find the region.<BR>
+
+<HR>
+</P>
+<P><B>Listing 3.3&nbsp;&nbsp;<TT>03CODE03.PRG</TT>-This Function Locates the Region
+of the Country that a ZIP Code Refers To</B>
+
+
+<BLOCKQUOTE>
+	<PRE>FUNCTION GETREGION
+
+LPARAMETER lcZipCode
+
+**********************************************
+
+*
+
+* This function uses file ZIPREGN with the
+
+* following structure:
+
+*
+
+*    StartZip    C(10)
+
+*    EndZip      C(10)
+
+*    Region      C(10)
+
+*
+
+* All zip codes that fall in a zip code range
+
+* defined by a record are assigned to that
+
+* region. Otherwise, the region is left blank.
+
+*
+
+**********************************************
+
+LOCAL lcCurNear, lcCurArea, lcRtnRegion, lcA
+
+
+
+* Use an inexact search
+
+  lcCurNear = SYS(2001, 'NEAR')
+
+  SET NEAR ON
+
+
+
+* Store current work area - VFP supports 32767 work areas
+
+  lcCurArea = SELECT()  &amp;&amp;Retrieves current work area number
+
+
+
+* Check if ZIPREGN IS OPEN
+
+  IF !USED('ZIPREGN.DBF')
+
+     lcA = ('\VFP5BOOK\DATA\ZIPREGN.DBF')
+
+     USE (lcA)
+
+  ELSE
+
+     SELECT ZIPREGN  &amp;&amp;selects work area where ZIPERGN is open
+
+  ENDIF
+
+
+
+* Check if controlling index is on STARTZIP
+
+  IF !TAG() = 'STARTZIP'
+
+     SET ORDER TO TAG STARTZIP
+
+  ENDIF
+
+
+
+  = SEEK(lcZipCode)
+
+* Check if an exact match was found
+
+  IF FOUND()
+
+    lcRtnRegion = Region
+
+  ELSE
+
+  * Check if on last record
+
+    IF EOF()
+
+      GOTO BOTTOM
+
+      lcRtnRegion = Region
+
+    ELSE
+
+      SKIP -1
+
+      lcRtnRegion = Region
+
+    ENDIF
+
+  ENDIF.
+
+
+
+* Check if beyond last zip code in range
+
+  IF lc_ZipCode &gt; ZIPREGN.EndZip
+
+    lcRtnRegion = SPACE(10)
+
+  ENDIF
+
+
+
+* RESET  environment and area
+
+  SELECT (lcCurArea)
+
+  SET NEAR &amp;lcCurNear
+
+
+
+RETURN lcRtnRegion
+
+
+
+* END OF FUNCTION GETREGION
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+<HR>
+
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+<TT>SELECT</TT> and <TT>SELECT()</TT>perform a variety of tasks. <TT>SELECT</TT>
+			as a command requires as a parameter either a work-area number or a table alias name.
+			<TT>SELECT 4</TT>, for example, opens work area 4. On the other hand, <TT>SELECT
+			0</TT> opens the first unused work area beginning with 1. However, you usually do
+			not know the work area number of a table. Instead, you can use the table alias to
+			open its work area, as in <TT>SELECT CUSTOMER</TT>.<BR>
+			By itself, <TT>SELECT()</TT> returns the number of the current work area. You can
+			also include a parameter of <TT>0</TT> to perform the same task. A parameter of <TT>1</TT>
+			returns the highest numbered unused work area. Thus, <TT>? SELECT(1)</TT> tells you
+			that VFP supports 32,767 work areas. By supplying the table alias name as the parameter,
+			as in <TT>SELECT('CUSTOMER')</TT>, you can get the work-area number for any open
+			table.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+To use the <TT>GETREGION</TT> function, simply place the following expression in
+the expression box of the index:
+
+
+<BLOCKQUOTE>
+	<PRE>GETREGION(CUSTOMER.cBillingPostalCode)
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P><B>Using Stored Procedures</B>&nbsp;&nbsp;The major disadvantage of using a user-defined
+function in an index expression is that FoxPro must be able to find the function
+to modify the index. Because you cannot store the function with the index, it can
+be easily misplaced, deleted, or forgotten when you transfer the table to another
+system. Thanks to the database container, you do have an alternative.</P>
+<P>If the table is bound to a database, user-defined functions can be stored in the
+database, thus eliminating the search for a procedure or function.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+FoxPro searches for procedures and functions in a specific order. It first looks
+			in the current file. Next, it checks to see whether <TT>SET PROCEDURE TO</TT> defined
+			a separate procedure library, and it looks there. Then it checks any previously executed
+			procedure files as part of the same program. It searches the current directory for
+			a file that has the same name as the procedure or function. Finally, it searches
+			in another directory defined with FoxPro's <TT>SET PATH</TT> statement for a file
+			with the same name. As you might expect, the farther down in the search sequence
+			you go, the slower the application performs.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<B>Realizing Index Limitations</B>&nbsp;&nbsp;The limits of an index expression depend
+on the length of the index expression string, as well as its value. Index files reserve
+a limited amount of space for an index expression and its value.</P>
+<P>For a standalone index, the index expression can consist of up to 220 characters.
+FoxPro limits the resulting index value to 100 characters. If you define the standalone
+index as a compact standalone index (a special case of standalone indexes that requires
+less total disk space), the index expression s hares space with the <TT>FOR</TT>
+expression. The combined length of both expression strings cannot be more than 512
+characters. The individual index value cannot exceed 240 characters. A similar requirement
+applies to compound indexes. Compound indexes are nothing more than compact indexes
+with repeated tags; thus, they have the same limitations.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Short index expressions are more efficient than long ones. Also, choose fields that
+			have short, meaningful values where possible. If complex long values appear to be
+			the only way to define unique keys, create an &quot;artificial&quot; number, such
+			as the customer ID field in <TT>CUSTOMER.DBF</TT>.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="SelectinganActiveIndexatRuntime"></A>Selecting an Active Index at Runtime</H3>
+<P>In applications that have standalone indexes, you can easily determine the active
+index. If a <TT>USE</TT> statement opens more than one index, FoxPro makes the first
+one in the list the active one by default. To change to a different index, use <TT>SET
+ORDER</TT> to change the controlling order. The following statements open <TT>CUSTOMER</TT>
+with two standalone indexes (<TT>CUSTID</TT> and <TT>CUSTNAME</TT>), the <TT>SET
+ORDER</TT> statement changes the controlling index from <TT>CUSTID</TT> to <TT>CUSTNAME</TT>:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUSTOMER INDEX CUSTID, CUSTNAME
+
+SET ORDER TO 2
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>To be clearer, you can also specify the index name rather than its position number
+in the list.</P>
+<P>If the <TT>USE</TT> statement does not open the index files, issue the <TT>SET
+INDEX</TT> command to both define the index list and set the controlling index, as
+follows:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUSTOMER
+
+SET INDEX TO CUSTID, CUSTNAME ORDER 2
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>These options continue to work in Visual FoxPro. However, with the introduction
+of compound indexes, in which each index has a tag name, you need to add a <TT>TAG</TT>
+argument such as the following:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUSTOMER
+
+SET ORDER TO TAG CUSTNAME
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>In this example, assume that <TT>CUSTOMER</TT> has a structural index with tags
+named <TT>CUSTID</TT> and <TT>CUSTNAME</TT>. Although FoxPro automatically opens
+a structural index, it does not automatically set a controlling index. You need to
+use a command such as <TT>SET ORDER</TT> to select a tag.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>TIP</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+You also can use <TT>USE CUSTOMER TAG CUSTNAME</TT>.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+The issue becomes more complex if you have both structural and standalone indexes.
+In the following statement, you again open <TT>CUSTOMER.DBF</TT> along with the structural
+index <TT>CUSTOMER.CDX</TT>, but FoxPro also opens a standalone index called <TT>CUSTZIP</TT>:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUSTOMER INDEX CUSTZIP
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>Notice that you did not specify the structural index; FoxPro opens it automatically.
+Furthermore, <TT>CUSTZIP</TT>-not the structural index-has precedence in the index
+order over a standalone index. Therefore, <TT>CUSTZIP</TT> controls the record-viewing
+order in this case.
+<H2><A NAME="AppendingRecords"></A><FONT SIZE="5" COLOR="#FF0000"> Appending Records</FONT></H2>
+<P>You create tables to add records to them. In fact, FoxPro is so sure that you
+want to populate a table with records as soon as possible that it prompts you to
+add records immediately on closing the table structure. Of course, this time might
+not always be the best time to add records. You might not even be the person to do
+the adding. But somewhere, sometime, someone (or some program) will add records to
+the table.</P>
+<P>You can add records to a table in several ways. The following sections explore
+these options.
+<H3><A NAME="AddingRecordsThroughTTBROWSETTorTTEDITTTScreens"></A>Adding Records
+Through <TT>BROWSE</TT> or <TT>EDIT</TT> Screens</H3>
+<P>Many casual FoxPro users begin by opening an Append window. To do so yourself,
+simply open the table and type <TT>APPEND</TT> in the Command window as shown in
+the following:
+
+
+<BLOCKQUOTE>
+	<PRE>USE CUSTOMER
+
+APPEND
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>These commands open an edit window, add a blank record, and place the cursor in
+the first field, as shown in Figure 3.9. After you enter data in the fields of the
+first record, FoxPro automatically adds another blank record and places the cursor
+in it. This process continues until you close the window.</P>
+<P><IMG SRC="f3-9.gif"><B>Figure 3.9 : </B><I>APPEND opens this
+simple edit window when you add records</I>.</A></P>
+<P>You also can open the Edit window directly with the <TT>EDIT</TT> command or open
+a Browse window with <TT>BROWSE</TT>. In these windows, FoxPro assumes that you want
+to edit or view existing records. You cannot simply move the cursor to a record beyond
+the last one to start entering a new record. Rather, you must press Ctrl+Y or open
+the Table pull-down menu and choose Append New Record.
+<H3><A NAME="AddingRecordsProgrammatically"></A>Adding Records Programmatically</H3>
+<P>You can append records to a table from within a program in several ways depending
+on the source of the records. The code that follows enables users to add a new table
+record and update the fields directly.
+
+
+<BLOCKQUOTE>
+	<PRE>* Code appends record to table and updates fields directly
+
+  SELECT &lt;table&gt;
+
+  APPEND BLANK
+
+
+
+* Call a previously created form that allows the user
+
+* to enter fields
+
+  DO FillForm
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>However, you might not always want to modify the table directly. Many programmers
+prefer to modify memory variables that represent each of the table's fields (although
+buffering techniques in VFP are preferred). The sample code shown next creates a
+set of memory variables from a table and, after entering values for the memory variables,
+saves them to the table on request.
+
+
+<BLOCKQUOTE>
+	<PRE>* Code creates a set of memory variables from table
+
+  SELECT &lt;table&gt;
+
+  SCATTER MEMVAR MEMO
+
+
+
+* Call a previously created form that allows the user
+
+* to enter fields
+
+* Function returns .T. if user clicks the SAVE button to exit
+
+  SaveIt = FillForm()
+
+
+
+* If user clicks SAVE, append a blank record and
+
+* gather the memory variable fields
+
+  IF SaveIt
+
+    APPEND BLANK
+
+    GATHER MEMVAR MEMO
+
+  ENDIF
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>The second example improves on the first because it does not add a new record
+to the table until the user decides to save the data.
+<H3><A NAME="AppendingDatafromOtherTables"></A>Appending Data from Other Tables</H3>
+<P>Suppose that you want to append records to the current table from a second table.
+You could read through one record at a time, store the fields in memory variables,
+and then append these values to a record in the second table. The code in Listing
+3.4 shows one implementation.<BR>
+
+<HR>
+</P>
+<P><B>Listing 3.4&nbsp;&nbsp;<TT>03CODE04.PRG</TT>-One Method of Appending Records
+to the Current Table from a Second Table</B>
+
+
+<BLOCKQUOTE>
+	<PRE>SELECT EMPLOYEE
+
+SCAN
+
+  SCATTER MEMVAR
+
+  SELECT EMPL9
+
+  APPEND BLANK
+
+  GATHER MEMVAR
+
+  SELECT EMPLOYEE
+
+ENDSCAN
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+<HR>
+</P>
+<P>Rather than scatter values to memory variables, you can use an array to store
+the field values from a single record. The code in Listing 3.5 illustrates this method.
+(Remember that all the code listings are available on the Macmillan Web site at <A
+HREF="http://www.mcp.com/info"><TT>http://www.mcp.com/info</TT></A>.) <BR>
+
+<HR>
+</P>
+<P><B>Listing 3.5&nbsp;&nbsp;<TT>03CODE05.PRG</TT>-Another Method Using Arrays to
+Store Values from a Single Record</B>
+
+
+<BLOCKQUOTE>
+	<PRE>SELECT EMPLOYEE
+
+SCAN
+
+  SCATTER TO EMPLOYEE
+
+  SELECT EMPL9
+
+  APPEND BLANK
+
+  GATHER FROM EMPLOYEE
+
+  SELECT EMPLOYEE
+
+ENDSCAN
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+<HR>
+</P>
+<P>An alternative method enables you to copy all records from the first table into
+a two-dimensional array with a single command, thereby eliminating the loop. This
+method works only if the table does not have too many records. How many is too many
+records? The number of records times the number of fields per record cannot exceed
+65,000. Listing 3.6 illustrates this method.<BR>
+
+<HR>
+</P>
+<P><B>Listing 3.6&nbsp;&nbsp;<TT>03CODE06.PRG</TT>-Yet a Third Method Using a Two-Dimensional
+Array</B>
+
+
+<BLOCKQUOTE>
+	<PRE>SELECT EMPLOYEE
+
+IF RECCOUNT() * FCOUNT() &lt; 65000
+
+  COPY TO ARRAY aEmployee
+
+  SELECT EMPL9
+
+  APPEND FROM ARRAY aEmployee
+
+ELSE
+
+  SCAN
+
+    SCATTER TO aEmployee
+
+    SELECT EMPL9
+
+    APPEND BLANK
+
+    GATHER FROM aEmployee
+
+    SELECT EMPLOYEE
+
+  ENDSCAN
+
+ENDIF
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+<HR>
+</P>
+<P>You might want to get even more sophisticated and copy blocks of 65,000 elements
+from one table to another, as shown in Listing 3.7.<BR>
+
+<HR>
+</P>
+<P><B>Listing 3.7&nbsp;&nbsp;<TT>03CODE07.PRG</TT>-A More Sophisticated Method-Copying
+Blocks of Data</B>
+
+
+<BLOCKQUOTE>
+	<PRE>SELECT EMPL10
+
+GO TOP
+
+IF RECCOUNT() * FCOUNT() &lt; 65000
+
+
+
+* Records can be copied in a single block
+
+  COPY TO ARRAY aEmployee
+
+  SELECT EMPL9
+
+  APPEND FROM ARRAY aEmployee
+
+ELSE
+
+
+
+* Determine the maximum number of records to copy at a time
+
+  nRecBlk = INT(RECCOUNT()/FCOUNT())
+
+  nRemain = RECCOUNT()
+
+
+
+* Loop until all records are copied
+
+  DO WHILE nRemain &gt; 0
+
+
+
+  * Copy next block of records
+
+    COPY TO ARRAY aEmployee NEXT nRecBlk
+
+    SELECT EMPL9
+
+    APPEND FROM ARRAY aEmployee
+
+    SELECT EMPL10
+
+
+
+  * Check if on last block
+
+    nRemain = nRemain - nRecBlk
+
+    nRecBlk = IIF(nRecBlk &lt; nRemain, nRecBlk, nRemain)
+
+  ENDDO
+
+ENDIF
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+<HR>
+
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>CAUTION</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Any method that uses arrays works only if both tables have the same structure or
+			if you use the <TT>FIELDS</TT> clause in the command to prearrange the order of the
+			fields. Using an array eliminates the requirement that the fields have the same name
+			in both files.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+If you have the same table structure in both files, you can use a much simpler approach.
+The following command appends all records from <TT>CURPROD</TT> to <TT>PRODHIST</TT>:
+
+
+<BLOCKQUOTE>
+	<PRE>SELECT PRODHIST
+
+APPEND FROM CURPROD
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>If you want to append records from <TT>CURPROD</TT> only where field <TT>lInProduction</TT>
+equals <TT>.F.</TT>, use the following program lines:
+
+
+<BLOCKQUOTE>
+	<PRE>SELECT PRODHIST
+
+APPEND FROM CURPROD FOR NOT lInProduction
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>You can even specify, with the <TT>FIELDS</TT> clause, which fields to append.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>CAUTION</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+The <TT>FIELDS</TT> clause identifies fields in the table that you are appending
+			data to, not appending from. Furthermore, appended fields must have the same name
+			and definition in both files.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="CreatingaDatabase"></A><FONT SIZE="5" COLOR="#FF0000"> Creating a Database</FONT></H2>
+<P>In Visual FoxPro, a database is a collection of tables. You can continue working
+with tables individually, as you would in the old FoxPro style. However, Visual FoxPro
+also provides several powerful enhancements for storing tables in databases. The
+balance of this chapter and the next chapter examine these enhanced properties.</P>
+<P>First, create a database container to store the tables. The following command
+creates and names a new database in one step:
+
+
+<BLOCKQUOTE>
+	<PRE>CREATE DATABASE SALES
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>You also can choose File, New, Database from the system menu, but like it does
+when you create tables, this method requires stepping through a series of dialog
+boxes.</P>
+<P>One way to tell whether you have a database open is to look at the Database list
+box in the toolbar. Normally, this box is empty. If one or more databases are open,
+the current one is displayed in the box and the drop-down list enables you to change
+to another. In a program, you can return the name and path of the current database
+with <TT>DBC()</TT>, and you can change the current database with <TT>SET DATABASE</TT>.
+To determine the names and paths of all open databases, use the <TT>ADATABASES()</TT>
+function. The function creates a two-dimensional array with the database name as
+one element and its path as another.</P>
+<P>To modify the contents of the current database interactively, use this command:
+
+
+<BLOCKQUOTE>
+	<PRE>MODIFY DATABASE
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>This command opens the Database Designer. Figure 3.10 shows the Database Designer
+for the Tastrade application that comes with Visual FoxPro.</P>
+<P><IMG SRC="f3-10.gif"><B>Figure 3.10: </B><I>The Database Designer
+shows tables and relations for database TASTRADE.DBC</I>.</A></P>
+<P>The Database Designer has its own toolbar. Figure 3.11 defines the buttons that
+it uses.</P>
+<P><IMG SRC="f3-11.gif"><B>Figure 3.11: </B><I>This figure shows
+the database toolbar buttons that are available from within Database Designer</I>.</A></P>
+<P>As you add tables to a database, they appear in the Database Designer window.
+Scrollbars appear as you add more tables. Each table lists the fields, followed by
+their indexes. A small key before an index name identifies the primary index. Relations
+between tables are shown with connecting lines. To browse a table, simply double-click
+it.
+<H3><A NAME="AddingExistingTablestotheDatabase"></A>Adding Existing Tables to the
+Database</H3>
+<P>To add an existing table (such as <TT>CUSTOMER.DBF</TT>) to the current database,
+click the Add Table button in the Database Designer toolbar or choose Database, Add
+Table. When the table appears in the design window, it can overlap or cover existing
+tables. You treat table definitions as you do any other window, and you can drag
+and resize them as you please.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+
+			<BLOCKQUOTE>
+			<P>You can add any table to only one database. Any attempt to add a table to a second
+			database results in the following error message:
+			<PRE><TT>File &lt;filename&gt; is part of a database</TT>
+</PRE>
+			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+To modify the contents of a table, right-click any part of it and choose Modify from
+the shortcut menu. You also can left-click the table to select it and then click
+the Modify Table button in the Database Designer toolbar. This button opens the Table
+Designer dialog box, in which you can modify any of the table's characteristics.</P>
+<P><B>Long Field Names</B>&nbsp;&nbsp;One of the first changes you might want to
+make is to rename the fields that use long field names. In a database, you can have
+up to 128 characters per field name. To change a field name, simply highlight it
+and enter a new name. Spaces are not allowed in field names (FoxPro would not know
+when a field ended). One solution uses the underscore where a blank would be used
+to create clearer, more descriptive field names. However, the new recommended naming
+convention frowns on underscores. Rather, it recommends that you can make the first
+letter of each significant word in the field name uppercase and the rest lowercase.
+Unfortunately, the Table Designer in Visual FoxPro does not support case. In fact,
+Visual FoxPro displays field names in different case in different parts of the system.
+Browse window column headers, for example, are all initial capital letters.</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+Tables bound to databases can have 128-character table names. Use the Table Name
+			text box in the Table Designer or a command like the following:<BR>
+<BR>
+<TT>CREATE TABLE orddetl NAME order_details</TT>			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+addition, the common naming convention for table fields includes a type prefix before
+the name. Figure 3.12 shows the first few fields of the <TT>CUSTOMER</TT> table with
+longer field names.</P>
+<P><IMG SRC="f3-12.gif"><B>Figure 3.12: </B><I>This figure shows
+the enhanced features that are available after you add tables to a database</I>.</A></P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>CAUTION</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+When you switch between long and short field names, you need to take a few steps.
+			First, if you already have queries, reports, or programs that use 10-character field
+			names, edit them before you use longer field names. Second, if you create queries,
+			reports, or programs that have longer field names, they might not work if you remove
+			the table from the database. (This action truncates the field names to 10 characters.)
+			If the truncation does not affect the first 10 characters, you do not have a problem.
+			But remember: FoxPro might automatically replace the last character or two with sequential
+			numbers to ensure that each field name within a table is unique.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+
+			<BLOCKQUOTE>
+			<P>Many field lists used in Visual FoxPro-particularly those in wizards-display a
+			limited number of characters. If you use table-identifying prefixes, or if you begin
+			related fields with a common first word, you might not be able to distinguish the
+			fields. You will not be able to distinguish the following two field names in many
+			wizard field lists:
+			<PRE><TT>CUST_BillingAddressLine1
+
+CUST_BillingAddressLine2</TT>
+</PRE>
+			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>NOTE</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+If you define long field names for a table, you must always use them. You cannot
+			use either the shorter names stored in the <TT>.DBF</TT> or the truncated 10-character
+			names described elsewhere in this section.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+<B>Field Format and Input Mask</B>&nbsp;&nbsp;You can store the field's preferred
+format and input mask for the field data in the database. The format and input mask
+options that you enter are the same as the available options in forms and reports.
+In fact, the purpose of storing them in the database comes into play when you are
+creating a field control in a form. When you create a field control in a form by
+dragging and dropping the field from the table to the form, the format that you specified
+in the Table Designer automatically sets the appropriate properties for the control.</P>
+<P><B>Field-Level Validations</B>&nbsp;&nbsp;You also can add field-level validation
+rules in the Table Designer dialog box (refer to Figure 3.12). To add a rule, enter
+it directly in the Field Properties Validation Rule text box, or click the Expression
+Builder button (the button to the immediate right of the field, with the ellipsis
+on it). You have seen the Expression Builder before, so you already know how to use
+it. For the date-of-last-purchase field, you want to ensure that the date never exceeds
+the current system date. If it does, you want to display the error message <TT>Last
+Purchase Date Cannot Be a Future Date</TT>.</P>
+<P>You can use any logical expression when you define a validation rule. You can
+even call a function for tests that are too complex to express as a single statement.
+The only restriction is that the function must return <TT>.T.</TT> or <TT>.F.</TT>.
+Field validation rules trigger when you attempt to move off the field or when the
+value changes due to an <TT>INSERT</TT> or <TT>REPLACE</TT> statement.</P>
+<P><B>Field Default Values</B>&nbsp;&nbsp;Although the date-of-last-purchase field
+in Figure 3.12 does not contain a default value, you can add a default value for
+any table field. To default to the current system date, for example, place <TT>DATE()</TT>
+in the Default Value text box. The expression added for the default value must result
+in the same data type as the field itself; otherwise, FoxPro generates an error.
+FoxPro places the default value in the table field whenever you add a new record
+with a command such as <TT>APPEND</TT> or interactively in a Browse or Edit window.</P>
+<P><B>Caption Values</B>&nbsp;&nbsp;FoxPro uses caption values as column headings
+when you browse or edit the table. By default, FoxPro uses the field name as the
+caption value. However, the field name might not always be the best choice. After
+all, if you use table prefixes or any other naming convention in the field names,
+you would not want to display them as field headings in Browse or Edit windows. You
+can define the caption based on the contents of another field or other variable,
+but the most common choice is to enter a simple text string in the Caption text box.
+This value is also used to create a label for a control when you are using the drag-and-drop
+method of creating field controls in a form or when you use the Form Wizard.</P>
+<P><B>Field Comment</B>&nbsp;&nbsp;A field comment is a note to help document the
+meaning or purpose of a field. FoxPro stores this element as a <TT>Memo</TT> field;
+therefore, it can be as long you want. Figure 3.12 uses it as a reminder to use the
+current date to validate the input field. For other fields, a field comment could
+list possible values, tables used to validate an entry, and other information. You
+determine the use of a field comment; you can even ignore it. But the more information
+you store in the table definition, the easier it is to maintain it later.</P>
+<P>This text appears after the label <TT>Description:</TT> when you highlight the
+field name in the Project Manager. This value is also used for the Comment property
+of a control when you are using the drag-and-drop method of creating field controls
+in a form.
+<H3><A NAME="UsingPrimaryandCandidateKeys"></A>Using Primary and Candidate Keys</H3>
+<P>Click the Index page of the Table Designer and open the Type drop-down list. From
+the earlier discussion about indexes, you remember that all four index types appear
+in this list. Remember that only an index that qualifies as a candidate index can
+be named primary. This means that the index expression references every record in
+the table with a unique value. You use the primary index to form relations with other
+tables. An Order table, for example, includes a customer ID with every order. FoxPro
+can relate the customer ID in that table to the customer ID in the <TT>CUSTOMER</TT>
+table to retrieve any or all of the customer's information.</P>
+<P>Primary and candidate tests occur when VFP updates the record. Therefore, you
+might not get an immediate error if the key value is not unique until you move off
+the record.
+<H3><A NAME="ChangingTablePropertiesProgrammatically"></A>Changing Table Properties
+Programmatically</H3>
+<P>In the past, changing table properties while you were in a program was difficult.
+The task basically required the program to re-create a new copy of the table with
+the changes and then copy the data from the old table to the new one. With Visual
+FoxPro, this task has become easier due to the addition of two commands: <TT>ALTER
+TABLE</TT> and <TT>ALTER COLUMN</TT>.</P>
+<P>Suppose that you want to change the default value for a company name during data
+entry. You could use the following expression:
+
+
+<BLOCKQUOTE>
+	<PRE>ALTER TABLE customer ALTER COLUMN company SET DEFAULT 'Documation'
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>In fact, you can do almost anything you want, as the <TT>ALTER TABLE</TT> syntax
+following this paragraph shows. Be aware, however, that this capability applies only
+to tables that are part of a database.
+
+
+<BLOCKQUOTE>
+	<PRE> [NULL|NOT NULL]
+
+    [CHECK Iexpression1 [ERROR cMessageText1]]
+
+    [DEFAULT eExpression1]
+
+    [PRIMARY KEY|UNIQUE]
+
+    [REFERENCES TableName2 [TAG TagName1]]
+
+    [NOCPTRANS]
+
+-Or-
+
+ALTER TABLE TableName1
+
+  ALTER [COLUMN] FieldName2
+
+    [SET DEFAULT eExpression2]
+
+    [SET CHECK Iexpression2 [ERROR cMessageText2]]
+
+    [DROP DEFAULT]
+
+    [DROP CHECK]
+
+-Or-
+
+ALTER TABLE TableName1
+
+  [DROP [COLUMN] FieldName3]
+
+  [SET CHECK Iexpression3 [ERROR cMessageText3]]
+
+  [DROP CHECK]
+
+  [ADD PRIMARY KEY eExpression3 TAG TagName2]
+
+  [DROP PRIMARY KEY]
+
+  [ADD UNIQUE eExpression4 [TAG TagName3]]
+
+  [DROP UNIQUE TAG TagName4]
+
+  [ADD FOREIGN KEY [eExpression5] TAG TagName4
+
+    REFERENCES TableName2 [TAG TagName5]]
+
+  [DROP FOREIGN KEY TAG TagName6 [SAVE]]
+
+  [RENAME COLUMN FieldName4 TO FieldName5]
+
+  [NOVALIDATE]
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<H2><A NAME="ExaminingCompatibilityIssues"></A><FONT SIZE="5" COLOR="#FF0000"> Examining
+Compatibility Issues</FONT></H2>
+<P>After the release of any major product upgrade, there is always a transition period
+in which some users are using the old version while others use the new one. You might
+need to share data between these versions. Eventually, you will need to convert the
+old system to the new version. This section describes some of the issues to consider
+during this transition.
+<H3><A NAME="SharingTableswithFoxProx"></A>Sharing Tables with FoxPro 2.x</H3>
+<P>In general, free tables can be shared between FoxPro 2.x and Visual FoxPro. However,
+FoxPro 2.x cannot share tables that have been included in a Visual FoxPro database.
+Attempting to use such a table in FoxPro 2.x results in the warning message <TT>Not
+a table/DBF</TT>. This behavior results from Visual FoxPro's changing the first byte
+of the <TT>.DBF</TT> file that identifies it.</P>
+<P>Another problem occurs when you create a table in VFP that uses a <TT>Memo</TT>
+field. In VFP, the <TT>Memo</TT> field pointer is stored in four bytes rather than
+10, as it was in previous versions of FoxPro.</P>
+<P>If you remove a table from your system, a reference to it still exists in the
+database. You can remove such references by opening the database like a table and
+deleting the appropriate records. Similarly, if a database is accidentally deleted
+from disk, references to the database remain in the tables that were formerly contained
+in the database. The <TT>FREE TABLE</TT> command removes the database reference from
+a table. Thereafter, you can add the table to a different database or use it from
+FoxPro 2.x.</P>
+<P>If you need to share tables with applications written in FoxPro 2.x, you cannot
+take advantage of the features provided by databases. In addition to being restricted
+to using free tables, you cannot define fields with the types <TT>Currency</TT>,
+<TT>DateTime</TT>, <TT>Double</TT>, <TT>Character</TT> (binary), or <TT>Memo</TT>
+(binary). These field types do not exist in FoxPro 2.x. If you can live with these
+limitations, you can share tables and their indexes with FoxPro 2.x. If you cannot,
+you might need to use a remote connection to the table using ODBC.
+<H3>Conversion from Visual FoxPro 3.0</H3>
+<P>When you open a project file created in VFP 3 or 5, VFP 6 has a built-in converter
+that converts all your files in that project. Actually, what FoxPro does at this
+point is rebuild your project, so if files have been moved, FoxPro prompts you to
+locate them.</P>
+<P>Also, when you try to open a database container created in VFP 3 or 5, VFP prompts
+you that the database container was compiled in a previous version if the database
+container has stored procedures. If you attempt to open a database created with Visual
+FoxPro 6, you will not need to be concerned. The only time you will get a prompt
+here is if the database was created with an earlier version. To solve this problem,
+type the following command in the Command window:
+
+
+<BLOCKQUOTE>
+	<PRE>COMPILE DATABASE DatabaseName
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<H3><A NAME="RemovingaTablefromtheDatabase"></A>Removing a Table from the Database</H3>
+<P>When it adds a table to a database, Visual FoxPro changes the first byte in the
+<TT>.DBF</TT> header and adds a relative reference to the <TT>.DBC</TT>, which prohibits
+you from using the table as a free table or from adding it to another database. However,
+you can run <TT>FREE TABLE</TT> as shown in the following example to reset the first
+byte in the <TT>.DBF</TT> file and clear the back link:
+
+
+<BLOCKQUOTE>
+	<PRE>FREE TABLE CUSTOMER
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>Current values for this first byte in the <TT>.DBF</TT> include <BR>
+
+<TABLE BORDER="0">
+	<TR VALIGN="TOP">
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">0 x 02
+		</TD>
+		<TD WIDTH="550">FoxBASE0x03 FoxPro, FoxBASE+, dBASE III PLUS, dBASE IV (no memo)</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">0 x 30
+		</TD>
+		<TD WIDTH="550">Visual FoxPro</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">0 x 43
+		</TD>
+		<TD WIDTH="550">dBASE IV SQL table file, no memo</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">0 x 63
+		</TD>
+		<TD WIDTH="550">dBASE IV SQL system file, no memo</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">0 x 83
+		</TD>
+		<TD WIDTH="550">FoxBASE+, dBASE III PLUS (with memo)</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">0 x 8B
+		</TD>
+		<TD WIDTH="550">dBASE IV (with memo)</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">0 x CB
+		</TD>
+		<TD WIDTH="550">dBASE IV ASQL table file, with memo</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">0 x F5
+		</TD>
+		<TD WIDTH="550">FoxPro 2.x (or earlier) (with memo)</TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="96">
+			<P ALIGN="CENTER">0 x FB
+		</TD>
+		<TD WIDTH="550">FoxBASE</TD>
+	</TR>
+</TABLE>
+</P>
+<CENTER>
+
+<TABLE BORDER="1">
+	<TR VALIGN="TOP">
+		<TD WIDTH="600"><B>TIP</B></TD>
+	</TR>
+	<TR VALIGN="TOP">
+		<TD WIDTH="600">
+
+			<BLOCKQUOTE>
+One way to hide data from other users and applications that read <TT>.DBF</TT> files
+			is to change the first byte to something that other applications do not recognize.			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+Then you can add the table to another database (which, of course, sets the first
+byte again). But you don't need to move tables. You can open more than one database
+at a time within an application by including multiple <TT>OPEN DATABASE</TT> commands,
+as shown in the following example:
+
+
+<BLOCKQUOTE>
+	<PRE>OPEN DATABASE databas1
+
+OPEN DATABASE databas2 ADDITIVE
+
+OPEN DATABASE databas3 ADDITIVE
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+<HR>
+
+<CENTER>
+<A HREF="ch02.htm"><IMG SRC="previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" BORDER="0"></A> <A HREF="index.htm"><IMG SRC="contents.gif"
+WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" BORDER="0"></A> <A HREF="ch04.htm"><IMG
+SRC="next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" BORDER="0"></A></CENTER>
+&copy; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All rights reserved.
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,1916 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 31-- Threads</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;31</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Threads</FONT></H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#TwoKindsofThreads">
+
+Two Kinds of Threads</A>
+
+<LI><A HREF="#ConvertingaClasstoaThread">
+
+Converting a Class to a Thread</A>
+
+<UL>
+
+<LI><A HREF="#DeclaringtheClassasImplementingtheIRunnableIInterface">
+
+Declaring the Class as Implementing the <I>Runnable</I> Interface
+
+</A>
+
+<LI><A HREF="#ImplementingtheIrunIMethod">
+
+Implementing the <I>run()</I> Method</A>
+
+<LI><A HREF="#DeclaringaIThreadIObject">
+
+Declaring a <I>Thread</I> Object</A>
+
+<LI><A HREF="#CreatingandStartingtheIThreadIObject">
+
+Creating and Starting the <I>Thread</I> Object</A>
+
+<LI><A HREF="#StoppingtheThread">
+
+Stopping the Thread</A>
+
+<LI><A HREF="#ExampleUsingaThreadinanApplet">
+
+Example: Using a Thread in an Applet</A>
+
+</UL>
+
+<LI><A HREF="#DerivingaClassfromIThreadI">
+
+Deriving a Class from <I>Thread</I></A>
+
+<UL>
+
+<LI><A HREF="#ExampleCreatingaThreadClass">
+
+Example: Creating a Thread Class</A>
+
+<LI><A HREF="#ExampleUsingaSeparateThreadinanApplet">
+
+Example: Using a Separate Thread in an Applet</A>
+
+</UL>
+
+<LI><A HREF="#SynchronizingMultipleThreads">
+
+Synchronizing Multiple Threads</A>
+
+<UL>
+
+<LI><A HREF="#ExampleUsingaSynchronizedMethod">
+
+Example: Using a Synchronized Method</A>
+
+<LI><A HREF="#UnderstandingThreadApplet">
+
+Understanding ThreadApplet3</A>
+
+</UL>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+When using Windows 95 (and other modern operating systems), you
+
+know that you can run several programs simultaneously. This ability
+
+is called multitasking. What you may not know is that many of
+
+today's operating systems also allow threads, which are separate
+
+processes that are kind of a step down from a complete application.
+
+A thread is a lot like a subprogram. An applet can create several
+
+threads-several different flows of execution-and run them concurrently.
+
+This is a lot like having multitasking inside multitasking. The
+
+user knows that he or she can run several applications at a time.
+
+The programmer knows that each application can run several threads
+
+at a time. In this chapter, you'll learn how to create and manage
+
+threads in your own applets.
+
+<H2><A NAME="TwoKindsofThreads"><FONT SIZE=5 COLOR=#Ff0000>
+
+Two Kinds of Threads</FONT></A></H2>
+
+<P>
+
+In Java, you can create threads in a couple of ways. The simplest
+
+way is to take an existing class and turn it into a thread. You
+
+do this by modifying the class so that it implements the <TT>Runnable</TT>
+
+interface, which declares the <TT>run()</TT> method required by
+
+all types of threads. (The <TT>run()</TT>method contains the code
+
+to be executed by a thread.) In the previous chapter, you learned
+
+how interfaces in Java enable you to add capabilities to classes
+
+simply by implementing the interface in that class. Now, you get
+
+a chance to put that idea to work for real.
+
+<P>
+
+The second way to create a thread is to write a completely separate
+
+class derived from Java's <TT>Thread</TT> class. Because the <TT>Thread</TT>
+
+class itself implements the <TT>Runnable</TT> interface, it already
+
+contains a <TT>run()</TT> method. However, <TT>Thread</TT>'s <TT>run()</TT>
+
+method doesn't do anything. You usually have to override the method
+
+in your own class in order to create the type of thread you want.
+
+<H2><A NAME="ConvertingaClasstoaThread"><FONT SIZE=5 COLOR=#Ff0000>
+
+Converting a Class to a Thread</FONT></A></H2>
+
+<P>
+
+As I mentioned in the preceding section, the first way to create
+
+a thread is to convert a class to a thread. To do this, you must
+
+perform several steps, as listed here:
+
+<OL>
+
+<LI>Declare the class as implementing the <TT>Runnable</TT> interface.
+
+<LI>Implement the <TT>run()</TT> method.
+
+<LI>Declare a <TT>Thread</TT> object as a data field of the class.
+
+<LI>Create the <TT>Thread</TT> object and call its <TT>start()</TT>
+
+method.
+
+<LI>Call the thread's <TT>stop()</TT> method to destroy the thread.
+
+</OL>
+
+<P>
+
+The following sections look at each of these steps in detail.
+
+<H3><A NAME="DeclaringtheClassasImplementingtheIRunnableIInterface">
+
+Declaring the Class as Implementing the <I>Runnable</I> Interface
+
+</A></H3>
+
+<P>
+
+As you can see in step 1 in the preceding section, to create a
+
+thread from a regular class, the class must first be declared
+
+as implementing the <TT>Runnable</TT> interface. For example,
+
+if your class is declared as
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public class MyApplet extends Applet 
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+you must change that declaration to
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public class MyApplet extends Applet 
+
+    implements Runnable
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<H3><A NAME="ImplementingtheIrunIMethod">
+
+Implementing the <I>run()</I> Method</A></H3>
+
+<P>
+
+Now, because you've told Java you're about to implement an interface,
+
+you must implement every method in the interface. In the case
+
+of <TT>Runnable</TT>, that's easy because there's only one method,
+
+<TT>run()</TT>, the basic implementation of which looks like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public void run()
+
+{
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+When you start your new thread, Java calls the thread's <TT>run()</TT>
+
+method, so it is in <TT>run()</TT> where all the action takes
+
+place. The preceding example of the <TT>run()</TT> method is the
+
+minimum you need to compile the new source code for the thread.
+
+However, in a real program, you'll add code to <TT>run()</TT>
+
+so that the thread does what you want it to do.
+
+<H3><A NAME="DeclaringaIThreadIObject">
+
+Declaring a <I>Thread</I> Object</A></H3>
+
+<P>
+
+The next step is to declare a <TT>Thread</TT> object as a data
+
+field of the class, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+Thread thread;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The <TT>thread</TT> object will hold a reference to the thread
+
+with which the applet is associated. You will be able to access
+
+the thread's methods through this object.
+
+<H3><A NAME="CreatingandStartingtheIThreadIObject">
+
+Creating and Starting the <I>Thread</I> Object</A></H3>
+
+<P>
+
+Now it's time to write the code that creates the thread and gets
+
+it going. Assuming that your new threaded class is an applet,
+
+you'll often want to create and start the thread in the applet's
+
+<TT>start()</TT> method, as shown in Listing 31.1.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 31.1&nbsp;&nbsp;LST31_1.TXT: Creating and Starting
+
+a </B><I>Thread</I><B> Object.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public void start()
+
+{
+
+    thread = new Thread(this);
+
+    thread.start();
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+Back in <A HREF="ch15.html" >Chapter 15</A>, &quot;Writing a Simple Applet,&quot; you learned that <TT>start()</TT> is the method that represents the applet's second life-cycle stage. Java calls your applet's life-cycle methods in this order: 
+<TT>init()</TT>, <TT>start()</TT>, <TT>paint()</TT>, <TT>stop()</TT>, and <TT>destroy()</TT>. Java calls the <TT>start()</TT> method whenever the applet needs to start running, usually when it's first loaded or when the user has switched back to the applet 
+from another Web page.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+Look at the call to the <TT>Thread</TT> constructor in Listing
+
+31.1. Notice that the constructor's single argument is the applet's
+
+<TT>this</TT> reference. This is how Java knows with which class
+
+to associate the thread. Right after the call to the constructor,
+
+the applet calls the <TT>Thread</TT> object's <TT>start()</TT>
+
+method, which starts the thread running. When the thread starts
+
+running, Java calls the thread's <TT>run()</TT> method, where
+
+the thread's work gets done.
+
+<H3><A NAME="StoppingtheThread">
+
+Stopping the Thread</A></H3>
+
+<P>
+
+When the thread's <TT>run()</TT> method ends, so does the thread.
+
+However, because threads tend to run for quite a while, controlling
+
+things like animation in the applet, the user is likely to switch
+
+away from your applet before the thread stops. In this case. it's
+
+up to your applet to stop the thread. Because Java calls an applet's
+
+<TT>stop()</TT> method whenever the user switches away from the
+
+applet, the <TT>stop()</TT> method is a good place to stop the
+
+thread, as shown in Listing 31.2.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 31.2&nbsp;&nbsp;LST31_2.TXT: Stopping a Thread.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public void stop()
+
+{
+
+    thread.stop();
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H3><A NAME="ExampleUsingaThreadinanApplet">
+
+Example: Using a Thread in an Applet</A></H3>
+
+<P>
+
+To understand about threads, you really have to dig in and use
+
+them. So in this section, you'll put together an applet that associates
+
+itself with a <TT>Thread</TT> object and runs the thread to control
+
+a very simple animated display. The animation in this case is
+
+not a bunch of space invaders landing to take over the earth,
+
+but rather only a changing number that proves that the thread
+
+is running. Listing 31.3 is the applet in question, which is called
+
+ThreadApplet. Figure 31.1 shows the applet running under Appletviewer.
+
+<P>
+
+<IMG SRC="f31-1.gif"><B> Figure 31.1 : </B><I>ThreadApplet uses a thread to count to 1,000.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 31.3&nbsp;&nbsp;ThreadApplet.java: Using a Thread in
+
+an Applet.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class ThreadApplet extends Applet 
+
+  implements Runnable
+
+{
+
+    Thread thread;
+
+    int count;
+
+    String displayStr;
+
+    Font font;
+
+
+
+    public void start()
+
+    {
+
+        font = new Font(&quot;TimesRoman&quot;, Font.PLAIN, 72);
+
+        setFont(font);
+
+
+
+        count = 0;
+
+        displayStr = &quot;&quot;;
+
+
+
+        thread = new Thread(this);
+
+        thread.start();
+
+    }
+
+
+
+    public void stop()
+
+    {
+
+        thread.stop();
+
+    }
+
+  
+
+    public void run()
+
+    {
+
+
+
+        while (count &lt; 1000)
+
+        {
+
+            ++count;
+
+            displayStr = String.valueOf(count);
+
+            repaint();
+
+
+
+            try
+
+            {
+
+                thread.sleep(100);
+
+            }
+
+            catch (InterruptedException e)
+
+            {
+
+            }
+
+        }
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(displayStr, 50, 130);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive <TT>ThreadApplet</TT> from <TT>Applet</TT> and implement
+
+<TT>Runnable</TT>.<BR>
+
+    Declare the class's data fields, including a <TT>Thread </TT>object.
+
+<BR>
+
+    Override the <TT>start()</TT> method.<BR>
+
+        Create and set the applet's display font.<BR>
+
+        Initialize data fields.<BR>
+
+        Create and start the thread.<BR>
+
+    Override the <TT>stop()</TT> method.<BR>
+
+        Stop the thread.<BR>
+
+    Implement the <TT>run()</TT> method<BR>
+
+        Loop one thousand times.<BR>
+
+            Increment the counter.<BR>
+
+            Create the display string from the counter.<BR>
+
+            Tell Java to repaint the applet.<BR>
+
+            Suspend the thread for one hundred milliseconds.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Draw the display string.
+
+</BLOCKQUOTE>
+
+<P>
+
+There are a couple of interesting things in ThreadApplet of which
+
+you should be aware. First, notice that in <TT>run()</TT>, the
+
+thread loops one thousand times, after which the <TT>while</TT>
+
+loop ends. When the <TT>while</TT> loop ends, so does the <TT>run()</TT>
+
+method. This means that when you run ThreadApplet, if you let
+
+it count all the way to one thousand, the thread ends on its own.
+
+However, what if you switch to a different Web page before ThreadApplet
+
+has counted all the way to one thousand? Then, Java calls the
+
+applet's <TT>stop()</TT> method, which ends the thread by calling
+
+the thread's <TT>stop()</TT> method.
+
+<P>
+
+The next point of interest is what's going on inside <TT>run()</TT>.
+
+At the beginning of the loop, the program increments the counter,
+
+converts the counter's value to a string, and then repaints the
+
+applet so that the new count value appears in the window. That
+
+code should be as clear as glass to you by now. But what's all
+
+that malarkey after the call to <TT>repaint()</TT>? That's where
+
+the thread not only times the animation, but also relinquishes
+
+the computer so that other threads get a chance to run. Simply,
+
+the call to the thread's <TT>sleep()</TT> method suspends the
+
+thread for the number of milliseconds given as its single argument.
+
+In this case, the sleep time is 100 milliseconds, or one tenth
+
+of a second. If you want the animation to run faster, change the
+
+100 to a smaller value. To count slower, change the 100 to a larger
+
+value.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>CAUTION</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+It's important that your threads not dominate the computer's processor for longer than necessary. This is because other threads and processes are almost certainly in competition for the processor at the same time. If your thread will be running for a 
+while, you should call the <TT>sleep()</TT> or <TT>yield() </TT>methods in order to give other processes a chance to run. This is more important on some systems than on others, but since you can't know for sure which system your applet will be running on, 
+be a considerate thread programmer.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+Notice that the call to <TT>sleep()</TT> is enclosed in a <TT>try</TT>
+
+block and followed by a <TT>catch</TT> block that's watching for
+
+<TT>InterruptedException</TT> exceptions. You have to catch this
+
+exception because the <TT>sleep()</TT> method throws it. If you
+
+fail to catch the exception, your program will not compile.
+
+<H2><A NAME="DerivingaClassfromIThreadI"><FONT SIZE=5 COLOR=#Ff0000>
+
+Deriving a Class from <I>Thread</I></FONT></A></H2>
+
+<P>
+
+The second way to create a thread is to derive a new class from
+
+<TT>Thread</TT>. Then, in your applet's class, you create and
+
+start a thread object of your thread class. This leaves you with
+
+two processes going simultaneously, the applet and the thread
+
+object created in the class. By giving the thread class access
+
+to data and methods in the applet, the thread can easily communicate
+
+with the applet in order to perform whatever tasks it was written
+
+for.
+
+<H3><A NAME="ExampleCreatingaThreadClass">
+
+Example: Creating a Thread Class</A></H3>
+
+<P>
+
+Suppose that you want to write the same sort of applet as that
+
+shown in Listing 31.3, but now you want a separate thread to control
+
+the counting process. Listing 31.4 shows how you might write the
+
+new class for the thread. (Don't try to compile this code yet.
+
+You'll use it in the next example in this chapter.)
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 31.4&nbsp;&nbsp;MyThread.java: A Class Derived from
+
+</B><I>Thread.<BR>
+
+</I>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public class MyThread extends Thread
+
+{
+
+    ThreadApplet2 applet;
+
+    int count;
+
+
+
+    MyThread(ThreadApplet2 applet)
+
+    {
+
+        this.applet = applet;
+
+    }
+
+
+
+    public void run()
+
+    {
+
+        count = 0;
+
+        while (count &lt; 1000)
+
+        {
+
+            ++count;
+
+            applet.displayStr = String.valueOf(count);
+
+            applet.repaint();
+
+
+
+            try
+
+            {
+
+                sleep(100);
+
+            }
+
+            catch (InterruptedException e)
+
+            {
+
+            }
+
+        }
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Derive the <TT>MyThread</TT> class from <TT>Thread</TT>.<BR>
+
+    Declare the class's data fields, including a <TT>Thread</TT>
+
+object.<BR>
+
+    Declare the class's constructor.<BR>
+
+        Store the constructor's single parameter.<BR>
+
+    Override the <TT>run()</TT> method<BR>
+
+        Loop one thousand times.<BR>
+
+            Increment the counter.<BR>
+
+            Create the display string from the counter.<BR>
+
+            Tell Java to repaint the applet.<BR>
+
+            Suspend the thread for one hundred milliseconds.
+
+</BLOCKQUOTE>
+
+<P>
+
+The first thing to notice in this thread class is that its constructor
+
+takes as a single argument a reference to a <TT>ThreadApplet2</TT>
+
+object, which is the applet from which you'll be running this
+
+thread. The thread needs this reference so that it can communicate
+
+with the applet.
+
+<P>
+
+Next, look at <TT>run()</TT>. The thread still counts from zero
+
+to one thousand, but now it accesses the applet object in order
+
+to create the display string and repaint the applet. In the original
+
+version of the program, the thread was directly associated with
+
+the class, rather than a completely separate process.
+
+<P>
+
+Now that you have a new thread class, you'll want to call it up
+
+for active duty. You'll do that in the next example.
+
+<H3><A NAME="ExampleUsingaSeparateThreadinanApplet">
+
+Example: Using a Separate Thread in an Applet</A></H3>
+
+<P>
+
+You'll now put that new thread class to work. To do this, you
+
+must have an applet that creates an object from the new thread
+
+class and calls that object's <TT>start()</TT> method to get the
+
+thread running. Listing 31.5 shows just such an applet, called
+
+ThreadApplet2. When you run the applet under Appletviewer, you'll
+
+see the same display that was created in the original version
+
+of the applet (ThreadApplet), but now the counting animation is
+
+being controlled by a separate thread class.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+To compile Listing 31.5, make sure you have both the MyThread.java and ThreadApplet2.java files in your CLASSES folder. Java will then compile both files when you compile ThreadApplet2.java.</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 31.5&nbsp;&nbsp;ThreadApplet2.JAVA: An Applet That
+
+Creates a Separate Thread.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+import MyThread;
+
+
+
+public class ThreadApplet2 extends Applet
+
+{
+
+    MyThread thread;
+
+    String displayStr;
+
+    Font font;
+
+
+
+    public void start()
+
+    {
+
+
+
+        font = new Font(&quot;TimesRoman&quot;, Font.PLAIN, 72);
+
+        setFont(font);
+
+
+
+        displayStr = &quot;&quot;;
+
+
+
+        thread = new MyThread(this);
+
+        thread.start();
+
+    }
+
+
+
+    public void stop()
+
+    {
+
+        thread.stop();
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(displayStr, 50, 150);
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the <TT>MyThread</TT> class.<BR>
+
+Derive the <TT>ThreadApplet2</TT> class from <TT>Applet.<BR>
+
+</TT>    Declare the class's data fields, including a <TT>MyThread</TT>
+
+object.<BR>
+
+    Override the <TT>start()</TT> method<BR>
+
+        Create and set the applet's font.<BR>
+
+        Initialize the display string.<BR>
+
+        Create and start the thread.<BR>
+
+    Override the <TT>stop()</TT> method.<BR>
+
+        Stop the thread.<BR>
+
+    Override the <TT>paint() </TT>method.<BR>
+
+        Draw the applet's display string, which is the current
+
+count.
+
+</BLOCKQUOTE>
+
+<H2><A NAME="SynchronizingMultipleThreads"><FONT SIZE=5 COLOR=#Ff0000>
+
+Synchronizing Multiple Threads</FONT></A></H2>
+
+<P>
+
+There may be times when you have several threads going, each competing
+
+for the same resources. This type of resource competition can
+
+be deadly for threads. For example, what if one thread tries to
+
+read from a string while another thread is still writing to that
+
+string? Depending on the situation, you'll get strange results.
+
+You can avoid these problems by telling Java where synchronization
+
+problems may occur so that Java can keep an eye out for unhealthy
+
+thread competition.
+
+<P>
+
+To put Java on guard, you use the <TT>synchronized</TT> keyword
+
+when you define a method (or even a code block). When you mark
+
+a method as synchronized, Java creates a monitor object for the
+
+class. The first time a thread calls the synchronized method,
+
+Java gives the monitor object to that thread. As long as the thread
+
+holds the monitor object, no other thread can enter the synchronized
+
+section of code. You can think of the monitor object as a key.
+
+Unless a thread is holding the key, it can't unlock the door to
+
+the synchronized method.
+
+<H3><A NAME="ExampleUsingaSynchronizedMethod">
+
+Example: Using a Synchronized Method</A></H3>
+
+<P>
+
+Using synchronized methods makes sense only when more than one
+
+thread is vying for an applet's resources. For that reason, to
+
+demonstrate thread synchronization, you need to create two threads.
+
+Listing 31.6 is a thread class, called MyThread2, that can count
+
+either forward or backward, depending upon the values you give
+
+to the class's constructor. By creating two thread objects from
+
+this class, you can experiment with thread synchronization.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+To compile Listings 31.6 and 31.7, make sure you have both the MyThread2.java and ThreadApplet3.java files in your CLASSES folder. Java will then compile both files when you compile ThreadApplet3.java.</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 31.6&nbsp;&nbsp;MyThread2.java: A Double-Duty Thread.
+
+<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+public class MyThread2 extends Thread
+
+{
+
+    ThreadApplet3 applet;
+
+    boolean forward;
+
+    int count;
+
+    int increment;
+
+    int end;
+
+    int position;
+
+
+
+    MyThread2(ThreadApplet3 applet, boolean forward)
+
+    {
+
+        this.applet = applet;
+
+        this.forward = forward;
+
+    }
+
+
+
+    public void run()
+
+    {
+
+        InitCounter();
+
+        DoCount();
+
+    }
+
+
+
+    protected void InitCounter()
+
+    {
+
+        if (forward)
+
+        {
+
+            count = 0;
+
+            increment = 1;
+
+            end = 1000;
+
+            position = 120;
+
+        }
+
+        else
+
+        {
+
+            count = 1000;
+
+            increment = -1;
+
+            end = 0;
+
+            position = 180;
+
+        }
+
+    }
+
+
+
+
+
+    protected void DoCount()
+
+    {
+
+
+
+        while (count != end)
+
+        {
+
+            count = count + increment;
+
+            String str = String.valueOf(count);
+
+            applet.SetDisplayStr(str, position);
+
+
+
+            try
+
+                sleep(100);
+
+            catch (InterruptedException e)
+
+            {
+
+            }
+
+        }
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Derive the <TT>MyThread2 </TT>class from <TT>Thread</TT>.<BR>
+
+    Declare the class's data fields.<BR>
+
+    Declare the class's constructor.<BR>
+
+        Store the constructor's parameters.<BR>
+
+    Override the <TT>run()</TT> method<BR>
+
+        Call the method that sets the values for this thread.
+
+<BR>
+
+        Call the method that does the counting.<BR>
+
+    Define the <TT>InitCounter()</TT> method.<BR>
+
+        If the thread is to count forward...<BR>
+
+            Set the data fields for forward counting.<BR>
+
+        Else if the thread is to count backwards...<BR>
+
+            Set the data fields for backwards counting.<BR>
+
+    Define the <TT>DoCount()</TT> method.<BR>
+
+        Loop until the counting is done.<BR>
+
+            Increment the counter and set the display string.
+
+<BR>
+
+            Go to sleep for one hundred milliseconds.
+
+</BLOCKQUOTE>
+
+<P>
+
+When you construct a <TT>MyThread2</TT> thread object, you must
+
+pass two values as parameters: a reference to the applet and a
+
+<TT>boolean</TT> value indicating whether the thread should count
+
+forward or backward. The thread uses the <TT>boolean</TT> value
+
+in its <TT>InitCounter()</TT> method to set the values needed
+
+to accomplish the counting. These values are the starting count
+
+value (<TT>count</TT>), the counting increment (<TT>increment</TT>),
+
+the target count (<TT>end</TT>), and the position at which to
+
+display the count in the applet (<TT>position</TT>). Notice that
+
+the <TT>increment</TT> variable can be either 1 or -1. When the
+
+increment gets added to the count, a positive <TT>increment</TT>
+
+increases the count by one, whereas a negative <TT>increment</TT>
+
+decreases the count by one.
+
+<P>
+
+In its <TT>run()</TT> method, the thread calls the applet's <TT>SetDisplayStr()</TT>
+
+method, which, as you'll soon see, is the synchronized method.
+
+In other words, if the thread isn't holding the monitor object
+
+for <TT>SetDisplayStr()</TT>, it cannot enter the method. This
+
+prevents two running instances of the <TT>MyThread2</TT> thread
+
+from trying to change the display string at the same time.
+
+<P>
+
+Now it's time to look at the applet that's in charge of the threads.
+
+Listing 31.7 is the applet, which is called ThreadApplet3. This
+
+applet creates two objects of the <TT>MyThread2</TT> class: one
+
+that counts forward and one that counts backward. The applet's
+
+<TT>SetDisplayStr()</TT> method is where the synchronization comes
+
+into play because both threads will be trying to access this method.
+
+<P>
+
+When you run the applet, you'll see that when the first thread
+
+can display its count, the string will appear closer to the top
+
+of the display area. The second thread, however, displays its
+
+count below the first thread's. For this reason, when you get
+
+the applet going, you can sit back and watch the two threads battle
+
+over the <TT>SetDisplayStr()</TT> method.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 31.7&nbsp;&nbsp;ThreadApplet3.java: An Applet That
+
+Uses Thread Synchronization.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+import MyThread2;
+
+
+
+public class ThreadApplet3 extends Applet
+
+{
+
+    MyThread2 thread1;
+
+    MyThread2 thread2;
+
+    String displayStr;
+
+    Font font;
+
+    int position;
+
+
+
+    public void init()
+
+    {
+
+        font = new Font(&quot;TimesRoman&quot;, Font.PLAIN, 72);
+
+        setFont(font);
+
+
+
+        displayStr = &quot;&quot;;
+
+        position = 120;
+
+
+
+        thread1 = new MyThread2(this, true);
+
+        thread2 = new MyThread2(this, false);
+
+    }
+
+
+
+    public void start()
+
+    {
+
+        if (thread1.isAlive())
+
+            thread1.resume();
+
+        else
+
+            thread1.start();
+
+
+
+        if (thread2.isAlive())
+
+            thread2.resume();<BR>
+
+
+
+        else
+
+            thread2.start();
+
+    }
+
+
+
+    public void stop()
+
+    {
+
+        thread1.suspend();
+
+        thread2.suspend();
+
+    }
+
+
+
+    public void destroy()
+
+    {
+
+        thread1.stop();
+
+        thread2.stop();
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(displayStr, 50, position);
+
+    }
+
+
+
+    synchronized public void SetDisplayStr(String str, int pos)
+
+    {
+
+        displayStr = str;
+
+        position = pos;
+
+        repaint();
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the applet uses the classes in the <TT>awt</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the classes in the <TT>applet</TT>
+
+package.<BR>
+
+Tell Java that the applet uses the <TT>MyThread2</TT> class.<BR>
+
+Derive the <TT>ThreadApplet3</TT> class from <TT>Applet</TT>.
+
+<BR>
+
+    Declare the class's data fields, including two <TT>MyThread2</TT>
+
+objects.<BR>
+
+    Override the <TT>init()</TT> method.<BR>
+
+        Create and set the applet's font.<BR>
+
+        Initialize the display string and display position.<BR>
+
+        Create the applet's two threads.<BR>
+
+    Override the <TT>start()</TT> method<BR>
+
+        If the first thread is already started...<BR>
+
+            Resume running the thread.<BR>
+
+        Else if the first thread hasn't yet been started...<BR>
+
+            Start the thread.<BR>
+
+        If the second thread is already started...<BR>
+
+            Resume running the thread.<BR>
+
+        Else if the second thread hasn't yet been started...<BR>
+
+            Start the thread.<BR>
+
+    Override the <TT>stop() </TT>method.<BR>
+
+        Suspend both threads.<BR>
+
+    Override the <TT>destroy()</TT> method.<BR>
+
+        Stop both threads.<BR>
+
+    Override the <TT>paint()</TT> method.<BR>
+
+        Draw the applet's display string, which is the current
+
+count.<BR>
+
+    Define the <TT>SetDisplayStr()</TT> method as synchronized.
+
+<BR>
+
+        Copy the method's parameters into the class's data fields.
+
+<BR>
+
+        Force Java to redraw the applet's display.
+
+</BLOCKQUOTE>
+
+<H3><A NAME="UnderstandingThreadApplet">
+
+Understanding ThreadApplet3</A></H3>
+
+<P>
+
+The ThreadApplet3 applet is unique with regards to other applets
+
+in this book because it's the only applet that takes full advantage
+
+of the applet's life-cycle stages. In the <TT>init()</TT> method,
+
+the applet creates the two threads. The different <TT>boolean</TT>
+
+values given as the constructor's second argument cause the first
+
+thread to count forward and the second thread to count backward.
+
+<P>
+
+In the <TT>start()</TT> method, the applet calls each thread's
+
+<TT>isAlive()</TT> method to determine whether the thread has
+
+been started yet. The first time <TT>start()</TT> gets called,
+
+the threads have been created in <TT>init()</TT> but haven't been
+
+started. In this case, <TT>isAlive()</TT> returns <TT>false</TT>,
+
+and the applet calls each thread's <TT>start()</TT> method to
+
+get the threads rolling. If <TT>start()</TT> is not being called
+
+for the first time, it's because the user has switched back to
+
+the applet from another Web page. In this case, <TT>isAlive()</TT>
+
+returns <TT>true</TT>. The applet knows that it must call the
+
+threads' <TT>resume()</TT> method rather than <TT>start()</TT>.
+
+<P>
+
+In the <TT>stop()</TT> method, which gets called when the user
+
+switches to another Web page, rather than stopping the threads,
+
+the applet suspends them. The threads remain suspended until the
+
+applet calls their <TT>resume()</TT> methods, which, as you now
+
+know, happens in the <TT>start()</TT> method.
+
+<P>
+
+Finally, when Java calls the <TT>destroy()</TT> method, the applet
+
+is going away for good. The threads, too, should follow suit,
+
+so the applet calls each thread's <TT>stop()</TT> method.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>CAUTION</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+When programming threads, you always have to watch out for a condition known as <I>deadlock</I>. Deadlock occurs when two or more threads are waiting to gain control of a resource, but for one reason or another, the threads rely on conditions that can't 
+be met in order to get control of the resource. To understand this situation, imagine that you have a pencil in your hand, and someone else has a pen. Now, assume that you can't release the pencil until you have the pen, and the other person can't release 
+the pen until she has the pencil. Deadlock! A more computer-oriented example would be when one thread must access Method1 before it can release its hold on Method2, but the second thread must access Method2 before it can release its hold on Method1. 
+Because these are mutually exclusive conditions, the threads are deadlocked and cannot run.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+Threads enable you to break an applet's tasks into separate flows
+
+of execution. These subprograms seem to run concurrently thanks
+
+to the task switching that occurs in multitasking systems. You
+
+can create a thread from a class by implementing the <TT>Runnable</TT>
+
+interface in the class. However, you can also create a separate
+
+class for your threads by deriving the class from <TT>Thread</TT>.
+
+Depending on how you want to use the threads, you can create and
+
+start your threads in the applet's <TT>start()</TT> method and
+
+stop the threads in the <TT>stop()</TT> method. If you want your
+
+threads to retain their state when the user switches to and from
+
+your Web page, you should create the threads in <TT>init()</TT>,
+
+start or resume the threads in <TT>start()</TT>, suspend the threads
+
+in <TT>stop()</TT>, and stop the threads in <TT>destroy()</TT>.
+
+Remember that if there's a chance that two or more threads may
+
+compete for a resource, you need to protect that resource using
+
+thread synchronization.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>How are threads similar to multitasking?
+
+<LI>What Java interface must be implemented by all threads?
+
+<LI>What thread method do you call to start a thread?
+
+<LI>What method does Java call to get a thread started?
+
+<LI>What are the two applet methods in which you'll usually stop
+
+your threads?
+
+<LI>What's the difference between suspending and stopping a thread?
+
+<LI>How do you ensure that your threads share the computer's processor
+
+properly?
+
+<LI>If you don't care about retaining a thread's state as the
+
+user switches between Web pages, where in your applet should you
+
+create and start your threads?
+
+<LI>How can you take advantage of an applet's life cycle in order
+
+to retain a thread's state as the user switches between Web pages.
+
+<LI>When would you use the <TT>synchronized</TT> keyword?
+
+<LI>What's a monitor object?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Modify the ThreadApplet applet so that the applet's state
+
+is retained when switching to and from the applet's Web page.
+
+Name the new version ThreadApplet4. (You can find the solution
+
+to this exercise in the CHAP31 folder of this book's CD-ROM.)
+
+<LI>Modify the ThreadApplet2 applet so that the thread changes
+
+the color of three rectangles displayed in the applet (see Figure
+
+31.2). The rectangles' colors should cycle between red, green,
+
+and blue. Repeat the color cycling until the user stops the applet.
+
+Name the applet ThreadApplet5, and name the new thread class <TT>ColorThread</TT>.
+
+(You can find the solution to this exercise in the CHAP31 folder
+
+of this book's CD-ROM.)<BR>
+
+<IMG SRC="f31-2.gif"><B> Figure 31.2 : </B><I>Your TheadApplet5 applet should look like this when running under Appletviewer.
+
+
+
+</I></A><P>
+
+<LI>Modify your ThreadApplet5 applet (naming the new applet ThreadApplet6)
+
+so that it runs two threads. One thread should change the rectangles'
+
+colors to red, green, and blue, and the second thread should change
+
+the rectangles to pink, orange, and yellow. Modify the <TT>ColorThread</TT>
+
+class from exercise 2, renaming it <TT>ColorThread2</TT>, and
+
+then create a new thread class called <TT>ColorThread3</TT> for
+
+setting the second set of colors. Don't forget to use thread synchronization
+
+to prevent one thread from changing the rectangles' colors when
+
+another thread is already doing so. (You can find the solution
+
+for this exercise in the CHAP31 folder of this book's CD-ROM.)
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch30.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch32.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

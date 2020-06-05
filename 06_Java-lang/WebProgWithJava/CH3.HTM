@@ -1,0 +1,2772 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 3</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>An Introduction to Java Classes</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+<UL>
+<LI><A HREF="#PackagesinJava" >Packages in Java</A>
+<LI><A HREF="#javalang" >java.lang</A>
+<UL>
+<LI><A HREF="#Object" >Object</A>
+<LI><A HREF="#WrappersforBasicTypes" >Wrappers for Basic Types</A>
+<LI><A HREF="#StringsinJava" >Strings in Java</A>
+<LI><A HREF="#Math" >Math</A>
+<LI><A HREF="#CloningObjectstheCloneableInterface" >Cloning Objects: the Cloneable Interface</A>
+<LI><A HREF="#ThreadsofExecution" >Threads of Execution</A>
+<LI><A HREF="#ExceptionsandErrors" >Exceptions and Errors</A>
+<LI><A HREF="#TheRuntimeEnvironment" >The Runtime Environment</A>
+<LI><A HREF="#ClassesatRuntime" >Classes at Runtime</A>
+</UL>
+<LI><A HREF="#javaawt" >java.awt</A>
+<UL>
+<LI><A HREF="#Component" >Component</A>
+<LI><A HREF="#ContainerComponents" >Container Components</A>
+<LI><A HREF="#ButtonsandOtherComponents" >Buttons and Other Components</A>
+<LI><A HREF="#EventHandling" >Event Handling</A>
+<LI><A HREF="#GettingPainted" >Getting Painted</A>
+<LI><A HREF="#Menus" >Menus</A>
+<LI><A HREF="#LayoutManagers" >Layout Managers</A>
+<LI><A HREF="#GraphicsandImages" >Graphics and Images</A>
+<LI><A HREF="#Fonts" >Fonts</A>
+</UL>
+<LI><A HREF="#javaapplet" >java.applet</A>
+<UL>
+<LI><A HREF="#Applet" >Applet</A>
+</UL>
+<LI><A HREF="#javaawtimage" >java.awt.image</A>
+<UL>
+<LI><A HREF="#ColorModels" >Color Models</A>
+<LI><A HREF="#ProducingImages" >Producing Images</A>
+<LI><A HREF="#ImageFilters" >Image Filters</A>
+</UL>
+<LI><A HREF="#javaawtpeer" >java.awt.peer</A>
+<LI><A HREF="#javaio" >java.io</A>
+<UL>
+<LI><A HREF="#BasicStreams" >Basic Streams</A>
+<LI><A HREF="#FilteredStreams" >Filtered Streams</A>
+<LI><A HREF="#DataIO" >Data I/O</A>
+<LI><A HREF="#UsingFiles" >Using Files</A>
+<LI><A HREF="#StreamTokenizer" >StreamTokenizer</A>
+</UL>
+<LI><A HREF="#javanet" >java.net</A>
+<UL>
+<LI><A HREF="#AddressingtheWebURLs" >Addressing the Web: URLs</A>
+<LI><A HREF="#ContentHandlers" >Content Handlers</A>
+<LI><A HREF="#SocketsandInternetAddresses" >Sockets and Internet Addresses</A>
+</UL>
+<LI><A HREF="#javautil" >java.util</A>
+<UL>
+<LI><A HREF="#DictionariesHashtablesandProperties" >Dictionaries, Hashtables, and Properties</A>
+<LI><A HREF="#StacksandVectors" >Stacks and Vectors</A>
+<LI><A HREF="#CountingThingsEnumerations" >Counting Things: Enumerations</A>
+<LI><A HREF="#ObserversandObservables" >Observers and Observables</A>
+<LI><A HREF="#OtherUtilityClasses" >Other Utility Classes</A>
+</UL>
+<LI><A HREF="#Summary" >Summary</A>
+</UL>
+<HR>
+<P>
+<TT><B><A TARGET="resource window" HREF="http://java.sun.com/JDK-1.0/api/packages.html">http://java.sun.com/JDK-1.0/api/packages.html</A></B></TT>
+<P>
+Programmers in most other languages have to re-invent the wheel
+repeatedly to accomplish basic tasks. In contrast, Java comes
+with several standard packages of ready-made classes to handle
+basic functionality. These carefully designed packages are a joy
+to use: you'll find that quite often a few lines of Java can accomplish
+what it takes a C programmer dozens of lines of mostly tedious
+code to do. This chapter describes the classes found in the standard
+Java packages. The programming interface is listed online at <TT><A TARGET="resource window" HREF="http://java.sun.com/JDK-1.0/api/packages.html">http://java.sun.com/JDK-1.0/api/packages.html</A></TT>.
+<A HREF="ch4.htm" >Chapter 4</A>, &quot;Creating Your Own Objects,&quot;
+describes how you can use these classes as the foundation on which
+to build your own custom classes.
+<P>
+As described in <A HREF="ch1.htm" >Chapter 1</A>, &quot;An Overview
+of Java,&quot; a <I>class</I> in Java is a description of how
+to create and operate on a certain kind of program object. An
+<I>object</I> is a chunk of computer memory with various values
+stored in it, which the program knows how to access and use. These
+program objects only really exist when your applet or Java application
+is actually running, but you as the programmer have to tell the
+compiler how to use them.
+<P>
+If you're a C or C++ programmer, keep in mind as you learn Java
+that every variable of class type is actually a <I>reference</I>
+to the class object. In C a variable can be an entire <TT>struct</TT>,
+which is different from being a <I>pointer</I> to <TT>struct</TT>.
+This isn't the case in Java. For example, comparing variables
+of class type in Java (using the relational operators <TT>==</TT>
+or <TT>!=</TT>) is actually a comparison
+of references, not values (but see the <TT>equals()</TT>
+method of <TT>java.lang.Object</TT>).
+Internally this is like comparing memory addresses, but references
+aren't exactly pointers: you cannot access those addresses. Assigning
+and copying in method arguments is always the copying of a single
+reference value for each object, never a field-by-field copy as
+in C. This is no limitation, and it actually saves you grief.
+<P>
+If you're an Eiffel programmer, then of course you're right at
+home!
+<P>
+The standard Java classes are organized into packages, and also
+by inheritance. <I>Packages</I> are a way of grouping related
+classes to avoid potential naming conflicts, while inheritance
+provides the economy of expression that makes object-oriented
+programming powerful. The standard Java packages are
+<BLOCKQUOTE>
+<TT>java.lang<BR>
+java.awt<BR>
+java.applet<BR>
+java.awt.image<BR>
+java.awt.peer<BR>
+java.io<BR>
+java.net<BR>
+java.util</TT>
+</BLOCKQUOTE>
+<P>
+The standard Java classes are often quite minimal implementations,
+designed to be subclassed by you, the programmer. In this way,
+you get the best compromise between having to write the same code
+over and over, and having to live with libraries that are cluttered
+and too &quot;fat.&quot; Perhaps best of all, you can be certain
+that the code you share with others has the same core of basic
+classes to draw upon. This makes your applets smaller and hence
+more &quot;internet friendly.&quot; These classes are intended
+to be reliable and efficient, and some may even use platform-dependent
+native code behind the scenes. So it is often impossible to write
+a more efficient routine in Java alone. Java is a relatively &quot;small&quot;
+language, and most of these packages are not strictly required
+by the language definition, with the exception of the <TT>java.lang</TT>
+package.
+<H2><A NAME="PackagesinJava"><FONT SIZE=5 COLOR=#FF0000>Packages
+in Java</FONT></A></H2>
+<P>
+In Java, a <I>package</I> is a collection of classes that are
+in some way related, and are to be compiled in their own name
+space. Typically, all the classes in a package are designed together
+by the same person or team. Thus, name conflicts between classes
+within the package can be avoided by design. To avoid name conflicts
+across different packages, the package name of a class is prepended
+to the class to distinguish it from classes of the same name that
+may exist in other packages.
+<P>
+For example, the fully qualified name of the Java <TT>Button</TT>
+class is <TT>java.awt.Button</TT>,
+since this class is defined in the <TT>java.awt</TT>
+package. If you like being confused, you can even write your own
+class called <TT>Button</TT> that
+does something completely different from the Java <TT>Button</TT>
+class. Then you can still access the predefined class by using
+its long name, <TT>java.awt.Button</TT>.
+<P>
+If no name conflicts exist, you may <I>import</I> the name <TT>java.awt.Button</TT>,
+or indeed the entire package if you choose. Imported names may
+be used in their short form (i.e. <TT>String</TT>
+rather than <TT>java.lang.String</TT>).
+For example, to import the entire <TT>java.awt</TT>
+package, as well as the single class <TT>java.util.Vector</TT>,
+put these two lines at the top of your source file:
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+import java.util.Vector;</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>java.lang</TT> package is
+automatically imported into every Java compilation.
+<P>
+<TT><B><A TARGET="resource window" HREF="http://java.sun.com/JDK-1.0/knownbugs.html#Compiler">http://java.sun.com/JDK-1.0/knownbugs.html#Compiler</A>
+<P>
+<CENTER></B></TT><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+In theory, packages establish separate name spaces, but see <TT><A TARGET="resource window" HREF="http://java.sun.com/JDK-1.0/knownbugs.html#Compiler">http://java.sun.com/JDK-1.0/knownbugs.html#Compiler</A></TT> for some known bugs.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Packages also provide new levels of access control. The default
+rule for access control (when no access control specifier is present)
+is <I>not</I> the same as <TT>public</TT>:
+it makes the class or field visible to any class inside the package
+and invisible outside the package. This is sometimes called &quot;friendly&quot;
+access control. Packages must explicitly declare classes and fields
+to be <TT>public</TT> if they are
+to be visible from other packages. The special access specifier
+<TT>private protected</TT> makes a
+field accessible to subclasses in the same package only. Subclasses
+from other packages do not see a <TT>private
+protected</TT> field.
+<H2><A NAME="javalang"><TT><FONT SIZE=5 COLOR=#FF0000>java.lang</FONT></TT></A>
+</H2>
+<P>
+The <TT>java.lang</TT> package contains
+the various classes that are essential to the definition of the
+Java language or that, by their nature, need to access the internals
+of Java in a way that most classes cannot do. For example, the
+string class <TT>java.lang.String</TT>
+is part of the language definition, and <TT>java.lang.Thread</TT>
+is used to control concurrent threads of execution in Java. The
+<TT>java.lang</TT> package contains
+the primordial class <TT>Object</TT>,
+of which every Java class is a subclass. It also contains wrapper
+classes for the various primitive types, which allow you to treat
+an <TT>int</TT>, for example, as a
+bona fide Java object (instance of a subclass of <TT>Object</TT>),
+by instantiating a <TT>java.lang.Integer</TT>.
+You need to do this in order to store integers in a vector array
+(<TT>java.util.Vector</TT>), for example.
+Objects belonging to these wrapper classes are freely convertible
+into the corresponding primitive type.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Think about why the <TT>String</TT> class is so special. It is impossible to write it yourself. It has a special form of constructor call: the double-quoted string literal actually results in the construction of a <TT>String</TT> object. This lexical tie-in requires special compiler design and makes the compiler depend on the class design!
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<H3><A NAME="Object"><TT><FONT SIZE=4>Object</FONT></TT></A>
+</H3>
+<P>
+One of the most important classes in Java, the <TT>Object</TT>
+class implements the basic methods that every class must have.
+Every Java class inherits from this class; <TT>Object</TT>
+is the only Java class with no superclass. Every method in the
+<TT>Object</TT> class is available
+to every object in Java (though another, intermediate base class
+may override some methods). The <TT>Object</TT>
+class includes utility methods to generate hash codes and to create
+clones, and the method <TT>equals()</TT>,
+which tests two objects for equality. There are also some thread
+synchronization primitives (<TT>notify()</TT>,
+<TT>notifyAll()</TT>, <TT>wait()</TT>),
+a way to interrogate objects about their run-time class (<TT>getClass()</TT>),
+and the <TT>finalize()</TT> method,
+which you can override to specify some code that is performed
+before the object is garbage-collected. For example, here you
+may close any open files that are created by the object.
+<P>
+A reference to <TT>Object</TT> can
+reference any Java object at runtime. For example, an array of
+<TT>Object</TT>s can hold references
+to many different types of object; all these types are subclasses
+of <TT>Object</TT>. This is a completely
+type-safe way to get beyond the &quot;casting void pointers&quot;
+trick, which every C programmer is familiar with.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Be careful when using the <TT>finalize()</TT> method. Merely dropping all references to an object does not guarantee that it is ever garbage-collected. The garbage collector can decide not to bother, if memory is plentiful. So don't rely on <TT>finalize()</TT> to be called in a timely way. <A HREF="ch4.htm" >See Chapter 4 </A>for more on garbage collection.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4>The <TT>equals()</TT> method</H4>
+<P>
+The <TT>equals()Object</TT> method
+is used this way:
+<BLOCKQUOTE>
+<TT>public class Thing extends Object<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;static Thing Fred;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;...<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public boolean sameAsFred( Object o )
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return o.equals(
+Fred );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+Note that <TT>equals()</TT> is supposed
+to be a different kind of test than comparing references. Equals
+is a comparison of the two given objects <I>by value, </I>which
+means they can be equal even if they are different objects so
+long as they have the same type and are functionally equivalent
+objects. That is, every instance variable that represents a part
+of the state of the external object being modeled is equal in
+the two objects. This is a recursive definition since the instance
+variables may themselves be class objects. So this kind of test
+is relatively more expensive than comparing references. The predefined
+library classes each override the <TT>equals()</TT>
+method to mean something sensible. However if you want this method
+call to be meaningful, you generally override it in your own objects.
+This is especially true if you are inheriting directly from the
+<TT>Object</TT> class since the <TT>equals()</TT>
+method in the <TT>Object</TT> class
+does nothing except compare references. And remember that even
+if your class has no explicit superclass (empty <TT>extends</TT>
+clause), your class has <TT>Object</TT>
+as its implicit superclass. The following segment is a typical
+example of overriding the <TT>equals()</TT>
+method:
+<BLOCKQUOTE>
+<TT>public class MyClass<BR>
+{<BR>
+&nbsp;&nbsp;String name;<BR>
+&nbsp;&nbsp;int serialno;<BR>
+<BR>
+&nbsp;&nbsp;/* other methods ... */<BR>
+<BR>
+&nbsp;&nbsp;public boolean equals( MyClass o )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return name.equals(o.name) &amp;&amp;
+serialno==o.serialno;<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+If you are strict about using inheritance to express <I>is-a</I>
+relations, rather than <I>has-a</I> relations, then your <TT>equals()</TT>
+method is like the above, albeit with different instance variables.
+A <TT>Manager</TT> <I>is-an</I> <TT>Employee</TT>;
+any further instance variables a <TT>Manager</TT>
+may have are not part of its identity as an <TT>Employee</TT>,
+so <TT>Manager</TT> need not override
+<TT>Employee</TT>'s <TT>equals()</TT>
+method at all.
+<P>
+Now suppose you need to express the idea of a <I>workgroup</I>.
+If you assume that a workgroup always has one manager, it is certainly
+tempting to make the <TT>WorkGroup</TT>
+class extend the <TT>Manager</TT>
+class. However, you run into problems: a workgroup just isn't
+a special kind of manager. When you try to write the <TT>equals()</TT>
+method, you are compelled to write ugly code such as the following:
+<BLOCKQUOTE>
+<TT>public class WorkGroup extends Manager
+<BR>
+{<BR>
+&nbsp;&nbsp;/* This is an example of how NOT to do this! */<BR>
+<BR>
+&nbsp;&nbsp;String groupname;<BR>
+<BR>
+&nbsp;&nbsp;/* other methods ... */<BR>
+<BR>
+&nbsp;&nbsp;public boolean equals( WorkGroup o )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return super.equals( o ) &amp;&amp; groupname.equals(o.groupname);
+<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+This code is <TT>Object</TT> ugly
+because you must explicitly call on the superclass to find whether
+the two workgroups have the same manager. This is nonsense! Moreover,
+this class is not easy to modify. Next week, the boss may tell
+you that a workgroup can have two managers. A much better way
+to express the idea of a workgroup is to make a <TT>WorkGroup</TT>
+class (extending <TT>Object</TT>)
+having instance variables to specify the <TT>Manager</TT>
+and the other <TT>Employee</TT>s (a
+workgroup has a manager, and so forth).
+<P>
+Generally speaking, if your class inherits directly from <TT>Object</TT>,
+you override the <TT>equals()</TT>
+method, making it compare corresponding instance variables. If
+your class extends a subclass of <TT>Object</TT>,
+then you must decide what semantics are appropriate, although
+by being consistent you can often avoid this decision.
+<H4>The <TT>toString()</TT> method
+</H4>
+<P>
+The <TT>Object</TT> class defines
+the <TT>toString()</TT> method, which
+returns a <TT>String</TT> that represents
+the value of the object. The <TT>Object</TT>
+class itself cannot do more than a rudimentary job at this. You
+should therefore override this in your own classes whenever such
+a conversion is meaningful. The string representation may be incomplete;
+there is no requirement that the object be recoverable from the
+string.
+<H4>The <TT>clone()</TT> method</H4>
+<P>
+The <TT>clone()Object</TT>  method
+creates a &quot;clone&quot; of the object, and returns it. By
+default, this is a &quot;shallow&quot; clone: instance variables
+that are references of class type are not cloned recursively.
+Rather, the reference value is copied. This means that the clone
+may reference some of the same objects as the original. If you
+prefer different behavior, you must override this method in your
+own objects.
+<P>
+Objects that specifically do not want to be cloned may throw a
+<TT>CloneNotSupportedException</TT>
+from their <TT>clone()</TT> method
+to complain about it.
+<H3><A NAME="WrappersforBasicTypes">Wrappers for Basic Types</A>
+</H3>
+<P>
+The classes <TT>Boolean</TT>, <TT>Character</TT>,
+<TT>Double</TT>, <TT>Float</TT>,
+<TT>Integer</TT>, and <TT>Long</TT>,
+defined in the package <TT>java.lang</TT>,
+are full-fledged Java objects whose purpose is to represent the
+values of primitive types. They all work in about the same way,
+so let's look at <TT>Boolean</TT>
+as an example.
+<P>
+You can use a <TT>boolean</TT> value
+to construct a <TT>Boolean</TT> object:
+<BLOCKQUOTE>
+<TT>Boolean b = new Boolean( true );</TT>
+</BLOCKQUOTE>
+<P>
+To get <TT>boolean</TT> values back
+out of a <TT>Boolean</TT> object,
+use the <TT>booleanValue()</TT> method:
+<BLOCKQUOTE>
+<TT>if ( b.booleanValue() ) System.out.println(
+&quot;yes&quot; );</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>Boolean</TT> class also provides
+both constant <TT>Boolean</TT> values
+as class variables:
+<BLOCKQUOTE>
+<TT>if ( b.equals( Boolean.TRUE ) )<BR>
+&nbsp;&nbsp;flag = Boolean.FALSE;</TT>
+</BLOCKQUOTE>
+<P>
+Similarly, each of the various wrapper classes provides class
+variables to delimit its range of legal values. The abstract class
+<TT>java.lang.Number</TT> is also
+provided as a superclass for the numerical classes <TT>Double</TT>,
+<TT>Float</TT>, <TT>Integer</TT>,
+and <TT>Long</TT>. The <TT>Number</TT>
+class merely specifies the four abstract methods <TT>intValue()</TT>,
+<TT>longValue()</TT>, <TT>floatValue()</TT>,
+and <TT>doubleValue()</TT>; this guarantees
+that any instance of a subclass of <TT>Number</TT>
+(say a <TT>Double</TT>) can be converted
+into any of the four representations (possibly with rounding).
+<H3><A NAME="StringsinJava">Strings in Java</A></H3>
+<P>
+Java provides a smart implementation of character strings. A <TT>String</TT>
+object holds a fixed character string. Since these objects are
+read only, the implementation of <TT>String</TT>
+can be clever and return shared references into a pool of unique
+strings if it chooses to (you can use the <TT>intern()</TT>
+method to guarantee this). An object provides an array in which
+to manipulate string data; it grows as required when new data
+is appended or inserted.
+<P>
+A <TT>String</TT> is typically constructed
+using a double-quoted string literal:
+<BLOCKQUOTE>
+<TT>String s = &quot;My String&quot;;</TT>
+</BLOCKQUOTE>
+<P>
+However, <TT>String</TT>s can also
+be constructed from arrays of <TT>char</TT>
+or <TT>byte</TT>:
+<BLOCKQUOTE>
+<TT>char s_data[] = { 'M', 'y', ' ', 'S',
+'t', 'r', 'i', 'n', 'g' };<BR>
+String s = new String( s_data );</TT>
+</BLOCKQUOTE>
+<P>
+Or from a <TT>StringBuffer</TT>:
+<BLOCKQUOTE>
+<TT>String s = new String( my_strbuffer );</TT>
+</BLOCKQUOTE>
+<P>
+There are many useful methods for scanning strings and for extracting
+substrings:
+<BLOCKQUOTE>
+<TT>String ring = &quot;My String&quot;.substring(5,
+9);&nbsp;&nbsp;&nbsp;&nbsp; // extract substring &quot;ring&quot;</TT>
+</BLOCKQUOTE>
+<P>
+Notice how the indices start at 0, and notice that the lower bound
+is inclusive, the upper exclusive. Then the length of the substring
+is easily calculated as 9-5 = 4.
+<P>
+The <TT>length()</TT> method gives
+the length of a string.
+<P>
+The <TT>String</TT> class also has
+several static <TT>valueOf()</TT>
+methods that know how to convert various types into string representations.
+The notation is quite mnemonic:
+<BLOCKQUOTE>
+<TT>String five = String.valueOf(5);</TT>
+</BLOCKQUOTE>
+<P>
+and so on. For more general objects, the method call <TT>String.valueOf(Object)</TT>
+uses the object's <TT>toString()</TT>
+method to perform the conversion. <TT>StringBuffer</TT>
+objects hold string data of variable length. You can <TT>append()</TT>
+any <TT>Object</TT> on the end, and
+the result is to append the string representation of that object
+to the <TT>StringBuffer</TT> (typically,
+you append a <TT>String</TT> anyway).
+You can <TT>insert()</TT> an <TT>Object</TT>
+at any index, and the string representation is inserted at that
+point, moving the rest of the buffer to make room. Although <TT>StringBuffer</TT>
+objects are handy for working with string data, all of the useful
+scanning methods are in the <TT>String</TT>
+class, so usually <TT>StringBuffer</TT>
+objects are an intermediate step to constructing a <TT>String</TT>.
+You can convert a <TT>StringBuffer</TT>
+to a string using the <TT>toString()</TT>
+method, or the constructor <TT>String(StringBuffer)</TT>.
+Conversion of <TT>StringBuffer</TT>s
+into <TT>String</TT>s is smart: the
+array of character data is not copied unless and until a subsequent
+operation via a <TT>StringBuffer</TT>
+reference tries to alter the data, and then a copy is made transparently.
+<P>
+You can concatenate a <TT>String</TT>
+with another <TT>String</TT> or <TT>StringBuffer</TT>
+by using the <TT>+</TT> operator.
+Indeed, so long as one operand of the <TT>+</TT>
+operator is a <TT>String</TT>, then
+the other is converted into a <TT>String</TT>
+and the result is the concatenation of the two <TT>String</TT>s:
+<BLOCKQUOTE>
+<TT>String myaddress = 1234 + ' ' + &quot;Birch
+St.,&quot; + ' ' + &quot;Birchville&quot;;</TT>
+</BLOCKQUOTE>
+<H3><A NAME="Math">Math</A></H3>
+<P>
+The class <TT>java.lang.Math</TT>
+is a class with only static methods and no instance variables.
+There are no instances of this class, so it requires no constructors.
+It is a collection of mathematically useful functions, together
+with the two constants <TT>Math.PI</TT>
+(an approximation of <FONT FACE="Symbol">p</FONT>, the circumference
+of a circle divided by its diameter) and <TT>Math.E</TT>,
+which is approximately Euler's number <I>e</I>, the base for natural
+logarithms.
+<BLOCKQUOTE>
+<TT>// how many times does this angle wrap
+around<BR>
+double q = Math.floor( angle / (2*Math.PI) );<BR>
+// bring the angle into the range 0..2*PI<BR>
+angle -= q * 2 * Math.PI;</TT>
+</BLOCKQUOTE>
+<P>
+The trigonometric functions always measure angles in radians (180
+degrees equals [pi] radians; equivalently, a radian is the angle
+subtended by a circular arc of length 1 on a circle of radius
+1), and the exponential and log functions use <TT>Math.E</TT>
+as the base. Some <TT>Math</TT> functions
+throw an <TT>ArithmeticException</TT>
+if their argument is absurd. Try <TT>Math.sqrt(-1.0)</TT>
+to see this happen. Interestingly, although the tangent of a right
+angle is undefined, <TT>Math.tan(Math.PI/2)</TT>
+does not result in an exception; rather, a very large number is
+returned. Due to roundoff, <TT>Math.PI/2</TT>
+is never exactly a right angle.
+<H3><A NAME="CloningObjectstheCloneableInterface">Cloning Objects:
+the <TT><FONT SIZE=4>Cloneable</FONT></TT><FONT SIZE=4>
+Interface</FONT></A></H3>
+<P>
+Besides overriding the <TT>clone()</TT>
+method in <TT>java.lang.Object</TT>,
+a class may implement the interface <TT>Cloneable</TT>
+to indicate that it makes sense to clone this type of object.
+The interface is an empty one. You don't need to supply any methods
+to conform to <TT>Cloneable</TT>,
+although you may want to override the default <TT>clone()</TT>
+method. Other classes can tell whether a class implements <TT>Cloneable</TT>
+by examining its class descriptor (an instance of the class <TT>Class</TT>).
+<H3><A NAME="ThreadsofExecution">Threads of Execution</A></H3>
+<P>
+In Java, a program or applet can be busy with several things at
+once. This means your classes must be able to create and control
+threads of execution. The <TT>java.lang</TT>
+classes <TT>Thread</TT>, <TT>ThreadGroup</TT>,
+and the interface <TT>Runnable</TT>
+provide this control. A <TT>Thread</TT>
+represents a single thread: a context of sequential execution.
+What gets executed is the <TT>run()</TT>
+method of the <TT>Thread</TT>, or
+of a <TT>Runnable</TT> that is designated
+as the <TT>Thread</TT>'s <I>target</I>.
+A <TT>ThreadGroup</TT> can hold several
+<TT>Thread</TT>s and <TT>ThreadGroup</TT>s,
+which is handy in case you want to organize your <TT>Thread</TT>s
+into a tree structure and operate on whole subtrees of <TT>Thread</TT>s
+at once. Moreover, <TT>Thread</TT>s
+are prohibited from accessing the parent of their <TT>ThreadGroup</TT>.
+So by using <TT>ThreadGroup</TT>s,
+you can be sure a rogue thread isn't going to suddenly suspend
+or kill a thread you don't want it to. <A HREF="ch16.htm" >Chapter 16</A>,
+&quot;Multithreading with Java,&quot; explains multithreaded Java
+programming.
+<H3><A NAME="ExceptionsandErrors">Exceptions and Errors</A></H3>
+<P>
+Java contains an elegant exception-handling mechanism. When a
+method cannot complete normally, there are three choices. You
+can return a nonsensical value, never ever return, or throw an
+exception. The first choice is not usually acceptable, and the
+second is downright antisocial. Applets want to take particular
+care that this doesn't happen. What's left? Throwing an exception
+transfers control non-locally to a block of &quot;rescue&quot;
+code defined in some currently executing method that called on
+your method, perhaps indirectly (for example, to a context perhaps
+several frames up the execution stack, but in the same thread).
+This rescue code is called a &quot;catch block.&quot; The objects
+that get &quot;thrown and caught&quot; are of class <TT>Exception</TT>,
+<TT>Error</TT>, or any class that
+implements the interface <TT>Throwable</TT>.
+These thrown objects describe the exceptional condition and the
+context in which it occurs. An <TT>Exception</TT>
+indicates that a method can't complete its stated mission because
+of bad arguments or unavailable resources. An <TT>Error</TT>
+is more serious and indicates a condition that is abnormal and
+unexpected. In the Java API these are heavily subclassed to provide
+more and less specific &quot;flavors&quot; of exception. <A HREF="ch10.htm" >Chapter 10</A>,
+&quot;The Order Entry System: Exception Handling and Browser Interaction,&quot;
+explains exception handling in more detail.
+<H3><A NAME="TheRuntimeEnvironment">The Runtime Environment</A>
+</H3>
+<P>
+The <TT>java.lang</TT> package provides
+access to the external system environment by way of the related
+classes <TT>Runtime</TT> and <TT>System</TT>.
+External processes are manipulated by way of class <TT>java.lang.Process</TT>,
+and security policy is set by an object of type <TT>java.lang.SecurityManager</TT>.
+<H4><TT>Compiler</TT></H4>
+<P>
+The <TT>java.lang.Compiler</TT> class
+provides a way to access an embedded Java compiler, which is loaded
+at startup if the <TT>java.compiler</TT>
+system property is defined. The value of the property should be
+the name of a dynamically linked library implementing the compiler.
+There is no predefined compiler; you must provide one.
+<H4><TT>Runtime</TT></H4>
+<P>
+You can't construct a <TT>Runtime</TT>
+instance yourself. A <TT>Runtime</TT>
+object is obtained by calling the static method <TT>Runtime.getRuntime()</TT>.
+By using a <TT>Runtime</TT> instance,
+you can
+<UL>
+<LI>Execute a subprocess.
+<LI>Exit the program.
+<LI>Load a dynamically linked library.
+<LI>Run the garbage collector or finalize objects.
+<LI>Estimate free memory.
+<LI>Control program tracing.
+<LI>Localize streams (make them translate from Unicode to the
+local character set).
+</UL>
+<P>
+A <TT>Runtime</TT> object can be used
+to execute another system process by way of the <TT>exec()</TT>
+method (in four flavors) that returns a <TT>java.lang.Process</TT>
+object. The <TT>Process</TT> instance
+is useful for attaching to the standard input, output, and error
+streams of the new process. You can also kill the subprocess,
+wait for it to terminate, and retrieve its exit code, all by way
+of the <TT>Process</TT> object. The
+process exists outside the Java virtual machine. It is not a <TT>Thread</TT>
+but a separate system process, and some aspects of its behavior
+may be system-dependent.
+<P>
+You can use a <TT>Runtime</TT> object
+to load a dynamically linked library. This is necessary in order
+to use native methods in Java. Procedures for loading dynamic
+libraries are covered in <A HREF="ch14.htm" >Chapter 14</A>, &quot;Extending
+Java.&quot;
+<P>
+The methods <TT>traceInstructions()</TT>
+and <TT>traceMethodCalls()</TT> request
+that the Java virtual machine print trace information about each
+instruction or each method call that gets executed, respectively.
+Where the output ends up or whether tracing is supported at all
+is implementation-dependent.
+<P>
+While you can use a <TT>Runtime</TT>
+object to run the garbage collector or finalize any outstanding
+objects (<TT>gc()</TT> and <TT>runFinalization()</TT>
+methods), this should not normally be necessary, since the Java
+environment runs a separate thread whose purpose is to finalize
+and garbage collect when necessary (<A HREF="ch4.htm" >see Chapter 4</A>).
+Furthermore, although the <TT>exit()</TT>
+method can be used to exit the program, it should normally be
+avoided, except to specify an exit code upon normal termination
+of a stand-alone program. Low-level methods and applets generally
+throw exceptions instead.
+<H4><TT>System</TT></H4>
+<P>
+While the <TT>Runtime</TT> functionality
+is accessed through an actual instance, the <TT>System</TT>
+class provides some similar functions by way of static methods
+and class variables. There are no instances of the <TT>System</TT>
+class. The <TT>System</TT> class allows
+you to
+<UL>
+<LI>Access the standard input, output, and error streams.
+<LI>Exit the program.
+<LI>Load a dynamically linked library.
+<LI>Run the garbage collector or finalize objects.
+<LI>Access system <TT>Properties</TT>.
+<LI>Access the <TT>SecurityManager</TT>.
+<LI>Perform system-dependent array copy and time-check operations.
+</UL>
+<P>
+The standard input, output, and error streams of your Java application
+or applet are accessed as <TT>System.in</TT>,
+<TT>System.out</TT>, and <TT>System.err</TT>.
+These class variables are <TT>PrintStream</TT>
+objects (see <TT>java.io</TT>, below),
+allowing your application to perform the usual UNIX-style I/O.
+That's not much use in a finished applet, since an applet embedded
+in a web page is typically disallowed from doing<BR>
+anything useful with these streams. They are handy for debugging
+in <TT>appletviewer</TT>, and also
+in stand-alone Java applications.
+<P>
+Java also maintains some <I>system properties</I>, accessible
+through the <TT>System</TT> class.
+These take the place of environment variables and anything else
+in the system that is relevant to the Java environment. The static
+method <TT>getProperties()</TT> returns
+a <TT>java.util.Properties</TT> object
+describing the system properties. For example, the properties
+can be listed by a little program such as the following:
+<BLOCKQUOTE>
+<TT>public class Props<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public static void main( String args[]
+)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.getProperties().list(System.err);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+This program results in a list of system properties:
+<BLOCKQUOTE>
+<TT>-- listing properties --</TT>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TT>java.home=/mnt2/java<BR>
+java.version=1.0<BR>
+file.separator=/<BR>
+line.separator=<BR>
+<BR>
+java.vendor=Sun Microsystems Inc.<BR>
+user.name=korpen<BR>
+os.arch=sparc<BR>
+os.name=Solaris<BR>
+java.vendor.url=<A TARGET="resource window" HREF="http://www.sun.com">http://www.sun.com</A>/<BR>
+user.dir=/nfs/grad/korpen/www/java<BR>
+java.class.path=.:/home/grad/korpen/www/java:/mnt2/ja...<BR>
+java.class.version=45.3<BR>
+os.version=2.x<BR>
+path.separator=:<BR>
+user.home=/homes/staff/korpen</TT>
+</BLOCKQUOTE>
+<P>
+Use the static method <TT>getProperty()</TT>
+to get individual properties by name.
+<H4><TT>SecurityManager</TT></H4>
+<P>
+By extending the abstract class <TT>java.lang.SecurityManager</TT>,
+you can specify a security policy for the current Java program.
+Any code loaded over the Internet by your program is then subject
+to that policy, for example. A Java program has only one <TT>SecurityManager</TT>.
+You can look up the current <TT>SecurityManager</TT>
+by calling <TT>System.getSecurityManager()</TT>.
+This method returns <TT>null</TT>
+to indicate that the default security policy is being used. The
+default policy is rather lax. However, you can install a custom
+security manager. This allows you to do the following, among other
+things:
+<UL>
+<LI>Prevent Java code from deleting, writing, or reading certain
+files.
+<LI>Monitor or disallow certain socket connections.
+<LI>Control which <TT>Thread</TT>s
+may access which other <TT>Thread</TT>s
+or <TT>ThreadGroup</TT>s.
+<LI>Control access to packages, and to system properties.
+</UL>
+<P>
+For example, the method call that checks whether the calling code
+is allowed to delete a certain file is declared:
+<BLOCKQUOTE>
+<TT>public void checkDelete( String file
+);</TT>
+</BLOCKQUOTE>
+<P>
+The method must either return quietly, or throw a <TT>SecurityException</TT>.
+This is typical of the <TT>public</TT>
+methods in class <TT>SecurityManager</TT>.
+<P>
+To provide a custom security manager, write a subclass of <TT>SecurityManager</TT>
+and override some of its check methods. Although the <TT>SecurityManager</TT>
+class is abstract, none of its methods are abstract. You still
+want to override a fair number of them, though, since the check
+methods inherited from <TT>SecurityManager</TT>
+always throw a <TT>SecurityException</TT>.
+You don't have to call on these methods yourself for the security
+manager to be effective. Once the security manager is installed,
+various library methods call on it to check for security clearance.
+To install your <TT>SecurityManager</TT>,
+create an instance of it, and call <TT>System.setSecurityManager()</TT>.
+Here is a little program (SMDemo.java) that demonstrates how to
+use a custom security manager. You should create files named DELETEME
+and KEEPME before running the program:
+<BLOCKQUOTE>
+<TT>import java.io.File;<BR>
+<BR>
+class MySecurityManager extends SecurityManager<BR>
+{<BR>
+&nbsp;&nbsp;public void checkDelete( String file )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Only allow the file &quot;DELETEME&quot;
+to be deleted.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if ( !file.equals( &quot;DELETEME&quot;
+) )<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new SecurityException(
+&quot;cannot delete: &quot; + file );<BR>
+&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// Override many more checkXXX() methods
+here...<BR>
+}<BR>
+<BR>
+public class SMDemo<BR>
+{<BR>
+&nbsp;&nbsp;public static void main( String argv[] )<BR>
+&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;MySecurityManager m = new MySecurityManager();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;File deleteme = new File( &quot;DELETEME&quot;
+);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;File keepme = new File( &quot;KEEPME&quot;
+);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.setSecurityManager( m );<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;deleteme.delete();&nbsp;&nbsp;// Should
+be OK.<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;keepme.delete();&nbsp;&nbsp;&nbsp;&nbsp;//
+Should get a SecurityException.<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;System.exit(0);<BR>
+&nbsp;&nbsp;}<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+After you execute the program, you should see that the file DELETEME
+is gone and the KEEPME file is still there, the program having
+triggered a <TT>SecurityException</TT>
+upon trying to delete it.
+<P>
+The security manager can only be set once in a program. So by
+setting it yourself, you know that untrusted code isn't busy installing
+its own super-lenient policy. <A HREF="ch19.htm" >See Chapter 19</A>,
+&quot;Security Issues,&quot; for more details on security issues.
+<P>
+Applets are not usually allowed to set the security manager.
+<H3><A NAME="ClassesatRuntime">Classes at Runtime</A></H3>
+<P>
+Even at runtime, it is possible to access certain features of
+a class. This is done by way of the class <TT>Class</TT>,
+which implements a class descriptor object for a Java class. You
+can get a class descriptor from an existing class either by using
+the <TT>getClass()</TT> method of
+<TT>java.lang.Object</TT> or by calling
+the static method <TT>Class.forName()</TT>:
+<BLOCKQUOTE>
+<TT>Class stringClass = Class.forName(&quot;String&quot;);</TT>
+</BLOCKQUOTE>
+<P>
+Using a class descriptor, you can find out:
+<UL>
+<LI>The class name
+<LI>The superclass
+<LI>Whether the class is actually an interface
+<LI>Which interfaces the class implements
+<LI>Which <TT>ClassLoader</TT> originated
+this class
+</UL>
+<P>
+There is also a way to instantiate new objects from the class
+descriptor: the <TT>newInstance()</TT>
+method. This has the limitation that no arguments can be passed
+to the constructor, so it fails unless the class has an accessible
+constructor which takes no arguments. There also doesn't seem
+to be any way to use the class descriptor to produce a valid operand
+for the right-hand side of <TT>instanceof</TT>.
+<P>
+Class <TT>java.lang.ClassLoader</TT>
+is meant to provide a way to load classes at runtime from a user-defined
+source. It is an abstract class. A subclass must implement the
+<TT>loadClass()</TT> method to load
+an array of bytes from somewhere and then convert it into a class
+descriptor by calling <TT>resolveClass()</TT>
+and <TT>defineClass()</TT>.
+<H2><A NAME="javaawt"><TT><FONT SIZE=5 COLOR=#FF0000>java.awt</FONT></TT></A>
+</H2>
+<P>
+The <TT>java.awt</TT> package is a
+uniform interface to various windowing environments (AWT stands
+for Abstract Window Toolkit). The various classes in this package
+make it easy to create graphical user interface (GUI) elements
+such as scrollbars, text fields, buttons, checkboxes, and so on.
+Internally, these classes bind to a native windows toolkit in
+the local implementation. Your applet does not have to know which
+toolkit is actually being used since the same method calls have
+functionally equivalent results in any implementation, be it X
+Window, MacOS, OS/2, or Windows NT/95. You'll find that programming
+in <TT>java.awt</TT> is easier and
+more elegant than native windows programming anyhow. Future versions
+of Java reportedly will incorporate still more powerful coordinate-based
+drawing functions, making Java unbeatable for writing portable
+GUI, driven programs.
+<P>
+The interface between <TT>java.awt</TT>
+and the native windows toolkit is provided by the <TT>java.awt.Toolkit</TT>
+class and the package <TT>java.awt.peer</TT>,
+which is discussed later.
+<P>
+The framework for any GUI application is provided by the <TT>java.awt.Component</TT>
+class and its subclasses. Every GUI element (except menus) corresponds
+to a subclass of <TT>Component</TT>.
+Menus have slightly different requirements and they subclass the
+<TT>java.awt.MenuComponent</TT> class.
+<P>
+Many of the components are demonstrated in the included Java program
+<TT>AWTDemo.java</TT>, together with
+some nifty event-handling tricks. Figure 3.1 shows some <TT>Checkbox</TT>es,
+a <TT>Choice</TT>, three <TT>Label</TT>s,
+a <TT>TextField</TT> (subclassed to
+accept only numbers), a <TT>Scrollbar</TT>
+and a <TT>Button</TT>. These classes
+are all explained in the following sections.
+<P>
+<A HREF="f3-1.gif" ><B>Figure 3.1:</B> <I>The sample program AWTDemo.java: first screen</I></A>
+<H3><A NAME="Component">Component</A></H3>
+<P>
+The <TT>Component</TT> class represents
+a GUI component that has size, font, and color attributes, can
+redraw itself, and handle events (such as a mouse click) which
+occur within the component's display area, as well as perform
+various other functions. An example of a simple component is <TT>java.awt.Button</TT>,
+which displays a rectangular button with a string label and responds
+to click events. Components size themselves using <TT>java.awt.Dimension</TT>
+objects. These are simple objects with two instance variables:
+<TT>width</TT> and <TT>length</TT>.
+<P>
+Some of the handiest methods from <TT>java.awt.Component</TT>
+include the following:
+<P><BLOCKQUOTE>
+<TT>hide()</TT>-Hide the component.
+<P>
+<TT>show()</TT>-Show the component.
+Most components are visible by default, but <TT>Window</TT>s
+are initially invisible, and must be shown. Showing a <TT>Window</TT>
+also brings it to the front.
+<P>
+<TT>disable()</TT>-Disable the component
+so a button has its text grayed out, for example.
+<P>
+<TT>enable()</TT>-Enable a disabled
+component again.
+<P>
+<TT>paint()</TT>-Here the component
+paints itself. When inheriting from another component, you typically
+override this. You shouldn't call this method directly. Call <TT>repaint()</TT>.
+<P>
+<TT>repaint()</TT>-Asks the runtime
+system to paint the component as soon as possible.
+<P>
+<TT>handleEvent()</TT>-You can override
+this method to provide specific responses to user events.
+<P>
+<TT>createImage()</TT>-Create images
+from an <TT>ImageProducer</TT>. This
+is described later in this chapter as part of the package <TT>java.awt.image.</TT>
+<P>
+<TT>validate()</TT>-Verify that the
+component is <I>valid,</I> which means that the peer has been
+created and displays properly (see <TT>java.awt.peer</TT>,
+below), and that the component is properly laid out.
+</BLOCKQUOTE><P>
+A word about validation: components are validated automatically
+before they are drawn for the first time. But if you <TT>add()</TT>
+new components to a container after it has already been shown,
+you need to call the <TT>validate()</TT>
+method of the container explicitly (anyway, it never hurts to
+do so). The <TT>validate()</TT> method
+is recursive. It validates all components contained in the validated
+component, as well as the component itself.
+<H3><A NAME="ContainerComponents">Container Components</A></H3>
+<P>
+Container components contain other components. All containers
+belong to a subclass of the <TT>java.awt.Container</TT>
+class which knows how to <TT>add()</TT>
+and <TT>remove()</TT> components to
+or from the container and how to <TT>layout()</TT>
+the various components using a layout manager. Every component
+that is not a top-level window (instance of <TT>Window</TT>
+or a subclass) <I>must be added to a container</I> to be visible
+on screen.
+<P>
+Of course containers can contain containers, so a GUI is nothing
+but a hierarchy of components organized by containers. This can
+be several levels deep. Every component is either a top-level
+window or else has a parent container (accessible by way of the
+<TT>getParent()</TT> method in <TT>java.awt.Component</TT>).
+<P>
+Containers are either <TT>Panel</TT>s
+or <TT>Window</TT>s. A <TT>Panel</TT>
+(<TT>java.awt.Panel</TT>) is a general
+purpose container that sits inside a parent container on your
+screen. An applet is a <TT>Panel</TT>,
+for example. A <TT>Window</TT> (<TT>java.awt.Window</TT>)
+ occupies its own top-level window on your screen. By default,
+a <TT>Window</TT> is very plain without
+borders, title, or pulldown menus. These added features are provided
+by a special class of window, <TT>java.awt.Frame</TT>.
+The <TT>AWTDemo.java</TT> program
+uses a <TT>Frame</TT> as its top-level
+window (see Figure 3.1). A handy method that is special to <TT>Window</TT>
+subclasses is the <TT>pack()</TT>
+method. This method resizes the <TT>Window</TT>
+so that every component in it can be laid out at its preferred
+size.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD
+<BLOCKQUOTE>
+You should call a <TT>Window</TT>'s <TT>resize()</TT> or <TT>pack()</TT> method before showing it for the first time, to give it a definite size.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The remaining container classes are <TT>Dialog</TT>
+and <TT>FileDialog</TT>, which are
+each a kind of <TT>Window</TT>. A
+<TT>Dialog</TT> object implements
+a window that is optionally modal (a <I>modal</I> dialog grabs
+the input focus so the user is forced to provide input before
+proceeding) and that vanishes when the parent <TT>Frame</TT>
+is iconified. These are properties that a dialog box should have.
+A <TT>FileDialog</TT> provides a standard
+type of modal dialog box that allows the user to select a file
+on the local filesystem for saving or loading. The sample program
+<TT>AWTDemo.java</TT> shows a <TT>FileDialog</TT>
+when you select <TT>Load...</TT> from
+the <TT>File</TT> menu. Use a <TT>java.io.FilenameFilter</TT>
+object to filter the filenames that are displayed in the dialog.
+<H3><A NAME="ButtonsandOtherComponents">Buttons and Other Components</A>
+</H3>
+<P>
+Let's take a look at some of the standard components that comprise
+a user interface. For the details of how to handle the various
+events, see the next section, &quot;Event Handling.&quot;
+<H4><TT>Button</TT></H4>
+<P>
+A <TT>Button</TT> component is a simple
+pushbutton that displays a string label and responds to mouse
+presses from the user. Pressing a button triggers an action event.
+See Figure 3.1 for a picture of a typical <TT>Button</TT>.
+<H4><TT>Canvas</TT></H4>
+<P>
+A <TT>Canvas</TT> is a blank area
+suitable for drawing in. You can use a <TT>Graphics</TT>
+object to put polygons or images on the <TT>Canvas</TT>.
+Because a <TT>Canvas</TT> has no predefined
+responses to events and because its appearance is completely arbitrary,
+a <TT>Canvas</TT> is a good place
+to start when designing custom components that look unlike the
+standard components.
+<H4><TT>Checkbox</TT></H4>
+<P>
+A <TT>Checkbox</TT> is a small box
+with two states: either it's checked or unchecked. Clicking the
+mouse over an enabled <TT>Checkbox</TT>
+toggles its state. A <TT>Checkbox</TT>
+can have a string label. Figures 3.1, 3.2, and 3.3 all have <TT>Checkbox</TT>es.
+Notice how they look different when in a <TT>CheckboxGroup</TT>.
+<H4><TT>CheckboxGroup</TT></H4>
+<P>
+You put <TT>Checkbox</TT>es in a <TT>CheckboxGroup</TT>
+in order to make them exhibit &quot;radio button&quot; behavior:
+when one is checked, the others become unchecked. Only one <TT>Checkbox</TT>
+from the group can be checked at any time. The <TT>CheckboxGroup</TT>
+does not act as a container for the <TT>Checkbox</TT>
+component; it only tells some of the <TT>Checkbox</TT>es
+to uncheck themselves when necessary. <TT>Checkbox</TT>es
+can be placed in a group on creation or by calling their <TT>setCheckboxGroup()</TT>
+method.
+<H4><TT>Choice</TT></H4>
+<P>
+A <TT>Choice</TT> component allows
+the user to specify one of a short list of choices, which appear
+on a little popup menu next to the current choice. The choices
+on the list are identified by a string name. Figure 3.1 shows
+a <TT>Choice</TT> component.
+<H4><TT>Label</TT></H4>
+<P>
+A <TT>Label</TT> component displays
+a line of text. The text can be aligned to the left, right, or
+center of the <TT>Label</TT>. The
+user isn't allowed to edit the text in a <TT>Label</TT>.
+Use a <TT>TextField</TT> for that.
+Figure 3.1 shows several <TT>Label</TT>s.
+<H4><TT>List</TT></H4>
+<P>
+A <TT>List</TT> presents a scrollable
+list of items, identified by string names. Use this instead of
+a <TT>Choice</TT> when multiple selections
+are meaningful or when there may be too many items to conveniently
+display on a single popup menu. Figure 3.2 shows a typical list.
+<TT>List</TT>s can allow or disallow
+multiple selections.
+<P>
+<A HREF="f3-2.gif" ><B>Figure 3.2:</B> <I>The sample program AWTDemo.java: second screen</I></A>
+<H4><TT>Scrollbar</TT></H4>
+<P>
+Most <TT>Scrollbar</TT> components
+are automatically generated when required by <TT>List</TT>
+or <TT>TextArea</TT> components. If
+you want to create your own scrollbars, you can do so. The orientation
+is specified by the constants <TT>Scrollbar.HORIZONTAL</TT>
+and <TT>Scrollbar.VERTICAL</TT>. Take
+a look at the horizontal scrollbar in Figure 3.1.
+<P>
+The <TT>Scrollbar</TT> reports its
+current position via the <TT>getValue()</TT>
+method. To make the values meaningful, set the minimum and maximum
+values, together with the line and page increment values, using
+either the full five-argument constructor or the <TT>setValues()</TT>
+method.
+<P>
+There are five basic operations on a <TT>Scrollbar</TT>:
+line up, line down, page up, page down, and absolute positioning.
+Corresponding to these, there are five scrollbar event types.
+You don't have to discriminate between these very often. The event
+argument is always the integer value reflecting the new scrollbar
+position. Unless you want real-time response to <TT>Scrollbar</TT>
+actions, it is not necessary to handle <TT>Scrollbar</TT>
+events at all.
+<H4><TT>TextField</TT></H4>
+<P>
+A <TT>TextField</TT> component holds
+a single line of text in a little window. The text is allowed
+to be longer than the window, in which case only part of it shows.
+By default, the user is allowed to edit the text. You can also
+set a <TT>TextField</TT> to be read
+only using <TT>setEditable(false)</TT>.
+This method is from class <TT>TextComponent</TT>,
+the abstract superclass of both <TT>TextField</TT>
+and <TT>TextArea</TT>. The <TT>NumberField</TT>
+shown in Figure 3.1 is a customized form of <TT>TextField</TT>.
+<H4><TT>TextArea</TT></H4>
+<P>
+A <TT>TextArea</TT> is a pane containing
+lines of text. Like a <TT>TextField</TT>,
+it can be editable or not. Figure 3.3 shows a <TT>TextArea</TT>
+in action.
+<P>
+<A HREF="f3-3.gif" ><B>Figure 3.3 :</B> <I>The sample program AWTDemo.java : third screen</I></A>
+<H3><A NAME="EventHandling">Event Handling</A></H3>
+<P>
+Programs that use a graphical user interface are inherently event-driven,
+at least in part. An <I>event</I> refers to something the user
+causes to happen using the mouse, keyboard, or other input device.
+An event-driven program typically just sits in an infinite loop
+that goes something like &quot;wait for event, handle event, repeat.&quot;
+In Java, you don't have to code this behavior; it is taken care
+of by the AWT. You override the event handling methods in the
+<TT>Component</TT> class in order
+to perform specific actions in response to user events.
+<P>
+When an event occurs within a GUI component, it is the native
+windows toolkit that first receives the event. The event is then
+passed to the AWT class that represents the component (the native
+widget corresponding to the AWT component is said to be the <I>peer</I>
+of the component). For example, when a <TT>Button</TT>
+is pressed, what really happens is that the <I>peer</I> of the
+button receives the event, creates a <TT>java.awt.Event</TT>
+object to describe it, and sends it to the <TT>java.awt.Button</TT>
+object corresponding to that button. The <TT>handleEvent()</TT>
+method of the <TT>Button</TT> object
+is invoked. By default, this method is inherited from the <TT>Component</TT>
+class and it decodes the event and calls on the various short
+form event-handler methods of the <TT>Button</TT>.
+<P>
+The short form event-handler methods are largely self-explanatory:
+<BLOCKQUOTE>
+<TT>mouseDown(), mouseDrag(), mouseUp(),
+mouseMove(), mouseEnter(), mouseExit()<BR>
+keyDown(), keyUp()<BR>
+action()</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>action()</TT>method means
+that an &quot;action&quot; has occurred. This depends on which
+type of component received the event. For example, for a <TT>Button</TT>,
+this represents a press. The default versions of all these methods
+do nothing and then return <TT>false</TT>.
+The <TT>boolean</TT> return value
+of all these methods (and of <TT>handleEvent()</TT>)
+indicates whether the event is fully handled. Return <TT>true</TT>
+only when you wish no further action on this event.
+<P>
+Among its instance variables, each <TT>Event</TT>
+object has an <I>event type</I>, a <I>target</I>, and an arbitrary
+<I>argument</I>. The event type is one of the predefined constants
+describing roughly what has happened: <TT>Event.ACTION_EVENT</TT>,
+<TT>Event.KEY_PRESS</TT>, and so on.
+The target is the component in which this event has occurred,
+and the argument is an arbitrary <TT>Object</TT>
+that further specifies the event. For example, for <TT>Scrollbar</TT>s,
+it is an <TT>Integer</TT> which is
+the new slider value.
+<P>
+Until the <TT>Event</TT> is fully
+handled by some event handler, it continues to propagate up the
+container hierarchy, passing from each component to its parent
+container. If the event emerges from a<BR>
+top-level container such as <TT>Window</TT>
+or <TT>Frame</TT> and is not fully
+handled, then it is passed back to the native windows toolkit
+to be handled in the usual way.
+<P>
+<TT><B><A TARGET="resource window" HREF="http://java.sun.com/tutorial/ui/components/peer.html">http://java.sun.com/tutorial/ui/components/peer.html</A>
+<P>
+<CENTER></B></TT><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+In fact, mouse events can't be intercepted correctly for some components in the JDK release 1.0: see <TT><A TARGET="resource window" HREF="http://java.sun.com/tutorial/ui/components/peer.html">http://java.sun.com/tutorial/ui/components/peer.html</A></TT>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+There are a few ways you can intercede in this process to provide
+custom behavior (using <TT>Button</TT>
+as an example):
+<UL>
+<LI>Override a short form event-handler function in a <TT>Container</TT>
+which contains the <TT>Button</TT>.
+<LI>Override the <TT>handleEvent()</TT>
+method of a <TT>Container</TT> which
+contains the button.
+<LI>Subclass <TT>Button</TT> and override
+an event handler.
+</UL>
+<P>
+For example, a <TT>TextField</TT>
+object generates keyboard events. Usually, you want the default
+behavior: the characters typed appear normally in the <TT>TextField</TT>.
+By subclassing <TT>TextField</TT>,
+you can intercept the keyboard events and provide alternative
+behavior such as putting all input characters in lowercase. You
+achieve this by <I>altering</I> the event as it passes up the
+hierarchy but is still returning <TT>false</TT>
+so that the changed event is returned to the native text field
+widget. On the other hand, returning <TT>true</TT>
+in response to some keyboard events ensures that those events
+are ignored.
+<P>
+See the example program <TT>AWTDemo.java</TT>
+for an idea of how to do this. The <TT>TextField</TT>
+shown in Figure 3.2 is actually an instance of class <TT>NumberField</TT>
+(defined in <TT>AWTDemo.java</TT>),
+which extends <TT>TextField</TT> and
+overrides the <TT>handleEvent()</TT>
+method. You can only type numbers in this component.
+<P>
+If you override both <TT>handleEvent()</TT>
+and one of the short-form event handlers in the same component,
+be aware that the short-form handler is never called, unless your
+<TT>handleEvent()</TT> explicitly
+does so, or else calls on the superclass's <TT>handleEvent()</TT>
+method to do so. The easiest way to do this is to make your <TT>handleEvent()</TT>
+method like this:
+<BLOCKQUOTE>
+<TT>public boolean handleEvent( Event e )
+<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if ( e.id == Event.ACTION_EVENT ) {<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// do some stuff
+...<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true;&nbsp;&nbsp;&nbsp;&nbsp;
+// this event was fully handled<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;// perhaps more stuff...<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return super.handleEvent( e );&nbsp;&nbsp;&nbsp;&nbsp;//
+refer this event to a higher authority<BR>
+}</TT>
+</BLOCKQUOTE>
+<P>
+If you are consistent with this practice, you can be sure that
+the superclass knows how to decode the event and call on your
+short-form event handlers.
+<H3><A NAME="GettingPainted">Getting Painted</A></H3>
+<P>
+To do any special drawing operations that change the look of your
+component, you need to override the <TT>paint()</TT>
+method and put the drawing code there. The single argument to
+<TT>paint()</TT> is a <TT>Graphics</TT>
+object through which you can draw images, lines, text, and so
+forth. The AWT calls on your <TT>paint()</TT>
+method when the component needs to be redrawn.
+<P>
+All paint requests occur in a single high-priority thread. This
+guarantees that they happen in the proper order and quickly. This
+also means that you never call the <TT>paint()</TT>
+method of a <TT>Component</TT> directly.
+Call the <TT>repaint()</TT> method
+instead when you wish a <TT>Component</TT>
+to be redisplayed. Many built-in methods automatically result
+in a <TT>repaint()</TT>, but you may
+need to call <TT>repaint()</TT> yourself
+in certain situations.
+<P>
+The <TT>repaint()</TT>method actually
+results in a call to the component's <TT>update()</TT>
+method. The default <TT>update()</TT>
+method clears the display area of the component to the current
+background color and then calls <TT>paint()</TT>.
+This can create excessive flicker for some applications so you
+may want to override the <TT>update()</TT>
+method to prevent the background from getting cleared. <A HREF="ch17.htm" >See Chapter 17</A>,
+&quot;Advanced Graphics: Multimedia,&quot; and <A HREF="ch18.htm" >Chapter 18</A>,
+&quot;Serious Play: Game Applets,&quot; for examples of advanced
+painting techniques including animation and double-buffered graphics.
+<P>
+Events propagate up the component hierarchy but <TT>paint</TT>
+requests propagate <I>down</I>. The top-level windows are drawn
+first, and then their immediate children, and so on. This ensures
+that the children show up on top of their parent container.
+<H3><A NAME="Menus">Menus</A></H3>
+<P>
+The AWT includes support for pulldown menus. The various components
+that implement the menus are not of class <TT>Component</TT>,
+but rather of class <TT>java.awt.MenuComponent</TT>.
+This reflects the &quot;popup&quot; nature of menus: they don't
+occupy space in a parent container, but pop up on top of other
+windows when required.
+<P>
+A menu is represented by a <TT>java.awt.Menu</TT>
+object. It can only be displayed on a menu bar (<TT>java.awt.MenuBar</TT>).
+In turn, a menu bar must be associated to a <TT>Frame</TT>
+in order to be useful. So a <TT>Frame</TT>
+can have a <TT>MenuBar</TT>, a <TT>MenuBar</TT>
+contains <TT>Menu</TT>s, and a <TT>Menu</TT>
+contains <TT>MenuItem</TT>s.
+<P>
+A <TT>MenuItem</TT> is a choice on
+a menu which is labeled with a string. <TT>CheckboxMenuItem</TT>
+extends <TT>MenuItem</TT> and has
+a string label with a checkbox gadget beside it. Selecting the
+item toggles the checkbox. The <TT>Menu</TT>
+class itself extends <TT>MenuItem</TT>,
+so a menu can be an item on another menu, that is to say, a submenu.
+<P>
+AWT menus support separators and tear-off functionality. A tear-off
+menu can be dragged onto the desktop where it occupies a new top-level
+window. A separator is a menu item with the special name &quot;-&quot;.
+A tear-off menu is created by calling the constructor with a second,
+<TT>boolean</TT> argument set to <TT>true</TT>:
+<BLOCKQUOTE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;Menu my_menu
+= new Menu( &quot;My Menu&quot;, true );&nbsp;&nbsp;// create
+a tear-off menu</TT>
+</BLOCKQUOTE>
+<P>
+A menu bar can have a designated <I>help menu</I> which is distinguished
+from the other menus in some way. For example, it is often placed
+at the extreme right end of the menu bar. See the sample program
+<TT>AWTDemo.java</TT> for examples
+of menus on a menu bar including a help menu, separators, and
+a submenu.
+<H3><A NAME="LayoutManagers">Layout Managers</A></H3>
+<P>
+When you add components into a container, it is the layout manager
+of the container which determines the actual size and location
+of each component. The two argument forms of <TT>add()</TT>
+allow you to specify a placement argument which is interpreted
+by the layout manager. The <TT>java.awt</TT>
+classes implementing layout manager policies are described here.
+They all implement the interface <TT>java.awt.LayoutManager</TT>.
+<P>
+All containers have a default layout manager, but you can designate
+whichever layout manager has your favorite policy by passing a
+new instance of the <TT>LayoutManager</TT>
+to the container's <TT>setLayout()</TT>
+method. You can also provide custom layout managers by implementing
+the <TT>LayoutManager</TT> interface
+yourself. The sample program <TT>AWTDemo.java</TT>
+demonstrates many of the layout managers in action.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR><TR VALIGN=TOP><TD WIDTH=585>
+<BLOCKQUOTE>
+To give hints to the layout manager about your component's preferred or minimum size, override the <TT>preferredSize()</TT> and <TT>minimumSize()</TT> methods in class <TT>Component</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4>BorderLayout</H4>
+<P>
+The possible placements are &quot;North,&quot; &quot;South,&quot;
+&quot;East,&quot; &quot;West,&quot; and &quot;Center.&quot; They
+are identified by the string names. The components around the
+edges are laid out first and the center component gets the leftover
+room. This can make some components larger than necessary since
+they are stretched out to meet the edges of the container. Put
+the components inside a <TT>Panel</TT>
+to avoid this.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Always use the two argument form of <TT>add()</TT> when using <TT>BorderLayout</TT> (for example, <TT>add(&quot;North,&quot; myButton)</TT>); the single argument version is ignored.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4><TT>CardLayout</TT></H4>
+<P>
+This layout manager lets several components occupy the same space,
+with only one visible at a time. Think of the components as lying
+on &quot;cards,&quot; which are shown one at a time. You need
+a way for the user to flip through the cards. Typically this is
+a <TT>Choice</TT> or a series of <TT>Checkbox</TT>es
+in a <TT>CheckboxGroup</TT>. You can
+also have next/back <TT>Button</TT>s.
+<P>
+In the sample program <TT>AWTDemo.java</TT>,
+there are three &quot;cards&quot; in a <TT>CardLayout</TT>,
+and the user switches between them using <TT>Checkbox</TT>es.
+The three cards are shown in Figures 3.1, 3.2, and 3.3.
+<H4><TT>FlowLayout</TT></H4>
+<P>
+This is one of the simpler layout managers. Components are arranged
+left to right in a row until no more fit. Then a new row is begun.
+Each row is centered in the parent component by default. This
+is the default layout for <TT>Panel</TT>s.
+<H4><TT>GridLayout</TT></H4>
+<P>
+A <TT>GridLayout</TT> arranges components
+in a grid of rectangular cells, all the same size. The contents
+of each cell are resized to fill the cell so you may want to put
+them on a panel in some of the cells and let them take their natural
+size. The <TT>Checkbox</TT>es in Figure
+3.2 are laid out using a <TT>GridLayout</TT>.
+<P>
+As you add components to a <TT>GridLayout</TT>,
+the cells are populated in reading order: from left to right in
+each row and then down to the next row.
+<H4><TT>GridBagLayout</TT></H4>
+<P>
+The most flexible layout manager provided by <TT>java.awt</TT>
+is the <TT>GridBagLayout</TT>. Like
+a <TT>GridLayout</TT>, it is based
+on a rectangular array of cells. However, each component may occupy
+a rectangular area covering several cells. There is no requirement
+that the child components have the same size. Each child component
+has an associated <TT>GridBagConstraints</TT>
+object to give hints to the layout manager about its minimum size
+and preferred position in the container.
+<H3><A NAME="GraphicsandImages">Graphics and Images</A></H3>
+<P>
+The <TT>java.awt</TT> package includes
+some classes to help you draw custom graphics and images. You
+typically want to draw either in a <TT>Canvas</TT>,
+or an off-screen <TT>Image</TT> (for
+double-buffered graphics <A HREF="ch17.htm" >see Chapter 17</A>).
+Drawing operations are usually performed in the <TT>paint()</TT>
+or <TT>update()</TT> methods of the
+component you want to draw in.
+<H4><TT>Graphics</TT></H4>
+<P>
+An instance of <TT>java.awt.Graphics</TT>
+is the single argument to <TT>paint()</TT>
+and <TT>update()</TT>. This object
+provides access to a drawable area as well as a graphics &quot;context&quot;:
+a current drawing color, font, and drawing mode. Here are just
+a few of the methods in the class <TT>Graphics</TT>:
+<P><BLOCKQUOTE>
+<TT>drawLine()<BR>
+drawPolygon()<BR>
+drawRect()<BR>
+drawOval()</TT>-A misnomer because it really draws an ellipse.
+<BR>
+<TT>drawImage()</TT>-Draw a bitmap
+<TT>Image</TT>, perhaps scaling it
+first.<BR>
+<TT>drawString()</TT>-Draw a <TT>String</TT>
+in the current font.<BR>
+<TT>fillPolygon()<BR>
+setColor()<BR>
+setFont()<BR>
+getFontMetrics()</TT>
+</BLOCKQUOTE><P>
+To assist in these coordinate-based drawing operations, there
+are the <TT>java.awt</TT> classes
+<TT>Point</TT>, <TT>Polygon</TT>,
+and <TT>Rectangle</TT>.
+<H4><TT>Image</TT></H4>
+<P>
+An <TT>Image</TT> object references
+a bitmapped image. Applets can load images from a URL. If you
+have an <TT>ImageProducer</TT> handy,
+you can call <TT>createImage()</TT>
+in either class <TT>Component</TT>
+or <TT>Toolkit</TT>. It's also possible
+to load an image using the <TT>getImage()</TT>
+method of a <TT>Toolkit</TT> object
+which can load from a URL or a file. The Java AWT has built-in
+support for the GIF and JPEG formats. See <TT>java.applet</TT>
+and <TT>java.awt.image</TT> for more
+on producing <TT>Image</TT>s.
+<P>
+An <TT>Image</TT> is not displayed
+on-screen automatically. You must paint it in a component using
+the <TT>drawImage()</TT> method in
+<TT>java.awt.Graphics</TT>. You can
+also perform arbitrary drawing operations in an <TT>Image</TT>
+by getting a <TT>Graphics</TT> object
+for the <TT>Image</TT> from the <TT>getGraphics()</TT>
+method.
+<P>
+When loading images, the <TT>java.awt.MediaTracker</TT>
+class can come in handy. A <TT>MediaTracker</TT>
+provides a way to wait for one or several related images to finish
+loading before doing anything further.
+<H4><TT>Color</TT></H4>
+<P>
+You can mix a color from red, green, and blue light. This is the
+RGB Color Model. It's important in Java since most of the time
+you draw onto a computer monitor which represents colors this
+way. RGB is the default color model for <TT>java.awt.Color</TT>
+objects which represent colors in Java.
+<P>
+A <TT>Color</TT> object is constructed
+from three intensity values in the range 0-255, one for each primary
+color: red, green, and blue. Alternatively, a single <TT>int</TT>
+can hold the 24 bits that serve to define any RGB color. Colors
+can also be converted between RGB and another color model, the
+HSB color model (Hue, Saturation, Brightness). The <I>saturation</I>
+of a color is a measure of how vibrant or intense the hue appears.
+Color with zero saturation is just a shade of gray while a color
+with saturation equal to 1 is as vibrant as the color can be.
+<I>Brightness</I> controls whether green looks more like forest
+green or lime green, for example. The HSB color model is useful
+for some operations such as desaturating a color image or changing
+the brightness only.
+<P>
+There are many convenient class variables for common colors. Thus,
+<TT>Color.red</TT> denotes red, <TT>Color.white</TT>
+denotes white, and so forth.
+<H3><A NAME="Fonts">Fonts</A></H3>
+<P>
+If you get sick of looking at your system's default font or if
+you want extra large titles and such, you can create a <TT>java.awt.Font</TT>
+instance to represent a font which is available on your system.
+For example, to specify italic, 18-point Helvetica:
+<BLOCKQUOTE>
+<TT>Font helv18i = new Font( &quot;Helvetica&quot;,
+Font.ITALIC, 18 );</TT>
+</BLOCKQUOTE>
+<P>
+You then use this as an argument to <TT>setFont()</TT>
+in class <TT>Graphics</TT> or <TT>Component</TT>.
+You probably want to stick to well-known font names because each
+font you load must be available on the user's system. Use the
+<TT>java.awt.Toolkit</TT> method <TT>getFontList()</TT>
+to read off the locally available font names:
+<BLOCKQUOTE>
+<TT>import java.awt.*;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;public class Fonts<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public static
+void main(String args[])<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Toolkit
+t = Toolkit.getDefaultToolkit();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String
+fonts[] = t.getFontList();<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for
+(int i = 0; i &lt; fonts.length; i++)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.err.println(
+fonts[i] );<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.exit(0);
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<P>
+To provide the measurements necessary for basic typesetting, a
+<TT>FontMetrics</TT> object can be
+retrieved for each font. There are methods in both classes <TT>Graphics</TT>
+and <TT>Toolkit</TT> which provide
+a <TT>FontMetrics</TT> instance, but
+you can construct one from the font directly:
+<BLOCKQUOTE>
+<TT>FontMetrics helv18i_m = new FontMetrics(
+helv18i );</TT>
+</BLOCKQUOTE>
+<P>
+The <TT>FontMetrics</TT> object provides
+you with such arcane knowledge as the ascent, leading (rhymes
+with bedding!), descent, and character widths of the font. Unless
+you already love typesetting, try your best to use a standard
+text component and avoid accessing font metrics directly. If you
+love typesetting, then be aware that you can't do any high-powered
+typesetting with these objects in any case. The <TT>Font</TT>
+and <TT>FontMetrics</TT> classes don't
+seem to have any idea about kerning pairs and ligatures, for example.
+A <TT>FontMetrics</TT> object provides
+enough information to display screen fonts readably.
+<H2><A NAME="javaapplet"><TT><FONT SIZE=5 COLOR=#FF0000>java.applet</FONT></TT></A>
+</H2>
+<P>
+Java applets are one of the main attractions of programming in
+Java. The <TT>java.applet</TT> package
+provides some methods that are very useful for programming applets.
+Some of these methods are shortcuts. They can be done using the
+other standard Java classes but only with a fair amount of work.
+Would you rather load an image over the Web by opening your own
+socket connection, speaking <TT>http</TT>
+to a Web server and parsing the header and image data, or by doing
+this?
+<BLOCKQUOTE>
+<TT>public class MyApplet extends java.applet.Applet
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Image my_image;
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public void init()
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;my_image
+= getImage( new URL( getCodeBase(), &quot;myimage.jpg&quot; )
+);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+catch (MalformedURLException e) {}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// More stuff
+...<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<P>
+Similar support exists for loading audio and even for directing
+the host browser to load a new Web page.
+<H3><A NAME="Applet"><TT><FONT SIZE=4>Applet</FONT></TT></A>
+</H3>
+<P>
+Every applet is defined by a public class extending <TT>java.applet.Applet</TT>
+which extends <TT>java.awt.Panel</TT>.
+The <TT>Applet</TT> class provides
+the four basic methods which embody the life cycle of an applet:
+<BLOCKQUOTE>
+<TT>init()</TT>-Called to initialize
+the applet after loading.<BR>
+<TT>start()</TT>-Called when the applet
+is displayed.<BR>
+<TT>stop()</TT>-Called when the applet
+is no longer being displayed.<BR>
+<TT>destroy()</TT>-Called when the
+applet is about to be unloaded.<BR>
+</BLOCKQUOTE>
+<P>
+Don't call these methods yourself. The host environment calls
+them automatically in response to user actions.
+<P>
+Each of these four methods should be fast. In particular, don't
+make the mistake of putting a lengthy or infinite loop into the
+<TT>start()</TT> method. If you have
+a lot of work to do (such as I/O or animation), use the <TT>start()</TT>
+method to start a new <TT>Thread</TT>
+which does the real work. You can even give your applet a <TT>run()</TT>
+method and declare that it implements <TT>Runnable</TT>;
+then pass in the applet itself as the target of the new thread:
+<BLOCKQUOTE>
+<TT>public class BusyApplet extends Applet
+implements Runnable<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread
+t;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public
+void run()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+Get busy ...<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public
+void start()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t
+= new Thread(this);&nbsp;&nbsp;&nbsp;// Thread t executes my run()
+method<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t.start();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public
+void stop()<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t.stop();
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t
+= null;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//
+etc ...<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</TT>
+</BLOCKQUOTE>
+<P>
+Use the <TT>init()</TT> method to
+initialize any local variables and load external resources such
+as images and audio clips. You may think that these operations
+are time-consuming and should therefore have a separate thread
+but the routines described below for images and audio already
+function asynchronously. They return immediately after starting
+separate threads, as required.
+<P>
+Some of the handy multimedia-related methods in class <TT>Applet</TT>
+include the following:
+<BLOCKQUOTE>
+<TT>getAppletContext()</TT>-Get a
+handle to the current context (host browser or applet viewer).
+<BR>
+<TT>getAudioClip()</TT>-Get an audio
+clip from a URL.<BR>
+<TT>getImage()</TT>-Get an image from
+a URL.<BR>
+<TT>play()</TT>-Play an audio clip
+directly from a URL.<BR>
+<TT>showStatus()</TT>-Show a message
+on the status line of the host browser.
+</BLOCKQUOTE>
+<P>
+The interfaces <TT>AppletContext </TT>and
+<TT>AudioClip</TT> are provided as
+a system-independent way of accessing the objects returned by
+<TT>getAppletContext()</TT> and <TT>getAudioClip()</TT>.
+You can use an <TT>AppletContext</TT>
+instance to find other applets on the same page or to direct the
+browser to visit a new URL.
+<P>
+When an applet is included in a Web page using the APPLET tag,
+the page designer can specify certain applet parameters which
+are string names with associated string values. You can access
+these values using the <TT>getParameter()</TT>
+method and use them to modify the behavior of your applet.
+<H2><A NAME="javaawtimage"><TT><FONT SIZE=5 COLOR=#FF0000>java.awt.image</FONT></TT></A>
+</H2>
+<P>
+The <TT>java.awt.image</TT> package
+allows device-independent loading and filtering of bitmapped images.
+<H3><A NAME="ColorModels">Color Models</A></H3>
+<P>
+A color model is a way of representing colors numerically. The
+abstract class <TT>java.awt.image.ColorModel</TT>
+provides a uniform superclass for various color models. The subclasses
+have to know how to convert their representation into the default
+RGB values together with transparency information (an <I>alpha</I>
+value). An alpha of 0 is transparent; 255 is opaque.
+<P>
+Two predefined types of color model in <TT>java.awt.image</TT>
+are <TT>DirectColorModel</TT> and
+<TT>IndexColorModel</TT>. A <TT>DirectColorModel</TT>
+encodes red, green, blue, and alpha channel values but possibly
+with less than eight bits per channel and the channel masks can
+be arbitrarily ordered within a 32-bit integer. An <TT>IndexColorModel</TT>
+works by looking up colors on a color table of red, green, blue,
+and alpha values. The maximum number of bits in each value is
+arbitrary up to a point; you never need more than eight per channel.
+The color table can have any length.
+<H3><A NAME="ProducingImages">Producing Images</A></H3>
+<P>
+The <TT>java.awt.image</TT> package
+provides a black-box type protocol for loading image data. The
+interfaces <TT>ImageConsumer</TT>,
+<TT>ImageProducer</TT>, and <TT>ImageObserver</TT>
+allow objects to declare that they are interested in the following:
+<UL>
+<LI>Receiving image data (<TT>ImageConsumer</TT>)
+<LI>Producing image data (<TT>ImageProducer</TT>)
+<LI>Being notified of progress in loading or preparing images
+(<TT>ImageObserver</TT>)
+</UL>
+<P>
+An <TT>ImageConsumer</TT> registers
+itself with the <TT>ImageProducer</TT>.
+The producer loads the image data from &quot;somewhere&quot; which
+depends on the exact implementation of the interface, and sends
+the data to the consumer by calling the consumer's <TT>setPixels()</TT>
+methods. What the consumer receives is the raw pixel data in an
+array. For example, the <TT>java.awt.image</TT>
+class <TT>PixelGrabber</TT> is an
+<TT>ImageConsumer</TT> which grabs
+a rectangular sub-image of a given <TT>Image</TT>.
+<P>
+Any <TT>Component</TT> or <TT>Toolkit</TT>
+instance can use its <TT>createImage()</TT>
+method to create an <TT>Image</TT>
+object when given an <TT>ImageProducer</TT>.
+You've seen how to load images in an applet and from a <TT>java.awt.Toolkit</TT>
+object. Further sources for <TT>Image</TT>s
+include:
+<BLOCKQUOTE>
+<TT>MemoryImageSource</TT>-Produces
+an <TT>Image</TT> from an array of
+RGB values.<BR>
+<TT>FilteredImageSource</TT>-Produces
+an <TT>Image</TT> from an existing
+<TT>ImageProducer</TT> and an <TT>ImageFilter</TT>
+(see the section &quot;Image Filters,&quot; later in this chapter).
+</BLOCKQUOTE>
+<P>
+Both of these classes implement the <TT>ImageProducer</TT>
+interface. Also, every <TT>Image</TT>
+can supply an <TT>ImageProducer</TT>
+(via the <TT>getSource()</TT> method)
+which reproduces the image itself.
+<P>
+The interface <TT>java.awt.image.ImageObserver</TT>
+requires the single method <TT>imageUpdate()</TT>.
+This method is called if the <TT>ImageObserver</TT>
+is supplied as an argument to an <TT>Image</TT>
+method such as <TT>getWidth()</TT>
+and the status of the image suddenly changes (the unknown width
+becomes known, for example). The <TT>java.awt.Component</TT>
+class uses this mechanism to redraw components automatically as
+their images load.
+<H3><A NAME="ImageFilters">Image Filters</A></H3>
+<P>
+As image data passes from producer to consumer it can be filtered.
+The <TT>java.awt.image</TT> class
+<TT>ImageFilter</TT> implements an
+image filter which does nothing. It is the superclass for all
+image filters. The <TT>RGBImageFilter</TT>
+class extends <TT>ImageFilter</TT>
+and provides a shortcut for writing filters which only want to
+manipulate RGB color data. To write a custom image filter, you
+subclass one of these.
+<P>
+Using an <TT>ImageFilter</TT> is a
+matter of instantiating a <TT>FilteredImageSource</TT>
+with it and the original image. Then you can create the new image
+from the <TT>FilteredImageSource</TT>
+by the usual <TT>createImage()</TT>
+method.
+<P>
+Possible uses for custom image filters include rotating existing
+images, adjusting their brightness and contrast, blurring images,
+or doing other special effects. The predefined <TT>CropImageFilter</TT>
+is an <TT>ImageFilter</TT> which extracts
+a specific rectangular sub-image.
+<H2><A NAME="javaawtpeer"><TT><FONT SIZE=5 COLOR=#FF0000>java.awt.peer</FONT></TT></A>
+</H2>
+<P>
+Every <TT>java.awt.Component</TT>
+object has a <I>peer</I>. Essentially a peer is an object in the
+native windows toolkit together with an interface to it. A <TT>Toolkit</TT>
+instance knows how to create peer objects. In Java programming
+it is very seldom necessary to do anything relating directly to
+the peer objects; but it's nice to know they are there. The <TT>java.awt.peer</TT>
+package is nothing but a collection of interfaces to these peer
+objects, one for each AWT component. This includes <TT>ButtonPeer</TT>,
+<TT>CanvasPeer</TT>, <TT>CheckboxPeer</TT>,
+and so on. Each interface provides the basic methods which the
+AWT uses to manipulate the peer in a toolkit-independent way.
+You should not attempt to call these methods directly. In fact,
+unless you are writing your own toolkit, you don't need to know
+this package at all.
+<H2><A NAME="javaio"><TT><FONT SIZE=5 COLOR=#FF0000>java.io</FONT></TT></A>
+</H2>
+<P>
+The Java model for I/O is entirely based around streams. A <I>stream</I>
+is a one-way flow of bytes from one place to another. Files, pipes,
+and sockets are places to attach streams to. The many flavors
+of stream classes defined in the <TT>java.io</TT>
+package are organized by inheritance to avoid duplication of methods.
+A stream class throws an <TT>IOException</TT>
+when things go awry.
+<P>
+Of course, <TT>java.io</TT> also provides
+methods for accessing files on a local file system. As far as
+possible this is made system-independent.
+<P>
+The predefined <TT>PrintStream</TT>s,
+<TT>System.out</TT>, and <TT>System.err</TT>
+are useful for printing diagnostics when debugging Java programs
+and applets. The standard input stream <TT>System.in</TT>
+is also available; it is of class <TT>InputStream</TT>.
+<H3><A NAME="BasicStreams">Basic Streams</A></H3>
+<P>
+The most basic stream classes don't provide buffering, and they
+don't structure their data at all. They provide nothing but a
+pathway for bytes. The differences between them lie in the mechanical
+question of where the bytes are to be found: in a file, in memory,
+or on a pipe. You generally use one of these classes only as a
+step toward instantiating a more useful form of stream.
+<H4><TT>InputStream</TT>, <TT>OutputStream</TT>
+</H4>
+<P>
+These are the base classes for all the other stream classes. They
+allow you to <TT>read()</TT> and <TT>write()</TT>
+arrays of <TT>byte</TT>. <TT>InputStream</TT>
+objects can declare that they support <I>mark and reset</I> behavior.
+This means that the input stream can be marked at some point and
+repositioned there subsequently. This is handy if you try to parse
+an input stream. The <TT>OutputStream</TT>
+class has a <TT>flush()</TT> method
+which writes any bytes that may be saved in a buffer (however,
+an instance of <TT>OutputStream</TT>
+is not required to buffer bytes).
+<H4><TT>FileInputStream</TT>, <TT>FileOutputStream</TT>
+</H4>
+<P>
+These classes attach streams to <TT>File</TT>
+and <TT>FileDescriptor</TT> objects
+which correspond to files on a local file system. They extend
+<TT>InputStream</TT> and <TT>OutputStream</TT>
+and provide the same basic functionality. You can get a <TT>FileDescriptor</TT>
+object referencing the stream by calling the <TT>getFD()</TT>
+method.
+<H4><TT>ByteArrayInputStream</TT>,
+<TT>ByteArrayOutputStream</TT></H4>
+<P>
+The class <TT>ByteArrayInputStream</TT>
+extends <TT>InputStream</TT> and reads
+out of an array of bytes rather than from a file or socket. This
+is useful when you have the data already in memory but you need
+to pass it to a method which expects a stream.
+<P>
+Likewise, <TT>ByteArrayOutputStream</TT>
+writes into a buffer of bytes which grows as required. You can
+access the written data as an array of bytes by calling the <TT>toByteArray()</TT>
+method or as a <TT>String</TT>, using
+<TT>toString()</TT>.
+<H4><TT>StringBufferInputStream</TT>
+</H4>
+<P>
+A <TT>StringBufferInputStream</TT>
+is an <TT>InputStream</TT> which reads
+from a <TT>StringBuffer</TT>.
+<H4><TT>PipedInputStream</TT>, <TT>PipedOutputStream</TT>
+</H4>
+<P>
+These streams  correspond in pairs: every <TT>PipedOutputStream</TT>
+needs to write to a <TT>PipedInputStream</TT>,
+and vice versa. This arrangement can be thought of as a pipe between
+the thread writing the <TT>PipedOutputStream</TT>
+and the thread reading the <TT>PipedInputStream</TT>.
+In this way, you can create <TT>Runnable</TT>
+objects which act as stream filters, for example (but also see
+<TT>FilterInputStream</TT> and <TT>FilterOutputStream</TT>,
+below).
+<P>
+These streams provide the same basic read/write functionality
+as <TT>InputStream</TT> and <TT>OutputStream</TT>,
+above.
+<H4><TT>SequenceInputStream</TT></H4>
+<P>
+This class  extends <TT>InputStream</TT>
+and allows the transparent concatenation of several <TT>InputStream</TT>s
+into a single stream. When one stream hits end-of-file, the <TT>SequenceInputStream</TT>
+automatically begins reading from the next one in sequence.
+<P>
+The constructor takes either two <TT>InputStream</TT>s
+or else a <TT>java.util.Enumeration</TT>
+of <TT>InputStream</TT>s.
+<H3><A NAME="FilteredStreams">Filtered Streams</A></H3>
+<P>
+Just moving bytes is not enough. Various forms of improved functionality
+are needed so often that embedding them into the stream object
+itself makes sense. All these improved or filtered stream classes
+extend <TT>FilterInputStream</TT>
+or <TT>FilterOutputStream</TT>. You
+can think of them as filters because they have an input and an
+output, and the output is the input but transformed in a useful
+way.
+<H4><TT>FilterInputStream</TT>, <TT>FilterOutputStream</TT>
+</H4>
+<P>
+These are  the base classes for streams which extend the basic
+I/O operations of <TT>InputStream</TT>
+and <TT>OutputStream</TT>. They are
+intended to be subclassed. You can't instantiate them because
+the constructor is <TT>protected</TT>.
+<P>
+A <TT>FilterInputStream</TT> is constructed
+from a single <TT>InputStream</TT>
+which then becomes an instance variable. Now <TT>FilterInputStream</TT>
+extends <TT>InputStream</TT> so it
+implements all the methods of <TT>InputStream</TT>
+but only as trivial wrappers which access its actual, protected
+<TT>InputStream</TT>. Additional methods
+providing the extended functionality are to be supplied in subclasses.
+<P>
+The same setup applies to <TT>FilterOutputStream</TT>.
+<H4><TT>BufferedInputStream</TT>,
+<TT>BufferedOutputStream</TT></H4>
+<P>
+The class <TT>BufferedInputStream</TT>
+extends <TT>FilterInputStream</TT>
+and you use it like an <TT>InputStream</TT>.
+The difference is that a <TT>BufferedInputStream</TT>
+is more efficient. It saves up bytes in a large buffer until you
+need them. This means that most <TT>read()</TT>
+requests don't actually cause an I/O operation.
+<P>
+Class <TT>BufferedOutputStream</TT>
+does the same only for output streams.
+<H4><TT>LineNumberInputStream</TT>
+</H4>
+<P>
+This class acts  like an <TT>InputStream</TT>
+with the added methods <TT>getLineNumber()</TT>
+and <TT>setLineNumber()</TT> which
+let you keep track of line numbers.
+<H4><TT>PrintStream</TT></H4>
+<P>
+A <TT>PrintStream</TT> is a special
+kind of <TT>OutputStream</TT> with
+the added methods <TT>print()</TT>
+and <TT>println()</TT>. These methods
+print the string representation of any object (as per <TT>String.valueOf()</TT>
+or <TT>toString()</TT>) onto the output
+stream. The <TT>println()</TT> method
+appends a newline character while <TT>print()</TT>
+does not. Even though a <TT>char</TT>
+is 16 bits wide, only the lower eight bits of each character are
+written.
+<P>
+Upon creation, you can specify whether the stream should flush
+itself every time a new line is written.
+<H4><TT>PushbackInputStream</TT></H4>
+<P>
+This is an <TT>InputStream</TT> which
+allows you to <TT>unread()</TT> a
+single byte into a pushback buffer. You may not <TT>unread()</TT>
+another byte until the pushback byte is read again. This is useful
+for parsing strings since you often need to peek at the next byte
+without necessarily accepting it as input.
+<H3><A NAME="DataIO">Data I/O</A></H3>
+<P>
+Streams read and write bytes but quite often you want to send
+other primitive Java types. The interfaces <TT>DataInput</TT>
+and <TT>DataOutput</TT> specify that
+a class knows how to read and write the various primitive Java
+types in a machine-independent way. The most useful methods in
+<TT>DataInput</TT> and <TT>DataOutput</TT>
+are shown in Tables 3.1 and 3.2. All of the <TT>DataOutput</TT>
+methods in Table 3.2 return <TT>void</TT>.
+<BR>
+<P>
+<CENTER><B>Table 3.1. Useful DataInput methods.</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=295><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>boolean readBoolean()</TT>
+</TD><TD WIDTH=295>Read a single <TT>boolean</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>byte readByte()</TT>
+</TD><TD WIDTH=295>Read a single <TT>byte</TT> (8 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>char readChar()</TT>
+</TD><TD WIDTH=295>Read a single <TT>char</TT> (16 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>float readFloat()</TT>
+</TD><TD WIDTH=295>Read a single <TT>float</TT> (32 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>double readDouble()</TT>
+</TD><TD WIDTH=295>Read a single <TT>double</TT> (64 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>int readInt()</TT>
+</TD><TD WIDTH=295>Read a single <TT>int</TT> (32 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>long readLong()</TT>
+</TD><TD WIDTH=295>Read a single <TT>long</TT> (64 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>short readShort()</TT>
+</TD><TD WIDTH=295>Read a single <TT>short</TT> (16 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>int readUnsignedByte()</TT>
+</TD><TD WIDTH=295>Read a <TT>byte</TT> and interpret as an unsigned integer.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>int readUnsignedShort()</TT>
+</TD><TD WIDTH=295>Read a <TT>short</TT> and interpret as an unsigned integer.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>void readFully(byte b[])</TT>
+</TD><TD WIDTH=295>Read bytes into an array until it is full.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>void readFully(byte b[],int,int)</TT>
+</TD><TD WIDTH=295>Read bytes into a sub-array until full.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>String readUTF()</TT>
+</TD><TD WIDTH=295>Read a UTF-encoded string.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=295><TT>String readLine()</TT>
+</TD><TD WIDTH=295>Read a sequence of bytes terminated by new line.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+All but one of these input methods throws a <TT>java.io.EOFException</TT>
+if the end of the input stream is reached before all the bytes
+in the specified object can be read. The lone exception is <TT>readLine()</TT>.
+It returns <TT>null</TT> to indicate
+that EOF occurred before a new line was seen.<BR>
+<P>
+<CENTER><B>Table 3.2. Useful DataOutput methods (all return void).</B></CENTER>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><I>Method</I></TD><TD WIDTH=311><I>Description</I>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeBoolean(boolean)</TT>
+</TD><TD WIDTH=311>Write a single <TT>boolean</TT>.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>write(int)</TT>
+</TD><TD WIDTH=311>Write a single <TT>byte</TT> (8 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeByte(int)</TT>
+</TD><TD WIDTH=311>Write a single <TT>byte</TT> (8 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>write(byte[])</TT>
+</TD><TD WIDTH=311>Write a sequence of <TT>byte</TT>s.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>write(byte[],int,int)</TT>
+</TD><TD WIDTH=311>Write a sequence of <TT>byte</TT>s from a sub-array.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeChar(int)</TT>
+</TD><TD WIDTH=311>Write a single <TT>char</TT> (16 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeFloat(float)</TT>
+</TD><TD WIDTH=311>Write a single <TT>float</TT> (32 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeDouble(double)</TT>
+</TD><TD WIDTH=311>Write a single <TT>double</TT> (64 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeInt(int)</TT>
+</TD><TD WIDTH=311>Write a single <TT>int</TT> (32 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeLong(long)</TT>
+</TD><TD WIDTH=311>Write a single <TT>long</TT> (64 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeShort(int)</TT>
+</TD><TD WIDTH=311>Write a single <TT>short</TT> (16 bits).
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeUTF(String)</TT>
+</TD><TD WIDTH=311>Write a <TT>String</TT> in UTF-encoded format.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeBytes(String)</TT>
+</TD><TD WIDTH=311>Write a <TT>String</TT> as a sequence of <TT>byte</TT>s.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=225><TT>writeChars(String)</TT>
+</TD><TD WIDTH=311>Write a <TT>String</TT> as a sequence of <TT>char</TT>s.
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Using these methods, you can read and write primitive Java types
+with ease. Your classes can use these methods to write themselves
+onto a stream by writing each instance variable.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Beware of the difference between <TT>byte</TT> and <TT>char</TT>. A <TT>String</TT> which is written using <TT>writeChars()</TT> must be read as a sequence of <TT>char</TT>. Don't use <TT>readLine()</TT> or <TT>readBytes()</TT> for this. In fact, avoid doing this altogether. Use <TT>writeBytes()</TT> or <TT>writeUTF()</TT> instead.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+If you are willing to let the new line character delimit the end
+of all your strings, you can read them using <TT>readLine()</TT>.
+A convenient way to do this is to make the corresponding output
+stream be a <TT>PrintStream</TT> and
+use the <TT>println()</TT> method
+to write the <TT>String</TT>. However,
+this method creates problems if your strings contain embedded
+new line characters.
+<P>
+To read and write more general strings, there are at least two
+options. Either the receiving end knows the length of the string
+in advance, in which case you may use <TT>writeBytes()</TT>,
+or else you need a scheme for terminating strings reliably. The
+easiest way to achieve this is also the most flexible way to read
+and write strings: by using <TT>readUTF()</TT>
+and <TT>writeUTF()</TT>. These methods
+read and write strings in a modified UTF-8 format. UTF is an ISO
+standard format which translates Unicode characters into streams
+of bytes in such a way that the normal ASCII bytes in the stream
+(encoded as 0x00-0x7f) always correspond to actual ASCII characters,
+while the non-ASCII bytes encode non-ASCII characters. A big advantage
+to using <TT>readUTF()</TT> and <TT>writeUTF()</TT>
+is that there is no need for you to send the length of the string
+or to add a terminator character. The UTF formatting takes care
+of that.
+<H4><TT>DataInputStream</TT>, <TT>DataOutputStream</TT>
+</H4>
+<P>
+These stream classes extend <TT>FilterInputStream</TT>
+and <TT>FilterOutputStream</TT> and
+provide a concrete implementation of the interfaces <TT>DataInput</TT>
+and <TT>DataOutput</TT>. They are
+two of the most useful stream classes in <TT>java.io</TT>,
+particularly for network applications.
+<H3><A NAME="UsingFiles">Using Files</A></H3>
+<P>
+Although applets are seldom allowed to access the local file system,
+stand-alone Java programs can do so. The <TT>java.io</TT>
+package provides some classes to try and make this as system-independent
+as possible. Conventions about path separator characters and such
+are loaded from the system properties (see <TT>java.lang.System</TT>).
+<H4><TT>File</TT></H4>
+<P>
+A <TT>java.io.File</TT> object represents
+a file name which may correspond to a file on an external file
+system. Using a <TT>File</TT> object,
+you can test whether such a file exists (<TT>exists()</TT>
+method). You can check permissions with <TT>canRead()</TT>
+and <TT>canWrite()</TT>. If the file
+is a directory (<TT>isDirectory()</TT>),
+you can list its contents by calling <TT>list()</TT>.
+You can use a <TT>java.io.FilenameFilter</TT>
+to restrict which files get listed. The <TT>File</TT>
+class includes several handy methods to create directories, rename
+files, check modification times, and so forth.
+<P>
+To open the file for reading or writing, instantiate a <TT>FileInputStream</TT>
+or a <TT>FileOutputStream</TT>.
+<H4><TT>FileDescriptor</TT></H4>
+<P>
+A <TT>FileDescriptor</TT> is an opaque
+handle to an open file on the local system. You can use it to
+instantiate <TT>FileInputStream</TT>
+and <TT>FileOutputStream</TT> objects.
+File descriptors for the standard input, output, and error streams
+are accessible as static class variables <TT>in</TT>,
+<TT>out</TT>, and <TT>err</TT>
+(for example, <TT>FileDescriptor.out</TT>
+is the standard output).
+<H4><TT>RandomAccessFile</TT></H4>
+<P>
+Class <TT>RandomAccessFile</TT> is
+the most flexible way to access a local file. This class implements
+both <TT>DataInput</TT> and <TT>DataOutput</TT>
+and provides a seekable file pointer. It is a suitable base class
+for classes which want to store fixed-length data records in a
+file. A <TT>RandomAccessFile</TT>
+may be opened in read-only or in read-write mode.
+<H4>Interface <TT>FilenameFilter</TT>
+</H4>
+<P>
+The <TT>FilenameFilter</TT> interface
+has a single method, <TT>accept()</TT>,
+which decides which files to include in a listing of a given directory.
+<TT>FilenameFilter</TT>s are used
+in the <TT>list()</TT> method of <TT>java.io.File</TT>
+and in <TT>java.awt.FileDialog</TT>.
+<H3><A NAME="StreamTokenizer"><TT><FONT SIZE=4>StreamTokenizer</FONT></TT></A>
+</H3>
+<P>
+This is a base class for writing lexical analyzers. It scans an
+<TT>InputStream</TT> and breaks it
+into a sequence of tokens of predefined types.
+<H2><A NAME="javanet"><TT><FONT SIZE=5 COLOR=#FF0000>java.net</FONT></TT></A>
+</H2>
+<P>
+The <TT>java.net</TT> package handles
+network-related functions: URLs, World Wide Web connections, and
+sockets for more general network interaction. <A HREF="ch12.htm" >Chapter 12</A>,
+&quot;Network Programming with Java,&quot; explores some possible
+applications of these classes in client/server applets.
+<H3><A NAME="AddressingtheWebURLs">Addressing the Web: URLs</A>
+</H3>
+<P>
+A URL is a Uniform Resource Locator, an address which references
+a &quot;resource&quot; on the World Wide Web. While a resource
+is often just a web page sitting in an HTML file, it can be more,
+such as a search engine query or a CGI script, for example. A
+URL contains more information than just the internet address of
+the WWW server. The protocol for connecting to the server and
+the location of the resource on the server are all embedded in
+the URL. A typical URL reads:
+<BLOCKQUOTE>
+<TT>http://www.myserver.com/~me/myFile.html</TT>
+</BLOCKQUOTE>
+<P>
+Here, the <I>protocol</I> is <TT>http</TT>
+(HyperText Transfer Protocol), the <I>server</I> is <TT>www.myserver.com</TT>,
+and the <I>virtual</I> <I>path</I> is <TT>/~me/myFile.html</TT>.
+Schematically, a URL has a format like:
+<BLOCKQUOTE>
+<TT><I>protocol://server:portNumber/virtualPath#referenceInfo</I></TT>
+</BLOCKQUOTE>
+<P>
+This is a fairly general form of URL. Most of the elements are
+optional. Missing elements are interpreted in the context where
+the URL is defined. For a web page or applet to refer to a URL
+with the same protocol on the same server and port number, it
+is enough to have only the virtual path.
+<P>
+An <I>absolute</I> URL is one whose virtual path begins with <TT>/</TT>
+or <TT>~user</TT> (the WWW home directory
+of a particular user). This includes any URL which specifies a
+server. A URL which isn't absolute is <I>relative</I>. A URL may
+also have reference information after a hash sign (#). The interpretation
+of this reference depends on which protocol is being used. For
+<TT>http</TT> it is the name of a
+hypertext anchor in the named HTML file. The browser is requested
+to jump directly to that position in the file.
+<P>
+The default port number for <TT>http</TT>
+is 80. Other typical protocols you may see include <TT>gopher</TT>,
+<TT>telnet</TT>, <TT>nntp</TT>,
+<TT>file</TT>, and <TT>ftp</TT>.
+<H4><TT>URL</TT></H4>
+<P>
+Java provides the <TT>java.net.URL</TT>
+class which encodes a URL in a convenient and uniform way. After
+you create a <TT>URL</TT>, you can't
+alter its value. Here are some ways to construct <TT>URL</TT>s:
+<BLOCKQUOTE>
+<TT>URL u1 = new URL( &quot;http&quot;, &quot;www.myserver.com&quot;,
+80, &quot;/myFile.html&quot; );<BR>
+URL u2 = new URL( &quot;http&quot;, &quot;www.myserver.com&quot;,
+&quot;/myFile.html&quot; );<BR>
+URL u3 = new URL( &quot;http://www.myserver.com&quot; );<BR>
+URL u4 = new URL( u3, &quot;myFile.html&quot; );</TT>
+</BLOCKQUOTE>
+<P>
+The first three forms expect you to know an <I>absolute</I> virtual
+path to the resource (a virtual path beginning with <TT>/</TT>
+or <TT>~</TT>). The last example is
+different. A <TT>URL</TT> is created
+by resolving the second argument, a <TT>String</TT>,
+as a URL <I>in the context of </I>the first <TT>URL</TT>.
+If the <TT>String</TT> is a relative
+URL, the return value is the complete absolute <TT>URL</TT>
+to the same resource, where the string is interpreted as being
+relative to the first <TT>URL</TT>.
+If the second argument already represents an absolute URL then
+it is returned (unchanged).
+<P>
+Applets often need to create <TT>URL</TT>s
+relative to their<I> code base</I> (the URL of the directory containing
+their class file). For this, use the <TT>getCodeBase()</TT>
+method of <TT>java.applet.Applet</TT>:
+<BLOCKQUOTE>
+<TT>URL my_image_url = new URL( getCodeBase(),
+&quot;myImage.gif&quot; );</TT>
+</BLOCKQUOTE>
+<P>
+In creating <TT>URL</TT>s, you usually
+have to catch the exception <TT>java.net.MalformedURLException</TT>.
+<P>
+The <TT>URL</TT> class has the methods
+<TT>getProtocol()</TT>, <TT>getHost()</TT>,
+<TT>getPort()</TT>, <TT>getFile()</TT>,
+and <TT>getRef()</TT> to save you
+the trouble of parsing the URL. <TT>getRef()</TT>
+gets the reference information after the hash sign. You can also
+use <TT>openConnection()</TT> to open
+a <TT>URLConnection</TT> to the object
+at that URL or <TT>getContent()</TT>
+to return a Java object representing the content of the URL. If
+you wish to read the contents as raw data, use the <TT>openStream()</TT>
+method to get an <TT>InputStream</TT>
+to the URL.
+<P>
+For applets, <TT>URL</TT>s are perhaps
+most useful for calling the <TT>getImage()</TT>
+and <TT>getAudioClip()</TT> methods.
+<H4><TT>URLConnection</TT></H4>
+<P>
+There may be times when you want to have the possibility of more
+flexible interaction with a Web server. For example, you may want
+to use the <TT>POST</TT> method to
+send information to a CGI script. A <TT>URLConnection</TT>
+represents a connection to a given URL and allows a richer interaction
+than just the <TT>URL</TT> object.
+You can open an <TT>OutputStream</TT>
+to a URL, get various <TT>http</TT>
+header fields, and so on. It is possible to set certain properties
+of the connection before connecting so as to restrict the types
+of interaction allowed. Class <TT>URLConnection</TT>
+also has the methods <TT>getContent()</TT>
+and <TT>getInputStream()</TT> which
+do the same thing as <TT>getContent()</TT>
+and <TT>openStream()</TT> in the class
+URL.
+<H4><TT>URLEncoder</TT></H4>
+<P>
+To pass string arguments to a CGI script (such as a search engine),
+you have to put a query on the end of the URL by appending a question
+mark and a series of argument definitions:
+<BLOCKQUOTE>
+<TT>http://www.myserver.com/cgi-bin/myscript.cgi?name=JoeBlow</TT>
+</BLOCKQUOTE>
+<P>
+Here, the value of the <TT>name</TT>
+argument is &quot;JoeBlow.&quot; In general, to cope with whitespace
+and other weird characters, the argument values must be translated
+into a format corresponding to a special MIME type. The class
+<TT>java.net.URLEncoder</TT> exists
+just to provide this translation, by way of its lone static method,
+<TT>encode()</TT>. For example:
+<BLOCKQUOTE>
+<TT>String s = URLEncoder.encode( &quot;William
+Thornhump \003&quot; );<BR>
+System.out.println( s );</TT>
+</BLOCKQUOTE>
+<P>
+(notice that the string contains a Control+C character with value
+3). This code results in the output:
+<BLOCKQUOTE>
+<TT>William+Thornhump+%03</TT>
+</BLOCKQUOTE>
+<H4><TT>URLStreamHandler</TT></H4>
+<P>
+A <TT>URLStreamHandler</TT> knows
+how to handle a particular type of protocol over a stream connected
+to a URL. Unless you are interested in embedding new protocols
+into your Java program, you don't have to bother with these low-level
+objects. Use the methods in the classes <TT>URL</TT>
+and <TT>URLConnection</TT> instead.
+A <TT>URLStreamHandler</TT> for a
+given protocol is instantiated once when the protocol name is
+first encountered in creating a <TT>URL</TT>
+instance. This is an abstract class.
+<P>
+The <TT>java.net</TT> package includes
+the interface <TT>URLStreamHandlerFactory</TT>.
+A class implementing this interface knows how to create a <TT>URLStreamHandler</TT>
+from a given protocol name, by way of the <TT>createURLStreamHandler()</TT>
+method. To provide a custom <TT>URLStreamHandler</TT>
+for a new protocol, you first have to subclass the abstract class
+<TT>URLStreamHandler</TT>, overriding
+methods as appropriate (at the very least, you must implement
+the <TT>openConnection()</TT> method).
+Next, write a class implementing <TT>URLStreamHandlerFactory</TT>,
+whose <TT>createURLStreamHandler()</TT>
+method understands the new protocol name, and set it as the <TT>URLStreamHandlerFactory</TT>
+for your application:
+<BLOCKQUOTE>
+<TT>URL.setURLStreamHandlerFactory( myFactory
+);&nbsp;&nbsp;&nbsp;// a static method in class URL</TT>
+</BLOCKQUOTE>
+<P>
+Your new <TT>URLStreamHandlerFactory</TT>
+doesn't have to worry about decoding the standard protocols. If
+the <TT>createURLStreamHandler()</TT>
+method returns <TT>null</TT>, the
+standard factory is consulted. This also allows you to override
+the standard protocol definitions, if you wish. A Java program
+can only set the <TT>URLStreamHandlerFactory</TT>
+once.
+<H3><A NAME="ContentHandlers">Content Handlers</A></H3>
+<P>
+As <TT>URLStreamHandler</TT>s are
+to protocol types, so <TT>ContentHandler</TT>s
+are to <I>content</I> types of a URL. An object in the abstract
+class <TT>java.net.ContentHandler</TT>
+knows how to read a given <TT>URLConnection</TT>
+and turn the input into an <TT>Object</TT>.
+Again, unless you are interested in extending the different content
+types understood by your Java program, you don't need to bother
+with this class. The different ways of encoding the content of
+a URL are known as MIME types, so you need a <TT>ContentHandler</TT>
+for each MIME type you wish to be able to access. To make a custom
+<TT>ContentHandler</TT> which <BR>
+corresponds to a new MIME type, you need to implement the single
+method <TT>getContent()</TT>. To make
+it work with the existing routines in classes <TT>URL</TT>
+and <TT>URLConnection</TT>, you must
+also install a new <TT>ContentHandlerFactory</TT>,
+using the static method <TT>setContentHandlerFactory()</TT>
+in class <TT>URLConnection</TT>. A
+<TT>ContentHandlerFactory</TT> is
+an object which implements the interface <TT>java.net.ContentHandlerFactory</TT>
+by providing the method <TT>createContentHandler()</TT>
+which turns the string name of a MIME type into a <TT>ContentHandler</TT>.
+<H3><A NAME="SocketsandInternetAddresses">Sockets and Internet
+Addresses</A></H3>
+<P>
+A <I>socket</I> is one endpoint of a two-way network connection.
+In Java, sockets come in three flavors: <TT>Socket</TT>,
+<TT>ServerSocket</TT>, and <TT>DatagramSocket</TT>.
+The actual implementation of all three of these kinds of socket
+is accomplished by the class <TT>SocketImpl</TT>
+which provides a fairly standard set of socket calls. To work
+with fancy setups like firewalls and proxies, you may have to
+provide your own socket implementation by subclassing <TT>SocketImpl</TT>
+and setting your own <TT>SocketImplFactory</TT>.
+<H4><TT>InetAddress</TT></H4>
+<P>
+An <TT>InetAddress</TT> object holds
+an internet address and is essential for using sockets. You can
+get an <TT>InetAddress</TT> by calling
+the static method <TT>InetAddress.getByName()</TT>
+with a host name or an IP address in standard string format:
+<BLOCKQUOTE>
+<TT>InetAddress a = InetAddress.getByName(
+&quot;www.myhost.com&quot; );<BR>
+InetAddress b = InetAddress.getByName( &quot;123.45.67.89&quot;
+);</TT>
+</BLOCKQUOTE>
+<P>
+To refer to the local host, you can pass in <TT>null</TT>.
+<H4><TT>ServerSocket</TT></H4>
+<P>
+A <TT>ServerSocket</TT> is created
+on a local port and then it listens for incoming socket connections.
+The <TT>accept()</TT> method blocks
+until there is a connection and then returns a corresponding <TT>Socket</TT>
+object. The new connection is a stream connection, as described
+below under <TT>Socket</TT>. The <TT>ServerSocket</TT>
+continues to listen until closed.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The constructor is called as <TT>ServerSocket(int port)</TT> or as <TT>ServerSocket(int port, int max)</TT>. The optional second argument is the maximum number of pending connections to hold in a queue before refusing further new connections. It is not the number of seconds to wait for a connection, as stated in the Java API 1.0.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H4><TT>Socket</TT></H4>
+<P>
+A <TT>Socket</TT> object represents
+a standard stream socket. This means that data passes along the
+connection in sequence and is reliably delivered. The stream socket
+is a layer of socket functionality which uses a more primitive
+packet interface behind the scenes, transparently resending bad
+packets as required (as long as the connection remains open).
+This type of socket can have an <TT>InputStream</TT>
+or an <TT>OutputStream</TT> connected
+to it, or both. These streams are accessed by way of the <TT>getInputStream()</TT>
+and <TT>getOutputStream()</TT> methods.
+(In fact, you can specify with an optional constructor argument
+that a <TT>Socket</TT> should be a
+datagram socket-not a stream socket-but it's not clear why this
+is a good idea, since there is a datagram socket class already.)
+<P>
+A <TT>Socket</TT> is created using
+an address and port number to which a connection is attempted
+immediately. If there is a socket listening at that port (Java
+<TT>ServerSocket</TT> or otherwise)
+and it is willing to accept the connection, then the <TT>Socket</TT>
+is constructed and may be used immediately. Otherwise, the constructor
+throws an exception.
+<H4>Datagram Sockets</H4>
+<P>
+Datagram sockets bind to a local port where they send and receive
+datagram packets. A datagram packet is a short sequence of bytes,
+addressed to a particular host and port. Unlike a stream socket,
+a datagram socket does not maintain a connection with a remote
+socket. Packets may be sent to any host and port at which a datagram
+socket is waiting to receive one. It is the packet, not the socket,
+which knows to whom it is addressed.
+<P>
+In Java, datagram sockets are implemented by the class <TT>java.net.DatagramSocket</TT>.
+A <TT>DatagramSocket</TT> can <TT>send()</TT>
+and <TT>receive()</TT> datagram packets
+which are represented by class <TT>java.net.DatagramPacket</TT>.
+The packets are not guaranteed to arrive in sequence or even to
+arrive at all.
+<H2><A NAME="javautil"><TT><FONT SIZE=5 COLOR=#FF0000>java.util</FONT></TT></A>
+</H2>
+<P>
+The <TT>java.util</TT> package is
+explored in <A HREF="ch13.htm" >Chapter 13</A>, &quot;General
+Purpose Classes.&quot; It contains some utility classes and useful
+data structures, described briefly here.
+<H3><A NAME="DictionariesHashtablesandProperties">Dictionaries,
+Hashtables, and Properties</A></H3>
+<P>
+A <TT>Dictionary</TT> lets you create
+an association between <I>keys</I> and <I>values</I>. These can
+be any Java objects. In a real dictionary, the key is a word,
+and the associated value is the definition of that word. The key-value
+pairs are stored in the <TT>Dictionary</TT>
+using the <TT>put()</TT> method. The
+values are retrieved by the <TT>get()</TT>
+method, given the corresponding key. The <TT>keys()</TT>
+and <TT>elements()</TT> methods return
+an <TT>Enumeration</TT> of the keys
+or the elements of the <TT>Dictionary</TT>.
+<P>
+A <TT>Hashtable</TT> is an efficient
+form of <TT>Dictionary</TT> which
+relies on a hashing function, which generates an integer hash
+code for each key and uses standard hashing techniques to ensure
+speedy access. This relies on proper implementations of <TT>hashCode()</TT>
+and <TT>equals()</TT> in the objects
+used as keys. In particular, the hash codes should not be too
+&quot;predictable.&quot;
+<P>
+Class <TT>java.util.Properties</TT>
+extends <TT>Hashtable</TT>, and adds
+the <TT>load()</TT>, <TT>save()</TT>,
+and <TT>list()</TT> methods for writing
+and reading the key-value pairs to and from streams. The convenience
+method <TT>getProperty()</TT> performs
+an explicit type cast operation on the returned element for you,
+from <TT>Object</TT> to <TT>String</TT>.
+The system properties are stored in a <TT>Properties</TT>
+object.
+<H3><A NAME="StacksandVectors">Stacks and Vectors</A></H3>
+<P>
+Arrays in Java are already far nicer objects than in many programming
+languages, however, they are most appropriate for storing items
+up to a fixed maximum number. A <TT>java.util.Vector</TT>
+object is like an array which automatically allocates more storage
+as required. The elements of the <TT>Vector</TT>
+are stored in sequence, indexed by integers starting from 0. The
+<TT>size()</TT> method returns the
+current number of elements. Any Java object can be stored in a
+<TT>Vector</TT>. You can insert an
+element into a position in the <TT>Vector</TT>
+and the existing elements roll over to make room. When you remove
+an element, the objects to the right roll back and fill the space.
+So you normally can't rely on an object staying at a fixed index
+in the <TT>Vector</TT>.
+<P>
+The <TT>Vector</TT> class is flexible
+enough to serve as a base class for various stack and queue type
+data structures. The class <TT>java.util.Stack</TT>
+extends <TT>Vector</TT> and provides
+a basic pushdown stack of objects (Last In, First Out or LIFO).
+You can <TT>push()</TT> an element
+onto the top of the stack and you can <TT>peek()</TT>
+at the top element or <TT>pop()</TT>
+it off the stack.
+<H3><A NAME="CountingThingsEnumerations">Counting Things: Enumerations</A>
+</H3>
+<P>
+There are many situations where you have a collection of elements
+and you want to iterate over the collection, visiting each element
+once. If they are already in some particular ordered structure
+such as an array or <TT>Vector</TT>,
+you can do this with a simple <TT>for</TT>
+loop. A more flexible way is provided by the interface <TT>java.util.Enumeration</TT>.
+For example, an <TT>Enumeration</TT>
+can iterate over the elements in a hash table using the <TT>hasMoreElements()</TT>
+and <TT>nextElement()</TT> methods.
+To get the <TT>Enumeration</TT>, call
+the <TT>elements()</TT> method of
+the <TT>Hashtable</TT> (or <TT>Vector</TT>,
+<TT>Stack</TT>, and so on).
+<H3><A NAME="ObserversandObservables">Observers and Observables</A>
+</H3>
+<P>
+Sometimes an object needs to become an <I>observer</I> which monitors
+the condition of a second, <I>observable</I> object. For example,
+a spreadsheet must monitor changes in its cells and respond by
+recalculating the spreadsheet values. This is particularly important
+in a multithreaded environment. Java offers a uniform approach
+to the observer model by way of the base class <TT>java.util.Observable</TT>
+and the interface <TT>java.util.Observer</TT>.
+An <TT>Observable</TT> keeps a list
+of <TT>Observer</TT>s which have registered
+their interest in watching changes in the <TT>Observable</TT>.
+When an observable change occurs, the <TT>Observable</TT>
+object calls its <TT>notifyObservers()</TT>
+method. This results in calls to the <TT>update()</TT>
+method of each <TT>Observer</TT>.
+<H3><A NAME="OtherUtilityClasses">Other Utility Classes</A></H3>
+<P>
+You may think that Java has everything except the kitchen sink,
+but here it is: the kitchen sink department. Java provides additional
+classes to handle those tricky functions which everybody needs
+at some point but which are a real headache to code. The <TT>java.util</TT>
+classes <TT>BitSet</TT>, <TT>Date</TT>,
+<TT>Random</TT>, and <TT>StringTokenizer</TT>
+offer bit-string logical operations, time and date functions,
+random number generation, and string-splitting capability, respectively.
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#FF0000>Summary</FONT></A>
+</H2>
+<P>
+In this chapter, you learned what each of the standard Java packages
+can do, and you at least heard mention of just about every different
+kind of class contained in them. These classes play a huge role
+in reducing the amount of boring code you need to write, and consequently
+they help to cut down on bugs. You get to have more spare time
+for surfing (the ocean or the Internet, as applicable). The next
+chapter (<A HREF="ch4.htm" >Chapter 4</A>, &quot;Creating Your
+Own Objects&quot;) deals with the mechanics of coding subclasses
+of these classes tailored to your own needs.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

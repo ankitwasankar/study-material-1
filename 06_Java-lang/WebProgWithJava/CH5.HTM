@@ -1,0 +1,984 @@
+<HTML>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" ALINK="red" VLINK="green">
+<BASEFONT SIZE="5">
+<font face="Arial,Helvetica" size="-1" color="#006666"><A HREF="/reference/r_library.html"><B>All Categories</A> :</B>
+<b><A HREF="/reference/r_java.html">Java</A></b></font><p>
+
+
+   <META>
+<H1><FONT COLOR=#FF0000>Chapter 5</FONT></H1>
+<H1><B><FONT SIZE=5 COLOR=#FF0000>Writing a Java Applet: The Order
+Entry System</FONT></B>
+</H1>
+<P>
+<HR WIDTH="100%"></P>
+<P>
+<H3 ALIGN=CENTER><FONT COLOR="#000000"><FONT SIZE=+2>CONTENTS<A NAME="CONTENTS"></A>
+</FONT></FONT></H3>
+
+<UL>
+<LI><A HREF="#TheSampleAppletTheOrderEntrySyste" >The Sample Applet: The Order Entry System</A>
+<LI><A HREF="#TheJavaAWT" >The Java AWT</A>
+<UL>
+<LI><A HREF="#TheOrganizationoftheJavaAWT" >The Organization of the Java AWT</A>
+<LI><A HREF="#supersimpleAWTBasedAppletExample" >supersimple AWT-Based Applet Example</A>
+</UL>
+<LI><A HREF="#Applets" >Applets</A>
+<UL>
+<LI><A HREF="#JavaAppletsversusJavaApplications" >Java Applets versus Java Applications</A>
+</UL>
+<LI><A HREF="#AppletLimitations" >Applet Limitations</A>
+<UL>
+<LI><A HREF="#ReadWriteLimitations" >Read/Write Limitations</A>
+<LI><A HREF="#ConnectivityLimitations" >Connectivity Limitations</A>
+<LI><A HREF="#NativeLibraryAccess" >Native Library Access</A>
+<LI><A HREF="#ProcessLimitations" >Process Limitations</A>
+</UL>
+<LI><A HREF="#TheAppletLifeCycle" >The Applet Life Cycle</A>
+<UL>
+<LI><A HREF="#TheinitMethod" >The init() Method</A>
+<LI><A HREF="#ThestartMethod" >The start() Method</A>
+<LI><A HREF="#ThestopMethod" >The stop() Method</A>
+<LI><A HREF="#ThedestroyMethod" >The destroy() Method</A>
+</UL>
+<LI><A HREF="#AddingAppletstoWebPages" >Adding Applets to Web Pages</A>
+<LI><A HREF="#NetscapeNavigatorandApplets" >Netscape Navigator and Applets</A>
+<UL>
+<LI><A HREF="#HTMLCodingforAppletsinNetscape" >HTML Coding for Applets in Netscape</A>
+<LI><A HREF="#ParametersandApplets" >Parameters and Applets</A>
+<LI><A HREF="#AligningtheApplets" >Aligning the Applets</A>
+<LI><A HREF="#DisplayingthesupersimpleExampleApple" >Displaying the supersimple Example Applet</A>
+</UL>
+<LI><A HREF="#AppletsandHotJava" >Applets and HotJava</A>
+<LI><A HREF="#WhatsBeenDonesoFar" >What's Been Done So Far</A>
+<LI><A HREF="#WhatsComingUp" >What's Coming Up</A>
+</UL>
+<HR>
+<P>
+In the preceding four chapters, you have had an introduction to
+Java as an object-oriented language. You will see, as the book
+continues, that this is what makes Java so powerful and easy to
+use. In <A HREF="ch3.htm" >Chapter 3</A>, &quot;An Introduction
+to Java Classes,&quot; you were given an introduction to the <TT>java.applet</TT>
+and <TT>java.awt</TT> classes. You
+extend your knowledge of those classes over the next six chapters
+as we build the Order Entry System applet. This construction of
+the Order Entry System and the concepts behind it will span almost
+all of Part II. Finishing up Part II of this book, <A HREF="ch11.htm" >Chapter 11</A>,
+&quot;Reading and Writing with Java,&quot; covers reading and
+writing with Java.
+<P>
+In this chapter, the Order Entry System is described. It is constructed
+over the next seven chapters as you explore the implementation
+and dynamics of the Java language and class libraries. You explore
+the basic concepts behind Java applets and the Abstract Windowing
+Toolkit (AWT), which allows you to construct a useful applet for
+entering and submitting orders. By the end of <A HREF="ch10.htm" >Chapter 10</A>,
+&quot;The Order Entry System: Exception Handling and Browser Interaction,&quot;
+you will have a fully functioning system, along with the knowledge
+necessary to customize and maintain it.
+<H2><A NAME="TheSampleAppletTheOrderEntrySyste"><FONT SIZE=5 COLOR=#FF0000>The
+Sample Applet: The Order Entry System</FONT></A></H2>
+<P>
+The World Wide Web (WWW) is evolving from being a means to communicate
+static scientific documents in its early days to becoming an interactive
+and alive medium. Currently, both individuals and businesses use
+it as a medium for their messages to reach a worldwide audience.
+Java is changing the Web from being a static means of communicating.
+The future of the WWW, as many people predict, is to be a unique
+medium involving active interaction, motion, and multimedia expression.
+<P>
+The Order Entry System functions in this interactive capacity.
+It includes graphical user interface (GUI) components such as
+buttons, scrolling lists, and text entry fields for use by someone
+viewing your Web site. This chapter covers the techniques of password
+entry and validation in Java Applets in order to limit access
+to your applet. It also checks the data to make sure that the
+data is appropriate for entry.
+<P>
+The Order Entry System functions as a stand-alone window, complete
+with a menu bar, and has all of the functions of a working window
+common to operating systems, such as Windows 95, X Window, and
+others. This functionality is accomplished through the use of
+Java frames and the layout managers provided in Java; the functionality
+is covered in <A HREF="ch8.htm" >Chapter 8</A>, &quot;The Order
+Entry System: Managing the Applet Layout.&quot; The layout of
+the GUI components is managed using the GridBagLayout Managers
+to ensure a clean interface. You will be aiming to produce a professional-looking
+and clean-running applet in both appearance and function. In keeping
+with this goal, you will also add graphics-based text and figures,
+and a logo to the applet. Figure 5.1 shows the Order Entry System
+GUI.
+<P>
+<A HREF="f5-1.gif" ><B>Figure 5.1 :</B> <I>The Order Entry System CUI.</I></A>
+<P>
+The Order Entry System takes user input from the keyboard and
+mouse. This is handled using code based on the concept of <I>events</I>,
+which are happenings that require some kind of reaction from a
+Java program using the AWT. For example, one such event requires
+the browser to command the Web browser to change its current focus
+to another HTML document. The concept of events in Java will be
+covered in the upcoming chapters. This enables the user to view,
+in the case of the Order Entry System, different Web documents
+containing descriptions of the different products available. Finally,
+this chapter covers the means to get the order back to you, either
+through e-mail or through use of CGI scripting.
+<P>
+You will build the Order Entry System block by block, adding more
+function and capability as you progress through Java concepts
+and their implementations. Each chapter covers an additional group
+of Java's capabilities and applies those to the System. But first,
+I need to cover some necessary concepts.
+<H2><A NAME="TheJavaAWT"><FONT SIZE=5 COLOR=#FF0000>The Java AWT</FONT></A>
+</H2>
+<P>
+Essential to Java is platform independence. As even those with
+just a little experience in programming know, porting programs
+between platforms is often a daunting task. Take, for instance,
+the question of how many bytes are required to store an integer
+type. Many systems, such as UNIX-based machines, use four bytes
+to store an integer. Intel machines use two. This inconsistency
+in changing platforms suggest what kinds of problems are posed
+to developers wishing to create machine-independent code. The
+designers of Java have attempted to circumvent these problems
+through careful planning.
+<P>
+The Java Abstract Windowing Toolkit (AWT) is the means by which
+GUIs are implemented in the Java language. It provides the programmer
+with the means to create windows utilizing buttons, text entry
+fields, and all of the typical elements you expect in windows
+systems. It allows the Java programmer to design windowing programs
+that can be used on any machine in which a Java bytecode interpreter
+and an AWT have been implemented. Above all, the AWT is important
+because it allows you to easily produce high-quality interactive
+and efficient Java applications and applets.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Applets, as you have seen in <A HREF="ch3.htm" >Chapter 3</A>, are a special type of Java program designed to be incorporated into HTML documents. Applications are stand-alone Java programs. Their differences are covered more in depth later on in this chapter.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+An important characteristic of the Java AWT is that it has been
+designed to be event-driven. By this, I mean that actions are
+delivered to your program based on the AWT, and your program handles
+them from there. The AWT has standardized those actions to make
+handling them very easy.
+<P>
+Also important to the portability of the AWT across different
+platforms and operating systems is how it handles the layout of
+different components. In many window systems, such as Microsoft
+Windows, the programmer must specify exact coordinates to specify
+the position of each different component of the window. This is,
+obviously, a problem when you are trying to design with platform-independence
+as a goal. What happens when you design an applet for a screen
+size of 1024<FONT FACE="Symbol">&#165;</FONT>768 and someone tries
+to view it on a screen of much lower resolution? An applet that
+once filled the entire screen cleanly is now a mess. The AWT is
+designed to circumvent this problem by not specifying exact layouts
+for a window; instead, it uses various different lay out managers
+in the class library, managers that function based on general
+rules to lay out the components in a window. This is covered in
+depth in <A HREF="ch8.htm" >Chapter 8</A>.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+The AWT is designed to produce windows to appear exactly like the native windows in any system. This way, your programs are not distinctively Java when run on different platforms. They blend cleanly into the local windowing system with little or no discontinuity.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="TheOrganizationoftheJavaAWT">The Organization of
+the Java AWT</A></H3>
+<P>
+The Java AWT is designed based on the concepts of components and
+containers. Components are the building blocks of AWT-based applets
+and applications. A diagram of the inheritance hierarchy of some
+of the AWT is shown in Figure 5.2.
+<P>
+<A HREF="f5-2.gif" ><B>Figure 5.2:</B> <I>The partial inheritance hierarchy of the AWT.</I></A>
+<P>
+You should notice that the vast majority of the other classes
+of the AWT are subclasses of the class <TT>Component</TT>.
+<P>
+One subclass of the component class is containers. Containers
+are AWT components that function to contain other components.
+Containers allow you, the programmer, to break down your GUI into
+smaller and smaller sections until each is laid out exactly the
+way you want it. This is accomplished easily because containers
+themselves are derived from components. Because each container
+can apply a specific layout to the components that it is housing,
+the programmer has much more control.
+<P>
+The type <TT>Component</TT> can be
+conceptually divided into three major categories: containers,
+user interface components, and windowing components.
+<H4>Containers</H4>
+<P>
+Containers hold other components, including containers themselves.
+The container type you see most often is the <TT>Panel</TT>
+class. Panels are the general container class that function just
+to hold other components. They don't do much else, but they are
+indispensable in the overall design goals for the AWT.
+<H4>User Interface Components</H4>
+<P>
+User interface components are the buttons, scrolling lists, and
+text entry fields that you should be familiar with in dealing
+with any windows-based interface. Here is a list of the major
+interface components provided by the AWT:
+<BLOCKQUOTE>
+Labels<BR>
+Buttons<BR>
+Radio buttons<BR>
+Checkboxes<BR>
+Lists<BR>
+Choices<BR>
+Text fields<BR>
+Text areas<BR>
+Scrollbars<BR>
+Menus<BR>
+Canvases<BR>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Canvases are special components that are, as their name implies, drawing surfaces. You are not limited to drawing just on canvases. You can also draw on panels, but as you see in later chapters, drawing on panels can lead to complications in layout and portability.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+These different types of interface components, their form and
+their functions, are detailed in depth in the chapters to come
+as you build the Order Entry System.
+<H4>Windowing Components</H4>
+<P>
+Windowing components are the components that function to produce
+stand-alone windows and menus in your Java applets and applications.
+Although these are technically a type of container, they are more
+easily understood if they are placed in a separate grouping aside
+from general containers. The major types of windowing components
+are frames and dialogs. Frames are the means by which you can
+create stand-alone windows outside of your browser; you also use
+frames when creating your own windowed application. Frames can
+include menu bars. Dialogs are limited windows. The most common
+type of dialog is the &quot;OK&quot; window, which presents a
+message to a user and then gets an OK to continue. <A HREF="ch8.htm" >Chapter 8</A>
+explores two types of dialogs: modal and non-modal. The difference
+between the two types is that modal dialogs allow input from the
+user only to its window, and no others, while it is active.
+<P>
+The Order Entry System contains almost all of the different components
+available. The System GUI is shown in Figure 5.3.
+<P>
+<A HREF="f5-3.gif" ><B>Figure 5.3:</B> <I>The components in the Order Entry System interface.</I></A>
+<H3><A NAME="supersimpleAWTBasedAppletExample"><TT><FONT SIZE=4 >supersimple</FONT></TT><FONT SIZE=4>
+AWT-Based Applet Example</FONT></A></H3>
+<P>
+This simple applet isn't going to do much except incorporate a
+button and a comment field into an applet. This example is useful
+for you to get a feel for the basic Java applet constructors before
+you move on to more complex examples. In any case, here it is:
+<BLOCKQUOTE>
+<TT>1.&nbsp;&nbsp;import java.awt.*;<BR>
+2.<BR>
+3. public class supersimple extends java.applet.Applet<BR>
+4. {<BR>
+5.&nbsp;&nbsp;public void init()<BR>
+6.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add(new Button(&quot;Order&quot;));
+<BR>
+8.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TextArea CommentArea =
+new TextArea(5,25);<BR>
+9.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+CommentArea.insertText(&quot;Hal Bialeck&quot;,0);<BR>
+10.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; add(CommentArea);<BR>
+11.&nbsp;&nbsp;&nbsp;&nbsp; }<BR>
+12.}<BR>
+</TT>
+</BLOCKQUOTE>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+All applets in this book are included on the book's companion CD-ROM.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Caution:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Java requires that your applets are saved in the same file name as the class name. For example, if your class is named <TT>dinky</TT>, it must be saved in a file called <TT>dinky.java</TT>. You will otherwise receive an error when you try to compile it.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Line 1 imports all of the classes in the Java.awt package. Earlier
+chapters covered the process of importing other classes into your
+classes. If you are not familiar with this process, go back and
+review that section. You can view applets simply as classes you
+write to extend and modify the framework of the <TT>java.applet.Applet</TT>
+class. This process is specified in the class declaration in line
+3.
+<P>
+As for the rest of the code, here is an explanation in brief (don't
+worry much about understanding it all now). Line 5 declares the
+new function <TT>init()</TT>, which
+overrides the method imported in the <TT>Java.applet.Applet</TT>
+class. Line 7 creates and inserts a button with the text <TT>Order</TT>
+on it. Lines 9 and 10 create a text area and insert the text <TT>Hal
+Bialeck</TT> in the beginning of the area. Finally, line
+11 inserts the text area.
+<P>
+This example gives you a feel for the flow of Java applets.
+<P>
+Figure 5.4 shows this applet when displayed in the AppletViewer
+utility from the JDK.
+<P>
+<A HREF="f5-4.gif" ><B>Figure 5.4 :</B> <I>The supersimple AWT example applet.</I></A>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+As you found out in previous chapters, applets must be imbedded in an HTML document before they can be viewed by a Java-enhanced browser or the AppletViewer utility. How to place applets in your Web pages is covered later in this chapter. You learn how to design the HTML document to display this example.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+This chapter has covered what makes up the framework of classes
+to produce Java-based GUIs. Next is the concept of <I>applets</I>,
+which are Java programs specially designed to be downloaded across
+the Internet and included in an HTML document displayed by a Java
+enhanced browser.
+<H2><A NAME="Applets"><FONT SIZE=5 COLOR=#FF0000>Applets</FONT></A>
+</H2>
+<P>
+Applets are designed to bring the Web alive. They function to
+add animation, sound, and eventually complete multimedia into
+HTML documents. Java is also part of the future of interfacing
+with virtual-reality environments implemented via VRML. At present,
+Java is limited only by the capabilities of the Internet  itself.
+<P>
+For more information on VRML, the Virtual Reality Markup Language
+for the Web, visit VRML's home at <TT><A TARGET="resource window" HREF="http://www.vrml.org">http://www.vrml.org</A></TT>.
+<P>
+<TT><B><A TARGET="resource window" HREF="http://www.vrml.org">http://www.vrml.org</A></B></TT>
+<P>
+The most important feature of applets on the Web, however, is
+the fact that applets change the Web from being a static medium
+to one based on interactivity with users. At present, Java is
+limited only by the capabilities of the Internet itself. As the
+Internet grows in data transmission, Java is ready to expand with
+it.
+<P>
+Applets are capable of commanding and interacting with the Web
+browser executing them.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Remember that not everyone can view applets that you might put on your Web pages. At the time of this writing, only HotJava, Microsoft Internet Explorer, Netscape Navigator 2.0 (and above) and a number of others are Java-capable. Also, Navigator 2.0 for Microsoft Windows 3.1 does not support Java, though the current release of Navigator 3.0 for 3.1 does support it. You should, therefore, use applets merely to enhance a Web page or site, not to be the centerpiece. This limitation will change in the future as Java-capable browsers become the standard, just as browsers capable of displaying images have become the standard today. (Of course, someone will always insist on using Lynx, a text-only browser; you can't do much about these folks.)</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Technically, applets are subclasses of the panel container of
+the AWT. They derive much of their function and form from panels.
+But just as the process of imbedding container upon container
+makes panels so powerful, the same is true about the versatility
+of applets. The diagram of the inheritance path of the class implementing
+applets, <TT>java.applet.Applet</TT>,
+is shown in Figure 5.5.
+<P>
+<A HREF="f5-5.gif" ><B>Figure 5.5 :</B> <I>The inheritance path of applets.</I></A>
+<H3><A NAME="JavaAppletsversusJavaApplications">Java Applets versus
+Java Applications</A></H3>
+<P>
+Java programs are divided into two types: applets and applications.
+As I have discussed previously, applets are Java programs that
+are specialized for use over the Web. Applications are stand-alone
+Java programs that can be run via a Java interpreter, and when
+run in that manner they appear just as any compiled C++ or Basic
+program would. Since this book focuses on Java programming for
+the WWW, I will concentrate on applets when examining the Java
+language.
+<P>
+As you will find out in <A HREF="ch12.htm" >Chapter 12</A>, &quot;Network
+Programming with Java,&quot; networking with Java is powerful
+and easy. As Java was designed to be a networking language, many
+of the problems with network programming in other languages have
+been removed. Both Java applications and applets have access to
+these networking capabilities, but applets are limited in scope
+to where they can connect and to where they can perform input/output
+tasks.
+<H2><A NAME="AppletLimitations"><FONT SIZE=5 COLOR=#FF0000>Applet
+Limitations</FONT></A></H2>
+<P>
+As of the 1.0.2 release of Java from June of 1996, applets are
+limited in order to ensure the security of the user. When you
+are designing applets, you should be aware of limitations in the
+areas of read/write access, connectivity, and native language
+library access.
+<H3><A NAME="ReadWriteLimitations">Read/Write Limitations</A>
+</H3>
+<P>
+Applets cannot read or write to the local file system. If applets
+were able to access the local file system, there would be little
+to stop an evil applet from searching the local files for valuable
+information and then sending that information back to its originating
+server. Nothing would stop a programmer from writing an applet
+to reformat a hard drive or spread a virus. Obviously, allowing
+Java applets to have read/write privileges on local machines would
+be disastrous.
+<H3><A NAME="ConnectivityLimitations">Connectivity Limitations</A>
+</H3>
+<P>
+Applets cannot make connections and transfer data except from
+the machine from which they were downloaded. For example, say
+an applet was written to post form data or send e-mail messages.
+Although allowing this kind of access would be advantageous, it
+is obviously dangerous. Suppose someone wrote an applet that would
+send a threatening e-mail message to the President (<TT>president@whitehouse.gov</TT>)
+each time someone viewed a page on the Web. Allowing this kind
+of access would be disastrous in that no one browsing the Web
+would be able to trust applets they are downloading across the
+Internet. By their nature, applets are untrusted by Web browsers.
+In fact, if you run the Order Entry System you are constructing
+over the next six chapters in Netscape Navigator 2.0, you will
+be presented with a large label informing you that you are viewing
+an &quot;Untrusted Applet Window.&quot; This is to keep an unscrupulous
+programmer from writing an applet that would disguise itself as
+a trusted application and prompt the user for a password that
+it would return to its server. This distrust of Java applets is
+becoming less common as more people and developers accept Java.
+<H3><A NAME="NativeLibraryAccess">Native Library Access</A></H3>
+<P>
+Java has the capability to access native libraries from other
+languages such as C++. Applets are restricted from this feature.
+If this was allowed, there would be nothing to keep applets from
+calling native language methods that would perform some evil action.
+By limiting the applet's library access, the ability for a programmer
+to write some evil methods in another language and circumvent
+Java's security measures by using them in an applet is removed.
+<H3><A NAME="ProcessLimitations">Process Limitations</A></H3>
+<P>
+Java applets are also restricted from executing any code on a
+local machine. This includes forking processes on UNIX systems.
+These limitations are entirely necessary. Say, for instance, an
+evil applet spawned a process to search (<TT>grep</TT>'ed
+in UNIX) your file system for the word <I>address</I> or <I>password</I>,
+and then sent an e-mail message containing the results back its
+server. This would be disastrous.
+<P>
+Hopefully, as the Internet and Java develop, the tight leash around
+applets will loosen. For the present day, however, you have to
+live with these constraints in order to take advantage of the
+capabilities of Java.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+There are also other notable security concerns and solutions to these problems. They are detailed in <A HREF="ch19.htm" >Chapter 19</A>, &quot;Security Issues,&quot; which deals with security issues and Java.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="TheAppletLifeCycle"><FONT SIZE=5 COLOR=#FF0000>The
+Applet Life Cycle</FONT></A></H2>
+<P>
+Applets follow a set life cycle during their execution. They are
+initialized, started, stopped, and destroyed. Initially, the Java
+bytecodes are run through a security check by an object running
+in the browser. Then, to start execution, the Java runtime calls
+the <TT>init()</TT> method of your
+applet.
+<H3><A NAME="TheinitMethod">The <TT><FONT SIZE=4>init()</FONT></TT><FONT SIZE=4>
+Method</FONT></A></H3>
+<P>
+The <TT>init()</TT> method is where
+your applet does much of its setup, such as defining its layout,
+parsing parameters, or setting the background colors. As with
+all of these methods, if you do not override the default methods
+provided in the <TT>java.applet.Applet</TT>
+class, they are called and do their normal duty. In the case of
+the <TT>init()</TT> method, if it
+isn't overridden, nothing goes on. In any case, it is still called.
+<P>
+If you noticed in the <TT>supersimple</TT>
+example discussed earlier, you utilized the <TT>init()</TT>
+method to set the initial layout for the applet. For the other
+three methods standard in the life cycle of Java applets, you
+simply used the default methods in the Applet class.
+<H3><A NAME="ThestartMethod">The <TT><FONT SIZE=4>start()</FONT></TT><FONT SIZE=4>
+Method</FONT></A></H3>
+<P>
+The <TT>start()</TT> method is used
+mainly when implementing threads in Java. You will learn more
+about threading in Java in <A HREF="ch16.htm" >Chapter 16</A>,
+&quot;Multithreading with Java,&quot; which covers threading and
+multithreading. If you have no clue as to what threads are, it
+might be helpful to glance at the beginning of that chapter.
+<P>
+In Java, threading is most helpful when performing audio playing
+or animation. In these cases, or if you want your program to be
+able to stop and restart, it is helpful to override the <TT>start()</TT>
+method and implement your own. But if this isn't the case, you
+can just utilize the <TT>start()</TT>
+method in the <TT>Applet</TT> class.
+<H3><A NAME="ThestopMethod">The <TT><FONT SIZE=4>stop()</FONT></TT><FONT SIZE=4>
+Method</FONT></A></H3>
+<P>
+The <TT>stop()</TT> method is used
+to do what its name suggests: stop what is going on. In it, you
+usually <TT>stop()</TT> the threads
+that you initiated in the <TT>start()</TT>
+method. As is the case with the <TT>start()</TT>
+method, if you aren't doing anything that is threaded, you do
+not have to worry about implementing this method in your applet.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+When a viewer leaves a page, by default, the applet continues running. Utilizing the <TT>stop()</TT> method ensures that whatever you have started in your applet stops to free up system resources.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="ThedestroyMethod">The <TT><FONT SIZE=4>destroy()</FONT></TT><FONT SIZE=4>
+Method</FONT></A></H3>
+<P>
+As with the previous three methods, the <TT>destroy()</TT>
+method is as simple as its name. When it is called, the applet
+is told to free up system resources. In most general cases, you
+probably won't need to override this method, although there are
+some very special cases in which you might want more control on
+applet shutdowns.
+<P>
+Figure 5.6 is a diagram of the call path of these methods used
+to control Java applets.
+<P>
+<A HREF="f5-6.gif" ><B>Figure 5.6 :</B> <I>The life cycle of applets.</I></A>
+<P>
+It is important to note that applet design should include multiple
+calls to <TT>start()</TT> and <TT>stop()</TT>;
+<TT>init()</TT> and <TT>destroy()</TT>,
+however, are never called more than once.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Different browsers act differently when reloading applets. Netscape Navigator 2.0 simply recalls the <TT>start()</TT> method of an applet when a viewer returns to a page that he or she has already visited. The AppletViewer included in the Java Developer's Kit instead reloads the entire applet from scratch. (This was a frustrating lesson learned late in one night of programming.) For this reason, you will probably always use the AppletViewer utility when testing your applets. You will need to use trial and error to figure out how your specific browser functions.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+Ideally, I would have liked to include an example demonstrating
+the life cycle of a Java applet. However, to do so would mean
+incorporating threading, and that would complicate things more
+than helping. For the present time, keep these applet characteristics
+in mind as you develop the Order Entry System in the chapters
+to  come.
+<H2><A NAME="AddingAppletstoWebPages"><FONT SIZE=5 COLOR=#FF0000>Adding
+Applets to Web Pages</FONT></A></H2>
+<P>
+This section covers the HTML codes specific to Java applets and
+how to include them in your Web pages. You should have a small
+amount of familiarity with the way HTML works before going through
+this section. If you don't, it would be best if you looked at
+one of the many books or Web documents available to teach HTML.
+A good source of information is Laura Lemay's <I>Teach Yourself
+HTML in a Week</I>. Many good Web documents teach HTML. Many of
+them are available on-line.
+<P>
+This section familiarizes you with how two browsers utilize Java:
+Netscape Navigator version 2.0 and above, and Sun's HotJava. This
+section covers the tags for declaring an applet in a Web page,
+parameters, and other features of HTML code for implementing applets.
+You will be, if nothing else, entirely comfortable with the process
+of putting not only your own applets into your pages, but also
+those written by programmers (those who give you permission, of
+course).
+<H2><A NAME="NetscapeNavigatorandApplets"><FONT SIZE=5 COLOR=#FF0000>Netscape
+Navigator and Applets</FONT></A></H2>
+<P>
+Netscape has pushed long and hard to continue developments above
+and beyond its competition in the Web browser arena. By releasing
+its software for free, Netscape has attracted millions of new
+users and continues doing so through technical advances. The 1.0.2
+version of Java is included in the JDK on the CD-ROM with this
+book. Most surveys report that the Navigator is far and away the
+dominant browser on the market today.
+<P>
+<CENTER<TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+You can assume that most of the other browsers on the market today will follow the Netscape format of applet inclusion in HTML documents. This is the same for Microsoft Internet Explorer and IBM's releases of its Web Explorer.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Navigator 2.0x currently supports Java only when run in operating systems that easily support multithreading, such as Windows 95 and X Windows for UNIX machines. It is also supported under the MacOS on Power Macs and Windows NT. Sadly, this leaves Windows 3.1 users unable to view Java applets under Navigator 2.0. However, the 3.0 test release of Navigator, currently named &quot;Atlas,&quot; does include Java support for<BR>
+Windows 3.1.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="HTMLCodingforAppletsinNetscape">HTML Coding for Applets
+in Netscape</A></H3>
+<P>
+The initiating tag for inserting an applet in an HTML document
+is the <TT>&lt;APPLET&gt;</TT> tag.
+It is followed later by the <TT>&lt;/APPLET&gt;</TT>
+tag, which signifies that all HTML code between the two tags is
+focused on the applet.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Note that only the HTML code between the tags is related to the applet, not the text inside of the two tags. This enables you to place text on a page just for people using browsers not enhanced for Java.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+The <TT>&lt;APPLET&gt;</TT> tag follows
+this format:
+<BLOCKQUOTE>
+<TT>&lt;APPLET CODE = &quot;yourclass.class&quot;
+WIDTH = 200 HEIGHT = 100&gt;</TT>
+</BLOCKQUOTE>
+<P>
+This tells the browser the following:
+<UL>
+<LI>That it should place an applet on the page
+<LI>The name of the applet
+<LI>The size it should allocate for display of the applet
+</UL>
+<P>
+By default, the browser looks in the directory in which it finds
+the HTML document to find the applet. However, there is another
+parameter available, the <TT>CODEBASE</TT>
+parameter, that allows you to specify where the browser should
+look to find your applet code. Here is an example of this feature:
+<BLOCKQUOTE>
+<TT>&lt;APPLET CODEBASE = &quot;myapplets&quot;
+CODE = &quot;king.class&quot; WIDTH = 10 HEIGHT = 0&gt;<BR>
+&lt;/APPLET&gt;</TT>
+</BLOCKQUOTE>
+<P>
+You can also specify your code to be loaded from another site
+in the following manner:
+<BLOCKQUOTE>
+<TT>&lt;APPLET CODEBASE = &quot;http://coolapplets.com/java/&quot;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;CODE = &quot;theirapplet.class&quot;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;WIDTH = 100 HEIGHT = 50&gt;<BR>
+&lt;/APPLET&gt;</TT>
+</BLOCKQUOTE>
+<P>
+This code says to the browser: &quot;I want you to insert an applet
+named <TT>theirapplet.class</TT> and
+you can find it at <TT><A TARGET="resource window" HREF="http://coolapplets.com/java">http://coolapplets.com/java</A></TT>.
+Make it a width of 100 pixels and a height of 50 pixels.&quot;
+To sum it up, the <TT>CODE</TT> parameter
+tells the browser what applet to get, and the <TT>CODEBASE</TT>
+parameter specifies where to look for it.
+<H3><A NAME="ParametersandApplets">Parameters and Applets</A>
+</H3>
+<P>
+Java programs can be written to accept parameters specified in
+between the <TT>&lt;APPLET&gt;</TT>
+and <TT>&lt;/APPLET&gt;</TT> tags.
+The following HTML code demonstrates this feature.
+<BLOCKQUOTE>
+<TT>&lt;APPLET CODEBASE = &quot;http://discus.com/fish/and/Java&quot;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;CODE = &quot;angelfish.class&quot;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;WIDTH = 100<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;HEIGHT = 50&gt;<BR>
+&lt;PARAM NAME = betta value=1&gt;<BR>
+&lt;PARAM NAME = cichlid value = &quot;Jack Dempsey&quot;&gt;
+<BR>
+&lt;/APPLET&gt;</TT>
+</BLOCKQUOTE>
+<P>
+This code does the same as the previous example except it also
+provides some variables for the applet to access. <A HREF="ch10.htm" >Chapter 10</A>
+covers how to handle these parameters in our applets.
+<H3><A NAME="AligningtheApplets">Aligning the Applets</A></H3>
+<P>
+Just as with images, you are able to specify in your HTML code
+how you want to align your applets relative to other items on
+your page. Here is an example of the HTML declaration of an applet
+that included alignment of the applet:
+<BLOCKQUOTE>
+<TT>&lt;APPLET CODEBASE = &quot;http://phil.com/gd/java/&quot;
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;CODE = &quot;lesh.class&quot;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;WIDTH = 100<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;HEIGHT = 500<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;ALIGN = ABSMIDDLE&gt;<BR>
+&lt;/APPLET&gt;</TT>
+</BLOCKQUOTE>
+<P>
+If the terms <TT>ABSMIDDLE</TT> and
+<TT>BASELINE</TT> aren't familiar
+to you, I would strongly suggest reviewing alignment in HTML documents.
+Wise and proper alignment is the key to producing professional
+quality HTML pages, with or without Java.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+Just as HTML is case-insensitive, so are these applet-specific HTML codes.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Feature Focus</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=565>
+<BLOCKQUOTE>
+There are three other notable parameters available to you: <TT>HSPACE</TT>, <TT>VSPACE</TT>, and <TT>NAME</TT>. By setting the <TT>HSPACE</TT> and <TT>VSPACE</TT> values, you can specify the horizontal and vertical space, respectively, that the browser places between your applet and text. The <TT>NAME</TT> parameter allows you to give your applet a name that can be used when creating applets. The name is used when two different applets on the same page wish to communicate with each other.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H3><A NAME="DisplayingthesupersimpleExampleApple">Displaying
+the <TT><FONT SIZE=4>supersimple</FONT></TT><FONT SIZE=4>
+Example Applet</FONT></A></H3>
+<P>
+As promised earlier in this chapter, here is the full HTML code
+for placing the <TT>supersimple</TT>
+applet:
+<BLOCKQUOTE>
+<TT>1.&nbsp;&nbsp;&lt;HTML&gt;<BR>
+2.&nbsp;&nbsp;&lt;HEAD&gt;<BR>
+3.&nbsp;&nbsp;&lt;TITLE&gt;The supersimple Applet&lt;/TITLE&gt;
+<BR>
+4.&nbsp;&nbsp;&lt;/HEAD&gt;<BR>
+5.&nbsp;&nbsp;&lt;BODY BGCOLOR = #FFFFFF&gt;<BR>
+6.&nbsp;&nbsp;This is the supersimple Example Applet:<BR>
+7.&nbsp;&nbsp;&lt;APPLET CODE = &quot;supersimple.class&quot;
+WIDTH = 100 HEIGHT = 50 ALIGN = ABSMIDDLE&gt;<BR>
+8.&nbsp;&nbsp;&lt;hr&gt;<BR>
+9.&nbsp;&nbsp;Your browser does not support Java.<BR>
+10.&nbsp;Go get a real one.<BR>
+11.&nbsp;&lt;/APPLET&gt;<BR>
+12.&nbsp;&lt;/BODY&gt;<BR>
+13.&nbsp;&lt;/HTML&gt;</TT>
+</BLOCKQUOTE>
+<P>
+This HTML document, viewed through the AppletViewer utility, is
+shown in Figure 5.7.
+<P>
+<A HREF="f5-7.gif" ><B>Figure 5.7: </B> <I>The MTML code when displayed by the Appletviewer.</I></A>
+<P>
+This code simply inserts the <TT>supersimple</TT>
+applet onto an HTML document with a white background. On a Java-capable
+browser and through the AppletViewer utility, this all comes out
+fine. However, on a browser not able to display applets, the text
+inside is displayed. Figure 5.8 shows what happens when viewed
+from a non-Java enhanced browser.
+<P>
+<A HREF="f5-8.gif" ><B>Figure 5.8 :</B> <I>The above HTML viewed through Netscape 2.0 for Windows 3.1.</I></A>
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Tip:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+When including applets on your Web site, you can specify alternate text in the <TT>&lt;APPLET&gt;</TT> declaration for people viewing your site without browsers capable of Java. To do this, just put the text after the <TT>&lt;APPLET&gt;</TT> tag and before the <TT>&lt;/APPLET&gt;</TT> end tag. Browsers with Java capabilities concentrate on the applet and parameters, while those without Java features ignore everything but the text and display it accordingly. You can also include <TT>ALT = &quot;your alternate text here&quot;</TT> in the <TT>&lt;APPLET&gt;</TT> tag to specify alternate text, although simply adding HTML between the tags works on many more browsers.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<H2><A NAME="AppletsandHotJava"><FONT SIZE=5 COLOR=#FF0000>Applets
+and HotJava</FONT></A></H2>
+<P>
+The HotJava browser released by Sun was actually written with
+the Java language. HotJava, being written in Java itself, demonstrates
+the capabilities of the Java language. However, there is a big
+catch in using it: HotJava currently supports only an earlier
+alpha release of the Java language. Sadly, browsers capable of
+the beta release and later releases, such as Netscape Navigator,
+are not compatible with these alpha release applets. For now,
+the vast majority of applets are being written and compiled in
+Java 1.0 beta and later. As of the time of this writing, Java
+is in the 1.0.2 release.
+<P>
+<CENTER><TABLE BORDERCOLOR=#000000 BORDER=1 WIDTH=80%>
+<TR VALIGN=TOP><TD><B>Note:</B></TD></TR>
+<TR VALIGN=TOP><TD>
+<BLOCKQUOTE>
+In fact, the Java compiler was also written in Java. You may ask yourself how this might work-how could they compile the compiler without a compiler? It was originally written in C.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE></CENTER>
+<P>
+<P>
+As of the time of this writing, HotJava is in pre-beta release.
+By the time you read this, it should be available in full release
+to handle the Java 1.02 release.
+<P>
+For a comprehensive listing of applets on the Web, a good place
+to start is Gamelan at <BR>
+<TT><A TARGET="resource window" HREF="http://www.gamelan.com/">http://www.gamelan.com/</A></TT>.
+<P>
+<TT><B><A TARGET="resource window" HREF="http://www.gamelan.com/">http://www.gamelan.com/</A></B></TT>
+<P>
+However, numerous alpha 3 release applets are available. If you
+are looking to see everything that's out there, it would be wise
+to fire up HotJava at least once and go looking for alpha-based
+applets. A good place to start is Gamelan at <TT><A TARGET="resource window" HREF="http://www.gamelan.com/">http://www.gamelan.com/</A></TT>.
+<P>
+Here is the form for including alpha 3 release Java applets in
+your Web pages:
+<BLOCKQUOTE>
+<TT>&lt;APP CODE = yourapplet NAME1 = &quot;a
+value&quot; NAME2 = 456 . . . &gt;</TT>
+</BLOCKQUOTE>
+<P>
+In this example, <TT>NAME1</TT> and
+<TT>NAME2</TT> are replaced by the
+names of your parameters to your applet. There is no limit to
+the number of parameters. Also, note that the <TT>CODE</TT>
+parameter does not require you to place <TT>.class</TT>
+after your applet name. Finally, there is no <TT>&lt;/APP&gt;</TT>
+tag, so including alternate text is impossible in the alpha 3
+release.
+<P>
+Get the latest version of Java, HotJava, and related information
+at <TT><A TARGET="resource window" HREF="http://java.sun.com/">http://java.sun.com/</A></TT>.
+<P>
+<TT><B><A TARGET="resource window" HREF="http://java.sun.com/">http://java.sun.com/</A></B></TT>
+<P>
+If you want to go all out, you can write your applet both in the
+alpha release and in the later releases. To include both, simply
+insert the <TT>&lt;APP&gt;</TT> tag
+in between the <TT>&lt;APPLET&gt;</TT>
+tag and the <TT>&lt;/APPLET&gt;</TT>
+tag. This displays your alpha 3 release applet for HotJava and
+the Java beta applet for browsers that support that release. Remember,
+you can always get the latest version of Java, HotJava, and related
+information on the Web at <TT><A TARGET="resource window" HREF="http://java.sun.com/">http://java.sun.com/</A></TT>.
+<H2><A NAME="WhatsBeenDonesoFar"><FONT SIZE=5 COLOR=#FF0000>What's
+Been Done So Far</FONT></A></H2>
+<P>
+This chapter has covered some key ideas to Java and how you are
+going to apply those ideas in constructing the Order Entry System
+applet. This chapter has discussed what applets are; how they
+are born, live, and die; and how applets differ from full-blown
+Java applications. This chapter also covered what you can and
+cannot do with applets. It covered a sample applet and gave you
+a feel for the flow and layout of Java programs.
+<P>
+This chapter has also discussed what the Abstract Windowing Toolkit
+(AWT) is, and its power and implementation. The insertion of applets
+into HTML documents was also covered for both the alpha 3 and
+later releases. Hopefully, this chapter has successfully managed
+to cut through all of the fluff and get down to the important
+concepts of Java applets and the Java language itself.
+<H2><A NAME="WhatsComingUp"><FONT SIZE=5 COLOR=#FF0000>What's
+Coming Up</FONT></A></H2>
+<P>
+Here is a brief summary of what is going to be covered in the
+rest of Part II.
+<P>
+<A HREF="ch6.htm" >Chapter 6</A>, &quot;The Order Entry System:
+Adding Features and Handling Events,&quot; covers the inclusion
+of AWT components into your applets and into the Order Entry System.
+It also covers how user actions, which are events in the AWT,
+are handled and how your program deals with them.
+<P>
+<A HREF="ch7.htm" >Chapter 7</A>, &quot;The Order Entry System:
+Entry Fields, Labels, and Validation,&quot; deals with including
+more of the AWT components including text entry fields and data
+validation. Where <A HREF="ch6.htm" >Chapter 6</A> dealt with
+the inclusion of graphical AWT components, the components in this
+section deal with text focused components such as labels, and
+text areas.
+<P>
+<A HREF="ch8.htm" >Chapter 8</A>, &quot;The Order Entry System:
+Managing the Applet Layout,&quot; describes why and how to manage
+the layout of the applet. The chapter also covers the concepts
+of frames, which permit stand-alone windows in your applets, and
+also menu bars. This chapter also covers the multiple layout managers
+in the AWT and how and when to use them.
+<P>
+<A HREF="ch9.htm" >Chapter 9</A>, &quot;The Order Entry System:
+Adding Graphics and a Logo,&quot; handles two concepts of images
+and graphics in the Order Entry System and how to use those ideas
+in other projects. This chapter improves the appearance of the
+Order Entry System. It also covers the MediaTracker class, which
+enables you to control the loading of images.
+<P>
+Finally, <A HREF="ch10.htm" >Chapter 10</A>, &quot;The Order Entry
+System: Exception Handling and Browser Interaction,&quot; covers
+the process of Java exceptions and error-handling. It also deals
+with communicating with the browser displaying your applet. And
+to finish it up, it covers how to get the order back to you.
+<P>
+At the end of it all, you will have a fully functioning and good-looking
+applet in the Order Entry System. It will be able to take an order
+from across the Internet and get it back to you. Best of all,
+by the end of this part, you will have the knowledge necessary
+to customize the Order Entry System and also to create your own
+quality applets for the Web.
+
+<HR WIDTH="100%"></P>
+
+</P></CENTER>
+
+<P>
+<HR WIDTH="100%"></P>
+
+
+
+
+
+</td>
+
+<!-- end main content column -->
+
+</tr>
+
+<!-- end main content column -->
+
+
+</tr>
+</table>
+
+</BODY>
+</HTML>

@@ -1,0 +1,3411 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Visual Basic 6 Database How-To -- Ch 7 -- SQL Server Databases and Remote Data Objects</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="sams.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/sams.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"></H1>
+
+<H1 ALIGN="CENTER">Visual Basic 6 Database How-To</H1>
+<CENTER>
+<P><A HREF="ch06.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch06/ch06.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch08.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch08/ch08.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1></H1>
+<H1 ALIGN="CENTER">- 7 -<BR>
+SQL Server Databases and Remote Data Objects</H1>
+
+<UL>
+	<LI>How do I...
+	<UL>
+		<LI><A HREF="#Browse a SQL Server database ...">7.1 Browse a SQL Server database
+		by using the RemoteData control?</A>
+		<LI><A HREF="#Add and delete records in a SQL  ...">7.2 Add and delete records in
+		a SQL Server database by using the RemoteData control?</A>
+		<LI><A HREF="#Connect to a SQL Server database ...">7.3 Connect to a SQL Server database
+		by using Remote Data Objects?</A>
+		<LI><A HREF="#Browse records in a SQL Server ...">7.4 Browse records in a SQL Server
+		database by using Remote Data Objects?</A>
+		<LI><A HREF="#Add, update, and delete records ...">7.5 Add, update, and delete records
+		in a SQL Server database by using Remote Data Objects?</A>
+		<LI><A HREF="#Execute a SQL Server stored ...">7.6 Execute a SQL Server stored procedure
+		by using Remote Data Objects?</A>
+		<LI><A HREF="#Execute a parameterized SQL ...">7.7 Execute a parameterized SQL Server
+		stored procedure with Remote Data Objects?</A>
+		<LI><A HREF="#Handle Remote Data Objects errors?">7.8 Handle Remote Data Objects
+		errors?</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<H3></H3>
+<P>If you're building large, high-volume database applications for many users, working
+with a database server such as Oracle, Sybase, or Microsoft SQL Server is probably
+in your future. This chapter focuses on Microsoft SQL Server. Although the techniques
+can often be applied to other server databases, each database can have its own particular
+feature set and SQL dialect.</P>
+<P>Unless you've been away on a trip to another planet for the past couple of years,
+you've undoubtedly noticed that various new technologies have been introduced for
+accessing server databases. Developers now have a choice of using the Data control,
+the RemoteData control (RDC), Data Access Objects (DAO), ODBC Direct Data Access
+Objects (still DAO), Remote Data Objects (RDO), the open database connectivity (ODBC)
+API, the VBSQL control and the native server API, or Microsoft's newest entries into
+remote server connectivity: OLEDB, and ADO. Each of these technologies can be a suitable
+candidate for any given task.</P>
+
+<UL>
+	<LI><I>The Data Control</I>--This is the traditional entry point for new database
+	developers and is often used for low-volume (and sometimes even high-volume) applications.
+	However, the Data control is really best suited for access to desktop database engines
+	like Jet. If you're scaling a database from Jet to SQL Server, the Data control will
+	continue to work, but for optimum performance you should consider using another data
+	access strategy.
+	<P>
+	<LI><I>The RemoteData Control</I>--The RemoteData control (RDC) is the companion
+	to the Data control for remote server databases. Although convenient for many applications,
+	it imposes some of the same restrictions and lack of control that come with the Data
+	control.
+	<P>
+	<LI><I>Data Access Objects</I>--DAO is the first step beyond the Data control for
+	most developers. It's a flexible and powerful object model for database application
+	development. Using linked tables or SQL Passthrough, you can accomplish almost all
+	server database tasks.
+	<P>
+	<LI><I>ODBC Direct</I>--With the latest release of DAO, Microsoft unbundled the Jet
+	engine from the object model. ODBC Direct uses the DAO model but sends queries directly
+	through to the database server using RDO (and via the RDO proxy by ODBC) bypassing
+	Jet entirely. This enables you to use existing DAO code (with minor modifications)
+	but gain the performance benefits of RDO. The limitations of DAO, however, still
+	apply, meaning that many server database features will be unavailable or difficult
+	to work with.
+	<P>
+	<LI><I>Remote Data Objects</I>--RDO is the remote server equivalent to DAO. It provides
+	a similar (although not identical) object model but is optimized to work with intelligent
+	server databases. Unlike DAO, which is bundled with the Jet engine, RDO does not
+	contain a query engine; it expects all query processing to take place on the server.
+	Because RDO is really just a thin object layer over the ODBC API, it exposes nearly
+	all the capabilities of the database server with almost no impact on performance.
+	<P>
+	<LI><I>The ODBC API</I>--ODBC was designed to be a database-independent server programming
+	interface. Cumbersome and complex to work with, it is the data access strategy for
+	the hard-core programmer. Despite its difficulties, it might offer a minor performance
+	advantage over RDO.
+	<P>
+	<LI><I>VBSQL</I>--Built on DBLib, the native programming interface to SQL Server,
+	VBSQL is a time-tested and reliable data access strategy. However, although other
+	technologies have continued to advance, VBSQL has not, and it has become an outdated
+	technology. Many development shops are continuing to build new applications and update
+	existing applications based on VBSQL despite its &quot;lame duck&quot; status--in
+	part because it is still the only technology that provides access to all the features
+	of SQL Server.
+</UL>
+
+<P>This is the new kid on the block:</P>
+
+<UL>
+	<LI><I>OLEDB/ADO</I>--OLEDB is currently being touted as the new native interface
+	to SQL Server. Originally targeted at Web based applications, OLEDB/ADO is expected
+	to replace DAO and RDO.
+</UL>
+
+<P>That's a wide array of choices--at times you might feel as if you've joined the
+technology-of-the-month club--but for most applications, RDO is an excellent option.
+RDO is now in its second release and is a proven technology. It offers the simplicity
+of a DAO-like object model but performance equal to the ODBC API or VBSQL. For those
+techniques available only with the ODBC API, RDO also exposes the necessary handles
+so you can go directly to the API when you need it.</P>
+<P>Along with all the new data access technologies comes a plethora of SQL Server
+specific and general concepts and buzzwords. Rather than dealing with database files,
+SQL Server gives you database devices, dump devices, databases, transaction logs,
+and so on. Instead of a simple user and group list for security, you have logins,
+users, and groups that can be set up using standard, integrated, or mixed security
+models. The list goes on to concepts like n-tier design, the use of transaction servers
+and object brokers, Web connectivity technologies, and more. All this goes far beyond
+the scope of this chapter, and many excellent books have been written that address
+some or all of these tools and technologies. Fortunately, SQL Server also comes with
+excellent documentation.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>Consider yourself lucky if you have
+	a seasoned dba (database administrator) on staff to help handle the details of creating
+	devices, databases, users, and so forth for you on the server. A good dba can save
+	you days or weeks of work. If you don't have a veteran dba available, dive into the
+	SQL Server documentation. There's a lot to cover, but you will learn it in time.
+	Rome wasn't built in a day, and your client/server application won't be either. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>This chapter assumes that you have already successfully installed Microsoft SQL
+Server 6.5, the pubs sample database, Visual Basic 6.0 Enterprise Edition, and the
+SQL Server client utilities. You will need to have the authority necessary to create
+a database on your server or access to a dba who can do it for you. You will also
+need to be able to execute SQL statements on the server using either SQL Enterprise
+Manager or ISQL/w. Consult the SQL Server documentation for more information on the
+installation and use of these utilities.</P>
+<P>
+<H4>7.1 Browse a SQL Server Database by Using the RemoteData Control</H4>
+<P>This How-To introduces the most basic of operations on a database server: browsing
+the results of a query with the RemoteData control.</P>
+<P>
+<H4>7.2 Add and Delete Records in a SQL Server Database by Using the RemoteData Control</H4>
+<P>In this How-To, you learn to use the RemoteData control to perform inserts and
+deletes on the remote SQL Server database.</P>
+<P>
+<H4>7.3 Connect to a SQL Server Database by Using Remote Data Objects</H4>
+<P>Before you can do anything with remote server data, you must establish a connection
+to the server. This How-To shows you how to open an RDO Connection.</P>
+<P>
+<H4>7.Browse Records in a SQL Server Database by Using Remote Data Objects</H4>
+<P>The RemoteData control, like the Data control, has its limitations. In this How-To,
+you learn to use Remote Data Objects to read SQL Server data.</P>
+<P>
+<H4>7.5 Add, Update, and Delete Records in a SQL Server Database by Using Remote
+Data Objects</H4>
+<P>This How-To shows you how to insert, update, and delete records using RDO.</P>
+<P>
+<H4>7.6 Execute a SQL Server Stored Procedure by Using Remote Data Objects</H4>
+<P>Most server databases rely heavily on stored procedures for database operations.
+This How-To teaches you to execute a simple, stored procedure that returns a result
+set.</P>
+<P>
+<H4>7.7 Execute a Parameterized SQL Server Stored Procedure with Remote Data Objects</H4>
+<P>SQL Server stored procedures, like Visual Basic procedures, can have input and
+output parameters and return values. This How-To shows you how to execute a stored
+procedure with parameters.</P>
+<P><B>7.8 Handle Remote Data Objects Errors</B></P>
+<P>Despite your best efforts, things can go wrong on the remote database. In this
+How-To, you learn to trap and handle errors delivered to RDO by SQL Server.</P>
+<P>
+<H2>7.1 How do I...</H2>
+<H3><A NAME="Browse a SQL Server database ..."></A><B>Browse a SQL Server database
+by using the RemoteData control?</B></H3>
+<P><B>Problem</B></P>
+<P>My data is on a SQL Server database. How do I access this data using the RemoteData
+control?</P>
+<P><B>Technique</B></P>
+<P>Accessing data from a SQL Server database need not be complex. With the RemoteData
+control (RDC), you can build a simple form based on SQL Server data in minutes. Building
+forms with the RDC is the ultimate in visual design--no code whatsoever is required.</P>
+<P>Building a form with the RDC requires only a few simple steps:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create an ODBC data source for your database.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Draw a RemoteData control on your form and set the <TT>DataSourceName</TT>
+	and SQL properties.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add controls to the form for the columns you need to display and set
+	the <TT>DataSource</TT> and <TT>DataField</TT> properties.
+	<P>
+</DL>
+
+<P>That's all there is to it. The RDC handles everything else for you in conjunction
+with the ODBC drivers. Like the Data control, the RemoteData control handles updating
+the tables as well as providing navigation buttons for the rows in the query.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>This example and the rest of the examples
+	in this chapter require that the pubs sample database be installed on your SQL Server
+	and that an ODBC data source named pubs has been configured to connect to your server
+	and the pubs sample database. See Chapter 6, &quot;Connecting to an ODBC Server,&quot;
+	for more information on configuring ODBC data sources. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Steps</B></P>
+<P>Open and run project HT701.vbp. You can browse and update the rows returned by
+the query using the form shown in Figure 7.1.</P>
+<P><A HREF="javascript:popUp('07fig01.gif')"><B>Figure 7.1.</B></A><B> </B><I>The
+Publishers form.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>Depending on the configuration of your
+	SQL Server and network, you might or might not be prompted to provide a user name
+	and password when connecting to the server. All of these examples were created using
+	integrated security, which uses your network logon to validate your connection to
+	the database server. SQL Server integrated security is available only if the server
+	is a member of a Windows NT domain. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE project, add the Microsoft RemoteData Control
+	6.0 to the toolbox, and save the project as HT701.vbp. Change the name of <TT>Form1</TT>
+	to <TT>FMain</TT> and create the objects and properties shown in Table 7.1.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 7.1. Objects and properties for FMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Publishers</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>RemoteData Control</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Publishers</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Align</TT></TD>
+		<TD ALIGN="LEFT"><TT>2 - vbAlignBottom</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSourceName</TT></TD>
+		<TD ALIGN="LEFT"><TT>pubs</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>SQL</TT></TD>
+		<TD ALIGN="LEFT"><TT>SELECT pub_id, pub_name</TT>, <TT>city, state,country FROM publishers</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>ID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>pub_id</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>pub_name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>City</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtCity</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>city</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>State</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>3</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtState</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>state</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Country</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>4</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtCountry</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>country</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Using the menu editor, create the menu shown in Table 7.2.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 7.2. Menu controls for FMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>&amp;File</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>----E&amp;xit</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuFileExit</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Create the declarations section of the form:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>You can and should set up Visual Basic
+	to always use <TT>Option Explicit</TT> by checking the box marked Require Variable
+	Declaration on the Editor tab of the Options dialog box. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Create the <TT>mnuFileExit_Click</TT> event procedure:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileExit_Click()</TT>
+<TT>  Unload Me</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>The RDC handles all the work for you in this application. When the application
+starts, the control opens a connection to the SQL Server, submits the query, and
+presents the results on the form. The navigation buttons provided by the control
+enable you to navigate among the rows returned by the query.</P>
+<P><B>Comments</B></P>
+<P>This simple application exemplifies the visual part of Visual Basic. The single
+line of executable code unloads the form and ends the program. Everything else required
+to enable live editing of data in the database is designed using visual tools.</P>
+<H2><B>7.2 How do I...</B></H2>
+<H3><A NAME="Add and delete records in a SQL  ..."></A><B>Add and delete records
+in a SQL Server database by using the RemoteData control?</B></H3>
+<P><B>Problem</B></P>
+<P>My users need to be able to add and delete rows in my SQL Server tables as well
+as view and update existing rows. How do I add and delete rows using the RemoteData
+control?</P>
+<P><B>Technique</B></P>
+<P>Writing just a small amount of code enables you to implement the ability to insert
+and delete rows with the RemoteData control. The RemoteData control's <TT>Resultset</TT>
+object provides the <TT>AddNew</TT> and <TT>Delete</TT> methods. You can implement
+both with just a few lines of code and a user interface mechanism to invoke the procedures.</P>
+<P>Inserting a row is a two-step process:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Call the <TT>AddNew</TT> method of the RemoteData control's <TT>Resultset</TT>
+	to set the row buffer to a blank new row.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Call the <TT>Update</TT> method of the <TT>Resultset</TT> to insert
+	the row into the table.
+	<P>
+</DL>
+
+<P>Deleting a row requires only a single call to the <TT>Delete</TT> method of the
+<TT>Resultset</TT>; but after the delete has been performed, the current row will
+be undefined, so you need to add code to move to a valid row. This example uses the
+Microsoft Access convention of moving to the previous row, but you could just as
+easily move to the next row.</P>
+<P><B>Steps</B></P>
+<P>Open and run project HT702.vbp. This is the same as the project created for How-To
+7.1, with code and controls added to support inserts and deletes. You can browse,
+update, insert, and delete rows in the Publishers table using the RemoteData control's
+navigation buttons and the commands on the Data menu, as shown in Figure 7.2.</P>
+<P><A HREF="javascript:popUp('07fig02.gif')"><B>Figure 7.2.</B></A><B> </B><I>The
+Publishers form's <TT>New</TT>, <TT>Delete</TT>, and <TT>Save</TT> functions.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>INSERTING AND DELETING ROWS IN THE PUBLISHERS TABLE</STRONG></B></P>
+
+	<P>The Publishers table in the sample database has a rather unusual rule for the
+	<TT>pub_id</TT> column:</P>
+	<PRE><TT>(pub_id = `1756' or (pub_id = `1622' or</TT>
+<TT>(pub_id = `0877' or (pub_id = `0736' or (pub_id = `1389')))) or</TT>
+<TT> (pub_id like `99[0-9][0-9]'))</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<P>This rule requires that the <TT>pub_id value</TT> be one of the five specific
+	values shown (<TT>1756</TT>, <TT>1622</TT>, <TT>0877</TT>, <TT>0736</TT>, or <TT>1389</TT>)
+	or that it be a four-digit number between <TT>9900</TT> and <TT>9999</TT>. Don't
+	be surprised if you see strange-looking rules like this appearing from time to time.
+	This sort of thing is occasionally necessary to maintain compliance with legacy code,
+	data, or both.<BR>
+	<BR>
+	If you add rows to the table while working with the sample application, you need
+	to make sure the <TT>pub_id</TT> column meets this rule. In a production application,
+	you would probably want to add code to automatically generate a valid value for this
+	column.<BR>
+	Additionally, there are other tables in the database that contain foreign key references
+	to the Publishers table, so you might not be able to delete some of the existing
+	rows. A complete application based on the pubs database would need to implement methods
+	of dealing with these foreign key references. Alternately, you could write a delete
+	trigger for the Publishers table that would delete any related rows in related tables.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE project, add the Microsoft RemoteData Control
+	2.0 to the toolbox, and save the project as HT702.vbp.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>FMain.frm is the same form developed for How-To 7.1. You can add <BR>
+	the existing file from the previous How-To, or refer to Table 7.1 to add the RemoteData
+	control, labels, text boxes, and refer to Table 7.2 to create the File menu controls.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Use the Menu Editor to add the menu controls for the Data menu as shown
+	in Table 7.3.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 7.3. Specifications for the Data menu.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Shortcut Key</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>&amp;Data</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuData</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>----&amp;Save</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuDataSave</TT></TD>
+		<TD ALIGN="LEFT">Ctrl+S</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>-----</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuDataBar</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>----&amp;New</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuDataNew</TT></TD>
+		<TD ALIGN="LEFT">Ctrl+N</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>----&amp;Delete</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuDataDelete</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add <TT>Option Explicit</TT> to the declarations section.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Create the <TT>Form_Unload</TT> event procedure. This procedure sets
+	up an error handler and calls the <TT>SaveRecord</TT> procedure described in step
+	10.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Unload(Cancel As Integer)</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  SaveRecord</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+ProcError:
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>6. </B>Create the <TT>mnuFileExit_Click</TT> event procedure. This code is
+	identical to the code in How-To 7.1.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileExit_Click()</TT>
+<TT>On Error Resume Next</TT>
+<TT>  Unload Me</TT>
+<TT>  If Err.Number &lt;&gt; 0 Then</TT>
+<TT>    MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>7. </B>Add code for the Data menu controls. The <TT>New</TT>, <TT>Delete</TT>,
+	and <TT>Save</TT> commands call the corresponding <TT>AddRecord</TT>, <TT>DeleteRecord</TT>,
+	and <TT>SaveRecord</TT> procedures described in steps 8, 9, and 10.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuDataNew_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  AddRecord</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuDataDelete_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  DeleteRecord</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuDataSave_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  SaveRecord</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>8. </B>Create the <TT>AddRecord</TT> procedure. This procedure calls the <TT>AddNew</TT>
+	method of the RemoteData control's <TT>Resultset</TT> to create the new record. The
+	new row is inserted into the table later by the <TT>SaveRecord</TT> procedure.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub AddRecord()</TT>
+</PRE>
+	<P>
+	<PRE><TT>  ` add it</TT>
+<TT>  rdc.Resultset.AddNew</TT>
+<TT>  txtID.SetFocus</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>9. </B>Add the <TT>DeleteRecord</TT> procedure. This procedure uses the <TT>Delete</TT>
+	method of the RemoteData control's <TT>Resultset</TT> to remove the row from the
+	table, then repositions the row pointer to a valid row in the table. The code first
+	moves to the previous row, then checks for the beginning of the <TT>Resultset</TT>
+	and, if necessary, moves to the first row.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub DeleteRecord()
+</PRE>
+	<P>
+	<PRE><TT>  ` delete the row</TT>
+<TT>  rdc.Resultset.Delete</TT>
+<TT>  ` back up one row</TT>
+<TT>  rdc.Resultset.MovePrevious</TT>
+<TT>  ` check for beginning of set</TT>
+<TT>  If rdc.Resultset.BOF Then</TT>
+<TT>    rdc.Resultset.MoveFirst</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>10. </B>The <TT>SaveRecord</TT> procedure uses the <TT>EditMode</TT> property
+	of the RemoteData control's <TT>Resultset</TT> to determine how to save the current
+	row using a <TT>Select Case</TT> block. If the row has not been changed, no action
+	is necessary. If an existing row has been changed, the <TT>UpdateRow</TT> method
+	is used to commit the changes. New rows are added to the table by calling the <TT>Update</TT>
+	method of the <TT>Resultset</TT>.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub SaveRecord()</TT>
+</PRE>
+	<P>
+	<PRE><TT>  Select Case rdc.Resultset.EditMode</TT>
+<TT>    Case rdEditNone</TT>
+<TT>      ` clean record, do nothing</TT>
+<TT>    Case rdEditInProgress</TT>
+<TT>      ` the control handles regular edits</TT>
+<TT>      rdc.UpdateRow</TT>
+<TT>    Case rdEditAdd</TT>
+<TT>      ` use the Update method of the</TT>
+<TT>      ` resultset</TT>
+<TT>      rdc.Resultset.Update</TT>
+<TT>  End Select</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>This is a basic bound control application. The only thing that differentiates
+the techniques from an application based on the Data control is the use of the RemoteData
+control and a few minor variations in the code syntax. The control handles most of
+the work of displaying and updating data, with a little help from a few lines of
+code.</P>
+<P><B>Comments</B></P>
+<P>The RemoteData control is a convenient, but limiting, method of working with remote
+server databases. In the following How-To's, you'll learn to use Remote Data Objects
+to connect to and manage data in SQL Server databases.</P>
+<P>
+<H2>7.3 How do I...</H2>
+<H3><A NAME="Connect to a SQL Server database ..."></A><B>Connect to a SQL Server
+database by using Remote Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>My application needs to connect to a SQL Server database without using the RemoteData
+control. How can I create a connection with Remote Data Objects?</P>
+<P><B>Technique</B></P>
+<P>If an ODBC data source has been configured, you can establish a connection to
+a SQL Server database with as little as a single line of code using the <TT>OpenConnection</TT>
+method of the <TT>rdoEnvironment</TT> object. By adding an extra line of code or
+two, you can also create a so-called &quot;DSN-less&quot; connection with no preconfigured
+ODBC data source name.</P>
+<P>Using a preconfigured ODBC data source adds one additional required step in configuring
+the workstation but also enables you to share the connection among multiple applications.
+If you embed the connection information in the source code for the application, you
+eliminate one step in setting up the workstation.</P>
+<P>The following example demonstrates both methods. Additionally, RDO 2.0 enables
+you to create an <TT>rdoConnection</TT> object without an explicit physical connection
+to a remote database. After you have assigned the necessary properties to the <TT>rdoConnection</TT>
+object, use the <TT>EstablishConnection</TT> method to open the connection.</P>
+<P><B>Steps</B></P>
+<P>Open project HT703.vbp. Before running this project using a DSN-less connection,
+you will need to change the values used in creating the connect string in the <TT>OpenConnection</TT>
+routine to reflect the correct user name (<TT>UID=</TT>), password (<TT>PWD=</TT>),
+and SQL Server machine name (<TT>SERVER=</TT>). If you check the box marked Use pubs
+DSN, the application will open a connection using an ODBC data source named pubs
+(which you should have already created using the 32-bit ODBC control panel applet).
+If the check box is cleared, a DSN-less connection will be created. The connection
+form is shown in Figure 7.3.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE project, add a reference to Microsoft Remote
+	Data Object 2.0, and save the project as HT703.vbp.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Change the name of <TT>Form1</TT> to <TT>FMain</TT> and add the objects
+	and properties shown in Table 7.4.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('07fig03.gif')"><B>Figure 7.3.</B></A><B> </B><I>The
+RDO Connect form.</I></P>
+
+
+<BLOCKQUOTE>
+	<H4>Table 7.4. Objects and properties for FMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CheckBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>chkUseDSN</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Use pubs DSN</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmdConnect</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Connect</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the declarations section. The module level
+	variable <TT>mcon</TT> is used later by the <TT>OpenConnection</TT> routine.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+<TT>Private mcon As rdoConnection</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>4. </B>Create the <TT>cmdConnect_Click</TT> event procedure. This routine
+	sets up an error handler, calls <TT>OpenConnection</TT>, and displays a message indicating
+	the success or failure of the connection.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmdConnect_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+</PRE>
+	<P>
+	<PRE><TT>  If OpenConnection() Then</TT>
+<TT>    MsgBox &quot;Connection Opened&quot;</TT>
+<TT>  Else</TT>
+<TT>    MsgBox &quot;Connection Failed&quot;</TT>
+<TT>  End If</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5. </B>Create the <TT>OpenConnection</TT> function. This function uses the
+	value of the check box to determine whether it should use the pubs DSN or create
+	a DSN-less connection; it then calls the <TT>OpenConnection</TT> method of the default
+	<TT>rdoEnvironment</TT> object to establish the connection to the remote server.
+	The function returns true if the connection was successfully established.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Function OpenConnection() As Boolean</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Dim sConnect As String</TT>
+<TT>  If chkUseDSN = vbChecked Then</TT>
+<TT>    ` use pubs DSN</TT>
+<TT>    Set mcon = rdoEnvironments(0).OpenConnection(&quot;pubs&quot;)</TT>
+<TT>  Else</TT>
+<TT>    ` use DSN-less connection</TT>
+<TT>    sConnect = _</TT>
+<TT>        &quot;UID=sa;&quot; &amp; _</TT>
+<TT>        &quot;PWD=MyPassword;&quot; &amp; _</TT>
+<TT>        &quot;DATABASE=pubs;&quot; &amp; _</TT>
+<TT>        &quot;SERVER=MyServer;&quot; &amp; _</TT>
+<TT>        &quot;DRIVER={SQL SERVER};&quot; &amp; _</TT>
+<TT>        &quot;DSN='';&quot;</TT>
+<TT>    Set mcon = rdoEnvironments(0).OpenConnection( _</TT>
+<TT>        &quot;&quot;, rdDriverNoPrompt, False, sConnect, rdAsyncEnable)</TT>
+<TT>  End If</TT>
+<TT>  OpenConnection = True</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Function</TT>
+<TT>ProcError:</TT>
+<TT>  OpenConnection = False</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Function</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>A single line of code is all that's required to connect to a remote server. The
+<TT>OpenConnection</TT> method (or alternately the <TT>EstablishConnection</TT> method)
+connects you to the SQL Server database. You can then use the connection to execute
+SQL statements and create other RDO objects.</P>
+<P><B>Comments</B></P>
+<P>If you're familiar with the DAO object model, the <TT>rdoConnection</TT> object
+is the rough equivalent of the <TT>Database</TT> object. Many of the properties and
+methods are similar. In fact, you'll find the entire Remote Data Objects hierarchy
+very similar to the Data Access Objects hierarchy. The similarities in the two models
+make it easier to not only learn to use RDO but also to convert existing code from
+DAO to RDO.</P>
+<P>
+<H2>7.4 How do I...</H2>
+<H3><A NAME="Browse records in a SQL Server ..."></A><B>Browse records in a SQL Server
+database by using Remote Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>How can I use Remote Data Objects to browse rows in a SQL Server database?</P>
+<P><B>Technique</B></P>
+<P>Remote Data Objects (RDO) provide the <TT>rdoResultset</TT> object --similar to
+the DAO Recordset object--that you can use to capture and browse the results of a
+<TT>SELECT</TT> query. If you've programmed with DAO, you'll find the <TT>rdoResultset</TT>
+familiar. The various <TT>Move</TT> methods work the same as the methods of the Recordset,
+and you still use <TT>AddNew</TT>, <TT>Edit</TT>, and <TT>Update</TT> to make changes
+to the data in a row. Many of the properties are also the same as those of the DAO
+Recordset. In fact, much of the code written for <TT>rdoResultsets</TT> is so similar
+that you could change the declaration and the <TT>Set</TT> statement and use your
+existing DAO code.</P>
+<P>Despite the code similarities, there are differences in the techniques used to
+access SQL Server data with <TT>rdoResultsets</TT>:</P>
+
+<UL>
+	<LI>The SQL statements used to retrieve data must be written in syntax that the remote
+	server will understand. Unlike DAO, which uses the Jet database engine, RDO does
+	not have its own query processor. All processing takes place on the remote server.
+	<P>
+	<LI>There are no <TT>Find</TT> methods. You are expected to run a new query and select
+	only the rows you need if the criteria for searching the data changes. You can also
+	move through the resultset testing for the desired values on individual rows and
+	columns.
+	<P>
+	<LI>There's no equivalent to the table-type recordset and its associated methods,
+	such as <TT>Seek</TT>.
+	<P>
+	<LI>The types of <TT>rdoResultsets</TT> available are somewhat different from the
+	types of Recordsets available. You can create a forward-only, keyset, dynamic, and
+	static cursor.
+	<P>
+	<LI>There are more locking strategies at your disposal. You can use read-only, pessimistic,
+	optimistic based on row ID, optimistic based on row values, and batch updates.
+	<P>
+	<LI>A single SQL Server query can return more than one set of results.
+	<P>
+	<LI>You can't modify the structure of the database with RDO. SQL Enterprise manager
+	provides visual tools for that purpose, and the Transact-SQL language also enables
+	you to manipulate the database design.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>A NOTE ON CURSORS</STRONG></B><STRONG> </STRONG></P>
+
+	<P>Don't be confused by all the new terminology. A <I>cursor</I> is essentially just
+	a set of pointers to rows in a resultset that enables you to browse the results.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>You create a resultset by using the <TT>OpenResultset</TT> method of an <TT>rdoConnection</TT>.
+You typically will provide a SQL statement to the method that specifies the rows
+to return. You can additionally specify the type of cursor, which by default is forward-only,
+and the type of locking which by default is read-only.</P>
+<P>After you have created the resultset, you can browse the rows using the various
+navigation methods: <TT>MoveFirst</TT>, <TT>MovePrevious</TT>, <TT>MoveNext</TT>,
+<TT>MoveLast</TT>, and <TT>Move</TT>. Like the DAO Recordset, the <TT>rdoResultset</TT>
+object provides the BOF and EOF properties that you can use to test for the ends
+of the resultset.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>SQL Server queries can return more
+	than one set of results. Use the <TT>MoreResults</TT> method to test for additional
+	resultsets from the query. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Values for individual columns in the rows retrieved are obtained from the <TT>rdoColumns</TT>
+collection. This is the default collection for a resultset. You can use the same
+syntax styles for columns in a resultset that you use for fields in a DAO recordset:</P>
+
+<UL>
+	<LI><TT>rdoResultset.rdoColumns(&quot;column0&quot;)</TT>
+	<P>
+	<LI><TT>rdoResultset(&quot;column0&quot;)</TT>
+	<P>
+	<LI><TT>rdoResultset!column0</TT>
+</UL>
+
+<P>Depending on the query, the type of cursor, and the type of locking, the data
+might be read-only or might be updatable.</P>
+<P><B>Steps</B></P>
+<P>Before you can use this example, you need to install the States table in the pubs
+sample database. Using SQL Enterprise Manager or I-SQL/W, load the States.sql script,
+select the pubs database, and run the script. The script creates and populates the
+States table with a list of the 50 states in the U.S. as well as the District of
+Columbia and Puerto Rico. After you have installed this table, you can run the sample
+application.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>You can run this script against any
+	database where you need this table. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Open and run project HT704.vbp. You can use the form shown in Figure 7.4 to browse
+and update the rows in the sample table from the pubs database. This project makes
+a simple extension to the project used for How-To 7.2. The text box used for the
+<TT>state</TT> column in the Publishers table has been replaced with a combo box
+that contains a list of state postal codes, using a query and <BR>
+an rdoResultset object. This is a commonly implemented user interface convenience.
+Unless people work all day every day with a data entry application, few will remember
+the postal codes for all the states, so the combo box enables the user to pick a
+value from a list on the form.</P>
+<P><A HREF="javascript:popUp('07fig04.gif')"><B>Figure 7.4.</B></A><B> </B><I>The
+modified Publishers form.</I></P>
+
+<DL>
+	<DD><B>1. </B>Create a new Standard EXE project, add a reference to Microsoft Remote
+	Data Object 2.0, and save the project as HT704.vbp. Rename the default Form1 to FMain,
+	save it as FMain.frm, and add the object and properties shown in Table 7.5. The menu
+	controls for this example are identical to those in How-To 7.2.
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 7.5. Objects and properties for FMain.</H4>
+	<P>
+	<TABLE BORDER="1" WIDTH="380">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Publishers</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>RemoteData Control</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Publishers</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Align</TT></TD>
+		<TD ALIGN="LEFT"><TT>2 - vbAlignBottom</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSourceName</TT></TD>
+		<TD ALIGN="LEFT"><TT>pubs</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>SQL</TT></TD>
+		<TD ALIGN="LEFT"><TT>SELECT pub_id, pub_name, city, state, country FROM publishers</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>ID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>pub_id</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>pub_name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>City</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtCity</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>city</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>State</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>3</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ComboBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboState</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>state</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Country</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>4</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtCountry</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataSource</TT></TD>
+		<TD ALIGN="LEFT"><TT>rdc</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>DataField</TT></TD>
+		<TD ALIGN="LEFT"><TT>country</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add the following code to the declarations section. The <TT>rdoConnection</TT>
+	object is used later to populate the state combo box.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+</PRE>
+	<P>
+	<PRE><TT>Private mcon As rdoConnection</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>3. </B>Create the <TT>Form_Load</TT> event procedure. This procedure calls
+	the <TT>OpenConnection</TT> procedure to connect to the remote server and then calls
+	<TT>GetStates</TT> to populate the combo box.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Load()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  OpenConnection</TT>
+<TT>  GetStates</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>4. </B>Add the following procedures to handle the click events for the menu
+	controls. These procedures are identical to those developed in How-To 7.2.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuDataDelete_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  DeleteRecord</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuDataNew_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  AddRecord</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuDataSave_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  SaveRecord</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuFileExit_Click()</TT>
+<TT>On Error Resume Next</TT>
+<TT>  Unload Me</TT>
+<TT>  If Err.Number &lt;&gt; 0 Then</TT>
+<TT>    MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5. </B>Create the <TT>AddRecord</TT>, <TT>NewRecord</TT>, and <TT>SaveRecord</TT>
+	procedures. These procedures are also identical to those in How-To 7.2.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub AddRecord()</TT>
+</PRE>
+	<P>
+	<PRE><TT>  rdc.Resultset.AddNew</TT>
+<TT>  txtID.SetFocus</TT>
+<TT>End Sub</TT>
+<TT>Private Sub DeleteRecord()</TT>
+<TT>  ` delete the row</TT>
+<TT>  rdc.Resultset.Delete</TT>
+<TT>  ` back up one row</TT>
+<TT>  rdc.Resultset.MovePrevious</TT>
+<TT>  ` check for beginning of set</TT>
+<TT>  If rdc.Resultset.BOF Then</TT>
+<TT>    rdc.Resultset.MoveFirst</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub SaveRecord()</TT>
+<TT>  Select Case rdc.Resultset.EditMode</TT>
+    Case rdEditNone
+<TT>      ` clean record, do nothing</TT>
+<TT>    Case rdEditInProgress</TT>
+<TT>      ` the control handles regular edits</TT>
+<TT>      rdc.UpdateRow</TT>
+<TT>    Case rdEditAdd</TT>
+<TT>      ` use the Update method of the</TT>
+<TT>      ` resultset</TT>
+<TT>      rdc.Resultset.Update</TT>
+<TT>  End Select</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>6. </B>Create the <TT>OpenConnection</TT> procedure. This is based on How-To
+	7.3 and uses the pubs ODBC DSN to create the connection to the SQL Server.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub OpenConnection()</TT>
+</PRE>
+	<P>
+	<PRE><TT>  Dim sConnect As String</TT>
+<TT>  ` default using a configured DSN</TT>
+<TT>  Set mcon = rdoEnvironments(0).OpenConnection(&quot;pubs&quot;)</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>7. </B>Create the <TT>GetStates</TT> subroutine. This code uses an <TT>rdoResultset</TT>
+	to populate the <TT>cboState</TT> combo box. It creates a forward-only, read-only
+	cursor based on the States table. Because only one pass through the results is required,
+	a forward-only cursor is sufficient. The <TT>rdExecDirect</TT> option bypasses ODBC's
+	normal step of creating a prepared statement and directly executes the query on the
+	SQL Server.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub GetStates()</TT>
+<TT>` populate the states combo box</TT>
+<TT>  Dim sSQL As String</TT>
+<TT>  Dim rsStates As rdoResultset</TT>
+<TT>  sSQL = &quot;SELECT StateCode FROM States&quot;</TT>
+<TT>  ` we only need one pass through this data,</TT>
+<TT>  ` and will only need to do it once, so we</TT>
+<TT>  ` use a read only, forward only cursor and</TT>
+<TT>  ` the exec direct option</TT>
+<TT>  Set rsStates = mcon.OpenResultset(sSQL, _</TT>
+<TT>      rdOpenForwardOnly, rdConcurReadOnly, rdExecDirect)</TT>
+<TT>  ` populate the combo box</TT>
+<TT>  Do While Not rsStates.EOF</TT>
+<TT>    cboState.AddItem rsStates!StateCode</TT>
+<TT>    rsStates.MoveNext</TT>
+<TT>  Loop</TT>
+<TT>  ` clean up</TT>
+<TT>  rsStates.Close</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>The primary object you will use in the Remote Data Objects hierarchy is the <TT>rdoResultset</TT>
+object. The <TT>rdoResultset</TT> object enables you to submit a SQL query (over
+an <TT>rdoConnection</TT> object) and process the results. Depending on the type
+of query, you might also be able to add, delete, and update the rows in the resultset.</P>
+<P>In this example, the resultset in the <TT>GetStates</TT> procedure is used only
+to populate the combo box and avoid the use of a data bound ComboBox control.</P>
+<P><B>Comments</B></P>
+<P>Many of the objects in the Remote Data Objects hierarchy have events in addition
+to properties and methods. You can use these events by declaring the objects using
+the <TT>WithEvents</TT> keyword and write event procedures for these events. For
+example, the <TT>rdoResultset</TT> object provides the <TT>RowStatusChanged</TT>
+event that you can use to trigger code that should run if a row is updated or deleted.</P>
+<P>
+<H2>7.5 How do I...</H2>
+<H3><A NAME="Add, update, and delete records ..."></A><B>Add, update, and delete
+records in a SQL Server database by using Remote Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>Bound controls use a database connection for each Data control; large applications
+based on bound controls would use too many connections. How can I create an unbound
+form based on SQL Server data using Remote Data Objects?</P>
+<P><B>Technique</B></P>
+<P>Building unbound applications with Remote Data Objects is no different from building
+unbound applications using any other data access approach, including Data Access
+Objects or standard Visual Basic file I/O techniques. Here are the steps:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Retrieve the data from the data source; in this example you will use
+	an <TT>rdoResultset</TT> to manage the data.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Display the values in the controls on the form.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Update the tables in the database when the user moves to a new row,
+	unloads the form, or explicitly requests that the data be saved.
+	<P>
+</DL>
+
+<P>If you've already read Chapter 2, &quot;Accessing a Database with Data Access
+Objects,&quot; you will be familiar with these techniques. The only thing that has
+changed is the object model used to manage the data. In the previous How-To, you
+were introduced to using an <TT>rdoResultset</TT> to retrieve data from a SQL Server
+database. In this How-To, you will extend the use of the <TT>rdoResultset</TT> to
+inserting, updating, and deleting rows.</P>
+<P>How-To 7.4 used a forward-only, read-only cursor--the default for <TT>rdoResultset</TT>
+objects created using the <TT>OpenResultset</TT> method of an <TT>rdoConnection</TT>
+object. Because you will now be making changes to the data as well as providing the
+capability to navigate both forward and backward through the rows, you will need
+a more flexible type of cursor. Using a keyset-type cursor enables you to add, update,
+or delete rows with minimal coding complexity and lower resource requirements than
+a dynamic cursor.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>If you did not install the States table
+	in How-To 7.4, do so now by running the States.sql SQL script, using SQL Enterprise
+	Manager or I-SQL/W. This script creates and populates a table of state names and
+	postal codes for U.S. states. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Steps</B></P>
+<P>Open and run project HT705.vbp. Use the form shown in Figure 7.5 to browse, add,
+update, or delete rows in the Publishers table. In this example, the RemoteData control
+has been replaced with Visual Basic code. Toolbar buttons created with a Toolbar
+control replace the navigation buttons provided by the RemoteData control. With the
+commands on the Data menu, you can create new rows, save changes to an existing row,
+or delete the current row.</P>
+<P><A HREF="javascript:popUp('07fig05.gif')"><B>Figure 7.5.</B></A><B> </B><I>The
+unbound Publishers form.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new Standard EXE project, add a reference to Microsoft Remote
+	Data Object 2.0, and save the project as HT705.vbp. Rename <TT>Form1</TT> to <TT>FMain</TT>,
+	save it as FMain.frm, and add the objects and properties shown in Table 7.6.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 7.6. Objects and properties for FMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Publishers</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Toolbar</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>tb</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>ID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtID</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtName</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>City</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtCity</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>State</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>3</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>ComboBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cboState</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Country</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>4</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtCountry</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Use the Menu Editor to create the menu controls shown in Table 7.7.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 7.7. Menu controls for FMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>CAPTION</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Shortcut Key</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>&amp;File</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuFile</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>----E&amp;xit</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuFileExit</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>&amp;Data</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuData</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>----&amp;Save</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuDataSave</TT></TD>
+		<TD ALIGN="LEFT">Ctrl+S</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>-----</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuDataBar</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>----&amp;New</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuDataNew</TT></TD>
+		<TD ALIGN="LEFT">Ctrl+N</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>----&amp;Delete</TT></TD>
+		<TD ALIGN="LEFT"><TT>mnuDataDelete</TT></TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the declarations section. The <TT>rdoConnection</TT>
+	and <TT>rdoResultset</TT> objects are used by the form to manage the data in the
+	sample database. The enumeration and the <TT>mlRowState</TT> variable are used to
+	track the current state of the data on the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Option Explicit</TT>
+` connection
+<TT>Private mcon As rdoConnection</TT>
+<TT>` resultset</TT>
+<TT>Private mrsPublishers As rdoResultset</TT>
+<TT>` record state</TT>
+<TT>Private Enum RowState</TT>
+<TT>  RowStateClean = 1</TT>
+<TT>  RowStateDirty = 2</TT>
+<TT>  RowStateNew = 3</TT>
+<TT>End Enum</TT>
+<TT>Private mlRowState As RowState</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>4. </B>Create the <TT>Form_Load</TT> and <TT>Form_Unload</TT> event procedures.
+	In the <TT>Load</TT> event, the form sets up the toolbar, opens the resultset for
+	the Publishers table upon which the form is based, and populates the <TT>cboState</TT>
+	combo box. In the <TT>unload</TT> event, the form saves any changes and closes and
+	releases the object variables created in the declarations section. The <TT>Initialize</TT>,
+	<TT>GetStates</TT>, and <TT>SetupToolbar</TT> procedures are described in steps 9,
+	11, and 20.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Form_Load()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  SetupToolbar</TT>
+<TT>  Initialize</TT>
+<TT>  GetStates</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub Form_Unload(Cancel As Integer)</TT>
+<TT>` save before exiting</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  ` save the current row</TT>
+<TT>  SaveRow</TT>
+<TT>  ` close down resultset and connection</TT>
+<TT>  Terminate</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>5. </B>Create the <TT>tb_ButtonClick</TT> event procedure. This procedure
+	calls procedures to navigate among the rows in the resultset.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub tb_ButtonClick(ByVal Button As ComctlLib.Button)</TT>
+<TT>` toolbar handles navigation</TT>
+<TT>  Select Case Button.Key</TT>
+<TT>    Case &quot;First&quot;</TT>
+<TT>      MoveFirst</TT>
+<TT>    Case &quot;Previous&quot;</TT>
+<TT>      MovePrevious</TT>
+<TT>    Case &quot;Next&quot;</TT>
+<TT>      MoveNext</TT>
+<TT>    Case &quot;Last&quot;</TT>
+<TT>      MoveLast</TT>
+<TT>  End Select</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>6. </B>Add the following event procedures to track the edit state of the data
+	on the form. Each procedure changes the module level <TT>mlRowState</TT> variable
+	to <TT>RowStateDirty</TT> if the current value is <TT>RowStateClean</TT>. This enables
+	later code to determine whether current changes should be sent to the SQL Server
+	as an update or an insert.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cboState_Click()</TT>
+<TT>` mark row dirty</TT>
+<TT>  If mlRowState = RowStateClean Then</TT>
+<TT>    mlRowState = RowStateDirty</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub cboState_Change()</TT>
+` mark row dirty
+<TT>  If mlRowState = RowStateClean Then</TT>
+<TT>    mlRowState = RowStateDirty</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub txtCity_Change()</TT>
+<TT>` mark row dirty</TT>
+<TT>  If mlRowState = RowStateClean Then</TT>
+<TT>    mlRowState = RowStateDirty</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub txtCountry_Change()</TT>
+<TT>` mark row dirty</TT>
+<TT>  If mlRowState = RowStateClean Then</TT>
+<TT>    mlRowState = RowStateDirty</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub txtID_Change()</TT>
+<TT>` mark row dirty</TT>
+<TT>  If mlRowState = RowStateClean Then</TT>
+<TT>    mlRowState = RowStateDirty</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT>
+<TT>Private Sub txtName_Change()</TT>
+<TT>` mark row dirty</TT>
+<TT>  If mlRowState = RowStateClean Then</TT>
+<TT>    mlRowState = RowStateDirty</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>7. </B>Create the <TT>mnuFileExit_Click</TT> event procedure. This procedure
+	unloads the form, ending the application.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuFileExit_Click()</TT>
+<TT>On Error Resume Next</TT>
+<TT>  Unload Me</TT>
+<TT>  If Err.Number &lt;&gt; 0 Then</TT>
+<TT>    MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>8. </B>Add the following event procedures for the commands on the Data menu.
+	Each menu command event procedure calls a corresponding subroutine in the form module
+	to perform the requested operation. The <TT>NewRow</TT>, <TT>SaveRow</TT>, and <TT>DeleteRow</TT>
+	procedures are described in steps 12, 13, and 14.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub mnuDataNew_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  NewRow</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuDataSave_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  SaveRow</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT>
+<TT>Private Sub mnuDataDelete_Click()</TT>
+<TT>On Error GoTo ProcError</TT>
+  DeleteRow
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>9. </B>Create the <TT>Initialize</TT> procedure. This subroutine is called
+	from the <TT>Form_Load</TT> event procedure. It opens a connection to the SQL Server
+	database, creates a resultset using the same query used in the previous RemoteData
+	control examples, and then calls the <TT>ColumnsToControls</TT> procedure to display
+	the first row in the resultset on the form. A keyset cursor with optimistic locking
+	based on row values is used so that the resultset will be updatable.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Initialize()</TT>
+<TT>` connect and open the publishers resultset</TT>
+<TT>  Dim sConnect As String</TT>
+<TT>  Dim sSQL As String</TT>
+<TT>  ` default using a configured DSN</TT>
+<TT>  Set mcon = rdoEnvironments(0).OpenConnection( _</TT>
+<TT>      &quot;pubs&quot;)</TT>
+<TT>  ` initialize the publishers resultset</TT>
+<TT>  ` create the SQL statement</TT>
+<TT>  sSQL = &quot;SELECT pub_id, pub_name, city, state, country &quot; &amp; _</TT>
+<TT>      &quot;FROM publishers&quot;</TT>
+<TT>  ` use a keyset cursor</TT>
+<TT>  Set mrsPublishers = _</TT>
+<TT>      mcon.OpenResultset(sSQL, rdOpenKeyset, rdConcurValues)</TT>
+<TT>  ` display the first row</TT>
+<TT>  ColumnsToControls</TT>
+<TT>  ` mark it clean</TT>
+<TT>  mlRowState = RowStateClean</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>10. </B>The <TT>Terminate</TT> procedure, called from the <TT>Form_Unload</TT>
+	event, performs a cleanup operation by closing the module level <TT>rdoConnection</TT>
+	and <TT>rdoResultset</TT> objects:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub Terminate()</TT>
+<TT>` clean up</TT>
+<TT>  mrsPublishers.Close</TT>
+<TT>  mcon.Close</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>11. </B>The <TT>GetStates</TT> procedure is the same code used in How-To 7.4:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub GetStates()</TT>
+<TT>` populate the states combo box</TT>
+<TT>  Dim sSQL As String</TT>
+<TT>  Dim rsStates As rdoResultset</TT>
+<TT>  sSQL = &quot;SELECT StateCode FROM States ORDER BY StateCode&quot;</TT>
+<TT>  ` we only need one pass through this data,</TT>
+<TT>  ` and will only need to do it once, so we</TT>
+<TT>  ` use a read only, forward only cursor and</TT>
+<TT>  ` the exec direct option</TT>
+<TT>  Set rsStates = mcon.OpenResultset(sSQL, _</TT>
+<TT>      rdOpenForwardOnly, rdConcurReadOnly, rdExecDirect)</TT>
+<TT>  ` populate the combo box</TT>
+<TT>  Do While Not rsStates.EOF</TT>
+<TT>    cboState.AddItem rsStates!StateCode</TT>
+<TT>    rsStates.MoveNext</TT>
+<TT>  Loop</TT>
+<TT>  ` clean up</TT>
+<TT>  rsStates.Close</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>12. </B>Create the <TT>NewRow</TT> procedure. This code saves the current
+	data, clears the controls, and sets the module level <TT>mlRowState</TT> state variable
+	to <TT>RowStateNew</TT>, in preparation for the creation of a new row in the table.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub NewRow()</TT>
+<TT>` create a new row</TT>
+<TT>  ` save current data</TT>
+<TT>  SaveRow</TT>
+<TT>  ClearControls</TT>
+<TT>  mlRowState = RowStateNew</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>13. </B>Create the <TT>SaveRow</TT> subroutine. The code uses either the <TT>Edit</TT>
+	or <TT>AddNew</TT> method of the <TT>rdoResultset</TT> object to update an existing
+	row or insert a new row, based on the value of the <TT>mlRowState</TT> module level
+	state flag.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub SaveRow()</TT>
+<TT>` save current data</TT>
+<TT>  Select Case mlRowState</TT>
+<TT>    Case RowStateDirty</TT>
+<TT>      mrsPublishers.Edit</TT>
+<TT>      ControlsToColumns</TT>
+<TT>      mrsPublishers.Update</TT>
+<TT>      mlRowState = RowStateClean</TT>
+<TT>    Case RowStateNew</TT>
+<TT>      mrsPublishers.AddNew</TT>
+<TT>      ControlsToColumns</TT>
+<TT>      mrsPublishers.Update</TT>
+<TT>      mlRowState = RowStateClean</TT>
+<TT>      mrsPublishers.Move 0</TT>
+<TT>    Case Else</TT>
+<TT>      ` nothing to do</TT>
+<TT>  End Select</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>14. </B>The <TT>DeleteRow</TT> procedure uses the <TT>Delete</TT> method of
+	the <TT>mrsPublishers</TT> <TT>rdoResultset</TT> object to delete the current row;
+	the procedure then calls <TT>MovePrevious</TT> to back up to the previous row:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub DeleteRow()</TT>
+<TT>` delete the current row</TT>
+<TT>  mrsPublishers.Delete</TT>
+<TT>  MovePrevious</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>15. </B>Create the <TT>MoveFirst</TT> and <TT>MoveLast</TT> subroutines. Each
+	routine saves the current row, performs the appropriate move operation, displays
+	the new row, and marks it as being clean.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub MoveFirst()</TT>
+<TT>` goto first row</TT>
+<TT>  SaveRow</TT>
+<TT>  mrsPublishers.MoveFirst</TT>
+<TT>  ColumnsToControls</TT>
+<TT>  mlRowState = RowStateClean</TT>
+<TT>End Sub</TT>
+<TT>Private Sub MoveLast()</TT>
+<TT>` goto last row</TT>
+<TT>  SaveRow</TT>
+<TT>  mrsPublishers.MoveLast</TT>
+<TT>  ColumnsToControls</TT>
+<TT>  mlRowState = RowStateClean</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>16. </B>Create the <TT>MovePrevious</TT> and <TT>MoveNext</TT> procedures.
+	These are similar to the <TT>MoveFirst</TT> and <TT>MoveLast</TT> routines, but with
+	code added to test for BOF and EOF conditions so that a valid row will always be
+	displayed by the form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+	<PRE>Private Sub MovePrevious()
+<TT>` goto previous row</TT>
+<TT>  SaveRow</TT>
+<TT>  mrsPublishers.MovePrevious</TT>
+<TT>  If mrsPublishers.BOF Then</TT>
+<TT>    mrsPublishers.MoveFirst</TT>
+<TT>  End If</TT>
+<TT>  ColumnsToControls</TT>
+<TT>  mlRowState = RowStateClean</TT>
+<TT>End Sub</TT>
+<TT>Private Sub MoveNext()</TT>
+<TT>` MoveNext w/ EOF handling</TT>
+<TT>  SaveRow</TT>
+<TT>  mrsPublishers.MoveNext</TT>
+<TT>  If mrsPublishers.EOF Then</TT>
+<TT>    mrsPublishers.MoveLast</TT>
+<TT>  End If</TT>
+<TT>  ColumnsToControls</TT>
+<TT>  mlRowState = RowStateClean</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>17. </B>Create the <TT>ColumnsToControls</TT> routine. This procedure copies
+	the values from the current row in the resultset to the controls on the form. In
+	order to eliminate the possibility of writing <TT>Null</TT> values to the <TT>Text</TT>
+	property of the text boxes, a zero-length string is appended to the value of the
+	column.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub ColumnsToControls()</TT>
+<TT>` load the current row in mrsPublishers to the controls</TT>
+<TT>  txtID = mrsPublishers!pub_id &amp; &quot;&quot;</TT>
+<TT>  txtName = mrsPublishers!pub_name &amp; &quot;&quot;</TT>
+<TT>  txtCity = mrsPublishers!city &amp; &quot;&quot;</TT>
+<TT>  cboState = mrsPublishers!state &amp; &quot;&quot;</TT>
+<TT>  txtCountry = mrsPublishers!country &amp; &quot;&quot;</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>18. </B>Create the <TT>ControlsToColumns</TT> procedure. This procedure compares
+	the values on the form to the values in the columns and--if they have changed--copies
+	the new values to the columns.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub ControlsToColumns()</TT>
+<TT>` copy controls to current row</TT>
+<TT>  Dim sID As String</TT>
+<TT>  Dim sName As String</TT>
+<TT>  Dim sCity As String</TT>
+<TT>  Dim sState As String</TT>
+<TT>  Dim sCountry As String</TT>
+<TT>  ` get the values</TT>
+<TT>  sID = txtID</TT>
+<TT>  sName = txtName</TT>
+<TT>  sCity = txtCity</TT>
+<TT>  sState = cboState</TT>
+<TT>  sCountry = txtCountry</TT>
+<TT>  ` copy to columns only if changed</TT>
+<TT>  With mrsPublishers</TT>
+<TT>    If !pub_id &lt;&gt; sID Then</TT>
+<TT>      !pub_id = sID</TT>
+<TT>    End If</TT>
+<TT>    If !pub_name &lt;&gt; sName Then</TT>
+<TT>      !pub_name = sName</TT>
+<TT>    End If</TT>
+<TT>    If !city &lt;&gt; sCity Then</TT>
+<TT>      !city = sCity</TT>
+<TT>    End If</TT>
+<TT>    If !state &lt;&gt; sState Then</TT>
+<TT>      !state = sState</TT>
+<TT>    End If</TT>
+<TT>    If !country &lt;&gt; sCountry Then</TT>
+<TT>      !country = sCountry</TT>
+<TT>    End If</TT>
+<TT>  End With</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>19. </B>The <TT>ClearControls</TT> subroutine writes zero-length strings to
+	each of the controls and is called when creating a new row:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub ClearControls()</TT>
+<TT>` clear existing values from controls</TT>
+<TT>  txtID = &quot;&quot;</TT>
+<TT>  txtName = &quot;&quot;</TT>
+<TT>  txtCity = &quot;&quot;</TT>
+<TT>  cboState = &quot;&quot;</TT>
+<TT>  txtCountry = &quot;&quot;</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>20. </B>Enter the following code as the <TT>SetupToolbar</TT> subroutine.
+	This procedure is called at startup and adds the four navigation buttons to the Toolbar
+	control.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub SetupToolbar()</TT>
+<TT>` setup toolbar buttons</TT>
+<TT>  With tb.Buttons</TT>
+<TT>    .Add , &quot;First&quot;, &quot;First&quot;</TT>
+<TT>    .Add , &quot;Previous&quot;, &quot;Previous&quot;</TT>
+<TT>    .Add , &quot;Next&quot;, &quot;Next&quot;</TT>
+<TT>    .Add , &quot;Last&quot;, &quot;Last&quot;</TT>
+<TT>  End With</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>In a production application, you should
+	set up more pleasing buttons with appropriate images in an associated ImageList control.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>How It Works</B></P>
+<P>At startup, the form connects to the SQL Server, submits a query, and captures
+the results of the query in the <TT>mrsPublishers</TT> <TT>rdoResultset</TT> object.
+Code attached to the menu controls and toolbar buttons provides the capability for
+navigation, inserts, updates, and deletes using the methods of the <TT>rdoResultset</TT>
+object.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>You can easily implement an <TT>undo</TT>
+	command by reloading the current row from the <TT>rdoResultset</TT> into the controls
+	with a call to the <TT>ColumnsToControls</TT> procedure. A column-level <TT>undo</TT>
+	command could be implemented by restoring only a single column value from the <TT>rdoResultset</TT>
+	object. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Comments</B></P>
+<P>In Chapter 2, &quot;Accessing a Database with Data Access Objects,&quot; a more
+robust approach was implemented using a class module to encapsulate all the data
+access code. That approach would work equally well with this example. For the sake
+of simplicity, the more direct approach of placing the data access code directly
+in the form module was used. Although this code might be somewhat simpler to understand,
+over the lifetime of an application, it might prove more difficult to maintain because
+of the tight coupling of the data access code with the user interface code.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>QUERYING THE DATABASE </STRONG></B></P>
+
+	<P>The SQL statement used to provide the source of the data for this form is somewhat
+	simplistic for a server database. Although the pubs sample database contains only
+	a handful of rows, many tables will have hundreds, thousands, or even millions of
+	rows of data. If you issue a <TT>SELECT</TT> query with no <TT>WHERE</TT> clause
+	against such a large table in a production application, you will at best produce
+	an application with terrible performance and will quite possibly be summoned to the
+	office of your database administrator and be given a painful lesson in how to submit
+	a proper query. Submitting queries that return only the data you need is always good
+	advice for any database application but is even more critical if you are sending
+	the query to a busy database server. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H2>7.6 How do I...</H2>
+<H3><A NAME="Execute a SQL Server stored ..."></A><B>Execute a SQL Server stored
+procedure by using Remote Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>Many of the queries I need to run are returned as the results of stored procedures
+on the server. How can I execute a stored procedure and capture the resultset with
+Remote Data Objects?</P>
+<P><B>Technique</B></P>
+<P>A SQL Server stored procedure is a precompiled set of Transact-SQL statements
+that are executed using a single statement. Because the statements have been precompiled
+and the queries have already been optimized, SQL Server can often execute stored
+procedures much more efficiently than ad hoc SQL statements submitted for processing.
+Many large database applications are built almost entirely using stored procedures
+to retrieve and edit rows. Additionally, stored procedures can provide an added measure
+of security by allowing access to tables and columns that would otherwise be unavailable.
+A user only needs permission to execute a stored procedure, regardless of the permissions
+on the underlying tables and columns.</P>
+<P>Stored procedures can range from simple <TT>SELECT</TT> queries that return results
+to complex Transact-SQL procedures that take input and output parameters and return
+values and multiple resultsets. Although the details of writing stored procedures
+on the server is beyond the scope of this chapter, it is not difficult to capture
+and use the results of stored procedures.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>Stored procedures always return read-only
+	results. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Depending on the nature of the procedure, you might execute the procedure directly
+using the <TT>Execute</TT> method of an <TT>rdoConnection</TT> object, or you might
+capture results of a stored procedure by using an <TT>rdoQuery</TT> or <TT>rdoResultset</TT>
+object.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>THE TROUBLE WITH STORED PROCEDURES </STRONG></B></P>
+
+	<P>Transact-SQL, from a programming perspective, can be a difficult language to work
+	with. SQL was designed to manage data and database objects, and the commands and
+	system stored procedures are often cryptic. Debugging tools are limited, and in many
+	cases you need to understand the inner workings of a procedure before you can use
+	it. This can make it difficult to create procedures that act as &quot;black boxes&quot;
+	with well-defined interfaces. However, the advantages in data processing efficiency
+	offered by stored procedures often far outweigh these disadvantages, especially for
+	heavily used, large database applications. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Steps</B></P>
+<P>Use SQL Enterprise Manager or I-SQL/W to create the spStates stored procedure
+listed in step 2; then open and run project HT706.vbp. This example uses a form that
+is visually identical to the form shown in Figure 7.5 in the preceding How-To. Only
+two lines of code have been changed, but a minor change of this nature has the potential
+to provide a significant performance improvement in a production application.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE project, add a reference to Microsoft Remote
+	Data Object 2.0, and save the project as HT706.vbp. The single form for the application,
+	FMain is identical to the FMain form used in HT705.vbp, with the exception of the
+	change shown in step 3.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Using SQL Enterprise Manager or I-SQL/W, select the pubs database and
+	execute the following SQL Script to create the <TT>spStates</TT> stored procedure:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>CREATE PROCEDURE spStates AS</TT>
+<TT>  SELECT StateCode FROM States ORDER BY StateCode</TT>
+<TT>Go</TT>
+<TT>GRANT EXECUTE ON spStates TO public</TT>
+<TT>Go</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>You will need to have already installed
+	the States table using the States.sql script. The script shown above can be found
+	in spStates.sql. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Replace the <TT>GetStates</TT> procedure with the following code. Two
+	changes were made to the original procedure in HT705.vbp. The <TT>sSQL</TT> string
+	variable and the assignment of the SQL statement were removed, and the <TT>name</TT>
+	parameter of the <TT>OpenResultset</TT> method was replaced with the <TT>spStates</TT>
+	stored procedure. The balance of the project is identical.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub GetStates()</TT>
+<TT>` populate the states combo box</TT>
+<TT>  Dim rsStates As rdoResultset</TT>
+<TT>  ` we only need one pass through this data,</TT>
+<TT>  ` and will only need to do it once, so we</TT>
+<TT>  ` use a read only, forward only cursor and</TT>
+<TT>  ` the exec direct option</TT>
+<TT>  Set rsStates = mcon.OpenResultset(&quot;spStates&quot;, _</TT>
+<TT>      rdOpenForwardOnly, rdConcurReadOnly, rdExecDirect)</TT>
+<TT>  ` populate the combo box</TT>
+<TT>  Do While Not rsStates.EOF</TT>
+<TT>    cboState.AddItem rsStates!StateCode</TT>
+<TT>    rsStates.MoveNext</TT>
+<TT>  Loop</TT>
+<TT>  ` clean up</TT>
+<TT>  rsStates.Close</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>The original query was a <TT>SELECT</TT> statement submitted directly to the server
+for processing:</P>
+<P>
+<PRE><TT>SELECT StateCode FROM States ORDER BY StateCode</TT>
+</PRE>
+<P>This was replaced with a stored procedure that executes the same query. Because
+stored procedures have already been compiled and optimized, a few steps have been
+saved on the SQL Server each time this query has been submitted. Only a minor change
+is required for the <TT>GetStates</TT> procedure to take advantage of the stored
+procedure because the procedure was already designed to use a read-only resultset.</P>
+<P><B>Comments</B></P>
+<P>There might be no difference in the steps the SQL server takes to process the
+rows for this query. If you execute the original SQL statement directly in SQL Enterprise
+Manager and then execute the stored procedure (both with the Show Query Plan option
+turned on), you will see that the plan is identical for both queries. However, you
+are still saving the SQL Server the time required to compile and optimize the query.</P>
+<P>For this type of data, you should design your application to run the query once
+(either at start time or the first time it is needed) and then cache the data locally
+for future use. On a table as stable as this one, you could consider permanently
+retaining a local copy and not querying the server at all. However, most database
+applications will need to run this type of query routinely. Often many small queries
+are run to populate lookup tables of coded values and other types of selection lists
+for combo boxes, list boxes, and so on. This type of data probably does not change
+often, but might not be stable enough to hardwire the values into the source code.</P>
+<P>If you routinely submit a number of these queries in your application, a good
+solution might be to design a single stored procedure on the server that returns
+several or possibly all of these queries at once; then cache the results locally
+after the first execution. When you submit a query or stored procedure that returns
+multiple resultsets, you use the <TT>MoreResults</TT> method of the <TT>rdoResultset</TT>
+object to determine whether there are additional resultsets to process. You can also
+use the <TT>GetRows</TT> method to quickly and easily populate an array with the
+results of a query for temporary local storage.</P>
+<P>
+<H2>7.7 How do I...</H2>
+<H3><A NAME="Execute a parameterized SQL ..."></A><B>Execute a parameterized SQL
+Server stored procedure with Remote Data Objects?</B></H3>
+<P><B>Problem</B></P>
+<P>I need to capture the return value of a stored procedure that takes parameters.
+How can I do this with Remote Data Objects?</P>
+<P><B>Technique</B></P>
+<P>SQL Server stored procedures, like Visual Basic procedures, can take input and
+output parameters and can return values. To capture these values, you need to use
+a different technique from that used in How-To 7.6. The <TT>rdoQuery</TT> object
+provides the <TT>rdoParameters</TT> collection to manage the parameters of a stored
+procedure.</P>
+<P>The question mark character is the placeholder for parameters in a SQL Server
+query. If a procedure takes parameters, you put question marks in the SQL statement
+where the parameters would be entered if you were submitting the query interactively.
+The following SQL statement would create a parameter query based on a <TT>CustLast</TT>
+column:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>SELECT CustID, CustFirst, CustLast FROM Customers WHERE CustLast = ?</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>To supply this parameter when you execute the query, you need to create an</P>
+
+
+<BLOCKQUOTE>
+	<P><TT>rdoQuery</TT> object using the <TT>CreateQuery</TT> method:</P>
+	<P>
+	<PRE><TT>` cn is a connection object defined elsewhere</TT>
+<TT>` qry is an object variable declared as rdoQuery</TT>
+<TT>` sSQL is a string variable</TT>
+<TT>sSQL = &quot;SELECT CustID, CustFirst, CustLast FROM Customers WHERE CustID = ?</TT>
+<TT>Set qry = cn.CreateQuery(&quot;&quot;,sSQL)</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>This query will now have a single parameter in its <TT>rdoParameters</TT> collection.</P>
+<P>You can assign a value to the parameter and execute the query:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>` the parameters collection is zero-based</TT>
+<TT>qry(0) = 12</TT>
+<TT>` rs is an rdoResultset object</TT>
+<TT>Set rs = qry.Execute</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>Stored procedures can also take parameters, but to capture output parameters or
+return values, you need to use the OBDC call syntax. Here's the beginning of the
+<TT>sp_addgroup</TT> procedure from the master database:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>create procedure sp_addgroup</TT>
+<TT>@grpname varchar(30)</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>In addition to the <TT>grpname</TT> input parameter, <TT>sp_addgroup</TT> also
+returns a value indicating the success or failure of the procedure. With the ODBC
+call syntax, this query would be created as</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>{? = call sp_addgroup (?) }</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>The question mark at the beginning of the statement acts as a placeholder for
+<BR>
+the return value, and the question mark at the end acts as a placeholder for the
+<TT>grpname</TT> parameter. Normally, the ODBC driver can determine whether the parameters
+are input or output, but you can also supply the direction explicitly by using the
+<TT>Direction</TT> property of the <TT>rdoParameter</TT> object:</P>
+
+
+<BLOCKQUOTE>
+	<PRE><TT>qry(0).Direction = rdDirectionInput</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P>Along with input and output parameters, you can also use <TT>rdParamReturnValue</TT>
+to specify that a parameter is a stored procedure return value.</P>
+<P><B>Steps</B></P>
+<P>The sample project for this How-To is a SQL Server Change Password dialog box.
+Open and run project HT707.vbp to display the form shown in Figure 7.6. The dialog
+box uses the <TT>sp_password</TT> system stored procedure (in the master database)
+to change the password for the current user.</P>
+<P><A HREF="javascript:popUp('07fig06.gif')"><B>Figure 7.6.</B></A><B> </B><I>The
+Change Password dialog box.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>If you are the sa, you can use <TT>sp_password</TT>
+	to change the password for any user--with or without the existing password. This
+	is a standard security mechanism. Administrators can change, but not read, existing
+	passwords. Windows NT Server domain administrators and Access database administrators
+	have the same capability. This dialog box does not provide that capability. If you
+	have sa authority and need to change the password of another user, execute <TT>sp_password</TT>
+	using SQL Enterprise Manager or I-SQL/w. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new Standard EXE project and save it as HT707.vbp. Change
+	the name of <TT>Form1</TT> to <TT>FMain</TT> and save it as FMain.frm, and then create
+	the objects and properties shown in Table 7.8.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 7.8. Objects and properties for FMain.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Value</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Form</TT></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Change Password</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Border Style</TT></TD>
+		<TD ALIGN="LEFT"><TT>3 - Fixed Dialog</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Old Password</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtOld</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>New Password</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtNew</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>Label</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>lbl</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Confirm New Password</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>2</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>TextBox</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>txtNewConfirm</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmd</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>OK</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Default</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>0</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><TT>CommandButton</TT></TD>
+		<TD ALIGN="LEFT"><TT>Name</TT></TD>
+		<TD ALIGN="LEFT"><TT>cmd</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Caption</TT></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Cancel</TT></TD>
+		<TD ALIGN="LEFT"><TT>True</TT></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT"><TT>Index</TT></TD>
+		<TD ALIGN="LEFT"><TT>1</TT></TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add <TT>Option Explicit</TT> to the declarations section of the form
+	module, and then create the <TT>cmd_Click</TT> event procedure. This procedure calls
+	the <TT>ChangePassword</TT> procedure if OK was clicked or unloads the form if Cancel
+	was clicked.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub cmd_Click(Index As Integer)</TT>
+<TT>On Error GoTo ProcError</TT>
+<TT>  Select Case cmd(Index).Caption</TT>
+<TT>    Case &quot;OK&quot;</TT>
+<TT>      ChangePassword</TT>
+<TT>    Case &quot;Cancel&quot;</TT>
+<TT>      Unload Me</TT>
+<TT>  End Select</TT>
+<TT>ProcExit:</TT>
+<TT>  Exit Sub</TT>
+<TT>ProcError:</TT>
+<TT>  MsgBox Err.Number &amp; vbCrLf &amp; Err.Description</TT>
+<TT>  Resume ProcExit</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>3. </B>Add the following code as the <TT>ChangePassword</TT> function. This
+	procedure uses the values entered in the text boxes to supply the parameters for
+	the <TT>sp_password</TT> system stored procedure. The procedure first verifies that
+	the user entered the same value in the New Password and Confirm New Password text
+	boxes; it then opens a connection to the SQL Server.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>The pubs DSN is used to open the connection, but any valid connection
+	to the server will work because the procedure name is fully qualified in the master
+	database. After the connection has been established, the procedure creates an <TT>rdoQuery</TT>
+	object, sets the direction of the parameters, and assigns the values of the two input
+	parameters. Finally, the query is executed using the <TT>Execute</TT> method of the
+	<TT>rdoQuery</TT> object, and the return value is captured using the <TT>rdoParameters</TT>
+	collection. The <TT>sp_password</TT> returns <TT>0</TT> if the password was successfully
+	changed, and this value is tested to display an appropriate message based on the
+	return value of the stored procedure.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub ChangePassword()</TT>
+<TT>` change the current user's password</TT>
+<TT>` using the sp_password system stored procedure</TT>
+<TT>  Dim con As rdoConnection</TT>
+<TT>  Dim sSQL As String</TT>
+<TT>  Dim qry As rdoQuery</TT>
+<TT>  Dim sOld As String</TT>
+<TT>  Dim sNew As String</TT>
+<TT>  Dim sNewConfirm As String</TT>
+<TT>  sOld = txtOld</TT>
+<TT>  sNew = txtNew</TT>
+<TT>  sNewConfirm = txtNewConfirm</TT>
+<TT>  If sNew &lt;&gt; sNewConfirm Then</TT>
+<TT>    ` mismatch, inform, clear values and exit</TT>
+<TT>    MsgBox &quot;New passwords do not match.&quot;</TT>
+<TT>    txtNew = &quot;&quot;</TT>
+<TT>    txtNewConfirm = &quot;&quot;</TT>
+<TT>    txtNew.SetFocus</TT>
+<TT>    Exit Sub</TT>
+<TT>  End If</TT>
+<TT>  Set con = _</TT>
+<TT>      rdoEnvironments(0).OpenConnection _</TT>
+<TT>      (&quot;pubs&quot;)</TT>
+  ` use the ODBC call syntax to capture the return value
+<TT>  ` this is needed to know if the change succeeded</TT>
+<TT>  sSQL = &quot;{? = call master.dbo.sp_password (?,?) }&quot;</TT>
+<TT>  ` create the query object</TT>
+<TT>  Set qry = con.CreateQuery(&quot;&quot;, sSQL)</TT>
+<TT>  ` set direction for param 0</TT>
+<TT>  qry(0).Direction = rdParamReturnValue</TT>
+<TT>  qry(1).Direction = rdParamInput</TT>
+<TT>  qry(2).Direction = rdParamInput</TT>
+<TT>  ` this is equivalent to using</TT>
+<TT>  ` qry.rdoParameters(1)</TT>
+<TT>  qry(1) = sOld</TT>
+<TT>  qry(2) = sNew</TT>
+<TT>  ` run it</TT>
+<TT>  qry.Execute</TT>
+<TT>  ` sp_password returns 0 if successful</TT>
+<TT>  ` the return parameters is always #0</TT>
+<TT>  If qry(0) = 0 Then</TT>
+<TT>    MsgBox &quot;Password changed.&quot;</TT>
+<TT>    Unload Me</TT>
+<TT>  Else</TT>
+<TT>    MsgBox &quot;Unable to change password.&quot;</TT>
+<TT>  End If</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><B>How It Works</B></P>
+<P>Only the ODBC call syntax can be used if you need to capture the output or return
+parameters from a stored procedure. By using this syntax in the SQL statement, you
+can create an <TT>rdoQuery</TT> object with an <TT>rdoParameters</TT> collection
+and use the parameters to supply input values and capture output and return values.</P>
+<P>This procedure could also be run by directly providing the old and new password
+as part of the SQL statement and run using the <TT>Execute</TT> method of an <TT>rdoConnection</TT>
+object, but you would not be able to determine whether the procedure succeeded or
+failed because the return value would be unavailable.</P>
+<P><B>Comments</B></P>
+<P>This simple Change Password dialog box could easily be plugged into any SQL Server
+database application by changing the code used to open the connection to the server
+or by supplying a valid connection using a public property of the form.</P>
+<P>
+<H2>7.8 How do I...</H2>
+<H3><A NAME="Handle Remote Data Objects errors?"></A><B>Handle Remote Data Objects
+errors?</B></H3>
+<P><B>Problem</B></P>
+<P>I know that there will be runtime errors generated in my application and that
+I must trap and handle these errors to make the application robust and reliable.
+How do I handle errors generated by Remote Data Objects?</P>
+<P><B>Technique</B></P>
+<P>As with any Visual Basic application, you must trap and handle the errors that
+are generated at runtime, or the Visual Basic runtime DLL will invoke its own default
+error handler--which simply displays a message and terminates your application. Error-handling
+techniques for Remote Data Objects applications are similar to the techniques used
+for handling any other Visual Basic runtime errors, with one subtle but important
+variation: More than one error can be generated by a single statement in Remote Data
+Objects.</P>
+<P>To enable you to deal with this possibility, Remote Data Objects provides the
+<TT>rdoErrors</TT> collection. This is a collection of <TT>rdoError</TT> objects
+you can examine the same way you examine the Visual Basic <TT>Err</TT> object. You
+can check the <TT>Number</TT>, <TT>Source</TT>, and <TT>Description</TT> properties.
+An <TT>rdoError</TT> object also provides the <TT>SQLRetCode</TT> and <TT>SQLState</TT>
+properties for you to examine.</P>
+<P>Each of these properties might or might not provide useful information. SQL Server
+error messages can often be cryptic at best, and although a Visual Basic runtime
+error is generated, you get only the first error in the <TT>rdoErrors</TT> collection.
+You will normally need to iterate the <TT>rdoErrors</TT> collection to find the true
+nature of the problem because the first error is often a generic message such as
+<TT>Command</TT> <TT>has</TT> <TT>been</TT> <TT>aborted.</TT>--a true but generally
+useless piece of information for debugging without having the underlying cause of
+the problem.</P>
+<P>The other significant difference in handling errors generated by Remote Data Objects
+is that you need to be prepared to deal with a much wider array of possible problems,
+ranging from typical Visual Basic errors like <TT>Invalid Use of Null</TT> (a common
+error in database applications) to the sudden death of the SQL Server at the other
+end of the connection. Along with the normal array of possible data manipulation
+problems (invalid foreign key values, data missing from required columns, and so
+on), most large SQL Server databases will have a wide variety of often complex business
+rules that are enforced. If rules are enforced using SQL Server triggers or stored
+procedures, the error numbers and messages generated will be dependent on the developer
+that created the Transact-SQL code. If that developer was conscientious in developing
+the Transact-SQL code, you will receive descriptive and informative messages. If
+you are developing your own Transact-SQL code, provide as much information as you
+reasonably can and use a sensible convention for generating error numbers.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>You generate errors in Transact-SQL
+	by using the <TT>RAISERROR</TT> statement. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Although there are standard techniques for trapping and examining errors, the
+means you use to handle the errors is entirely up to you and dependent on the context
+of the error. If a rule or some type of constraint is violated, you might be able
+to provide a message to the user with information about the problem and possible
+solutions. For more severe errors, such as a lost connection to the database server
+over the network, you might have little choice but to gracefully terminate the application,
+informing the user of the problem in the process.</P>
+<P>There are several avenues available for you to deal with possible problems:</P>
+
+<UL>
+	<LI><I>Prevent the errors before they happen.</I> By using combo boxes, lists, and
+	other user interface mechanisms that provide fixed lists of values for the user to
+	select, you can prevent the entry of data that will violate database rules. If a
+	column requires that a value be a member of a particular list of valid values, you
+	should design the application so that only that list is available to the user.
+	<P>
+	<LI><I>Make explicit tests for known probable errors before submitting data to the
+	server.</I> By handling the problem in advance of the generation of a runtime error,
+	you gain more direct control over the problem and reduce the overhead on the server--which
+	will need to process only validated data.
+	<P>
+	<LI><I>Iterate the <TT>rdoErrors</TT> collection</I> <I>with a <TT>For...Each</TT>
+	loop</I> <I>to gather as much information as possible about the errors you do encounter.</I>
+	To whatever degree is possible, do this while debugging the application and take
+	steps to prevent the problems if you can.
+	<P>
+	<LI><I>As always, set up error handlers in <TT>Sub Main</TT> and all event procedures.</I>
+	Because these procedures are by definition at the top of the Visual Basic call tree,
+	errors in them cannot be raised and will be fatal to your application. If your application
+	must be shut down due to a severe error, close it down gracefully with your own code
+	rather than letting Visual Basic's default runtime error handling terminate the application
+	for you. You might even be able to save edits in progress locally and submit them
+	to the server later when the problem has been cleared up.
+</UL>
+
+<H3>Your Responsibilities as a Database Application</H3>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>DEVELOPER </STRONG></B></P>
+
+	<P>As the developer of a database application, you have two responsibilities that
+	can sometimes be at odds with each other. You need to provide an easy-to-use, high-performance
+	application for the user. Users are mainly concerned with getting their work done
+	and don't care much about the intricacies of SQL Server rules, foreign key constraints,
+	and other problems. At the same time, you need to make sure that only valid data
+	is stored in the database because the data can be worse than useless if it is not
+	reliable.<BR>
+	Most database developers tend to err on the side of caution where data validation
+	is concerned, often at the expense of end user productivity. How strictly you need
+	to enforce your rules depends on the nature of the application. If you are working
+	with a financial application where precision is paramount, you might need to be more
+	severe in your enforcement of business rules. However, it is often the case that
+	developers enforce rules that can potentially be ignored--at least temporarily--for
+	the sake of the productivity of the end user.<BR>
+	<BR>
+	Only you can determine how strict you need to be, but you should try to make an effort
+	to sterilize the data only if it's truly necessary. In most cases, it's wishful thinking
+	to believe that you can build an application where no bad data can be entered, so
+	attempts to do so only hurt user productivity. If you are faced with a decision about
+	data validation and rule enforcement, make the decision in the context of the overall
+	goal of the application rather than looking only at the details of table or column
+	level rules. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>Steps</B></P>
+<P>There is no specific project that demonstrates handling errors from Remote Data
+Objects. You are probably already well versed with basic Visual Basic error handling
+techniques, so rather than provide a contrived example, the following steps examine
+some of the problems you might encounter in the existing examples from How-To 7.2
+and How-To 7.7. If you need a review of the essentials of Visual Basic error handling,
+see How-To 2.8, which covers the basic techniques of runtime error handling.</P>
+<P>In How-To 7.2, a bound control application was developed that enables you to browse,
+update, insert, and delete rows in the Publishers table of the pubs sample database.
+There are two known problems involved in working with the Publishers table that were
+described in the chapter. First, a rather strange check constraint is enforced on
+the <TT>pub_id</TT> column, and second, there are foreign keys in other tables that
+reference the <TT>pub_id</TT> column. Inserts, updates, and deletes can all generate
+violations of these rules, and the basic error handlers provided in the existing
+example do not provide any information about the true nature of the problem.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Open and run HT702.vbp. The first publisher displayed should be New
+	Moon Books. Change the existing ID value from <TT>0736</TT> to <TT>0737</TT> and
+	attempt to move to the next row using the navigation buttons provided by the RemoteData
+	control. The message shown in Figure 7.7 will be displayed. Following this message
+	will be another, shown in Figure 7.8.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('07fig07.gif')"><B>Figure 7.7.</B></A><B> </B><I>The
+<TT>Command has been aborted</TT> message.</I></P>
+<P><A HREF="javascript:popUp('07fig08.gif')"><B>Figure 7.8.</B></A><B> </B><I>The
+operation canceled message.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>2. </B>Insert the following code as the <TT>rdc_Error</TT> event procedure.
+	This procedure iterates the <TT>rdoErrors</TT> collection with a <TT>For...Each</TT>
+	loop and builds a message using all the available errors. The message generated reveals
+	the true nature of the problem: The column level check constraint on the <TT>pub_id</TT>
+	column has been violated.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>Private Sub rdc_Error( _</TT>
+<TT>  ByVal Number As Long, _</TT>
+<TT>  Description As String, _</TT>
+<TT>  ByVal Scode As Long, _</TT>
+<TT>  ByVal Source As String, _</TT>
+<TT>  ByVal HelpFile As String, _</TT>
+<TT>  ByVal HelpContext As Long, _</TT>
+<TT>  CancelDisplay As Boolean)</TT>
+<TT>Dim sMsg As String</TT>
+<TT>  Dim rerr As rdoError</TT>
+<TT>  For Each rerr In rdoErrors</TT>
+<TT>    sMsg = _</TT>
+<TT>      rerr.Number &amp; &quot;: &quot; &amp; rerr.Description &amp; vbCrLf</TT>
+<TT>  Next</TT>
+<TT>  MsgBox sMsg</TT>
+<TT>End Sub</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>3. </B>In the <TT>mnuDataSave_Click</TT> event, replace the simple <TT>MsgBox</TT>
+	statement in the error handler with the following code. This is the same approach
+	used in the <TT>rdc_Error</TT> event procedure to find out what the real problem
+	is with the error. The original message <TT>Command has been aborted</TT>--although
+	true--is useless without the additional information provided by the <TT>rdoErrors</TT>
+	collection.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>  Dim rerr As rdoError</TT>
+<TT>  Dim sMsg As String</TT>
+<TT>  For Each rerr In rdoErrors</TT>
+<TT>    sMsg = rerr.Number &amp; &quot;: &quot; &amp; rerr.Description &amp; vbCrLf</TT>
+<TT>  Next</TT>
+<TT>  MsgBox sMsg</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+<DL>
+	<DT><TT></TT></DT>
+	<DD><B>4. </B>Run the project again, but this time attempt to delete New Moon Books.
+	The now familiar <TT>Command has been aborted</TT> message appears. Again the message
+	is correct but useless. Replace the <TT>MsgBox</TT> statement in the error handler
+	with the same code used in the two previous steps. If you run the project and again
+	attempt the delete, the <TT>rdoErrors</TT> collection will now reveal that the underlying
+	problem is the violation of a foreign key constraint. With this information available,
+	you can deal with the problem by either cancelling the delete and informing the user
+	or by deleting the associated rows in the foreign table.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Sometimes, despite your best efforts, the messages you receive from
+	SQL Server just aren't going to provide any useful information. In How-To 7.7, you
+	created a form that calls the system stored procedure <TT>sp_password</TT>. In SQL
+	Enterprise Manager or I-SQL/w, you can run this stored procedure (which resides in
+	the master database) from any database on the server and change your password. That's
+	how system stored procedures are supposed to work and why they're called system stored
+	procedures--they apply to the entire SQL Server. Based on this information, replace
+	the line of code in the <TT>ChangePassword</TT> subroutine with the following line.
+	At first glance you might expect this to work, but it doesn't. The rather bizarre
+	error message shown in Figure 7.9 is displayed instead of a notification that the
+	password was changed.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>sSQL = &quot;{? = call sp_password (?,?) }&quot;</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+<P><A HREF="javascript:popUp('07fig09.gif')"><B>Figure 7.9.</B></A><B> </B><I>A not-so-helpful
+error message.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>A copy of the application with the
+	incorrect code is available in project HT707R.vbp. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>The trouble is that a fully qualified name for the procedure in the
+	form database.owner.object is required. Unfortunately, the <TT>rdoErrors</TT> collection
+	does not provide any further information. If you place a breakpoint in the procedure
+	or set the Break on all Errors option in Visual Basic, you can examine the <TT>rdoErrors</TT>
+	collection in the immediate window. The only error available is the one displayed,
+	and it certainly doesn't indicate the true nature of the problem. A search of the
+	Microsoft Technical Support Knowledge Base on the Microsoft Web site using the keywords
+	<TT>rdoquery error</TT> returned (among others) the following article. This article
+	indicates that you need to provide the full path to the stored procedure if you use
+	the technique shown in How-To 7.7 (as well as an alternative method).
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE><TT>HOWTO: Call SQL Server System Stored Procedures from RDO</TT>
+Last reviewed: April 18, 1997
+<TT>Article ID: Q166211 The information in this article applies to:</TT>
+<TT>*Microsoft Visual Basic Enterprise Edition for Windows, version 5.0</TT></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><TT></TT></PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>NOTE</STRONG></B><STRONG> </STRONG>If you aren't already familiar with
+	the Microsoft Knowledge Base, you should visit the Web site and learn to use it.
+	The Knowledge Base (or just KB) provides a wealth of technical information on all
+	Microsoft products and should be your first source of information if you encounter
+	a problem. You can query the KB online at <TT>http://www.microsoft.com/kb/</TT>.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>How It Works</B></P>
+<P>Standard Visual Basic error-handling techniques, in conjunction with the <TT>rdoErrors</TT>
+collection, enable you to trap and examine runtime errors returned by Remote Data
+Objects. Armed with the information provided by the <TT>rdoErrors</TT> collection,
+you can build applications that trap and handle runtime errors effectively.</P>
+<P><B>Comments</B></P>
+<P>The information provided by the <TT>rdoErrors</TT> collection is often helpful,
+but not always--as demonstrated in the steps above. In order to be productive as
+a programmer, you'll need to be able to query the resources available in the help
+files, the Knowledge Base, and other sources to find the solutions to your problems.
+Finally, don't underestimate the power of your own intuition in solving problems
+and working out bugs in your application. As you gain experience in programming with
+Visual Basic and Remote Data Objects, you will eventually learn to anticipate problems
+and can often solve them with a simple educated guess.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch06.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch06/ch06.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch08.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch08/ch08.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

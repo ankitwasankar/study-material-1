@@ -1,0 +1,3214 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 4 - Advanced Database Management Concepts</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch03.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch05.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;4</H1>
+<H1>Advanced Database Management Concepts</H1>
+
+<UL>
+<LI><A HREF="#DatabaseDesignTechniques">
+Database Design Techniques</A>
+<LI><A HREF="#DataNormalization">
+Data Normalization</A>
+<UL>
+<LI><A HREF="#FunctionalDependencies">
+Functional Dependencies</A>
+<LI><A HREF="#FirstNormalForm">
+First Normal Form</A>
+<LI><A HREF="#SecondNormalForm">
+Second Normal Form</A>
+<LI><A HREF="#ThirdNormalForm">
+Third Normal Form</A>
+<LI><A HREF="#WhentoBreaktheRules">
+When to Break the Rules</A>
+</UL>
+<LI><A HREF="#NamingConventions">
+Naming Conventions</A>
+<UL>
+<LI><A HREF="#NamingIssuesWithinanApplication">
+Naming Issues Within an Application</A>
+<LI><A HREF="#NamingMemoryVariables">
+Naming Memory Variables</A>
+<LI><A HREF="#NamingFieldsinTables">
+Naming Fields in Tables</A>
+<LI><A HREF="#NamingObjects">
+Naming Objects</A>
+<LI><A HREF="#NamingIssuesAcrossRelatedApplications">
+Naming Issues Across Related Applications</A>
+<LI><A HREF="#UsingEnterpriseWideNamingConventions">
+Using Enterprise-Wide Naming Conventions</A>
+</UL>
+<LI><A HREF="#OtherAdvancedFeaturesofVisualFoxProiacutesDatabaseContainer">
+Other Advanced Features of Visual FoxPro&iacute;s Database
+Container</A>
+<UL>
+<LI><A HREF="#UsingRecordLevelValidations">
+Using Record-Level Validations</A>
+<LI><A HREF="#MaintainingReferentialIntegrity">
+Maintaining Referential Integrity</A>
+<LI><A HREF="#FormingPersistentRelations">
+Forming Persistent Relations</A>
+<LI><A HREF="#UsingtheReferentialIntegrityBuilder">
+Using the Referential Integrity Builder</A>
+<LI><A HREF="#BuildingYourOwnReferentialIntegrity">
+Building Your Own Referential Integrity</A>
+<LI><A HREF="#UsingTriggers">
+Using Triggers</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="DatabaseDesignTechniques"><FONT SIZE=5 COLOR=#FF0000>
+Database Design Techniques</FONT></A></H2>
+<P>
+No other single factor has a greater influence on the success
+of a database application than the design of the database itself.
+The way you organize individual data items in tables and then
+relate those tables with one another in a database forms the very
+foundation of the application. A poorly built foundation weakens
+the programs built on it by making them more difficult to write,
+more difficult to maintain, and more difficult to enhance as demands
+on the software grow. Furthermore, improper design might force
+the programmer to fall back on less efficient methods of coding,
+which thus require more time and are more susceptible to error.
+<P>
+Perhaps you learned programming from classroom courses that taught
+you good design methods right from the start. On the other hand,
+maybe you learned programming by doing it and learned good design
+methods by trial and error. In either case, this chapter should
+help you build on your existing skills to create better database
+designs. To do so, it examines several areas of database management.
+<H2><A NAME="DataNormalization"><FONT SIZE=5 COLOR=#FF0000>
+Data Normalization</FONT></A></H2>
+<P>
+The most important thing you can do when you start a new application
+is design the structure of your tables carefully. A poorly structured
+database results in very inefficient code at best; at worst, it
+makes some features nearly impossible to implement. On the other
+hand, a well-designed set of tables will not only solve your current
+problem, but also provide the flexibility to answer questions
+that you don't yet anticipate. Perhaps even more important, you
+will write programs faster by taking advantage of queries and
+SQL <TT>SELECT</TT> statements to retrieve and maintain data.
+Finally, reports that might have required awkward manual coding
+under a denormalized structure almost write themselves when you
+use the report generator.
+<P>
+In general, the data structure of an application, more than any
+other factor, makes or breaks the application's success. Visual
+FoxPro is based on the relational database model proposed by E.F.
+Codd in 1970. Codd based his model on mathematical principles
+that govern relational set theory. By following only a few very
+specific rules defining the creation of sets, he proved that you
+can manipulate the data easily. His technique became known as
+<I>data normalization</I>.
+<P>
+All relational database theory revolves around the concept of
+using key fields to define relations between flat file tables.
+The more tables you have, the more relations FoxPro requires to
+connect them. Set theory does not demand, or even expect, that
+each table be connected directly to every other table. However,
+because each table is connected to at least one other, all tables
+in the database have direct or indirect relations with one another.
+<P>
+To examine the concepts of normalization, this section examines
+the Tasmanian Trader example provided with Visual FoxPro. However,
+it takes a view close to the beginning of the application-development
+process-just after establishing the data requirements.
+<H3><A NAME="FunctionalDependencies">
+Functional Dependencies</A></H3>
+<P>
+Assuming that you have decided what data fields you need, the
+next step is to divide them into tables. (Of course, you could
+put all the fields in a single table.) Even without normalization
+rules, it should be obvious that you do not want to repeat all
+the information about employees, customers, products, suppliers,
+and shippers for each item ordered. The only way to determine
+which fields belong together in each table is through functional
+dependency analysis. (It's not the same thing as taking away a
+computer terminal from a programmer; that's a functionally dependent
+analyst.)
+<P>
+<I>Functional dependency</I> defines the relationship between
+an attribute or a group of attributes in one table to another
+attribute or group of attributes in another table. In this discussion,
+the term <I>attributes</I> refers to fields. Therefore, you need
+to see which fields depend on other fields. A person's last name,
+for example, depends on his Social Security number (not originally,
+but at least according to the U.S. government). For any given
+Social Security number (person), there is only one corresponding
+name-not necessarily a unique name, but still only one name.
+<P>
+On the other hand, a Social Security number does not depend on
+a name. Given only a person's last name, there may be dozens,
+if not hundreds, of Social Security numbers. Even if you add a
+first name to the last, it still might not uniquely identify a
+single Social Security number. Imagine how many Bob Smiths there
+are, for example.
+<P>
+Thus, you can conclude that a last name is functionally dependent
+on a Social Security number, but not the other way around. You
+might even go the Orwellian route of referring to a person by
+his Social Security number.
+<P>
+Next, you might want to find other attributes that are functionally
+dependent on a Social Security number. Having gone through all
+the fields, you might have a list like the one shown in Table
+4.1.<BR>
+<P>
+<CENTER><B>Table 4.1&nbsp;&nbsp;Fields Functionally Dependent
+on a Social Security Number</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=109><TT>Address</TT></TD><TD WIDTH=109><TT>FirstName</TT>
+</TD><TD WIDTH=109><TT>Password</TT></TD><TD WIDTH=129><TT>SalesRegion</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=109><TT>BirthDate</TT></TD><TD WIDTH=109><TT>GroupId</TT></TD><TD WIDTH=109><TT>Photo
+</TD><TD WIDTH=129><TT>Ssn</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=109><TT>Cty</TT></TD><TD WIDTH=109><TT>HireDate</TT></TD><TD WIDTH=109><TT>Position
+</TD><TD WIDTH=129><TT>StartSalary</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=109><TT>Country</TT></TD><TD WIDTH=109><TT>HomePhone</TT></TD><TD WIDTH=109><TT>PostalCode
+</TD><TD WIDTH=129><TT>SystemUser</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=109><TT>EmplId</TT></TD><TD WIDTH=109><TT>LastName</TT></TD><TD WIDTH=109><TT>Region
+</TD><TD WIDTH=129><TT>TaskDesc</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=109><TT>Extension</TT></TD><TD WIDTH=109><TT>LicenseNo</TT>
+</TD><TD WIDTH=109><TT>ReportsTo</TT></TD><TD WIDTH=129><TT>Title</TT>
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+As a first pass at designing tables, you might group these fields
+into one table. Then, following similar logic, you might determine
+the functional dependencies in the remaining fields. Continue
+to group those attributes that have the same dependency in the
+same table. In effect, the number of functional dependencies determines
+the number of tables required.
+<P>
+Actually, if you follow this method of grouping fields, the resulting
+tables should be very close to a normalized form already. However,
+to guarantee that they are normalized, you should verify that
+they obey at least the first three rules of normalized data:
+<UL>
+<LI>First normal form: eliminates repeating
+fields and nonatomic values
+<LI>Second normal form: requires each column
+to be dependent on every part of the primary key
+<LI>Third normal form: requires that all nonprimary
+fields depend solely on the primary fields
+</UL>
+<H3><A NAME="FirstNormalForm">
+First Normal Form</A></H3>
+<P>
+The first normal form eliminates repeating fields and nonatomic
+values. An <I>atomic value</I> means that the field represents
+a single thing, not a concatenation of values-just as an atom
+represents a single element.
+<P>
+In the early days of relational databases, there were some rather
+small limits on the number of fields allowed in a record. As a
+result, programmers concatenated fields to fit all the data into
+a single record. Thus, one field might contain something like
+the following:
+<BLOCKQUOTE>
+<PRE>
+12/03/9412/15/9401/05/95T
+</PRE>
+</BLOCKQUOTE>
+<P>
+This value actually represents four fields: an order date, a start-production
+date, a completion date, and a flag to indicate whether the order
+was shipped.
+<P>
+Forming relations between fields, retrieving data, and performing
+other operations is not easy when a field contains multiple values.
+The need to perform substring searches and to parse the fields
+slows applications tremendously, not to mention adding extra complexity
+to the code. To bring this table into first normal form, you need
+to split this field into four separate fields: three <TT>Date</TT>
+fields and one <TT>Logical</TT> field.
+<P>
+Another common problem addressed by the first normal form is repeated
+fields. Again, it was not unusual for early database developers
+to hard-code the number of items that a customer could order.
+They did so by placing the ordered products' IDs in the same record
+as the general order information, as shown in the following table:
+<BLOCKQUOTE>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=83>
+<TT>OrderId</TT>
+</TD><TD WIDTH=84>
+<TT>OrderDate</TT>
+</TD><TD WIDTH=84>
+<TT>ProdId1</TT>
+</TD><TD WIDTH=84>
+<TT>ProdId2</TT>
+</TD><TD WIDTH=84>
+<TT>ProdId3</TT>
+</TD><TD WIDTH=84>
+<TT>ProdId4</TT>
+</TD><TD WIDTH=81>
+<TT>Net</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=83>
+00006
+</TD><TD WIDTH=84>
+08/04/94
+</TD><TD WIDTH=84>
+A3426
+</TD><TD WIDTH=84>
+B8483
+</TD><TD WIDTH=84>
+C398
+</TD><TD WIDTH=84>
+&nbsp;
+</TD><TD WIDTH=81>
+59.34
+</TD></TR>
+</TABLE></BLOCKQUOTE>
+<P>
+<P>
+In this example, there is no problem as long as the customer never
+orders more than four items at a time. (Only three items were
+ordered in this example.) However, it would be difficult to search
+the database to determine how many units of each product have
+been sold because the program has to check each product column
+and then sum the results. Reports that display a list of customers
+who order specific products would be similarly difficult to produce.
+In fact, most reports need complex hand coding so that they can
+search each field. As a result, the reports tend to be more likely
+to generate errors and require more time to execute.
+<P>
+Of course, you could increase the number of possible products
+that a customer can buy, but how many is enough (5? 10? 20?)?
+If you select 20, what if most customers order only two or three
+items? The resulting database wastes a great deal of space. More
+important, depending on the way that the code reads these fields,
+it can spend a great deal of time processing empty fields.
+<P>
+One alternative is to define a database that has a variable number
+of fields. In fact, some database systems several years ago supported
+this feature; they even promoted it as the best solution, in their
+marketing department's opinion. Fortunately, FoxPro continued
+to support the true relational definition of tables and kept records
+fixed in length.
+<P>
+The first normal form replaces repeating fields with a single
+field. It then creates as many records as necessary (one per ordered
+item), as shown in the following table:
+<BLOCKQUOTE>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=148>
+<TT><B>OrderId</B></TT>
+</TD><TD WIDTH=148>
+<TT><B>OrderDate</B></TT>
+</TD><TD WIDTH=148>
+<TT><B>ProductId</B></TT>
+</TD><TD WIDTH=148>
+<TT><B>OrderNet</B></TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=148>
+00006
+</TD><TD WIDTH=148>
+08/04/94
+</TD><TD WIDTH=148>
+A3426
+</TD><TD WIDTH=148>
+59.34
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=148>
+00006
+</TD><TD WIDTH=148>
+08/04/94
+</TD><TD WIDTH=148>
+B8483
+</TD><TD WIDTH=148>
+59.34
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=148>
+00006
+</TD><TD WIDTH=148>
+08/04/94
+</TD><TD WIDTH=148>
+C398
+</TD><TD WIDTH=148>
+59.34
+</TD></TR>
+</TABLE></BLOCKQUOTE>
+<P>
+<P>
+After performing this analysis on each table in the database,
+the preliminary relational model of the data is complete. This
+first normal form is called structural or syntactic normalization.
+However, it should never be your final goal. There can still be
+problems in the data that cause the code to be more complex than
+it needs to be.
+<P>
+Intuitively, you may not like the solution offered in the preceding
+example. For one thing, it repeats values-not within records,
+but across multiple records. And wherever repeated values occur,
+inconsistencies can occur. This problem is addressed in subsequent
+normal forms.
+<H3><A NAME="SecondNormalForm">
+Second Normal Form</A></H3>
+<P>
+The second normal form requires that each column be dependent
+on every part of the primary key. Look again at the table that
+results from the first normal form:<BLOCKQUOTE>
+<B>ORDERS.DBF</B>
+<TABLE>
+<TR VALIGN=TOP><TD COLSPAN=4 WIDTH=535>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=143>
+<CENTER><TT><B>OrderId</B></TT></CENTER>
+</TD><TD WIDTH=133>
+<CENTER><TT><B>OrderDate</B></TT></CENTER>
+</TD><TD WIDTH=133>
+<CENTER><TT><B>ProductId</B></TT></CENTER>
+</TD><TD WIDTH=124>
+<CENTER><TT><B>OrderNet</B></TT></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=143>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>08/04/94</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>A3426</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>59.34</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=143>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>08/04/94</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>B8483</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>59.34</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=143>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>08/04/94</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>C398</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>59.34</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=143>
+<CENTER>00007</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>08/05/94</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>B8483</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>&nbsp;9.18</CENTER>
+</TD></TR>
+</TABLE></BLOCKQUOTE>
+<P>
+<P>
+Because of the transformation performed by the first normal form,
+<TT>OrderId</TT> is no longer unique; neither is any other single
+field. However, the combination of <TT>OrderId</TT> and <TT>ProductId</TT>
+may be unique. Using this as a working assumption, you next need
+to examine the other fields to see whether they depend on the
+new primary key.
+<P>
+<TT>OrderDate</TT> depends only on <TT>OrderId</TT>, not on the
+combination of <TT>OrderId</TT> and <TT>ProductId</TT>. The same
+is true of <TT>OrderNet</TT>. Therefore, according to the second
+normal form, you need to remove these fields and place them in
+a separate table with a copy of the field on which they depend:
+<TT>OrderId</TT>. This results in two tables. Name the one that
+uses <TT>OrderId</TT> as the primary key, <TT>ORDERS.DBF</TT>;
+name the other, which contains a primary key on <TT>OrderId</TT>
+and <TT>ProductId</TT>, <TT>ORDITEMS.DBF</TT>. These new tables
+are as follows:<BLOCKQUOTE>
+<B>ORDERS.DBF</B>
+<TABLE>
+<TR VALIGN=TOP><TD COLSPAN=3 WIDTH=420>
+
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER><TT><B>OrderId</B></TT></CENTER>
+</TD><TD WIDTH=133>
+<CENTER><TT><B>OrderDate</B></TT></CENTER>
+</TD><TD WIDTH=124>
+<CENTER><TT><B>OrderNet</B></TT></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>08/04/94</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>59.34</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00007</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>08/05/94</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>&nbsp;9.18</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=3 WIDTH=420>
+<br>
+<B>ORDITEMS.DBF</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER><TT><B>OrderId</B></TT></CENTER>
+</TD><TD WIDTH=133>
+<CENTER><TT><B>ProductId</B></TT></CENTER>
+</TD><TD WIDTH=124>
+<CENTER><TT><B>LineNo</B></TT></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>A3426</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>0001</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>B8483</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>0002</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>C398</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>0003</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00007</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>B8483</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>0001</CENTER>
+</TD></TR>
+</TABLE></blockquote>
+<P>
+<P>
+Merely by following the rules of normalization, you have taken
+the original order data and derived a structure that consists
+of two tables: one table with information about the overall order
+and the other with details on each order. Notice that a new field
+has been added to <TT>ORDITEMS.DBF</TT>: <TT>LineNo</TT>. This
+additional field counts the number of items in the form. This
+field has a fixed size of four digits; thus, it enables up to
+9,999 items to appear in the same order.
+<P>
+To associate the information in <TT>ORDERS.DBF</TT> with <TT>ORDITEMS.DBF</TT>,
+you form a relation between them based on <TT>OrderId</TT>. This
+relation is a one-to-many relation because, for every order in
+<TT>ORDERS.DBF</TT>, there can be more than one record in <TT>ORDITEMS.DBF</TT>.
+In fact, there is no limit to the number of items that the customer
+can order-one item or a million. (Well, actually, you set an arbitrary
+limit of 9,999 via the size of the field <TT>LineNo</TT>, but
+you can always increase the size of this field.) The program,
+when it is written to use related files, handles both situations
+equally well.
+<H3><A NAME="ThirdNormalForm">
+Third Normal Form</A></H3>
+<P>
+To reach the third normal form, the table must already be in first
+and second normal form. Then, you determine which field or combination
+of fields represents the primary key for the table. For the employee
+table, a logical choice would be either employees' Social Security
+numbers or their employee IDs. For the order table, <TT>OrderId</TT>
+makes a good choice.
+<P>
+For the order-items table, no single field uniquely defines a
+record. There can be more than one detail record for an order
+ID and <TT>ProductId</TT> can occur many times, both in the same
+order and across orders. <TT>OrderId</TT> also can occur many
+times within a single order. <TT>LineNo</TT> repeats the same
+sequence, beginning with 1 for each order. However, the combination
+of <TT>OrderId</TT> and <TT>LineNo</TT> is unique. Even if the
+same item appears more than once in a single order, its line-item
+value will be different. Thus, this file requires a composite
+primary key.
+<P>
+To illustrate third normal form, another field-<TT>ProdName</TT>-has
+been added. Suppose that the order-detail table includes the following
+fields:<blockquote>
+<B>ORDITEMS.DBF</B>
+<TABLE>
+<TR VALIGN=TOP><TD COLSPAN=4 WIDTH=526>
+
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER><TT><B>OrderId</B></TT></CENTER>
+</TD><TD WIDTH=105>
+<CENTER><TT><B>LineNo</B></TT></CENTER>
+</TD><TD WIDTH=133>
+<CENTER><TT><B>ProductId</B></TT></CENTER>
+</TD><TD WIDTH=124>
+<CENTER><TT><B>ProdName</B></TT></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=105>
+<CENTER>0001</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>A3426</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>Tape Drives</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=105>
+<CENTER>0002</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>B8483</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>Modems</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=105>
+<CENTER>0003</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>C398</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>Track Balls</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=162>
+<CENTER>00007</CENTER>
+</TD><TD WIDTH=105>
+<CENTER>0001</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>B8483</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>Modems</CENTER>
+</TD></TR>
+</TABLE></blockquote>
+<P>
+<P>
+To be in third normal form, all nonprimary fields must depend
+solely on the primary fields. First, determine whether <TT>ProductId</TT>
+depends solely on the key field combination <TT>OrderId</TT> and
+<TT>LineNo</TT>. The answer is yes, because there can be only
+one product ID for each combination of <TT>OrderId</TT> and <TT>LineNo</TT>.
+<P>
+Does product ID depend on the product name? This is a trick question.
+In some ways, it does, but product names may not be unique. Some
+products could have multiple sizes, colors, or other attributes.
+Each product has its own unique product ID but the same product
+name. Therefore, product ID does not depend solely on product
+name.
+<P>
+Does <TT>ProdName</TT> depend solely on the primary key fields?
+Not really. The product name is not a function of the order ID
+and line number; rather, it depends on the product ID. Remember
+that each product ID has one unique product name, although the
+product name might be assigned to more than one product ID. Therefore,
+this field fails the third normal form.
+<P>
+The solution in this case is to move the product name into a new
+file called <TT>PRODUCTS</TT> in which <TT>ProductId</TT> is the
+primary key. You might have reached this conclusion independently
+from your analysis of functional dependencies. Remember that normalization
+rules just reinforce functional analysis and common sense. The
+new table structure appears as follows:
+<blockquote>
+<TABLE>
+<TR VALIGN=TOP><TD COLSPAN=3 WIDTH=422>
+<B>ORDITEMS.DBF</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER><TT><B>OrderId</B></TT></CENTER>
+</TD><TD WIDTH=124>
+<CENTER><TT><B>LineNo</B></TT></CENTER>
+</TD><TD WIDTH=133>
+<CENTER><TT><B>ProductId</B></TT></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>0001</CENTER>
+</TD><TD WIDTH=133>
+<center>A3426</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>0002</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>B8483</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER>00006</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>0003</CENTER>
+</TD><TD WIDTH=133>
+<center>C398</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER>00007</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>0001</CENTER>
+</TD><TD WIDTH=133>
+<CENTER>B8483</CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD COLSPAN=3 WIDTH=422>
+<br>
+<B>PRODUCTS.DBF</B>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER><TT><B>ProductId</B></TT></CENTER>
+</TD><TD WIDTH=124>
+<CENTER><TT><B>ProdName</B></TT></CENTER>
+</TD><TD WIDTH=133>
+<CENTER><B>&nbsp;</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER>A3426</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>Tape Drives</CENTER>
+</TD><TD WIDTH=133>
+<CENTER><B>&nbsp;</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER>B8483</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>Modems</CENTER>
+</TD><TD WIDTH=133>
+<CENTER><B>&nbsp;</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER>C398</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>Track Balls</CENTER>
+</TD><TD WIDTH=133>
+<CENTER><B>&nbsp;</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=164>
+<CENTER>B8483</CENTER>
+</TD><TD WIDTH=124>
+<CENTER>Modems</CENTER>
+</TD><TD WIDTH=133>
+<CENTER><B>&nbsp;</B></CENTER>
+</TD></TR>
+</TABLE></blockquote>
+<P>
+<P>
+Of course, you need to perform this same analysis on every table
+in the application. When the analysis is complete, you can say
+that the application is normalized. Although there are additional
+levels of normalization, the need for them is rare. If you practice
+creating tables in third normal form, you can avoid most data
+structure problems. You usually do not want to include fields
+that can be derived from other fields in the same or related tables.
+For example, you might not want to include an order-total field
+in the order file if the detail file also contains the price of
+each item ordered-it is safer to sum the individual prices to
+arrive at the order total. Of course, the amount actually paid
+might go on the order to compare against the total due. Think
+of it this way: The customer typically pays against an order but
+is billed based on individual items.
+<P>
+Perhaps you feel overwhelmed by these rules. Actually, with practice,
+you will begin creating normalized files right from the start.
+Some wise person once said that true understanding comes only
+when you see it in your dreams. When you look at the data for
+a new application and immediately visualize multiple files in
+your head, you truly understand normalization.
+<H3><A NAME="WhentoBreaktheRules">
+When to Break the Rules</A></H3>
+<P>
+Normalization rules are not laws; they are merely guidelines to
+help you avoid creating data structures that limit the flexibility
+of the application or reduce its efficiency. However, no one will
+knock on your door and arrest you for breaking normalization rules
+(except maybe your boss). The following examples are situations
+in which breaking normalization rules might make sense:
+<UL>
+<LI>You need to write a library system that
+prevents any patron from checking out more than five books at
+one time. You could write the system by normalizing the file that
+tracks the books checked out; it would have to ensure that no
+more than five records exist for each patron. However, a single
+record with five fields-one for each book-might make this application
+easier to develop. (An alternative is to add to the main patron
+table a field that simply counts the number of books that the
+patron has currently borrowed.)
+<LI>An order ID actually consists of the concatenation
+of two digits that represent the year plus a five-digit sequential
+number. Because the order-date field also reflects the year, you
+could, in theory, extract it or use the date in combination with
+the sequence number. However, the ease of referencing a single
+field in this case probably outweighs the strict avoidance of
+repeating data that can be derived from other fields.
+<LI>You have accepted a project to build a
+database for the National Association of Twins. Would you create
+a separate record for the name of each twin, or would you include
+twins in the same record? After all, you know by definition that
+there will always be exactly two names.
+</UL>
+<P>
+The intent here is to emphasize that normalization is a desired
+goal, but every once in a while, it makes sense to be a little
+abnormal.
+<H2><A NAME="NamingConventions"><FONT SIZE=5 COLOR=#FF0000>
+Naming Conventions</FONT></A></H2>
+<P>
+Your first question might be, &quot;Why do I need a naming convention?
+FoxPro does not require it.&quot; Although Visual FoxPro does
+not require a naming convention, using one makes code clearer.
+You will appreciate this benefit when you have to return to code
+that you wrote months or years earlier and try to remember what
+the variables mean. You might encounter similar problems when
+you try to work with code written by someone else. It can take
+considerable time just to determine the type, scope, and origin
+of variables. Using a naming convention solves these problems
+when you use the convention consistently and if you take into
+account the variable's type and scope. This practice can eliminate
+naming and scoping conflicts that are common in many large applications.
+<P>
+Attempts at implementing naming conventions in earlier versions
+of FoxPro met with limited success. FoxPro limited both table
+field and memory variable names to 10 characters. With so few
+characters available, using any of them detracted from a programmer's
+ability to assign meaningful names. Also, some proposed naming
+conventions limited users' abilities to transfer data between
+tables easily, especially when they were using commands such as
+<TT>SCATTER</TT> and <TT>GATHER</TT>. Thus, the issue became a
+trade-off; programmers felt that they had to choose between two
+conflicting goals. They could adopt a naming convention that identified
+a variable's source and type, or they could use all 10 characters
+to make meaningful names.
+<P>
+Now, with Visual FoxPro's support of long field and variable names,
+you can have both naming conventions and significant names. The
+following sections recommend naming conventions for different
+categories of variables. The sections also mention some possible
+variations that you might consider. Each section uses a slightly
+different method due to differences in the variables and objects
+that each variable attempts to name. However, implementing an
+overall naming convention for your applications will make supporting
+multiprogrammer development easier and result in fewer naming
+and scoping conflicts.
+<P>
+There is no one absolute naming convention. Rather, the one that
+you pick (or that your company standardizes on) becomes the right
+one. It is difficult, if not impossible, to switch to a new naming
+convention after you have worked with a product for some time.
+That is why the introduction of Visual FoxPro presents a rare
+opportunity to begin using a naming convention with your new applications,
+especially if you have never used one before.
+<H3><A NAME="NamingIssuesWithinanApplication">
+Naming Issues Within an Application</A></H3>
+<P>
+Developers of independent applications do not often see the immediate
+advantages of implementing naming conventions. After all, they
+are the only ones who are working on the code and they know everything
+in it, right? Well, put aside an application for a few months
+and try to come back to it. How much do you really remember? The
+larger the application, the bigger the problem. It is easy to
+forget which variables each procedure uses. And what about the
+program that failed because Bill and Beth developed separate routines
+that use the same variables? Both situations lead to naming conflicts.
+If you reuse the same variable name, the program may accidentally
+overwrite values that are needed elsewhere. Suddenly, the application
+no longer works and users are on the phone, waiting patiently
+to politely inform you of a problem.
+<P>
+Visual FoxPro does not require that you adopt a naming convention.
+For many programmers, conforming to a convention might seem like
+wearing a straitjacket. Give it a try, though, and as you start
+developing Visual FoxPro projects, see whether things run more
+smoothly after you get used to the convention. Some working environments
+have a standard for programming, such as variable declarations
+and naming conventions. If you are a developer, you need to check
+with your client because it might have some requirements that
+you need to conform to. Otherwise, you should develop your own
+conventions because it is easier to use standards in your day-to-day
+operations.
+<P>
+The following sections describe some proposed naming convention
+rules for different variable types. Feel free to adopt what you
+like and discard the rest. Add additional rules if you need them.
+But when you have something that you like, stick with it for at
+least the duration of your current project. Also, keep an eye
+on the industry as naming conventions become more commonly used
+and more standardized.
+<H3><A NAME="NamingMemoryVariables">
+Naming Memory Variables</A></H3>
+<P>
+You must follow some basic rules when naming a variable. A variable
+name:
+<UL>
+<LI>Must begin with a letter.
+<LI>Must contain only letters, numbers, and
+underscore characters. Spaces and special characters are not permitted,
+and underscores are frowned upon.
+<LI>Must not exceed 255 characters.
+<LI>Must not be a reserved word, or (if the
+variable is only four characters long) must not be the first four
+characters of a reserved word, that is, the first four characters
+of any Visual FoxPro command.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You probably think that the third rule is a misprint. It's not. A memory variable can have up to 255 characters. Using that many characters means:
+<UL>
+<LI>You like to type.
+<LI>You have trouble coming up with significant, unique names.
+<LI>You don't want other people to be able to read your code.
+<LI>You have a good story to tell and you put it in each variable name.
+</UL><BR>
+Seriously, although 10 characters is too few, 255 characters is too many for most applications.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Microsoft's intent is to bring the object languages of its major
+products (such as Visual FoxPro, Access, Visual Basic, and C++)
+closer together. All these products support longer field names.
+Access currently supports up to 64 characters, and Visual Basic
+supports 40 characters. Other products that enable you to access
+their data via ODBC or OCX controls might have variable names
+of other lengths. If you intend to share data with one of these
+products, try to limit your variable-name sizes to match the smaller
+of them. In this way, you will eliminate potential name conflicts
+based on name size.
+<P>
+<B>Variable Scope&nbsp;&nbsp;</B>The first attribute to consider
+when naming variables is scope identification. A variable's scope
+defines where and when it is known in a program. For example,
+a program can reference a <I>public variable</I> (global in other
+languages) from any line in the application when it is defined.
+The simple program shown in Listing 4.1 illustrates this concept.
+<P>
+
+<HR>
+<B>Listing 4.1&nbsp;&nbsp;</B><TT><B>04CODE01.PRG</B></TT><B>-Public
+Variables Can Be Referenced Anywhere in Your Program<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Main program
+  DO SUB1
+  ? abc
+
+PROCEDURE SUB1
+PUBLIC ABC
+  ABC = 5
+  DO SUB2
+RETURN
+
+PROCEDURE SUB2
+  ? ABC
+RETURN
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This example defines variable <TT>ABC</TT> as a public variable
+and initializes it in procedure <TT>SUB1</TT>. Any lower procedure
+or function called directly or indirectly by <TT>SUB1</TT> after
+defining <TT>ABC</TT> can use it. Similarly, any higher routine
+that calls <TT>SUB1</TT> can also use <TT>ABC</TT> after calling
+<TT>SUB1</TT>. The capability to reference a variable value in
+both higher and lower procedures is the key distinguishing feature
+of public variables.
+<P>
+Many programmers use public variables extensively, so they do
+not have to worry about where they define or use those variables.
+They can even initialize every variable in the main program. Although
+this practice actually gives them a scope of private (meaning
+that the variables are known only to the current procedure and
+any called procedure), the fact that the variables have been defined
+in the initial procedure makes them available to all subsequent
+procedures. However, this type of coding often results in problems.
+ Primarily, it is difficult to locate errors caused when a &quot;new&quot;
+variable in a lower subroutine has the same name as the public
+variable. The program simply appears to inexplicably change the
+variable's value.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you use a variable in a program without declaring its scope first, you cannot later declare it public without generating an error.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Declaring variables at the start of a <TT>PRG</TT> makes them available throughout the <TT>PRG</TT>, but private only to the <TT>PRG</TT>. If the <TT>PRG</TT> is called by another program, these variables will not be known in the calling program. On the other hand, a variable declared public will be known in all <TT>PRG</TT>s involved in the application after it is declared and defined.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<I>Private variables</I> offer  more limited scope. When initialized,
+these variables are known to the current procedure and all procedures
+that it calls. However, they are not known to the procedure that
+calls it, to any other higher procedures, or to procedures that
+follow a different calling sequence. In other words, the scope
+travels in one direction only: down one branch of the procedure
+call stack.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you need a variable to be known across multiple branches of the procedure call stack, declare it public.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Declaring a variable private in the main routine has almost the same effect as declaring it public. The difference is that the private variable is known only within the current <TT>.PRG</TT> file. Of course, this makes a difference only when you have one <TT>.PRG</TT> call another.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+To see the scope of a private variable in action, change the line
+<TT>PUBLIC ABC</TT> to <TT>PRIVATE ABC</TT> in the preceding example.
+Although Visual FoxPro recognizes the variable <TT>ABC</TT> in
+routines <TT>SUB1</TT> and <TT>SUB2</TT>, it is not known in the
+main program. In fact, FoxPro generates an error when it attempts
+to use that variable.
+<P>
+The manual states that declaring a variable private does not create
+a new variable; it merely hides any previous variable with the
+same name from the current module. When the program exits the
+current module, it reveals the hidden variables again.
+<P>
+A new scope introduced in Visual FoxPro is the <I>local variable</I>.
+A variable declared local is known only in the routine that declares
+and defines it; higher- or lower-level routines cannot use it.
+If you replace the <TT>PUBLIC ABC</TT> line in the example with
+<TT>LOCAL ABC</TT>, <TT>ABC</TT> exists only in <TT>SUB1</TT>;
+neither <TT>SUB2</TT> nor the main program can reference it.
+<P>
+Although not specifically defined as a variable scope, variables
+defined in class definitions have unique status. First, like local
+variables, they exist only in the class that defines them. Second,
+they retain their values between references to the class. This
+is different from a local variable, which must be redefined and
+initialized each time the program executes the routine that uses
+it. Other languages refer to variables with similar scope as static
+variables. Unfortunately, you cannot define static variables outside
+a class definition.
+<P>
+As programs grow, it becomes easier to forget or confuse the scope
+of each variable. A common naming convention identifies a variable's
+scope by adding a scope-prefix character to each variable's name.
+Table 4.2 lists the available scope levels and suggests appropriate
+prefixes.<BR>
+<P>
+<CENTER><B>Table 4.2&nbsp;&nbsp;Scope-Prefix Characters</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Scope</B></CENTER></TD><TD WIDTH=96><CENTER><B>Prefix</B></CENTER>
+</TD><TD WIDTH=192><CENTER><B>Example</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Local</TD><TD WIDTH=96><CENTER><TT>l</TT></CENTER>
+</TD><TD WIDTH=192><TT>llTaxableItem</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Private</TD><TD WIDTH=96><CENTER><TT>p</TT></CENTER>
+</TD><TD WIDTH=192><TT>pnTotalDue</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Public/Global</TD><TD WIDTH=96><CENTER><TT>g</TT></CENTER>
+</TD><TD WIDTH=192><TT>gcCurrentUser</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Static (Class Variable)</TD><TD WIDTH=96><CENTER><TT>s</TT></CENTER>
+</TD><TD WIDTH=192><TT>snCounter</TT></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The need for a prefix in static variables that are used to define properties of a class or in event code is less obvious than for other variable scopes because these variables cannot be used anywhere else anyway. This convention does not apply to property or method names, just to other variables used with event method code.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+In <A HREF="ch13.htm" >Chapter 13</A>, &quot;Introduction to Object-Oriented Programming,&quot;
+you learned how to store a reference to an object in a variable.
+Therefore, you might be tempted to use prefixes in these object
+reference variables. Strictly speaking, these variables might
+act like private variables in scope, but they are so different
+in use that they deserve their own naming convention. Those conventions
+are listed in Table 4.4 later in this chapter.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Because naming conventions are optional, you might decide to use different prefix letters for scope. However, Visual FoxPro and Microsoft recommend these characters. Using them will help you read other programmers' code if those programmers follow the same recommended conventions.<br>
+
+Some developers include naming conventions for windows, procedures, functions, menu pads, and other objects. Because these names cannot be used outside their very restricted context, there is less likelihood of confusion. However, the &quot;Naming Objects&quot; section later in this chapter provides possible guidelines for these objects as well.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Variable Type&nbsp;&nbsp;</B>The next attribute of the variable
+that you can identify is its type. Knowing a variable's type can
+help prevent errors caused by using the wrong variable type in
+an expression. Suppose that you want to use a variable named <TT>START</TT>.
+By itself, the variable gives no indication whether it stores
+a date, character string, or number. Suppose that you want to
+use <TT>START</TT> in an expression such as the following:
+<BLOCKQUOTE>
+<PRE>
+? 'List records from ' + start + ' TO ' + end
+</PRE>
+</BLOCKQUOTE>
+<P>
+If <TT>START</TT> stores anything other than character-type data,
+Visual FoxPro quickly responds with the following error message:
+<BLOCKQUOTE>
+<PRE>
+Operator/operand type mismatch
+</PRE>
+</BLOCKQUOTE>
+<P>
+On the other hand, using a prefix that identifies the variable
+type can immediately warn you of the need to convert the variable
+to a different type before you use it. The following line combines
+two variables that have the prefix <TT>gd</TT> with text strings.
+The prefix indicates that the variables are global variables of
+type <TT>Date</TT>. Notice that the variable type information
+provided by the second character of the prefix alerts you to a
+potential problem: You cannot directly combine text with dates.
+Therefore, you know to use <TT>DTOC()</TT> before concatenating
+the variables with text, as the following code illustrates.
+<BLOCKQUOTE>
+<PRE>
+? 'List records from ' + DTOC(gdstart) + ;
+            ' to ' + DTOC(gdend)
+</PRE>
+</BLOCKQUOTE>
+<P>
+Table 4.3 lists the variable types in Visual FoxPro, along with
+suggested prefixes. These prefixes represent Microsoft's recommendations,
+based on internal representations of these variable types.<BR>
+<P>
+<CENTER><B>Table 4.3&nbsp;&nbsp;Type-Prefix Characters</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>Type</B></CENTER></TD><TD WIDTH=96><CENTER><B>Prefix</B></CENTER>
+</TD><TD WIDTH=240><CENTER><B>Example</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Array</TT></TD><TD WIDTH=96><CENTER><TT>a</TT></CENTER>
+</TD><TD WIDTH=240><TT>gaMonthsInYear</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Character</TT></TD><TD WIDTH=96><CENTER><TT>c</TT></CENTER>
+</TD><TD WIDTH=240><TT>gcLastName</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Currency</TT></TD><TD WIDTH=96><CENTER><TT>y</TT></CENTER>
+</TD><TD WIDTH=240><TT>pyProductCost</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Date</TT></TD><TD WIDTH=96><CENTER><TT>d</TT></CENTER>
+</TD><TD WIDTH=240><TT>pdBirthDate</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>DateTime</TT></TD><TD WIDTH=96><CENTER><TT>t</TT></CENTER>
+</TD><TD WIDTH=240><TT>ltRecordPackStamp</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Double</TT></TD><TD WIDTH=96><CENTER><TT>b</TT></CENTER>
+</TD><TD WIDTH=240><TT>lbAnnualRiceProduction</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Float</TT></TD><TD WIDTH=96><CENTER><TT>f</TT></CENTER>
+</TD><TD WIDTH=240><TT>lfMilesBetweenCities</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>General</TT></TD><TD WIDTH=96><CENTER><TT>g</TT></CENTER>
+</TD><TD WIDTH=240><TT>lgSoundSample</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Integer</TT></TD><TD WIDTH=96><CENTER><TT>I</TT></CENTER>
+</TD><TD WIDTH=240><TT>liTries</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Logical</TT></TD><TD WIDTH=96><CENTER><TT>l</TT></CENTER>
+</TD><TD WIDTH=240><TT>llTaxable</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Memo</TT></TD><TD WIDTH=96><CENTER><TT>m</TT></CENTER>
+</TD><TD WIDTH=240><TT>lmProductDescription</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Numeric</TT></TD><TD WIDTH=96><CENTER><TT>n</TT></CENTER>
+</TD><TD WIDTH=240><TT>gnAge</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Picture</TT></TD><TD WIDTH=96><CENTER><TT>p</TT></CENTER>
+</TD><TD WIDTH=240><TT>lpProductPicture</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>Unknown</TT></TD><TD WIDTH=96><CENTER><TT>u</TT></CENTER>
+</TD><TD WIDTH=240><TT>luSampleData</TT></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Using this naming convention requires that a variable have a two-character prefix. The first prefix character always denotes the scope and the second denotes the type. Although you could define these characters in reverse order, you should never switch the order of these characters after you start an application. If you do, the resulting confusion will make you wish that you never heard of naming conventions-and it will not make you popular with other programmers who need to read your code, if they follow the standard prefix order.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Using Case to Make Variables Readable&nbsp;&nbsp;</B>A variation
+on the preceding naming examples uses an underscore character
+between the prefix characters and the rest of the variable name.
+Often, underscores are included between individual words in the
+variable name. This personal preference of some developers is
+not part of the new Microsoft recommendation, but you might encounter
+it in the naming convention used by other applications. In fact,
+the recommended conventions proposed for Visual Basic, Access,
+and Visual FoxPro do not include the underscore anywhere in a
+variable name. The conventions rely on the fact that the first
+capitalized letter indicates the beginning of the unique portion
+of the variable name and the end of the prefix. Also, when the
+variable name consists of two or more words, the first letter
+of each word also begins with a capital letter. The rest of the
+characters are always lowercase.
+<P>
+The only time the recommended convention could conceivably pose
+a problem is if you use an external text editor that does not
+honor case. (That possibility is relatively remote these days.)
+On the other hand, Visual FoxPro does not yet completely honor
+the case of field names, which detracts from their readability.
+Most programmers define their variable names in many different
+ways.  No matter how you do it, you should use the variable declarations
+and naming standards required by your client or customers. If
+these requirements do not exist, you should develop them for your
+own use. You should use names that mean something, such as <TT>fileAccountJuly</TT>
+or <TT>FileAccountJuly</TT>. However you choose to do it, you
+should have some organization and sensibility to your methods.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Because naming conventions are optional, many variations exist. To some extent, this situation is good because experimentation sometimes leads to better methods. Many leading FoxPro developers have developed their own naming conventions over the years, some of which are better than others. At this writing, it is too early to determine whether these conventions will be abandoned for a common naming convention. Actually, global acceptance would be a surprise. Part of the problem is that the naming convention proposed for FoxPro is not completely consistent with other development languages yet. Another problem is that Visual FoxPro does not fully support cases in all the places where variables and field names appear. Finally, developers might use naming conventions for different purposes.<br>
+On the other hand, any naming convention probably is better than no naming convention, as long as it is strictly followed within the application.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Keep in mind that although you can enter variable names with the
+uppercase and lowercase rule as suggested earlier in this chapter,
+Visual FoxPro is case insensitive. FoxPro really doesn't care
+whether the variable is called <TT>lsOrderEnter</TT> or <TT>lsorderenter</TT>-both
+variables represent the same data memory location. This means
+that the burden of following such a naming convention is solely
+on your shoulders. Visual FoxPro's Documenting Wizard not only
+supports all uppercase or all lowercase, but also uses the case
+of the first occurrence of a variable and matches all subsequent
+occurrences. Thus, it even supports mixed-case variable names.
+Using initial caps for each word in a variable name, however,
+makes the variable easier to read.
+<P>
+Remember, FoxPro does not require that you use a naming convention.
+But following any naming convention (even one that you create
+yourself) generates the following benefits:
+<UL>
+<LI>It makes identifying the scope and type
+of a variable easier.
+<LI>It reduces syntax errors and undefined
+variable errors.
+<LI>It makes it easier for other programmers
+to identify the purpose of a variable when they look at your code.
+</UL>
+<P>
+Places where you might not want to use these prefixes in variable
+names include:
+<UL>
+<LI>Constants created with <TT>#DEFINE</TT>.
+(In fact, the recommended convention for these variable names
+is all uppercase.)
+<LI>Class names, properties, or methods.
+</UL>
+<H3><A NAME="NamingFieldsinTables">
+Naming Fields in Tables</A></H3>
+<P>
+If you need to use free tables in an application, Visual FoxPro
+continues to limit field names to 10 characters. Even in such
+cases, some developers have proposed using character prefixes.
+One three-character prefix convention uses the first two characters
+of the prefix to uniquely identify the table. These characters
+can be the first two characters of the table name, but they don't
+have to be. The third character is an underscore to clearly separate
+the prefix from the rest of the field name.
+<P>
+If the same field appears in multiple tables, you can continue
+to use a table prefix. However, you should make the remaining
+seven characters exactly the same in each table in which the field
+appears. Suppose that you have a <TT>Style</TT> field in several
+databases. If style has the same meaning in each database, you
+might have:
+<BLOCKQUOTE>
+<TT>or_Style</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for
+the style in the order file
+<br>
+<TT>pr_Style</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for
+the style in the product file
+<br>
+<TT>in_Style</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for
+the style in the inventory file
+</BLOCKQUOTE>
+<P>
+However, if style means something different in each file, the
+seven characters should uniquely reflect this difference, as follows:
+<BLOCKQUOTE>
+<TT>or_CStyle</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for customer
+style
+<br>
+<TT>pr_PStyle</TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for product
+style
+<br>
+<TT>in_ClStyle</TT>&nbsp;&nbsp;&nbsp;&nbsp;for cloth style
+</BLOCKQUOTE>
+<P>
+The recommended Visual FoxPro naming convention used with table
+fields uses only the first character of a field name to identify
+its type (refer to Table 4.2). The remaining nine characters uniquely
+identify the field. Because the same field name can appear in
+more than one table, you should always precede it with the file
+alias when you use it in code, as shown in the following example:
+<BLOCKQUOTE>
+<PRE>
+customer.cLastName
+order.dOrderDate<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Despite the recommendation that you use uppercase and lowercase, the Visual FoxPro Table Designer supports only lowercase. To make matters more confusing, commands such as <TT>DISPLAY STRUCTURE</TT> list field names in uppercase. The <TT>Browse</TT> and <TT>Edit</TT> commands label column headings by displaying field names with initial caps only. Thus, there is no way to differentiate case in a table name. This is another reason for some developers to use the underscore character after the prefix, or even between major words. Would the field <TT>C_RAP</TT>, for example, make more sense in a table that lists types of music, or would you prefer <TT>CRAP</TT>?
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Never use just a letter to identify a work area, such as <TT>A.cLastName</TT>.
+Such a practice restricts programs to always opening tables in
+the same work area. When you write generalized code that more
+than one procedure can call, you cannot always guarantee a work
+area's availability for a table. Therefore, always reference fields
+by their table alias.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Even though Visual FoxPro may not honor case in field names, there is no reason not to use case when you are coding field names.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Applications rewritten with Visual FoxPro can take advantage of
+the enhanced table features of a database. (It is unlikely that
+anyone will modify existing FoxPro applications just to add long
+character names. As part of an application rewrite to take advantage
+of other VFP features, however, converting to longer character
+names makes sense.)
+<P>
+When you add a table to a database, you can define 128-character
+field names. As indicated earlier, 128 characters may be overkill.
+With this many available characters, there is no reason why you
+cannot adopt one of the naming conventions and still define significant
+names.
+<P>
+The trade-off in using a naming convention for table fields is
+the fact that some commands and procedures might not work with
+some conventions. Suppose that you include a table-prefix code
+in each field name. With 128 characters, you could include the
+entire table or alias name. But code that uses <TT>SCATTER</TT>
+and <TT>GATHER</TT> to transfer data between tables will not work
+because the prefix names would be different. Furthermore, Visual
+FoxPro will not automatically identify relations between tables.
+On the other hand, if you limit the prefix to a single field-type
+character in all tables, <TT>SCATTER</TT>, <TT>GATHER</TT>, and
+other table commands continue to work well.
+<P>
+Finally, even if you adopt a naming convention for your table
+variables, using commands such as <TT>SCATTER</TT> can lead to
+unexpected problems. When you scatter table fields to memory variables,
+Visual FoxPro creates a memory variable with the exact name as
+the field. When you use that variable without an alias identifier,
+Visual FoxPro makes the following assumptions about whether you
+mean the table variable or the memory variable:
+<UL>
+<LI>Any variable used with <TT>STORE</TT>
+is assumed to be a memory variable.
+<LI>A variable that is assigned a value with
+a <TT>REPLACE</TT> statement is assumed to be a table variable.
+<LI>The variable on the left side of an equation
+is assumed to be a memory variable.
+<LI>Any variable on the right side of an equation
+is first assumed to be a table variable and then a memory variable.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can override some of these assumptions by prefixing the variable with the table alias. If the variable is a memory variable, use <TT>m.</TT> as the prefix.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The following equation takes the table variable <TT>Quantity</TT>,
+adds sale quantity (<TT>SaleQty</TT>) to it, and then saves the
+sum in the memory variable <TT>Quantity</TT>:
+<BLOCKQUOTE>
+<PRE>
+Quantity = Quantity + SaleQty
+</PRE>
+</BLOCKQUOTE>
+<P>
+If you have this statement in your code, you may wonder why <TT>Quantity</TT>
+never seems to increase. The following redefined statement, using
+the recommended naming convention, makes the assignment clearer:
+<BLOCKQUOTE>
+<PRE>
+m.nQuantity = m.nQuantity + m.lnSaleQty
+</PRE>
+</BLOCKQUOTE>
+<P>
+This statement tells you that <TT>nQuantity</TT> is a numeric
+variable saved to a memory variable from a table (because the
+prefix has only a single character). It also clearly adds a local
+numeric memory variable, <TT>lnSaleQty</TT>, which represents
+the sales quantity.
+<H3><A NAME="NamingObjects">
+Naming Objects</A></H3>
+<P>
+When you create an instance of a class, you store a pointer to
+it in a reference variable. You might want to include a special
+prefix to identify its class type. When you are looking at a property
+reference such as the following, it can be difficult to guess
+what class was used to create this object:
+<BLOCKQUOTE>
+<PRE>
+? Customer.City.Value
+</PRE>
+</BLOCKQUOTE>
+<P>
+You may guess that <TT>Value</TT> represents the name of the city;
+therefore, the object probably is a text box within a form. The
+form is referenced by the object-reference name <TT>Customer</TT>,
+and the text box has the object-reference name <TT>City</TT>.
+But it could just as easily be a list or a combo box. The point
+is that you cannot be really sure to which class this object belongs.
+Why is this important? Knowing the class of an object tells you
+what properties, events, and methods to expect from it. Notice
+how much more information you know about the object when it includes
+an object prefix. Immediately, you know that it is a text box
+in a form such as the following:
+<BLOCKQUOTE>
+<PRE>
+? frmCustomer.txtCity.Value
+</PRE>
+</BLOCKQUOTE>
+<P>
+This modified expression defines the object hierarchy. It says
+that a form named <TT>Customer</TT> contains a text box named
+<TT>City</TT> and that it returns the object's value. The recommended
+prefixes for naming object references are listed in Table 4.4.
+<BR>
+<P>
+<CENTER><B>Table 4.4&nbsp;&nbsp;Object-Reference Name Prefixes</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>Object</B></CENTER></TD><TD WIDTH=96><CENTER><B>Prefix</B></CENTER>
+</TD><TD WIDTH=240><CENTER><B>Example</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Check box</TD><TD WIDTH=96><CENTER><TT>chk</TT></CENTER>
+</TD><TD WIDTH=240><TT>chkCurrentYrOnly</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Combo box</TD><TD WIDTH=96><CENTER><TT>cbo</TT></CENTER>
+</TD><TD WIDTH=240><TT>cboShipMethod</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Command button</TD><TD WIDTH=96><CENTER><TT>cmd</TT></CENTER>
+</TD><TD WIDTH=240><TT>cmdRecordMove</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Command group</TD><TD WIDTH=96><CENTER><TT>cmg</TT></CENTER>
+</TD><TD WIDTH=240><TT>cgpReportOptions</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Container</TD><TD WIDTH=96><CENTER><TT>cnt</TT></CENTER>
+</TD><TD WIDTH=240><TT>cntBitBucket</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Control</TD><TD WIDTH=96><CENTER><TT>ctl</TT></CENTER>
+</TD><TD WIDTH=240><TT>ctlOrders</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Custom</TD><TD WIDTH=96><CENTER><TT>cst</TT></CENTER>
+</TD><TD WIDTH=240><TT>cstDiscountCalculation</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Edit box</TD><TD WIDTH=96><CENTER><TT>edt</TT></CENTER>
+</TD><TD WIDTH=240><TT>edbBugDescription</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Form</TD><TD WIDTH=96><CENTER><TT>frm</TT></CENTER>
+</TD><TD WIDTH=240><TT>frmCustomerAddress</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Form set</TD><TD WIDTH=96><CENTER><TT>frs</TT></CENTER>
+</TD><TD WIDTH=240><TT>fstCustomer</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Grid</TD><TD WIDTH=96><CENTER><TT>grd</TT></CENTER>
+</TD><TD WIDTH=240><TT>grdProductMatrix</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Grid column</TD><TD WIDTH=96><CENTER><TT>grc</TT></CENTER>
+</TD><TD WIDTH=240><TT>grcProductPrice</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Grid column header</TD><TD WIDTH=96><CENTER><TT>grh</TT></CENTER>
+</TD><TD WIDTH=240><TT>grhProductFieldName</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Image</TD><TD WIDTH=96><CENTER><TT>img</TT></CENTER>
+</TD><TD WIDTH=240><TT>imgProductPicture</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Label</TD><TD WIDTH=96><CENTER><TT>lbl</TT></CENTER>
+</TD><TD WIDTH=240><TT>lblCustomerLabel</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Line</TD><TD WIDTH=96><CENTER><TT>lin</TT></CENTER>
+</TD><TD WIDTH=240><TT>linSeparator</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>List box</TD><TD WIDTH=96><CENTER><TT>lst</TT></CENTER>
+</TD><TD WIDTH=240><TT>lstStatesList</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Menu</TD><TD WIDTH=96><CENTER><TT>mnu</TT></CENTER>
+</TD><TD WIDTH=240><TT>mnuMainMenu</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>OLE bound control</TD><TD WIDTH=96><CENTER><TT>olb</TT></CENTER>
+</TD><TD WIDTH=240><TT>olbEmployeePicture</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>OLE</TD><TD WIDTH=96><CENTER><TT>ole</TT></CENTER>
+</TD><TD WIDTH=240><TT>oleExcelGraph</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Option button</TD><TD WIDTH=96><CENTER><TT>opt</TT></CENTER>
+</TD><TD WIDTH=240><TT>optPaymentMethod</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Option group</TD><TD WIDTH=96><CENTER><TT>ogr</TT></CENTER>
+</TD><TD WIDTH=240><TT>ogrPaymentDistribution</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Page</TD><TD WIDTH=96><CENTER><TT>pag</TT></CENTER>
+</TD><TD WIDTH=240><TT>pagStoreConfiguration</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Page frame</TD><TD WIDTH=96><CENTER><TT>pfr</TT></CENTER>
+</TD><TD WIDTH=240><TT>pfrPointOfSaleOptions</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Separator</TD><TD WIDTH=96><CENTER><TT>sep</TT></CENTER>
+</TD><TD WIDTH=240><TT>sepFirstGapShape</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Shape</TD><TD WIDTH=96><CENTER><TT>shp</TT></CENTER>
+</TD><TD WIDTH=240><TT>shpTitleBox</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Spinner</TD><TD WIDTH=96><CENTER><TT>spn</TT></CENTER>
+</TD><TD WIDTH=240><TT>spnReportCopies</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Text box</TD><TD WIDTH=96><CENTER><TT>txt</TT></CENTER>
+</TD><TD WIDTH=240><TT>txtLastName</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Timer</TD><TD WIDTH=96><CENTER><TT>tmr</TT></CENTER>
+</TD><TD WIDTH=240><TT>tmrStartProcess</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144>Toolbar</TD><TD WIDTH=96><CENTER><TT>tbr</TT></CENTER>
+</TD><TD WIDTH=240><TT>btnFileSelect</TT></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+This naming convention distinguishes object references by a three-character
+prefix.
+<P>
+<A HREF="ch13.htm" >Chapter 13</A>, &quot;Introduction to Object-Oriented Programming,&quot;
+describes ways to use a reference variable to shorten the full
+object reference. Because the complete reference can be rather
+lengthy to type, consider assigning aliases to recurring objects
+using the prefix for the lowest-level object, as follows:
+<BLOCKQUOTE>
+<PRE>
+txtCustCity = OrderForm.CustomerInfo.CityName
+txtCustCity.Value = 'Redmond'<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The recommended convention does not prefix characters to object names. However, you can use prefixes on object references.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="NamingIssuesAcrossRelatedApplications">
+Naming Issues Across Related Applications</A></H3>
+<P>
+All the conventions in the preceding section apply whether you
+develop a single application or multiple applications. However,
+it is more common for problems to occur when different teams develop
+different modules of larger applications. There are more possibilities
+for naming, scoping, and typing inconsistencies. The following
+paragraphs describe a few of these possibilities:
+<UL>
+<LI>Suppose that two developers create two
+separate tables that share several common fields, but they name
+the fields differently and assign them different sizes. (In variations
+on this scenario, the developers name the fields consistently
+but assign them different sizes or assign the same sizes but different
+names.)
+<LI>Now, suppose that you have the opposite
+situation: Two developers create fields in separate tables that
+have exactly the same name and definition. The problem is that
+the fields actually represent two different things.
+<LI>Suppose that two developers create modules,
+each using his own data-naming conventions. If both developers
+use entirely different conventions, it may be possible to bring
+one module into alignment with the other by using a few replace
+statements. The real problem is when the naming conventions used
+by the two developers have common prefixes that do not mean the
+same thing. Suppose that one developer puts field type first and
+scope second and the other developer puts scope first and type
+second. In this case, does a variable labeled <TT>pl_thing</TT>
+represent a private <TT>Logical</TT> or a local <TT>Picture</TT>?
+<LI>Suppose that two developers create two
+separate applications and use the same variable name for different
+purposes. Each developer defines the variable as a different type,
+therefore causing confusion. However, a most difficult obstacle
+to resolve occurs when the same variables from the two separate
+applications have a different definition but are of the same data
+type. It takes longer to realize that the variables are actually
+different. If the applications are truly separate, this situation
+might not pose more than an academic question. But if the applications
+form two modules in a system, at some point a third developer
+might look at both applications and attempt to form a relation
+by using this field between the two tables.
+</UL>
+<P>
+Not many data dictionaries are products on the market yet, especially
+products that deal with cross-application development. But as
+Visual FoxPro begins to become more a corporate development tool
+than a department tool, the need for these tools will force their
+creation. In the meantime, you might want to consider assigning
+one person to be responsible for a list of field names and their
+definitions. Then, when anyone needs to create a new database,
+he must first consult this list to see whether the names that
+he wants are already in use, with the same or different meanings.
+<P>
+Another option is to create your own data dictionary. Our experience
+in developing and working with a data dictionary proved that it
+can quickly become an essential tool to your project.
+<H3><A NAME="UsingEnterpriseWideNamingConventions">
+Using Enterprise-Wide Naming Conventions</A></H3>
+<P>
+Enterprise issues expand on the cross-application issues, especially
+as development teams become separated over greater distances.
+In developing client/server applications, the focus on consistency
+switches to a central data repository. In some ways, this situation
+is a benefit because it becomes easier for everyone to determine
+what field names have already been used and how they have been
+defined. On the other hand, no system has the internal intelligence
+to prevent the types of situations mentioned earlier in this chapter.
+<P>
+One of the greatest potential areas for problems is development
+of applications in different departments of the same company,
+because there usually is little coordination between application
+developers in each department. As a result, the risk of naming
+inconsistencies increases dramatically. As long as each department
+operates independently of the other, these problems never surface.
+But as soon as two departments are required to work together on
+a common system, the naming inconsistencies create significant
+problems. A company-wide naming convention will not eliminate
+all these problems, but it will reduce them.
+<H2><A NAME="OtherAdvancedFeaturesofVisualFoxProiacutesDatabaseContainer"><FONT SIZE=5 COLOR=#FF0000>
+Other Advanced Features of Visual FoxPro&iacute;s Database
+Container</FONT></A></H2>
+<P>
+In <A HREF="ch03.htm" >Chapter 3</A> &quot;Defining Databases, Tables, and Indexes,&quot;
+we mentioned a few of the advanced features that Visual FoxPro's
+data container offers at the field level in addition to its capability
+to assign 128-character field names. Although this situation tremendously
+improves the 10-character limitation of free tables, it comes
+with a price: When you begin using 128-character field names,
+going back to 10-character names is difficult. All programs, forms,
+reports, and other files that reference the table will require
+changes to referenced, shortened field names.
+<H3><A NAME="UsingRecordLevelValidations">
+Using Record-Level Validations</A></H3>
+<P>
+You can define additional properties at table level by clicking
+the Table Properties button. Figure 4.1 shows the Table Properties
+dialog box with its six additional fields.
+<P>
+<IMG SRC="f4-1.gif"><B>Figure 4.1 : </B><I>The Table Properties dialog box shows a
+record-level validation rule</I>.</A>
+<P>
+The validation rule in this dialog box is a record-level validation.
+Visual FoxPro triggers this rule when you change any value in
+the record and attempt to move to another record. When you are
+in a browse window, form, or other interface feature that enables
+scanning of records, you can move between records without triggering
+the validation only if you don't make changes.
+<P>
+When you use record-level validation, the validation code cannot
+change any field in the current record or move the record pointer.
+It can, however, compare the values of one field with those of
+another, as follows:
+<BLOCKQUOTE>
+<PRE>
+(dHireDate - dBirthDate) &gt; 18 * 365.25
+</PRE>
+</BLOCKQUOTE>
+<P>
+The code can also perform a lookup validation against another
+file:
+<BLOCKQUOTE>
+<PRE>
+SEEK(cCustId, 'CUSTOMER')
+</PRE>
+</BLOCKQUOTE>
+<P>
+In Figure 4.1, the record validation is more complex than a single
+expression. Therefore, a user-defined function (UDF) calls the
+validation code that is saved as a stored procedure in the database.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Before you can enter a UDF for a validation rule, the stored procedure must exist. Otherwise, Visual FoxPro rejects the UDF reference. Therefore, choose Edit Stored Procedure from the Database pull-down menu before adding the validation clause to the table structure. You can also open the stored procedures anytime the database is open by typing <B>MODIFY PROCEDURE</B> in the Command window.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Any validation expression or function call must evaluate to a
+logical result. If the field validation returns <TT>.F.</TT>,
+Visual FoxPro keeps the record pointer in the same record and
+does not save any changes made to it; it also displays the validation
+text. Following is the full text for the validation text that
+was cut off in Figure 4.1:
+<BLOCKQUOTE>
+<PRE>
+&quot;Record changes will not be accepted!&quot;
+</PRE>
+</BLOCKQUOTE>
+<P>
+To validate the records, you need to use a new Visual FoxPro function
+called <TT>GETFLDSTATE</TT>. This function determines whether
+a field in a table or cursor has changed during the current command
+or whether the delete status has changed. The basic syntax of
+this command is
+<BLOCKQUOTE>
+<PRE>
+GETFLDSTATE(cFieldName|nFieldNumber [,cTableAlias|nWorkArea])
+<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Row or table buffering must be enabled with <TT>CURSORSETPROP()</TT> before <TT>GETFLDSTATE()</TT> can operate on local tables.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+If you include a field name or number, <TT>GETFLDSTATE</TT> returns
+one of the values listed in Table 4.5 indicating the status of
+that field. The validation text in Listing 4.2 uses <TT>GETFLDSTATE</TT>
+to determine which error message to display based on whether the
+sales-total field has changed.<BR>
+<P>
+<CENTER><B>Table 4.5&nbsp;&nbsp;Return Values for GETFLDSTATE</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>Return Value</B></CENTER></TD><TD WIDTH=288><CENTER><B>Edit/Delete Status</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>1</TT></CENTER></TD><TD WIDTH=288>Field has not changed value and deletion-status flag has not changed.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>2</TT></CENTER></TD><TD WIDTH=288>Either field or deletion-status flag has changed.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>3</TT></CENTER></TD><TD WIDTH=288>Field in appended record has not been changed and its deletion status has not changed.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>4</TT></CENTER></TD><TD WIDTH=288>Field in appended record has changed or the deletion-status flag has changed.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro returns this information only for tables in a database.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+You can also return the information about all fields in the current
+table with <TT>GETFLDSTATE(-1)</TT>. This command returns a string.
+Its first value represents the deletion-status flag, which is
+followed by one return value for each field in the record.
+<P>
+Calling <TT>GETFLDSTATE()</TT> with an argument of 0 returns a
+single value that represents the status of the deletion flag.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When you are evaluating return values from <TT>GETFLDSTATE()</TT>, all options other than <TT>-1</TT> return a numeric value. Option <TT>-1</TT> returns a string.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The code segment in Listing 4.2 shows the complete validation
+code associated with the record-validation function shown in Figure
+4.2.
+<P>
+<IMG SRC="f4-2.gif"><B>Figure 4.2 : </B><I>The Edit Relationship dialog box, used by
+the Database Designer, defines which fields connect the tables</I>.</A>
+<P>
+
+<HR>
+<B>Listing 4.2&nbsp;&nbsp;</B><TT><B>04CODE02.PRG</B></TT><B>-A
+Record Validation Function Called by the Valid Event of the Total
+Order Amount Field<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+FUNCTION PAYTYPE
+* This function checks the payment type as a function
+* of the total order amount to validate the record.
+LOCAL llReturnCode, lnChangeCheck
+
+* Check if any changes were made to either the sales total or
+* the payment method.
+* Check if customer attempts to pay &lt; $10 by credit card.
+  IF (MOD(GETFLDSTATE('nSalesTotal'),2) = 0 OR ;
+      MOD(GETFLDSTATE('cPaymentMethod'),2) = 0) AND ;
+      nSalesTotal &lt; 10.00
+  * Check for payment method of 'CA' - Cash
+    IF cPaymentMethod # 'CA'
+      = MESSAGEBOX('Orders of less than $10 must be cash')
+      RETURN .F.
+    ENDIF
+  ENDIF
+
+* If paid by credit card, Check if credit card was approved.
+  IF (MOD(GETFLDSTATE('nSalesTotal'),2) = 0 OR ;
+      MOD(GETFLDSTATE('cPaymentMethod'),2) = 0) AND ;
+      cPaymentMethod # 'CA'
+  * Ask if card was approved. If not reject record.
+    IF MESSAGEBOX('Was card approved?', 36) = 7
+      = MESSAGEBOX('Cannot accept a credit card ' + ;
+        'order without approval')
+      RETURN .F.
+    ENDIF
+  ENDIF
+
+RETURN .T.
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice that the function first checks to see whether the change
+that triggered the validation occurred to either the sales-total
+or payment-method field. Remember that a change to any field triggers
+the record validation. Therefore, you should determine whether
+to perform the validation because you certainly don't want to
+perform the validation for every field that changes.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+While you are in the validation-rule code, do not attempt to move the record pointer for the current table. Any change could result in a series of recursive calls that could create more error conditions. For this reason, VFP prohibits changes to any field in the current table. Therefore, you cannot use the record validation to &quot;correct&quot; an error.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Even if you don't move off the current record, but instead attempt
+to close the browse window or form after making a change to a
+field, Visual FoxPro still performs the record validation.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Visual FoxPro stores all validation code and text in the database. Freeing a table from a database removes the link to these definitions. The stored procedures remain in the database, but the links to the table are broken.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You can add, modify, or delete a record validation with the <TT>CHECK</TT> or <TT>DROP CHECK</TT> clause in <TT>ALTER TABLE</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="MaintainingReferentialIntegrity">
+Maintaining Referential Integrity</A></H3>
+<P>
+In general, referential integrity defines which operations are
+permissible between tables that are connected with relations.
+The basic premise is that a primary key value in the parent table
+must have a corresponding lookup or foreign key in another table
+(called the <I>child table</I>). Referential integrity treats
+records that do not meet these criteria as invalid.
+<P>
+You can implement referential integrity in several ways; you need
+to decide what method best suits the data. Consider the basic
+relation between general order information and detailed order
+information, for example. The Tasmanian Trader example provided
+with Visual FoxPro represents these files as <TT>ORDERS.DBF</TT>
+and <TT>ORDITEMS.DBF</TT>, respectively.
+<P>
+The orders table contains information that is unique to the order
+as a whole. This information includes <TT>Order_Id</TT>, <TT>Order_Date</TT>,
+<TT>Customer_Id</TT>, and many other fields. The order detail
+table contains specifics on individual items ordered, such as
+<TT>Order_Id</TT>, <TT>Product_Id</TT>, <TT>Quantity</TT>, and
+<TT>Unit_Price</TT>. The relation that ties these two tables together
+is based on <TT>Order_Id</TT>.
+<P>
+When you add a record to <TT>ORDERS.DBF</TT>, you do so with the
+intent of adding details to <TT>ORDITEMS.DBF</TT>. After all,
+an order without details is not a complete order. Similarly, you
+would never think of adding details to <TT>ORDITEMS.DBF</TT> without
+also adding an order record to <TT>ORDERS.DBF</TT>. These files
+reference each other in a parent/child relation: <TT>ORDERS.DBF</TT>
+represents the parent and <TT>ORDITEMS.DBF</TT> is the child.
+The analogy is that you can have a parent without a child, but
+you cannot have a child without a parent.
+<H3><A NAME="FormingPersistentRelations">
+Forming Persistent Relations</A></H3>
+<P>
+<I>Persistent relations</I> define relations between two tables,
+and are stored in the Database Designer. Visual FoxPro automatically
+uses them each time the tables are opened. This feature is especially
+useful for automatically setting the relations between tables
+in SQL statements and for creating lookups, validations, and the
+data environment of forms and reports.
+<P>
+Persistent relations are sometimes called permanent relations,
+as opposed to temporary relations created with the <TT>SET RELATION</TT>
+command. The reason that <TT>SET</TT> relations are temporary
+is that FoxPro dissolves them when you exit FoxPro or issue the
+<TT>SET RELATION</TT> command by itself. Persistent relations
+remain in place between applications.
+<P>
+<B>Creating Relations Among Tables&nbsp;&nbsp;</B>To create a
+relation between tables, return to the Database Designer window.
+Figure 4.2 shows two tables between which you need to define relations.
+<P>
+Create the following indexes using the Table Designer dialog box,
+if you do not have them already:
+<P>
+In <TT>CUSTOMER.DBF</TT>:<blockquote>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=166>
+<TT>TAG:</TT> <TT>CUSTID</TT>
+</TD><TD WIDTH=114>
+<TT>PRIMARY</TT>
+</TD><TD WIDTH=310>
+<TT>INDEX ON:</TT> <TT>cCustomerId</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166>
+<TT>TAG:</TT> <TT>CUSTNAME</TT>
+</TD><TD WIDTH=114>
+<TT>REGULAR</TT>
+</TD><TD WIDTH=310>
+<TT>INDEX ON:</TT> <TT>cLastName + cFirstName</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=166><TT>TAG:</TT> <TT>COMPANY</TT>
+</TD><TD WIDTH=114>
+<TT>REGULAR</TT>
+</TD><TD WIDTH=310>
+<TT>INDEX ON:</TT> <TT>cCompanyName + STR(cOutstandingBillsTotal, 9, 2)</TT>
+</TD></TR>
+</TABLE></blockquote>
+<P>
+<P>
+In <TT>SALES.DBF</TT>:<blockquote>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>TAG: ORDERID</TT>
+</TD><TD WIDTH=133>
+<TT>PRIMARY</TT>
+</TD><TD WIDTH=285>
+<TT>INDEX ON: cOrderId</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>TAG: CUSTID</TT>
+</TD><TD WIDTH=133><TT>REGULAR</TT>
+</TD><TD WIDTH=285>
+<TT>INDEX ON: cCustomerId</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172><TT>TAG: SALESMAN</TT>
+</TD><TD WIDTH=133><TT>REGULAR</TT>
+</TD><TD WIDTH=285>
+<TT>INDEX ON: cSalesmanId</TT>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=172>
+<TT>TAG: SALES</TT>
+</TD><TD WIDTH=133>
+<TT>CANDIDATE</TT>
+</TD><TD WIDTH=285>
+<TT>INDEX ON: DTOC(dSaleDate)+cOrderId</TT>
+</TD></TR>
+</TABLE></blockquote>
+<P>
+<P>
+In <TT>DETAILS.DBF</TT>:<blockquote>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=162>
+<TT>TAG: DETAILS</TT>
+</TD><TD WIDTH=114>
+<TT>PRIMARY</TT>
+</TD><TD WIDTH=297>
+<TT>INDEX ON: cOrderId+cItemId</TT>
+</TD></TR>
+</TABLE></blockquote>
+<P>
+<P>
+Use the scrollbars of each table to display the index list at
+the bottom. To form a relation, simply click the index name in
+one of the tables and drag it to an index in another table. Suppose
+that you want to find the sales information for each customer.
+Click <TT>CUSTID</TT> in the <TT>CUSTOMER</TT> table and drag
+it to <TT>CUSTID</TT> in the <TT>SALES</TT> table. FoxPro displays
+the Edit Relationship dialog box (refer to Figure 4.2).
+<P>
+Because you dragged the index from one table to another, FoxPro
+automatically fills in the customers' names. FoxPro also defines
+the relationship as one-to-many, because there can be many sales
+orders for each customer. Finally, to accept the relation, simply
+click OK.
+<P>
+FoxPro follows a few simple rules to define the relation type.
+First, it assumes that the start table, or &quot;from&quot; table,
+is on the &quot;one&quot; side and must be a candidate or primary
+index. (You cannot start a persistent relation from a unique or
+regular index.) If you then connect to a primary, or candidate,
+index in the related table, FoxPro knows that it must be a one-to-one
+relation because these are unique indexes that include every record
+in the table. Connecting to any other index (regular or unique)
+enables more than one record on the &quot;to&quot; side; therefore,
+FoxPro assumes a one-to-many relationship. Remember that a unique
+index does not prohibit multiple records that have the same index
+value, it merely keeps a pointer to only the first one.
+<P>
+Create a similar relation between <TT>ORDER_ID</TT> in <TT>SALES.DBF</TT>
+and <TT>ORDER_ID</TT> in <TT>DETAILS.DBF</TT>. The details side
+of this relation defines a many relation because each order can
+contain many ordered items.
+<P>
+In the Database Designer window, you now see a connecting line
+between the indexes. FoxPro displays the &quot;one&quot; side
+of a relation with a single line coming out of the table. The
+&quot;many&quot; side has three lines leading from the index.
+<P>
+<B>Breaking a Relation&nbsp;&nbsp;</B>To break a relation that
+is no longer needed or defined incorrectly, merely click it and
+press the Delete key. You can also right-click and then choose
+Remove Relationship from the shortcut menu.
+<P>
+Creating Self-Referential Relations&nbsp;&nbsp;A self-referential
+relation relates one field in a table to another field in the
+same table. An example that illustrates this concept involves
+the relation between a supervisor and an employee. An employee
+table contains a record for each company employee, identified
+by an employee ID. Each record has one field that identifies the
+ID of the employee's supervisor. That ID is also the supervisor's
+employee number. Thus, by referencing the employee's number, you
+can get the supervisor's name, the name of that supervisor's supervisor,
+and so on.
+<P>
+Figure 4.3 shows the Database Designer after the formation of
+the relation between two records within <TT>empl2</TT>. In this
+case, <TT>custid</TT> is defined as the primary index and <TT>superv</TT>
+is defined as a regular index.
+<P>
+<IMG SRC="f4-3.gif"><B>Figure 4.3 : </B><I>This Database Designer view shows a self-referencing
+relation</I>.</A>
+<P>
+Although queries have not been discussed yet, the following is
+a query that lists every employee and his or her supervisor's
+name using the self-referencing relation in <TT>EMPL2</TT>:
+<BLOCKQUOTE>
+<PRE>
+SELECT A.EmplId, ;
+   A.LastName AS EMPLOYEE_LAST_NAME, ;
+   A.FirstName AS EMPLOYEE_FIRST_NAME, ;
+   B.LastName AS SUPERVISOR_LAST_NAME ;
+   B.FirstName AS SUPERVISOR_FIRST_NAME ;
+   FROM EMPL2 A, EMPL2 B ;
+   WHERE A.Supervisor = B.EmplId
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="UsingtheReferentialIntegrityBuilder">
+Using the Referential Integrity Builder</A></H3>
+<P>
+Visual FoxPro adds a powerful new feature by providing engine-based
+referential integrity. To access the Referential Integrity (RI)
+Builder:
+<UL>
+<LI>Open the database that contains the tables
+for which you want to define referential integrity rules.
+<LI>Right-click the persistent relation, or
+double-left-click the relation to display the Edit Relation box.
+</UL>
+<P>
+The first method displays a menu that contains the Referential
+Integrity option; the second method displays a command button.
+Choosing either option displays the builder shown in Figure 4.4.
+<P>
+<IMG SRC="f4-4.gif"><B>Figure 4.4 : </B><I>Referential Integrity Builder opened for
+database \VFP\SAMPLES\ TASTRADE\DATA\ TASTRADE.DBC, showing all
+the table relations and their current RI rules</I>.</A>
+<P>
+The bottom half of the builder lists each relation on a separate
+line or row. The columns across the row name the parent and child
+tables. Next are three columns for the Update, Delete, and Insert
+integrity rules. Initially, all these columns say <TT>Ignore</TT>.
+However, you can define rules for each relation and action. Finally,
+the last two columns define the parent and child tags involved
+in the relation.
+<P>
+Only the referential-rule columns can be modified. If you select
+any of these columns by clicking them, a drop-down-arrow button
+appears; when clicked, that button displays the referential options.
+These options are also defined in the page frame in the top half
+of the builder.
+<P>
+Each referential action has its own page, which lists the available
+options. The referential options available when you are updating
+the key value in a parent table include the following:
+<UL>
+<LI><I>Cascade</I>. This option updates all child records with
+the new parent key value that had the same old parent key value.
+<LI><I>Restrict</I>. This option checks to see whether any child
+records exist with the current parent key value. If so, FoxPro
+prohibits you from changing the parent key value.
+<LI><I>Ignore</I>. This option performs no referential integrity
+and enables changes to the parent key without regard to any related
+child records.
+</UL>
+<P>
+As you can see, each of these options has an option (radio) button.
+Clicking the button changes the selected rule for the highlighted
+relation in the top half of the builder. Thus, you have two ways
+to select the referential rules.
+<P>
+The rules for deleting parent records are similar to those for
+updating. The rules for inserting records, however, apply from
+the child side of the relation. The two possible rules provided
+here are:
+<UL>
+<LI><I>Restrict</I>. This rule prevents the insertion of a child
+record if a parent record with the same key value does not exist.
+<LI><I>Ignore</I>. This option performs no referential-integrity
+checks.
+</UL>
+<P>
+After you define the referential integrity rules for each relation
+and action, click OK to exit the builder. You might want to cascade
+key updates made in the <TT>CUSTOMER</TT> table to the <TT>ORDERS</TT>
+table. On the other hand, you might want to restrict deletion
+of <TT>CUSTOMER</TT> records if <TT>ORDERS</TT> records exist.
+Finally, you want to restrict the entry of an <TT>ORDERS</TT>
+record if the customer key does not exist in <TT>CUSTOMER</TT>.
+<P>
+When you click OK, the builder displays a dialog box that asks
+you to save your changes, generates the RI code, and exits. This
+process creates a set of triggers and stored procedures in the
+database. If the database previously defined triggers or a stored
+procedure, it makes a backup copy before overwriting it. If you
+defined stored procedures for other features, such as validations,
+you need to manually copy them from the backup to the new stored
+procedures.
+<P>
+After the RI Builder completes this task, you can open the Table
+Designer and select Table Properties to view the added triggers.
+Alternatively, you can view the stored procedures by clicking
+the Edit Stored Procedure button on the Database Designer toolbar.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+If you change any of the tables that are involved in referential integrity, their indexes (or persistent relations) rerun the RI Builder. This action revises the code as appropriate due to the changes made.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Although the Referential Integrity Builder is a fast and easy
+way to add common referential integrity rules to your database
+relations, you define referential integrity in many ways. Some
+of these ways are discussed in the following section.
+<H3><A NAME="BuildingYourOwnReferentialIntegrity">
+Building Your Own Referential Integrity</A></H3>
+<P>
+To illustrate some of these principles, the Web site Que has set
+up to accompany this book contains a database called <TT>PTOFSALE</TT>
+(for point-of-sale). This database is a modification of the Tastrade
+files, which show one way of implementing referential integrity.
+<P>
+The following section examines referential integrity rules created
+for two files in the database: <TT>SALES.DBF</TT> and <TT>DETAILS.DBF</TT>.
+These files loosely resemble <TT>ORDERS.DBF</TT> and <TT>ORDITEMS.DBF</TT>,
+from Tasmanian Traders, but with fewer fields and records to help
+illustrate the points. By using separate files, you can experiment
+with triggers without worrying about potential damage to your
+Tasmanian Trader example. Table 4.6 displays the field structure
+for <TT>SALES.DBF</TT>; Table 4.7 displays the field structure
+for <TT>DETAILS.DBF</TT>.<BR>
+<P>
+<CENTER><B>Table 4.6&nbsp;&nbsp;Field Structure for SALES.DBF</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=154><CENTER><B>Field Name</B></CENTER></TD><TD WIDTH=115><CENTER><B>Type</B></CENTER>
+</TD><TD WIDTH=77><CENTER><B>Width</B></CENTER></TD><TD WIDTH=77><CENTER><B>Decimals</B></CENTER>
+</TD><TD WIDTH=77><CENTER><B>Null</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>dSaleDate</TT></TD><TD WIDTH=115><TT>Date</TT>
+</TD><TD WIDTH=77><CENTER>8</CENTER></TD><TD WIDTH=77><CENTER>&nbsp;</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>cCustomerId</TT></TD><TD WIDTH=115><TT>Character</TT>
+</TD><TD WIDTH=77><CENTER>4</CENTER></TD><TD WIDTH=77><CENTER>&nbsp;</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>cSalesmanId</TT></TD><TD WIDTH=115><TT>Character</TT>
+</TD><TD WIDTH=77><CENTER>4</CENTER></TD><TD WIDTH=77><CENTER>&nbsp;</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>cOrderId</TT></TD><TD WIDTH=115><TT>Character</TT>
+</TD><TD WIDTH=77><CENTER>6</CENTER></TD><TD WIDTH=77><CENTER>&nbsp;</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>nSalesTotal</TT></TD><TD WIDTH=115><TT>Numeric</TT>
+</TD><TD WIDTH=77><CENTER>9</CENTER></TD><TD WIDTH=77><CENTER>2</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>cPaymentMethod</TT></TD><TD WIDTH=115><TT>Character</TT>
+</TD><TD WIDTH=77><CENTER>2</CENTER></TD><TD WIDTH=77><CENTER>&nbsp;</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>CshipperId</TT></TD><TD WIDTH=115><TT>Character</TT>
+</TD><TD WIDTH=77><CENTER>4</CENTER></TD><TD WIDTH=77><CENTER>&nbsp;</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<CENTER><B>Table 4.7&nbsp;&nbsp;Field Structure for DETAILS.DBF</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=154><CENTER><B>Field Name</B></CENTER></TD><TD WIDTH=115><CENTER><B>Type</B></CENTER>
+</TD><TD WIDTH=77><CENTER><B>Width</B></CENTER></TD><TD WIDTH=77><CENTER><B>Decimals</B></CENTER>
+</TD><TD WIDTH=77><CENTER><B>Null</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>cOrderId</TT></TD><TD WIDTH=115><TT>Character</TT>
+</TD><TD WIDTH=77><CENTER>6</CENTER></TD><TD WIDTH=77><CENTER>&nbsp;</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>cItemId</TT></TD><TD WIDTH=115><TT>Character</TT>
+</TD><TD WIDTH=77><CENTER>6</CENTER></TD><TD WIDTH=77><CENTER>&nbsp;</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>nQuantity</TT></TD><TD WIDTH=115><TT>Numeric</TT>
+</TD><TD WIDTH=77><CENTER>4</CENTER></TD><TD WIDTH=77><CENTER>0</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>nUnitPrice</TT></TD><TD WIDTH=115><TT>Numeric</TT>
+</TD><TD WIDTH=77><CENTER>8</CENTER></TD><TD WIDTH=77><CENTER>2</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=154><TT>lTaxable</TT></TD><TD WIDTH=115><TT>Logical</TT>
+</TD><TD WIDTH=77><CENTER>1</CENTER></TD><TD WIDTH=77><CENTER>&nbsp;</CENTER>
+</TD><TD WIDTH=77>No</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+These two files use the standard recommended naming convention for table variables, which includes a single-character type prefix. The convention also uses initial caps for words within the field name where Visual FoxPro recognizes them, such as within code to help make reading the names easier.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="UsingTriggers">
+Using Triggers</A></H3>
+<P>
+The next three options after Record Validations in the Table Properties
+dialog box are called <I>triggers</I>. Visual FoxPro executes
+these triggers when you insert, update, or delete a record in
+the table. As is true of record validation rules, you need to
+store the code for triggers as stored procedures in the database.
+<P>
+You can use triggers for additional calculations or validations
+when you perform any of these three operations. You could send
+an email message to Purchasing when the inventory of any item
+falls below a predefined stock value, for example. You could also
+log all changes made to a table or create your own referential
+integrity rules. However, you cannot do several things with them.
+You can't do the following:
+<UL>
+<LI>Move the record pointer in the current
+work area
+<LI>Change the value of any field in the current
+record
+<LI>Close the current work area or open another
+file in the same work area
+</UL>
+<P>
+The most common use for triggers is to implement referential integrity.
+<P>
+<B>Initializing the Stored Procedures for Triggers&nbsp;&nbsp;</B>In
+this section, you learn how to define the triggers. Figure 4.1
+shows the extended options for triggers in <TT>SALES.DBF</TT>,
+defined as follows:
+<BLOCKQUOTE>
+Insert Trigger:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>RISALES(&quot;I&quot;)</TT>
+<BR>
+Update Trigger:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>RISALES(&quot;U&quot;)</TT>
+<BR>
+Delete Trigger:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>RISALES(&quot;D&quot;)</TT>
+</BLOCKQUOTE>
+<P>
+Next, define a similar set of triggers for <TT>DETAILS.DBF</TT>:
+<BLOCKQUOTE>
+Insert Trigger:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>RIDETAILS(&quot;I&quot;)</TT>
+<BR>
+Update Trigger:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>RIDETAILS(&quot;U&quot;)</TT>
+<BR>
+Delete Trigger:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>RIDETAILS(&quot;D&quot;)</TT>
+</BLOCKQUOTE>
+<P>
+Notice that in both cases, triggers for each table call the same
+function, merely passing it a different single-character parameter
+to identify the operation. The reason is that referential integrity
+requires some common additional support, or housekeeping tasks.
+These tasks are called from <TT>RIDETAILS</TT> and <TT>RISALES</TT>,
+so they do not have to be repeated. Each of these requirements
+is examined later in this chapter; the following section starts
+by examining <TT>RISALES()</TT>.
+<P>
+<B>Defining Triggers for the Parent Table&nbsp;&nbsp;</B>Whenever
+Visual FoxPro senses the insertion, updating, or deletion of a
+record, it checks to see whether a trigger for that event exists.
+If it does, as in this case, VFP executes the trigger. All triggers
+for the table <TT>SALES.DBF</TT> call function <TT>RISALES()</TT>,
+as shown in Listing 4.3.<P>
+
+<HR>
+<B>Listing 4.3&nbsp;&nbsp;</B><TT><B>04CODE03.PRG</B></TT><B>-Referential
+Integrity Code Generated by the RI Builder Called on by VFP in
+the Event of a Delete, Insert, or Modify<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+****************
+FUNCTION RISALES
+* This routine is called by the triggers in SALES.DBF
+LPARAMETERS lcAction
+LOCAL llReturnValue, Dummy
+
+* Start Transaction
+  Dummy         = IIF(TYPE(&quot;nLevel&quot;)&lt;&gt;&quot;N&quot; OR nLevel=0, ;
+                  RISTART(), &quot;&quot;)
+  nLevel        = nLevel + 1
+  llReturnValue = .F.
+
+* Perform action
+  DO CASE
+    CASE TYPE('lcAction') # 'C' ;
+         OR !UPPER(lcAction) $ 'DIU' ;
+         OR LEN(lcAction)&gt;1
+      ERROR 'Invalid action code passed to RISALES'
+    CASE UPPER(lcAction) == 'D'
+      llReturnValue = SALEDEL()
+    CASE UPPER(lcAction) == 'I'
+      llReturnValue = SALEINS()
+    CASE UPPER(lcAction) == 'U'
+      llReturnValue = SALEMOD()
+  ENDCASE
+
+* End transaction
+  nLevel = nLevel - 1
+  Dummy  = IIF(nLevel = 0, RIEND(llReturnValue), 0)
+
+RETURN llReturnValue
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice that this routine begins by assigning the passed character
+to a local parameter (<TT>LPARAMETER</TT>) called <TT>lcAction</TT>.
+It then defines a local variable, which it uses to return a logical
+value to the trigger, <TT>llReturnValue</TT>.
+<P>
+This function itself has three parts. The first part initializes
+a transaction by checking the current value of variable <TT>nLevel</TT>.
+If you object that <TT>nLevel</TT> is not defined yet, you are
+correct. That is the purpose of the first conditional test in
+the <TT>IIF</TT> statement: It takes advantage of the way Visual
+FoxPro evaluates expressions. When a conditional statement has
+more than one expression, VFP evaluates them one at a time from
+left to right. As soon as VFP can evaluate the expression, it
+stops, even if it does not evaluate all conditions.
+<P>
+In this case, <TT>IIF()</TT> contains two conditions connected
+with <TT>OR</TT>. The logical result of this expression is true
+as long as one or the other condition is true. Visual FoxPro knows
+this. It evaluates the first expression, and because <TT>nLevel</TT>
+is undefined, it returns a type of <TT>&quot;U&quot;</TT>. Therefore,
+the first condition is true. Because this is all that FoxPro needs
+to evaluate the entire expression, it never checks to see whether
+<TT>nLevel</TT> is equal to zero. If <TT>nLevel</TT> were equal
+to zero, it would generate an error because <TT>nLevel</TT> is
+undefined. Thus, FoxPro executes function <TT>RISTART()</TT> when
+the expression is true, as occurs at the start of the first trigger
+event.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When defining conditional expressions, define the evaluation order so as to minimize the work that Visual FoxPro must do. Put the most critical condition first. This action saves VFP time; it also enables you to include in the second part of the test conditions that are not otherwise valid.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+When you are connecting two expressions with <TT>OR</TT>, put the one that is most likely to pass first. When you are connecting two expressions with <TT>AND</TT>, put the one that is most likely to fail first.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+This first section also increments the value of <TT>nLevel</TT>,
+which <TT>RISTART()</TT> initializes to zero. This variable tracks
+how many triggers have been set and which one is being processed.
+An <TT>nLevel</TT> value of <TT>1</TT> indicates that processing
+should execute code related to the primary trigger event. Higher
+values of <TT>nLevel</TT> evaluate cascade events.
+<P>
+The second portion of <TT>RISALES()</TT> uses a <TT>CASE</TT>
+statement to determine whether the parameter passed is valid and
+then to branch to the correct function. Notice, again, that a
+compound test is used in the first <TT>CASE</TT> statement. If
+the <TT>TYPE</TT> of <TT>lcAction</TT> is not <TT>Character</TT>,
+Visual FoxPro ignores the rest of the conditions-which only makes
+sense because <TT>lcAction</TT> should be <TT>Character</TT>.
+<P>
+Finally, the last section performs a cleanup. First, the section
+decreases the trigger level. If it has executed all the triggers
+(<TT>nLevel=0</TT>), it executes one final function: <TT>RIEND()</TT>.
+<P>
+Now examine <TT>RISTART</TT>, shown in Listing 4.4.<P>
+
+<HR>
+<B>Listing 4.4&nbsp;&nbsp;</B><TT><B>04CODE04.PRG</B></TT><B>-The
+RISTART Code<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+****************
+FUNCTION RISTART
+* Call this program when starting Referential Integrity.
+* It initializes several variables.
+  IF TYPE(&quot;nLevel&quot;) &lt;&gt; 'N'
+    PUBLIC nLevel
+    nLevel = 0
+  ENDIF
+
+  IF TYPE(&quot;cCursors&quot;) &lt;&gt; &quot;C&quot;
+    PUBLIC cCursors
+  ENDIF
+
+  IF nLevel = 0
+    BEGIN TRANSACTION
+    PUBLIC cOldError, nError
+    cCursors  = &quot;&quot;
+    cOldError = ON(&quot;ERROR&quot;)
+    nError    = 0
+    ON ERROR nError = ERROR()
+  ENDIF
+RETURN
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+As you can see, the routine initializes <TT>nLevel</TT> to zero
+and makes it a public variable. This routine also initializes
+two other variables. The first variable, <TT>cCursors</TT>, tracks
+the names of cursors opened by the code in the triggers. The second
+variable, <TT>cOldError</TT>, stores the current <TT>ON ERROR</TT>
+action.
+<P>
+The following statement is very important:
+<BLOCKQUOTE>
+<PRE>
+BEGIN TRANSACTION
+</PRE>
+</BLOCKQUOTE>
+<P>
+This statement defines the beginning of a transaction and tells
+Visual FoxPro to buffer all record changes that are made until
+it executes an <TT>END TRANSACTION</TT>. <TT>END TRANSACTION</TT>
+writes the changes from the buffer permanently to the file. If
+you decide to cancel changes, you can use <TT>ROLLBACK</TT> or
+<TT>TABLEREVERT()</TT> to back out or discard changes. Function
+<TT>TABLEREVERT()</TT> has the following syntax:
+<BLOCKQUOTE>
+<PRE>
+TABLEREVERT([lAllRows][,cTableAlias|nWorkArea]
+</PRE>
+</BLOCKQUOTE>
+<P>
+The first parameter, when it is set to true, discards changes
+made to all records in the current table or in the table referenced
+by an alias or work-area number. When it is set to false, the
+parameter discards only changes made in the current record.
+<P>
+Up to this point, the routines used have been fairly generic.
+In fact, you could use them in your own applications virtually
+unchanged, except for the functions called by the <TT>CASE</TT>
+statement in <TT>RISALES</TT>. The following section examines
+the first function that performs the real action of the trigger.
+<P>
+<B>Defining a Cascade Delete Trigger&nbsp;&nbsp;</B>The <TT>SALEDEL()</TT>
+function defines the trigger action when Visual FoxPro senses
+the deletion of a record in <TT>SALES.DBF</TT>. The purpose of
+this routine is to cause a delete cascade to remove all order
+details associated with the deleted order record. After all, when
+the parent order record no longer exists, the child details are
+no longer valid.  Listing 4.5 shows the code required to accomplish
+this task.<P>
+<HR>
+<B>Listing 4.5&nbsp;&nbsp;</B><TT><B>04CODE05.PRG</B></TT><B>-Referential
+Integrity Code Generated by the RI Builder Called on the Event
+of a Delete<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+****************
+FUNCTION SALEDEL
+* If deleting a sales record, delete all details
+LOCAL  llReturnValue, lcOrderId, lnDetArea
+
+  llReturnValue = .T.
+  IF nLevel = 1
+    lcOrderId     = cOrderId
+    lnDetArea     = RIOPEN('DETAILS')
+    SELECT (lnDetArea)
+    SCAN FOR cOrderId = lcOrderId
+      llReturnValue = RIDELETE()
+    ENDSCAN
+    SELECT sales
+  ENDIF
+
+RETURN llReturnValue
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This relatively short routine starts by storing the order ID from
+the sales record in <TT>lcOrderId</TT> and then uses <TT>RIOPEN()</TT>
+to safely open a copy of <TT>DETAILS</TT>. The routine opens <TT>DETAILS.DBF</TT>
+without setting a tag so that Rushmore can fully optimize the
+<TT>FOR</TT> clause. The code uses <TT>SCAN FOR</TT> to find all
+records with a matching order ID; it then deletes each matching
+record by calling the <TT>RIDELETE()</TT> function.
+<P>
+The <TT>SALEDEL()</TT> function introduces two new functions,
+both of which are generalized functions that you can use in any
+referential integrity situation. In fact, triggers from the <TT>DETAILS</TT>
+table also use them. The following section discusses <TT>RIOPEN()</TT>.
+<P>
+<B>Using a Common Procedure to Open Cursors&nbsp;&nbsp;</B>The
+<TT>RIOPEN()</TT> function supports two parameters: one for the
+table name and the other for an optional tag name.  Listing 4.6
+shows the <TT>RIOPEN()</TT> code.<P>
+
+<HR>
+<B>Listing 4.6&nbsp;&nbsp;</B><TT><B>04CODE06.PRG</B></TT><B>-The
+</B><TT><B>RIOPEN() </B></TT><B>Code
+<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+***************
+FUNCTION RIOPEN
+* This procedure opens cursors for use during Referential
+* Integrity checks since operations that perform record
+* pointer moves are not allowed directly.
+LPARAMETERS lcTable, lcTag
+LOCAL lnNewArea, nInUseArea
+
+  nInUseArea = ATC(lcTable+&quot;*&quot;, cCursors)
+
+* Open reference table
+  IF nInUseArea = 0
+    SELECT 0
+    lnNewArea = SELECT()
+    IF EMPTY(lcTag)
+      USE (lcTable) ;
+          ALIAS (&quot;RI_&quot;+LTRIM(STR(lnNewArea))) ;
+          AGAIN SHARE
+    ELSE
+      USE (lcTable) ;
+          ORDER (lcTag) ;
+          ALIAS (&quot;RI_&quot;+LTRIM(STR(lnNewArea))) ;
+          AGAIN SHARE
+    ENDIF
+    cCursors = cCursors + UPPER(lcTable) + &quot;?&quot; + ;
+               STR(lnNewArea,5)
+  ELSE
+  * Retrieve work area of referential integrity cursor
+    nNewArea = VAL(SUBSTR(cCursors, ;
+               nInUseArea + LEN(lcTable) + 1, 5))
+    cCursors = STRTRAN(cCursors, ;
+               UPPER(lcTable) + &quot;*&quot; + STR(nNewArea,5), ;
+               UPPER(lcTable) + &quot;?&quot; + STR(nNewArea,5))
+  ENDIF
+
+RETURN (lnNewArea)
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This routine begins by checking variable <TT>cCursors</TT> to
+see whether the table has already been opened for use by the referential
+integrity routines. Variable <TT>cCursors</TT> has the following
+structure:
+<UL>
+<LI>Table name
+<LI>Character to identify whether the table
+is in use for another trigger
+<LI>Work-area number where table is open
+</UL>
+<P>
+Actually, <TT>cCursors</TT> is a string that repeats the preceding
+structure for each open table. If the table is already open, all
+that the routine needs to do is retrieve the work area that it
+is in and change the in-use character flag from <TT>*</TT> to
+<TT>?</TT>. Then, <TT>RIOPEN()</TT> returns the work-area number.
+This tracking is required to keep track of which tables are open
+and can have their record pointer moved. Remember that you cannot
+move the record pointer of tables that are directly involved in
+the current trigger.
+<P>
+If the table is not open, <TT>RIOPEN()</TT> selects the next available
+work area with <TT>SELECT 0</TT> and opens the table with the
+<TT>AGAIN</TT> and <TT>SHARE</TT> clauses. The <TT>AGAIN</TT>
+clause creates a cursor that enables you to open the table multiple
+times. The table could already be open, but referential integrity
+requires a separate copy with its own tag and record pointer.
+Systems developed for use on a network require the <TT>SHARE</TT>
+clause so that multiple users can have the same file open at the
+same time.
+<P>
+The last thing that <TT>RIOPEN()</TT> does is update variable
+<TT>cCursors</TT> with the following information:
+<UL>
+<LI>The name of the table
+<LI>The <TT>?</TT> character, indicating
+that the file is in active use
+<LI>The work-area number
+</UL>
+<P>
+The other routine used by <TT>SALEDEL()</TT> is <TT>RIDELETE()</TT>,
+which performs the actual deletion of records referenced by triggers.
+In this case, <TT>SALEDEL()</TT> has already changed the default
+work area to <TT>DETAILS.DBF</TT> and points to a record to delete.
+However, <TT>RIDELETE()</TT> cannot simply delete the record,
+it first checks to see whether it can get a record lock. If not,
+<TT>REDELETE()</TT> begins a rollback process by returning a false
+value in <TT>llReturnValue</TT>. This value eventually works its
+way back up to the trigger, which cancels the deletion of the
+parent record and any child records deleted for this parent since
+the trigger began.
+<P>
+Listing 4.7 shows the code for <TT>RIDELETE()</TT>.<P>
+
+<HR>
+<B>Listing 4.7&nbsp;&nbsp;</B><TT><B>04CODE07.PRG</B></TT><B>-The
+</B><TT><B>RIDELETE </B></TT><B>Code
+<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+*****************
+FUNCTION RIDELETE
+* Delete the current record in the current area
+LOCAL llReturnValue
+
+llReturnValue = .T.
+* Attempt to get a record lock
+  IF (UPPER(SYS(2011))='RECORD LOCKED' and !DELETED()) OR !RLOCK()
+    llReturnValue = .F.
+  ELSE
+  * If not deleted, delete it.
+    IF !DELETED()
+      DELETE
+      nError = 0
+      UNLOCK RECORD (RECNO())
+      IF nError &lt;&gt; 0
+        = TABLEREVERT()
+        UNLOCK RECORD (RECNO())
+        llReturnValue = .F.
+      ENDIF
+    ENDIF
+  ENDIF
+RETURN llReturnValue
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+When it obtains a record lock, <TT>RIDELETE()</TT> checks to see
+whether the record has already been deleted. (It hardly makes
+sense to delete it twice.) The function then deletes the current
+record in the current table. If an error occurs, it executes a
+function called <TT>TABLEREVERT()</TT>, which cancels the delete.
+<TT>RIDELETE()</TT> passes the <TT>llReturnValue</TT> back to
+the trigger to cancel any related deletions.
+<P>
+If everything deletes successfully, <TT>llReturnValue</TT> passes
+a value of true back to the trigger and the event ends. Although
+the trigger on the <TT>SALES</TT> file can perform other actions,
+it is the programmer's responsibility to determine appropriate
+actions in each situation.
+<P>
+After a procedure is performed by means of a cursor, the procedure
+can close it. On the other hand, leaving it open until the end
+of the transaction enables other functions in the program to reuse
+it. The special character (<TT>?</TT>) after the table name in
+variable <TT>cCursors</TT> indicates that the cursor is currently
+in use. If so, subsequent functions cannot reuse the cursor because
+another routine might need the current record-pointer position.
+(Remember that you cannot move the record-pointer position of
+a table that is currently involved in a trigger or validation.)
+When you are done with the cursor, change this character to a
+different character (<TT>*</TT>) in variable <TT>cCursors</TT>
+to tell the program that it can reuse the cursor.  That is the
+purpose of <TT>RIREUSE()</TT>: It changes the special character
+from a question mark (<TT>?</TT>) to an asterisk(<TT>*</TT>) to
+indicate that the cursor can be reused. Listing 4.8 illustrates
+the code to perform this action.<P>
+
+<HR>
+<B>Listing 4.8&nbsp;&nbsp;</B><TT><B>04CODE08.PRG</B></TT><B>-Referential
+Integrity Code Generated by the RI Builder Called at the End of
+Every Trigger<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+****************
+FUNCTION RIREUSE
+* This routine allows reuse of exiting cursor
+LPARAMETERS lcTable, lcArea
+  cCursors = STRTRAN(cCursors, ;
+             UPPER(lcTable) + &quot;?&quot; + STR(lcArea,5), ;
+             UPPER(lcTable) + &quot;*&quot; + STR(lcArea,5))
+RETURN .T.
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+<B>Triggers Performing No Action&nbsp;&nbsp;</B>The insert trigger
+for <TT>SALES</TT> calls the <TT>SALEINS()</TT> function, which
+simply returns a value of true as shown in the following code.
+When you are adding a new sales order, there is no reason to check
+<TT>DETAILS</TT>.
+<BLOCKQUOTE>
+<PRE>
+****************
+FUNCTION SALEINS
+* No referential action required when adding a parent
+RETURN .T.<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Actually, there may be a reason for adding code to the insert trigger of <TT>SALES</TT>. Visual FoxPro executes this trigger not only when you add a new record to the table, but also when you recall a deleted one. When a sales order is recalled, you may want to recall its details automatically.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Performing a Cascade Modify&nbsp;&nbsp;</B>The last trigger
+in <TT>SALES.DBF</TT> occurs when you change any field value in
+a record. This routine begins by initializing the return variable
+to true, and then it checks to see whether it is in the first
+trigger level. This means that you are modifying a <TT>SALES</TT>
+record directly, not as a result of deleting <TT>DETAIL</TT> records
+for the same order ID.
+<P>
+Next, the routine stores the current order ID in a local variable,
+along with the &quot;pre-change&quot; order ID. When a transaction
+begins, think of Visual FoxPro as storing the changes to the current
+record in a buffer. You can access the changed values of any field
+by using the variable name directly. However, to access the original
+values of any field, you need to use the <TT>OLDVAL()</TT> function.
+<P>
+The <TT>SALEMOD()</TT> function retrieves both values to determine
+whether the relational fields (<TT>cOrderId</TT>, in this case)
+have changed. If they have not changed, the function exits with
+a return value of true. Otherwise, this function locates the matching
+records in <TT>DETAILS.DBF</TT> and updates the old key values
+to the new one.  This portion of the routine is similar to <TT>SALEDEL()</TT>,
+with the exception that it uses a <TT>REPLACE</TT> statement instead
+of a call to <TT>RIDELETE()</TT>.
+<P>
+Listing 4.9 shows the code for <TT>SALEMOD()</TT>.<P>
+
+<HR>
+<B>Listing 4.9&nbsp;&nbsp;</B><TT><B>04CODE09.PRG</B></TT><B>-Referential
+Integrity Called on a Modify to Modify All Related Records Automatically
+<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+****************
+FUNCTION SALEMOD
+* If modifying a sales record, modify all details
+LOCAL  llReturnValue, lcOrderId, lcOldValue, lnDetArea
+
+  llReturnValue = .T.
+  IF nLevel = 1
+    lcOrderId     = cOrderId
+    lcOldValue    = OLDVAL('cOrderId')
+
+  * If key value changed, updated the child records
+    IF lcOrderID &lt;&gt; lcOldValue
+      lnDetArea = RIOPEN('DETAILS')
+      SELECT (lnDetArea)
+      SCAN FOR cOrderId = lcOldValue
+        REPLACE cOrderId WITH lcOrderId
+      ENDSCAN
+      SELECT sales
+    ENDIF
+  ENDIF
+RETURN llReturnValue
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Another way to see whether the foreign key has changed uses the
+<TT>GETFLDSTATE()</TT> function. However, the function still needs
+<TT>OLDVAL()</TT> to find and replace the key value in the child
+records.
+<P>
+<B>Using Triggers for the Child Table&nbsp;&nbsp;</B><TT>DETAILS.DBF</TT><B>
+</B>also has three triggers. Each trigger calls a single routine
+called<B> </B><TT>RIDETAILS()</TT>, with a single-character parameter
+to identify the trigger. The code of <TT>RIDETAILS()</TT>, which
+appears in Listing 4.10, shows that except for the function calls
+in the <TT>CASE</TT><B> </B>statement, it mirrors <TT>RISALES()</TT>.
+<P>
+
+<HR>
+<B>Listing 4.10&nbsp;&nbsp;</B><TT><B>04CODE10.PRG</B></TT><B>-Referential
+Integrity Code Generated by the RI Builder Called on a Modification
+to Update All Related Records<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+******************
+FUNCTION RIDETAILS
+* This routine is called by the triggers in DETAILS.DBF
+LPARAMETERS lcAction
+LOCAL llReturnValue, Dummy
+
+* Start Transaction
+  Dummy         = IIF(TYPE(&quot;nLevel&quot;)&lt;&gt;&quot;N&quot; OR nLevel=0, ;
+                  RISTART(), &quot;&quot;)
+  nLevel        = nLevel + 1
+  llReturnValue = .F.
+
+* Perform action
+  DO CASE
+    CASE TYPE('lcAction') # 'C' ;
+         OR !UPPER(lcAction) $ 'DIU' ;
+         OR LEN(lcAction)&gt;1
+      ERROR 'Invalid action code passed to RIDETAILS'
+    CASE UPPER(lcAction) == 'D'
+      llReturnValue = DETAILDEL()
+    CASE UPPER(lcAction) == 'I'
+      llReturnValue = DETAILINS()
+    CASE UPPER(lcAction) == 'U'
+      llReturnValue = DETAILMOD()
+  ENDCASE
+
+* End transaction
+  nLevel = nLevel - 1
+  Dummy  = IIF(nLevel = 0, RIEND(llReturnValue), 0)
+RETURN llReturnValue
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+<B>Using a Trigger to Delete Parent When Last Child Is Deleted&nbsp;&nbsp;</B>When
+a user deletes an order detail record, you may want to know whether
+he deleted one of many detail records for the order or the last
+one. In this case, you should delete the parent record if you
+delete the last or only child record. However, not every application
+should delete the parent record. Just because you delete all the
+employee's projects, for example, does not mean that you delete
+the employee as well. So the developer must take an active role
+in determining the expected functionality of each trigger. The
+code shown in Listing 4.11 implements a trigger that deletes the
+parent record when the last child is deleted.<P>
+
+<HR>
+<B>Listing 4.11&nbsp;&nbsp;</B><TT><B>04CODE11.PRG</B></TT><B>-Code
+that Deletes the Parent Record When the Last Child Is Deleted
+<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+******************
+FUNCTION DETAILDEL
+* Check if all order details are deleted, then delete parent
+LOCAL cnt, lcOrderId, lnCurrentArea, ;
+      lnSalesArea, lnDetArea, llReturnValue
+
+  llReturnValue   = .T.
+  lcOrderId       = cOrderId
+  lnCurrentArea   = SELECT()
+
+  IF !EMPTY(lcOrderId)
+    lnDetArea     = RIOPEN('DETAILS')
+    cnt           = 0
+    SELECT (lnDetArea)
+    SCAN FOR cOrderId = lcOrderId AND !DELETED()
+      cnt         = cnt + 1
+    ENDSCAN
+
+    IF cnt = 1 AND nLevel =1
+      lnSaleArea  = RIOPEN('SALES', 'ORDERID')
+      IF SEEK(lcOrderId)
+        llReturnValue = RIDELETE()
+      ENDIF
+      = RIREUSE('SALES', lnSaleArea)
+    ENDIF
+    SELECT (lnCurrentArea)
+  ENDIF
+RETURN llReturnValue
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This routine first checks to see whether the <TT>OrderId</TT>
+exists before proceeding so that the user can delete a blank record
+without going through the rest of the validation. Then, the routine
+opens a second occurrence of <TT>DETAILS</TT> and counts the number
+of active records that have the same <TT>OrderId</TT>. If this
+number is greater than <TT>1</TT>, and if the trigger sequence
+began by deleting details, it looks for and deletes the parent
+record.
+<P>
+Why check for a count greater than <TT>1</TT> if the conditional
+string contains the function <TT>NOT DELETED()</TT>? During a
+transaction, the record is not recognized as deleted until you
+commit the transaction.
+<P>
+The reason why you have to check the level is that <TT>SALEDEL()</TT>
+can also call <TT>DETAILDEL()</TT>. When <TT>SALEDEL()</TT> initiates
+a <TT>DETAIL</TT> record delete, the function does not have to
+go back to <TT>SALEDEL()</TT> a second time, which could potentially
+lead to an endless loop. But when the trigger initiates the detail
+delete, you do want to check <TT>SALEDEL()</TT> when you delete
+the last child.
+<P>
+<B>Using an Insert Trigger that Checks for a Parent Record&nbsp;&nbsp;</B>The
+second trigger for file <TT>DETAILS</TT> occurs when you add a
+record or recall a deleted one. Remember that Visual FoxPro triggers
+the insert trigger when you add a new record, not after you fill
+in its fields. Therefore, FoxPro triggers for a new, blank record.
+Because you do not want to check for a blank foreign key in <TT>SALES.DBF</TT>,
+the <TT>DETAILINS()</TT> function tests for an empty <TT>OrderId</TT>.
+When that field is empty, the function simply skips the check.
+<P>
+On the other hand, a recalled record should have a corresponding
+parent. Therefore, when <TT>OrderId</TT> exists, the following
+routine uses it to search a copy of <TT>SALES.DBF</TT> (see Listing
+4.12). If the routine finds a matching order record, it completes
+the record recall; otherwise, the record remains deleted. When
+this happens, a message box appears telling the user that there
+is <TT>No corresponding order for this detail</TT>.<P>
+
+<HR>
+<B>Listing 4.12&nbsp;&nbsp;</B><TT><B>04CODE12.PRG</B></TT><B>-Referential
+Integrity Can Insert a Detail Record on the Insert of a Parent
+Record Automatically<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+******************
+FUNCTION DETAILINS
+* Insert a detail record only if a sales record exists
+LOCAL lcOrderId, lnSaleArea, llReturnValue, lnCurrentArea
+
+  llReturnValue =  .T.
+  lcOrderId     = cOrderId
+  lnCurrentArea = SELECT()
+
+  IF !EMPTY(lcOrderId)
+    lnSaleArea    = RIOPEN('SALES', 'ORDERID')
+    llReturnValue = SEEK(lcOrderId, lnSaleArea) AND ;
+                    !DELETED(lnSaleArea)
+    = RIREUSE('SALES', lnSaleArea)
+    IF !llReturnValue
+      = MESSAGEBOX('No corresponding order for this detail')
+    ENDIF
+    SELECT (lnCurrentArea)
+  ENDIF
+RETURN llReturnValue
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+If triggers cannot guarantee that a new detail record has a corresponding
+sales record, how can you guarantee it? One method uses the <TT>VALID</TT>
+clause on the <TT>cOrderId</TT> field, and it performs a <TT>SEEK</TT>
+against <TT>cOrderId</TT> in <TT>SALES</TT>. Barring that, consider
+checking for a <TT>SALES</TT> record in the update trigger of
+<TT>DETAILS</TT>. After all, filling in a blank field is still
+an update.
+<P>
+The following section examines the final trigger for <TT>DETAILS</TT>:
+the update trigger.
+<P>
+<B>Using a Modify Trigger that Also Checks for a Parent Record&nbsp;&nbsp;</B>The
+update trigger, named <TT>DETAILMOD()</TT>, makes sure that <TT>cOrderId</TT>
+in <TT>DETAILS</TT> matches <TT>cOrderId</TT> in <TT>SALES</TT>.
+The trigger also checks to see whether any other detail records
+exist with the old <TT>cOrderId</TT> value. If not, it deletes
+the parent record that has the old ID.
+<P>
+Of course, there are other ways to handle an order ID modification.
+The first is to change all records with matching order IDs in
+<TT>DETAILS</TT> to the new value. Also, you can change the order
+ID in the parent record. If a corresponding parent record does
+not exist for the new order ID, find the <TT>SALES</TT> record
+with the preceding order ID and change it first. Then change all
+corresponding records in <TT>DETAILS</TT> to match the new order
+ID.
+<P>
+The code in Listing 4.13 shows the <TT>DETAILMOD()</TT> function.
+<P>
+
+<HR>
+<B>Listing 4.13&nbsp;&nbsp;</B><TT><B>04CODE13.PRG</B></TT><B>-Referential
+Integrity Can Check for a Matching Parent Key Value on the Modification
+of a Child Key Value and Delete the Child if the Child's Key Value
+Has No Match to a Parent<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+******************
+FUNCTION DETAILMOD
+* Allow key value change if it matches another parent
+* If no more child records for this parent, delete it
+LOCAL cnt, lcOrderId, lcOldValue, ;
+      lnSalesArea, llReturnValue, lnDetArea
+
+  llReturnValue   = .T.
+
+  IF nLevel=1
+    lcOrderId       = cOrderId
+    lcOldValue      = OLDVAL('cOrderId')
+
+  * First check if new value is a valid parent key
+    lnSaleArea      = RIOPEN('SALES', 'ORDERID')
+    llReturnValue   = SEEK(lcOrderId, lnSaleArea) AND ;
+                      !DELETED(lnSaleArea)
+    IF !llReturnValue
+      = MESSAGEBOX('No corresponding order for this detail')
+    ENDIF
+
+  * New order id is valid, check for other child records in old order
+    IF llReturnValue
+      cnt             = 0
+      lnDetArea       = RIOPEN('DETAILS')
+      SELECT (lnDetArea)
+      SCAN FOR OLDVAL('cOrderId') = lcOldValue AND !DELETED()
+        cnt = cnt + 1
+      ENDSCAN
+      = RIREUSE('DETAILS', lnDetArea)
+
+    * If no other child records, delete the parent
+      IF cnt = 1
+        SELECT (lnSaleArea)
+        IF SEEK(lcOldValue)
+          llReturnValue = RIDELETE()
+        ENDIF
+      ENDIF
+    ENDIF
+    SELECT DETAILS
+  ENDIF
+  = RIREUSE('SALES', lnSaleArea)
+RETURN llReturnValue
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Again, this routine first checks to see whether <TT>DETAILS.cOrderId</TT>
+exists in the parent file <TT>SALES.DBF</TT>. If not, the routine
+displays a message and exits with a return value of false. However,
+if the order ID does exist, the routine first counts the number
+of active <TT>DETAIL</TT> records with the old order ID. If no
+others exist, the routine opens <TT>SALES.DBF</TT> and deletes
+the parent record.
+<P>
+<B>Using a Cleanup Routine&nbsp;&nbsp;</B> Only one routine remains.
+When Visual FoxPro completes any of these six triggers, it returns
+to either <TT>RISALES()</TT> or <TT>RIDETAILS()</TT>. FoxPro then
+executes the <TT>RIEND()</TT> routine, which takes the return
+value from the trigger and determines whether to commit the transaction
+or roll it back. To commit the transaction, FoxPro executes <TT>END
+TRANSACTION</TT>.
+<P>
+You have a choice, however. You can use <TT>ROLLBACK</TT>, which
+discards every change made since the transaction began in the
+<TT>RISTART()</TT> function. Alternatively, you can roll back
+incrementally using <TT>TABLEREVERT()</TT>. This command rolls
+back individual (or all) records in one table at a time, as shown
+in Listing 4.14.<P>
+
+<HR>
+<B>Listing 4.14&nbsp;&nbsp;</B><TT><B>04CODE14.PRG</B></TT><B>-Referential
+Integrity Can Call a Routine to Perform the Appropriate Action
+After a Check<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+**************
+FUNCTION RIEND
+* Call this routine to exit the referential integrity check
+* It saves changes or reverts to original values depending
+* on the value passed to it.
+LPARAMETER llSuccess
+LOCAL lnXx
+
+* Complete transaction or roll it back
+  IF !llSuccess
+    IF USED('SALES')
+      = TABLEREVERT(.T., 'SALES')
+    ENDIF
+    IF USED('DETAILS')
+      = TABLEREVERT(.T., 'DETAILS')
+    ENDIF
+  ENDIF
+  END TRANSACTION
+* or use this code:
+*  IF llSuccess
+*    END TRANSACTION
+*  ELSE
+*    ROLLBACK
+*  ENDIF
+
+* Reset on error
+  IF EMPTY(cOldError)
+    ON ERROR
+  ELSE
+    ON ERROR (cOldError)
+  ENDIF
+
+* Remove cursors and reset variables that track them
+  FOR lnXx = 1 TO OCCURS(&quot;?&quot;, cCursors)
+    cFound = ATC('?', cCursors, lnXx) + 1
+    USE IN (VAL(SUBSTR(cCursors, cFound, 5)))
+  ENDFOR
+  FOR lnXx = 1 TO OCCURS(&quot;*&quot;, cCursors)
+    cFound = ATC('*', cCursors, lnXx) + 1
+    USE IN (VAL(SUBSTR(cCursors, cFound, 5)))
+  ENDFOR
+  STORE &quot;&quot; TO cCursors
+RETURN .T.
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+This routine reads <TT>cCursors</TT> to remove the cursors created
+by referential integrity so that functions can move the record
+pointer.
+<P>
+In the past, you could easily have programmed these functions
+into forms. But you could not have done anything about users who
+directly edited the tables using browse windows or other commands
+directly from the Command window. Now, by adding triggers to critical
+tables, you can protect referential integrity even from users
+who prefer to edit files directly rather than to use forms.
+<P>
+As you can see from these routines, writing your own referential
+integrity rules is certainly possible-and even necessary, if you
+want to handle changes differently from the VFP defaults. If you
+can accept the rules defined by VFP's own Referential Integrity
+Builder, however, your task will be much easier and more error-proof.
+<HR>
+<CENTER>
+
+<A HREF="ch03.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch05.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

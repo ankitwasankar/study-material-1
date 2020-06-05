@@ -1,0 +1,1487 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 8 -- The Project</TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+<H1><FONT SIZE=6 COLOR=#FF0000>Chapter&nbsp;8</FONT></H1>
+<H1><FONT SIZE=6 COLOR=#FF0000>The Project</FONT></H1>
+<HR>
+<P>
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+<UL>
+<LI><A HREF="#ProjectOverview">
+Project Overview</A>
+<UL>
+<LI><A HREF="#DesigningtheObjectModel">
+Designing the Object Model</A>
+<LI><A HREF="#ChoosingtheProjectTypeEXEorDLL">
+Choosing the Project Type: EXE or DLL</A>
+</UL>
+<LI><A HREF="#Instancing">
+Instancing</A>
+<UL>
+<LI><A HREF="#Private">
+Private</A>
+<LI><A HREF="#PublicNotCreatable">
+PublicNotCreatable</A>
+<LI><A HREF="#SingleUse">
+SingleUse</A>
+<LI><A HREF="#MultiUse">
+MultiUse</A>
+<LI><A HREF="#GlobalMultiUse">
+GlobalMultiUse</A>
+<LI><A HREF="#GlobalSingleUse">
+GlobalSingleUse</A>
+<LI><A HREF="#VariationsonInstancing">
+Variations on Instancing</A>
+<LI><A HREF="#ImpactofInstancingonSharingClassModulesBetweenProjects">
+Impact of Instancing on Sharing Class Modules Between Projects
+</A>
+</UL>
+<LI><A HREF="#ProjectProperties">
+Project Properties</A>
+<UL>
+<LI><A HREF="#GeneralPropertySettings">
+General Property Settings</A>
+<LI><A HREF="#MakePropertySettings">
+Make Property Settings</A>
+<LI><A HREF="#ApplicationTitle">
+Application Title</A>
+<LI><A HREF="#ApplicationIcon">
+Application Icon</A>
+<LI><A HREF="#CompilePropertySettings">
+Compile Property Settings</A>
+<LI><A HREF="#ComponentPropertySettings">
+Component Property Settings</A>
+</UL>
+<LI><A HREF="#MovingOn">
+Moving On</A>
+</UL>
+</UL>
+
+<HR>
+<P>
+So you're ready to create a code component. You have a task in
+mind-one you can envision encapsulated into an object with a clearly
+defined interface. Perhaps you expect this object to be used by
+multiple programs simultaneously, or perhaps you expect it to
+be reusable in some future project. Perhaps you expect that the
+implementation of this particular object may need to be updated
+frequently, and you don't want to have to redistribute the entire
+application with every update. Perhaps you need to take advantage
+of some of the unique capabilities of objects implemented within
+an executable.
+<P>
+There are many options. What counts first is that you ask the
+questions. You must understand what you want to accomplish before
+you can take that critical first step of creating your project.
+<H2><A NAME="ProjectOverview"><FONT SIZE=5 COLOR=#FF0000>
+Project Overview</FONT></A></H2>
+<P>
+Your project, in an ActiveX code component, is made up of four
+elements: The project, the class modules, the standard modules,
+and the forms.
+<P>
+The project defines some key characteristics about the code component,
+including whether it runs in process or out of process, whether
+it is single or multithreaded (more on this later), and how your
+component is made accessible to the outside world. A project may
+expose multiple objects or none at all.
+<P>
+The class modules, if present, are used to define your component's
+objects. Those objects that are visible to the outside world make
+up the object model of your project. Objects that are private
+to the project may also prove valuable for implementation purposes.
+<P>
+Standard modules, if present, are never exposed to the outside
+world. They are often useful for providing global functions and
+variables to your project. However, the meaning of &quot;global&quot;
+can depend on the type of component you are creating.
+<P>
+Forms are the primary user interface objects for Visual Basic.
+Many code components do not have a user interface-in fact, it
+is possible to create code components in which all user interface
+elements are disabled. Other code components, such as those that
+belong to stand-alone applications that expose an object model,
+rely extensively on forms. Some code components use forms only
+as holders for controls. Keep in mind that forms are also objects;
+they can have methods, properties, and events.
+<P>
+Every project ultimately demands that you take the following steps
+(though you may not take them in the order shown):
+<UL>
+<LI>Define what you are trying to accomplish.
+<LI>Design an object model to suit.
+<LI>Configure the project settings according to the needs of the
+component.
+<LI>Define the classes and forms that you will use to implement
+the component. These will become the objects that the component
+will use, though not all of them may be exposed to the outside
+world.
+<LI>Define the global variables and functions that will be used
+by the component.
+</UL>
+<H3><A NAME="DesigningtheObjectModel">
+Designing the Object Model</A></H3>
+<P>
+It's difficult to design a component if you do not yet fully understand
+the capabilities of the language you are using. It is difficult
+to understand and demonstrate the capabilities of a language if
+you do not understand how to define an application's requirements
+and create an object model for it. So where do you start?
+<P>
+Microsoft's documentation takes the approach of leading you through
+a step-by-step example that demonstrates many language features,
+while ducking (or only briefly mentioning) the trade-offs and
+choices implied by the sample. The documentation then goes into
+a more in-depth, feature-by-feature review of the language.
+<P>
+Theirs is really not a bad approach. And since this book is intended
+to supplement the Microsoft documentation rather than rehash it,
+it seemed appropriate that I take a different tack. Given that
+I've just recommended a sequence for creating a component, it
+seems reasonable that I follow through with a demonstration. But
+instead of a simple step-by-step description of building a sample
+component, I'll go into as much depth as possible so you can see
+some of the choices and trade-offs that are possible.
+<P>
+The first step is to define a task.
+<P>
+We had a recent investment craze at work. You know how fads sometimes
+appear in the workplace? Everyone got excited about a particular
+stock. You see, the company's stock had dropped suddenly due to
+some very public bad news, and it seems that our crew really liked
+their products and believed the stock would quickly recover. People
+were frequently interrupting their work to check the progress
+of the stock.
+<P>
+Now, I like to think I'm a very enlightened employer, and I must
+confess that I, too, was interrupting my work to check out the
+latest market figures. But things were getting out of hand. Clearly
+what was needed was a program that would just sit in the background
+and check the stock value, notifying us whenever it changed beyond
+a certain threshold. But it had to be a simple program-one that
+could be thrown together in 10 or 15 minutes-because spending
+any longer would defeat its purpose, which was to save time. Spending
+several days coding a stock monitor program in order to save a
+few minutes here and there would be a complete waste of time.
+<P>
+Logically, the program is fairly simple. You can imagine a form
+with a text box in which you can enter a stock symbol. It would
+have a variable to hold the current stock price. Every few minutes
+the application would retrieve the stock price and check it against
+the previous value. If the price changed, it would beep or otherwise
+notify the person to take a look. You could even set a threshold
+so the program would warn you only if the price changed by a substantial
+amount. An advanced version of the program could verify a list
+of stocks. Why, you could even tie it into a database and check
+an entire list-but I'm getting ahead of myself.
+<P>
+Now, to an intermediate level Visual Basic programmer, almost
+everything in the above project should sound absolutely trivial.
+You already know about forms, timers, and text boxes. The idea
+of a program that compares a stored value with a new value during
+a timer event should be clear and obvious.
+<P>
+But in fact, the chances are good that you'll see the catch in
+the project. Visual Basic does not provide a function that lets
+you retrieve a stock quote.
+<P>
+So in looking at the design of this stock monitor program, you
+have one critical decision to make. Do you figure out how to obtain
+a stock quote and add that functionality to the monitor program?
+Or do you create a component of some sort that has the ability
+to obtain stock quotes?
+<P>
+To answer this question, let's look at a pseudo-code description
+of this program. Pseudo code, for those of you who are unfamiliar
+with it, in this context is code for a language that doesn't exist.
+This is different from P-code (pseudo code), which is an intermediate
+compiled language used by interpreted VB programs. When you use
+pseudo code to document a program, you simply write a plain English-language
+description of what the program will do. The stock monitor program
+in pseudo code might look something like this:
+<BLOCKQUOTE>
+<PRE>
+Get the current price of the stock and store it.
+On each timer event
+       Get the current price of the stock
+       If the current price does not match the stored value then
+             Notify the user
+       End If
+End timer event
+</PRE>
+</BLOCKQUOTE>
+<P>
+See what I mean? No compiler (that I know of) can run this program,
+but it clearly describes what the program does and could form
+a starting point for the actual implementation.
+<P>
+The only thing you cannot do using Visual Basic functions is the
+operation &quot;Get the current price of the stock.&quot; Notice
+that this operation is performed twice in the program. Note also
+that while the program depends on this operation, the operation
+itself does not depend on any other part of the program. This
+means the operation can stand alone as an independent function.
+<P>
+Another way of looking at it is this: if you changed the &quot;Get
+the current price of the stock&quot; function, it would require
+that you change the rest of the program. But if you changed the
+rest of the program, it would have no impact on the stock pricing
+function. The dependency is one way only.
+<P>
+The question you need to ask now is this: Is the operation of
+getting a current price of a stock unique to this application?
+Or is it likely to be useful at other times by other applications?
+<P>
+This is a critical question. You see, if you think you will want
+to reuse the code that implements this functionality, you will
+certainly want to isolate it in some way. There are a number of
+ways of isolating code for reuse:
+<UL>
+<LI>Place the code in its own function and cut-and-paste the code
+to other applications as needed.
+<LI>Place the code in its own module and add the module to applications
+that need it.
+<LI>Place the code in an ActiveX component and let any applications
+that need the functionality access it through the component.
+</UL>
+<P>
+Let's look at the trade-offs for this particular example.
+<P>
+Placing the code in a function within one of the application's
+forms or modules has several disadvantages. Cutting-and-pasting
+code from one application to another is awkward; you have to remember
+which module contained the function each time you need it. Of
+course, there are some third-party tools that support code libraries
+that can alleviate this problem. However, if the function is one
+you'll use often, in no time at all your system will have multiple
+copies of the function scattered among many different applications.
+Now, if a bug turned up in the code, you would not only have to
+recompile each of those programs, you would have to correct the
+function in each and every one of the modules that contain it.
+Not that you would ever have a bug in one of your functions, but&#133;
+<P>
+Another major disadvantage is that this approach is very poorly
+suited to tasks that cannot be implemented in a single function.
+Complex tasks may need to be implemented with multiple functions,
+objects, or custom controls. Using cut-and-paste techniques to
+share code in these cases borders on the ridiculous, if not the
+impractical.
+<P>
+Surely there must be some advantage to keeping the function within
+the application? Well, yes-you can be fairly certain that no changes
+in another application or another application's code modules will
+affect your program. This approach provides the best control over
+the code associated with your application.
+<P>
+Is this approach applicable to the stock quote problem?
+<P>
+It is not. The operation of getting a stock quote is clearly defined.
+If you had a bug in your implementation, you would certainly want
+it to be fixed on recompilation at least, without having to search
+through the application's modules. The chances of having changes
+to a common module cause problems with the monitor program are
+slim. Finally, what you may not know (because I have not yet even
+hinted at how the stock quote operation is actually implemented)
+is that obtaining a stock quote is a somewhat complex task that
+(as far as I know) cannot be implemented in a single Visual Basic
+language function.
+<P>
+So let's look at the next option.
+<P>
+Placing the code in a shared module solves most of the disadvantages
+of the previous approach. A single module can be added to many
+applications. Changes to the module will be incorporated into
+each application that uses it as soon as the application is recompiled.
+Because the code is kept in a single shared module, the problem
+of multiplying versions is eliminated. You may still run into
+trouble with complex tasks that require objects or custom controls.
+In those cases you may actually need a set of modules, forms,
+and classes to implement the functionality but, depending on your
+situation, this may not be a significant problem.
+<P>
+The big issue with this approach is the fact that changes to the
+module do not take place until the program is recompiled. You
+can consider this either an advantage or a disadvantage. If the
+functionality is in an ActiveX component and you need to fix a
+bug in the code, you need only redistribute the component. Your
+application and any other application using the component is instantly
+updated. However, any new bugs planted into the ActiveX component
+immediately appear in those applications as well! The shared module
+approach places the code in your executable (leading to a larger
+EXE size), but it eliminates the need to distribute a separate
+component and handle versioning of that component as well.
+<P>
+Is this approach applicable to the stock quote problem? It's possible,
+but there are numerous factors that suggest that the ActiveX component
+approach might be better. For example:
+<UL>
+<LI>An ActiveX component effectively adds an easy-to-use stock
+quote capability to your system, accessible not only from Visual
+Basic but from any application that supports ActiveX automation
+(Excel, for example).
+<LI>Thinking ahead, anyone who wants a stock quote would probably
+also want other statistics on the stock, the daily high and low,
+the prior closing price and other statistics as well. This sentence
+should raise all sorts of warning bells in your mind. Think about
+it: Many different data values. Functionality associated with
+those values (in this case, obtaining the values and perhaps performing
+calculations based on them). By now Data + Associated functionality
+should positively scream the word &quot;object&quot; to you. ActiveX
+components work by exposing objects. Bingo!!!
+<LI>Let's say the technique you are using to obtain stock quotes
+involves connecting to a quotation service via a dial-up account
+or the Internet. What happens when the technique suddenly fails
+because the quote provider has gone out of business? You need
+to implement a new technique-fast! The last thing you want to
+do is recompile and redistribute dozens of different applications
+that might be using the quotation component. Instead you'll want
+to update the quotation component to handle the new quote provider
+and distribute the component. All of the applications that use
+it will immediately work with the new provider.
+</UL>
+<P>
+So the choice is now clear. If you are not interested in reusing
+the stock quoting code, you can place it in the application itself.
+But if you are going to reuse it, the task should definitely be
+implemented as an ActiveX component-and as an object no less.
+<P>
+Now since I am basically a lazy person (in the sense that I don't
+like to repeat work I've already done), code reuse is a high priority.
+If I'm already going to go to the trouble of writing code to obtain
+a stock quote, once is enough. So an ActiveX component it will
+be. 
+<P>
+But what type of component? Should it be a DLL or an EXE? Good
+question, so hold that thought. We're not quite ready to answer
+it.
+<P>
+Let's first conclude this section by following up on one key thought
+that came up regarding the &quot;object&quot; nature of the task.
+While the current price of a stock might be enough at first, clearly
+a stock quote program will want to retrieve other information
+associated with a stock. You can thus imagine an object related
+to a particular stock quotation that has the following properties:
+<UL>
+<LI>Symbol-The ticker symbol for the stock
+<LI>LastPrice-The current, or most recently traded, price
+<LI>High-Today's high
+<LI>Low-Today's low
+<LI>PriorClose-The closing price at the end of the previous trading
+day
+<LI>QuoteTime-The time of the most recent quote
+<LI>CompanyName-The full company name
+</UL>
+<P>
+You can imagine this object having a method to load the current
+information for the stock. It could be called GetQuote<B>,</B>
+for example. From here on we'll call this the StockQuote object.
+<P>
+You can imagine an ActiveX component that simply allows you to
+create StockQuote objects. This is a very simple object model.
+We'll be looking at building more complex object models later
+in this chapter and throughout the remainder of this book.
+<H3><A NAME="ChoosingtheProjectTypeEXEorDLL">
+Choosing the Project Type: EXE or DLL</A></H3>
+<P>
+Should the stock quote server be implemented as an in-process
+DLL, or out-of-process EXE? Based on the discussion in Part I
+of this book, the choice might seem obvious. In-process code runs
+substantially faster than out-of-process code, so of course it
+should be implemented as a DLL.
+<P>
+Or should it?
+<P>
+If the choice was this obvious, there would never be a need for
+EXE servers at all. Clearly out-of-process servers must have some
+advantages. There are a number of areas to consider:
+<UL>
+<LI>Performance
+<LI>Background operations
+<LI>Ability to share resources among multiple processes
+<LI>Multithreading issues
+</UL>
+<P>
+Before beginning, let's remove multithreading-threading issues
+from the equation. But only temporarily, because this subject
+will receive an entire chapter later on.
+<H4>Performance</H4>
+<P>
+We'll also give short shrift to performance, since that subject
+has already been covered in Part I. The important point to keep
+in mind here is that you cannot simply describe the relative performance
+of the two approaches by saying that &quot;EXE servers are slower
+than DLL servers.&quot; It is more correct to say that accessing
+properties and methods on components implemented by EXE servers
+is slower than accessing properties and methods on components
+implemented by DLL servers. The code within the component itself
+runs as quickly. We've already seen that a short operation, such
+as a property read, can take substantially longer on an EXE server.
+But what if what you are doing is calling a function that takes
+several minutes to execute (for example, executing a large database
+query or generating a report)? In this case the difference between
+a few microseconds or milliseconds is a negligible part of the
+total time spent in the function.
+<P>
+The StockQuote object is a good example in this respect. You would
+expect the property accesses to the object, such as obtaining
+the last price or quote time, to be fast operations. Thus, the
+marshaling overhead would be significant. But you can expect the
+GetQuote operation to be relatively slow, since it will involve
+communication with an outside quote provider.
+<P>
+You should also consider how often your application will be accessing
+the object when estimating the performance impact. An object that
+your program will be accessing continuously may best be implemented
+in a DLL because the marshaling process does impose a load on
+the system. However, the impact of marshaling on your overall
+system performance becomes negligible with an object that your
+program accesses infrequently. In the case of the StockQuote object,
+the time to retrieve a quote will probably be measured in hundreds
+of milliseconds if not seconds, which is quite infrequent by the
+performance standards of today's machines.
+<P>
+Does this mean that the StockQuote object should be implemented
+as an ActiveX EXE component? Not necessarily. It only means that
+for this particular object, the performance issues are relatively
+unimportant. We must look at the other two issues to make the
+decision.
+<H4>Background Operations</H4>
+<P>
+If you've been reading closely, you may have noticed that I mentioned
+the term multithreading in several places, along with a caveat
+that it was either unimportant at the moment or would be covered
+later. Both of these caveats still apply. However, to understand
+one of the key differences between DLL and ActiveX servers, you
+must know something about threads and the way Windows 32-bit operating
+systems multitask. Those of you who have a thorough understanding
+of multithreading and multitasking may want to skip what follows.
+For everyone else, let's start with the fundamentals.
+<P>
+You know that Windows allows you to run multiple applications
+at once. You probably also realize that this involves more than
+just switching quickly between applications. The Counter.vbp example
+demonstrates this. It contains a label control and a timer. The
+timer has an interval of 200 ms. The code is shown below:
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+
+Dim countval&amp;
+
+
+Private Sub Timer1_Timer()
+   countval = countval + 1
+   lblCounter.Caption = countval
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Run two instances of the counter.exe executable. Both of them
+will count simultaneously. How is it possible for a single processor
+to run two different applications at once? (We'll duck the issue
+of computers with more than one processor, since the principle
+is the same.) It is possible because the operating system can
+rapidly switch between the applications. In fact, at any given
+time your system may have many processes running, some of them
+that are launched and managed by the operating system itself.
+<P>
+Figure 8.1 illustrates multitasking between two applications.
+The first application runs for a while, then the operating system
+interrupts the flow of execution and starts running the other
+application. This happens very rapidly, giving the perception
+that both applications are running at once. This perception does
+not apply just at the user interface level. 
+<P>
+<A HREF="f8-1.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f8-1.gif"><B>Figure 8.1 :</B> <I>Impact of multitasking on program flow</I>.</A>
+<P>
+As a programmer, you generally need not worry about the fact that
+your application has been interrupted. You can rely on Windows
+to continue running your code from the point of interruption.
+From your perspective as a programmer, your application runs as
+a continuous sequence of instructions. This sequence is called
+an execution <I>thread</I>. The operating system sees two different
+processes, each with its own thread. It can switch between the
+threads, but from your point of view, the thread is unbroken,
+as illustrated by the vertical lines.
+<P>
+Whereas Figure 8.1 shows multitasking from the operating system
+viewpoint, Figure 8.2 illustrates a system timeline from the programmer's
+perspective. Application A and Application B each run in their
+own thread, and those threads run simultaneously (as far as you
+can tell).
+<P>
+<A HREF="f8-2.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f8-2.gif"><B>Figure 8.2 :</B> <I>Applications run in their own thread</I>.</A>
+<P>
+A thread can exist in three possible states. It can be running.
+It can be idle, meaning it is ready to run, but the CPU is currently
+running a different thread. Or it can be blocked, meaning that
+the thread is waiting for either a system resource or a system
+event. The operating system will not schedule the thread to run
+until the resource is available or the event occurs.
+<P>
+Each application runs as its own process. Each process has a main
+thread. It is possible for processes to have more than one thread,
+but Visual Basic 5.0 does not allow you to create multithreaded
+applications. (VB does allow you to create a limited type of multithreaded
+component server, which will be covered later.) 
+<P>
+The nature of Windows multithreading does impact the choice between
+EXE and DLL servers because they work differently. Let's first
+look at the DLL server case. Figure 8.3 shows the program flow
+for two applications and a DLL server. Application B runs in its
+own thread and has no impact on either Application A or the DLL
+server. But, as you can see, whenever Application A executes code
+in the DLL server, it is not executing its own code. In other
+words, DLL code runs in the same thread as the calling process.
+<P>
+<A HREF="f8-3.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f8-3.gif"><B>Figure 8.3 :</B> <I>Execution sequence with a DLL server</I>.</A>
+<P>
+An EXE server runs as a separate process. We've already discussed
+the impact this has on performance due to the fact that it has
+its own memory space. With this introduction to multitasking you
+can probably see what follows next: An EXE server also runs in
+its own thread!
+<P>
+This has two major ramifications. First, when one application
+is executing a function in an EXE server, other applications that
+try to access that server are blocked by default (multithreading
+servers will be discussed later). The server will wait until one
+method/property call is complete before the next is allowed to
+run, regardless of which application is calling the method.
+<P>
+Next, it is possible for an application to launch a background
+operation that will be run by the EXE server while the application
+continues to run its own code. This can be seen in Figure 8.4,
+where EXE server code is shown running simultaneously with the
+Application A code.
+<P>
+<A HREF="f8-4.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f8-4.gif"><B>Figure 8.4 :</B> <I>Execution sequence with an EXE server</I>.</A>
+<P>
+Let's take a look at this again from a different perspective.
+<P>
+An object implemented by a DLL server runs in the thread of the
+calling application. If 50 different applications each create
+an object using the same DLL server, each of the 50 objects will
+exist in the process space of the calling application and run
+in the thread of the calling application. Even though they are
+using the same server, there will be no communication between
+the objects, and they will not interfere with each other in any
+way.
+<P>
+An object implemented by an EXE server runs in the thread of the
+server application. If 50 different applications each create an
+object using the same instance of an EXE server, each of the 50
+objects will exist in the process space of the server and will
+run in the server's thread. While the server is executing a method
+or property call from one application, it cannot execute a method
+or property call from another-the thread is already running code
+based on the first application's request. Requests will thus be
+queued and executed in an order determined by the operating system.
+<P>
+Is there any way to prevent this blocking effect? Yes. One solution
+is to specify that a new instance of the EXE server be run for
+each object created. That way each object will be run by its own
+process; it will have its own process space and thus its own thread.
+While this is appropriate for some situations, especially when
+the one object acts as the top level for a complex object model
+that can all be run by a single instance of the server, it does
+involve quite a bit of overhead. Taking this approach for our
+50-object example would effectively run 50 copies of the server,
+which is sure to impact your system's performance. 
+<P>
+The other solution involves turning on multithreading for the
+server. I know I keep putting this subject off by saying that
+it is covered in a later chapter. The reason for this is that
+Visual Basic 5.0's implementation of multithreading is only appropriate
+for a certain class of problems and also has major impacts on
+global variable scoping. It's also a more advanced technique that
+has potential side effects. The dilemma is that I can't really
+talk about side effects until after the &quot;normal&quot; effects
+are discussed. If you really want to find out more now, you can
+skip ahead to <A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch14.htm" >Chapter 14</A>.
+<P>
+The <A HREF="ch8.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch8.htm" >Chapter 8</A>sample directory on the CD-ROM contains several
+programs that demonstrate this situation. First, there are two
+server applications. Both servers implement a public object called
+TestObject1, which has the following class code:
+<BLOCKQUOTE>
+<PRE>
+Option Explicit
+
+Public Sub SlowOperation()
+   Dim counter&amp;
+   For counter = 1 To 10000000
+   Next counter
+End Sub
+
+Public Sub FastOperation()
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The MTTstSv1.vbp project implements this object as an ActiveX
+EXE server with the project name MTTestServer1. The MTTstS1D.vbp
+project implements this object as an ActiveX DLL server with the
+project name MTTestServer1DLL.
+<P>
+The TestObject1 class exposes two functions. The SlowOperation
+method performs a very long loop, which demonstrates a time-consuming
+operation. The FastOperation method returns immediately, demonstrating
+a very fast operation.
+<P>
+A test program called MTTest1.vbp tests the behavior of these
+objects. The following listing shows the code for the frmMTTest1
+form. This form contains a label control and four buttons. Each
+button calls a method in one of the TestObject1 objects and upon
+return increments a counter and displays the count in the label
+control. The project creates two objects. Both are named TestObject1,
+so you can distinguish between the objects by qualifying them
+with the project name. Figure 8.5 shows the layout of the form.
+<P>
+<A HREF="f8-5.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f8-5.gif"><B>Figure 8.5 :</B> <I>The MTTest1 project in action</I>.</A>
+<BLOCKQUOTE>
+<PRE>
+' Threading demonstration program #1
+' Guide to the Perplexed
+' Copyright (c) 1997, by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Dim counter&amp;
+
+' We can reference two different test objects
+Dim mtserve As New MTTestServer1.TestObject1
+Dim mtserveDLL As New MTTestServer1DLL.TestObject1
+
+Private Sub cmdFast_Click()
+   mtserve.FastOperation
+   counter = counter + 1
+   lblCount.Caption = counter
+End Sub
+
+Private Sub cmdFastDLL_Click()
+   mtserveDLL.FastOperation
+   counter = counter + 1
+   lblCount.Caption = counter
+End Sub
+
+Private Sub cmdSlow_Click()
+   mtserve.SlowOperation
+   counter = counter + 1
+   lblCount.Caption = counter
+End Sub
+
+Private Sub cmdSlowDLL_Click()
+   mtserveDLL.SlowOperation
+   counter = counter + 1
+   lblCount.Caption = counter
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+Now, try the following:
+<UL>
+<LI>Be sure the MTTstS1D.DLL and MTTstSv1.EXE servers are registered.
+(Use regsvr32.exe to register the DLL and simply run the executable.)
+<LI>Launch two copies of the MTTest1.exe program and set them
+side by side on the screen.
+<LI>Click on the Slow (EXE) button for one of the applications
+to preload the EXE server. Now click it again to get a sense for
+how long it takes to execute. If it is faster than a few seconds,
+recompile the servers using a longer loop count. It is important
+that you not only be able to tell the difference, but that you
+have time to perform other operations while one is in progress.
+<LI>Click the Slow and Fast (DLL) buttons to get a sense of their
+performance as well. As you can see, the performance will seem
+to be identical to the EXE server version. This is to be expected,
+since you will not be able to perceive the marshaling overhead.
+<LI>Now click on the Slow (EXE) button in one instance of the
+program and immediately click a few times on the Fast (EXE) button
+in the other instance. You will see that the other instance's
+counter is not updated until after the first instance's slow operation
+is complete. This is because its access to the server is blocked.
+Even though each instance has its own TestObject1 object, both
+objects are serviced by the same EXE server, and it can only execute
+code for one at a time.
+</UL>
+<P>
+Now click on the Slow (DLL) button in one instance of the program
+and immediately click a few times on the Fast (DLL) button in
+the other instance. You will see that the other instance's counter
+is updated right away. This is because each application's object
+runs in the application's thread.
+<P>
+I've mentioned that an EXE server's ability to run in its own
+thread implies that it is possible to have an object run code
+as background operation, but I haven't yet really demonstrated
+how this is done. In principle the idea is this:
+<UL>
+<LI>Call a method in the EXE-based object method that initializes
+another object that will later trigger an event (a Timer object,
+for example).
+<LI>The method returns. The application thread continues to run.
+<LI>At some time thereafter, the event is triggered in the Server
+object. This event runs in the server thread at the same time
+as the other application continues to run in its own thread.
+</UL>
+<P>
+We'll be going into much more detail on this subject in the next
+chapter. In fact, the StockQuote example uses this technique,
+which is a strong factor to consider towards implementing it in
+an EXE server instead of a DLL server.
+<H4>Ability to Share Resources among Multiple Processes</H4>
+<P>
+An EXE server that supports multiple objects can also be useful
+for sharing a limited system resource or one that can only be
+used by a single object at a time.
+<P>
+Consider again the problem of retrieving a stock quotation. We
+still haven't discussed exactly how to accomplish this, but let's
+assume for the moment that it will require use of an ActiveX control,
+a form, and a communications resource of some type.
+<P>
+Now, these are not exactly lightweight resources. You would not
+notice any significant impact on the system with a single server
+containing these elements. But imagine you were running 20 different
+applications that could perform stock quotes simultaneously. Even
+if you used a DLL server, that is 20 different controls on 20
+different forms, all trying to access quotes through a single
+communications link. Assuming that the link and the quote server
+has enough throughput to support a single control at a time, the
+other 19 controls and forms represent wasted memory and resources.
+<P>
+However, if you use an EXE server that can support multiple StockQuote
+objects, all of the objects could share a single control and form.
+The server could queue up requests from the various objects and
+report to the object once the quote has been retrieved. Since
+the EXE server runs in its own thread, it can retrieve quotes
+in the background without interfering with the performance of
+the applications using the objects. Because the limiting factor
+in performance is the relatively slow communications link and
+server, the overhead in marshaling caused by using an out-of-process
+server is insignificant.
+<P>
+The verdict: The StockQuote object should be implemented as an
+EXE server. This way, a single server implements all of the StockQuote
+objects.
+<H2><A NAME="Instancing"><FONT SIZE=5 COLOR=#FF0000>
+Instancing</FONT></A></H2>
+<P>
+Every class module has two properties, the class name and the
+Instancing property. Instancing is not technically a project option
+(which is, after all, the subject of this chapter). But it has
+an enormous impact on the behavior of objects in a project. It
+is also one of the most confusing properties to understand, though
+I think you'll find it quite easy to understand with the background
+you have gained in this book so far.
+<P>
+The Instancing property can have the following values:
+<UL>
+<LI>Private
+<LI>PublicNotCreatable
+<LI>SingleUse 
+<LI>GlobalSingleUse 
+<LI>MultiUse
+<LI>GlobalMultiUse
+</UL>
+<P>
+Let's look at these one by one, though not in this order, for
+reasons that will soon become apparent.
+<H3><A NAME="Private">
+Private</A></H3>
+<P>
+Private objects are accessible only within a component or application.
+It is theoretically possible to create a private object and pass
+it outside of the component, but this is generally a very bad
+idea, since Visual Basic will not guarantee proper referencing
+of private objects that are used externally. Other applications
+cannot create private objects of a component.
+<P>
+Any object that you use within an application or component should
+be private by default. 
+<P>
+Private objects are supported by every type of ActiveX component
+and standard executables.
+<H3><A NAME="PublicNotCreatable">
+PublicNotCreatable</A></H3>
+<P>
+These objects are exposed in the component's type library and
+are accessible by applications using the component, but only if
+the object is created and provided by the component itself. In
+other words, no outside application can create an object of this
+type. However, if an outside application has access to a different
+object in the component, that object can create a PublicNotCreatable
+object and pass it to the outside application through a function
+call or property.
+<P>
+This is demonstrated in the PubTest.vbg project group, which contains
+two projects. The first project is an ActiveX DLL server project
+called PubTest.vbp. It contains two classes. This demonstration
+can be run entirely within the Visual Basic environment.
+<P>
+The first class is called PublicTest and has its instancing property
+set to 5-Multiuse, meaning that it can be created publicly. It
+contains the following code:
+<BLOCKQUOTE>
+<PRE>
+Public Function GetOtherClass() As PublicNotCreatable
+   Dim obj As New PublicNotCreatable
+   Set GetOtherClass = obj
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+The other class is named PublicNotCreatable and has its instancing
+property set to 2-PublicNotCreatable. It contains the following
+code:
+<BLOCKQUOTE>
+<PRE>
+Public Sub Message()
+   MsgBox &quot;Public Not Creatable Object&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The other project is called PubTest1.vbp and is a standard executable.
+The project contains a single form with a command button which
+triggers the following code:
+<BLOCKQUOTE>
+<PRE>
+' Obtain a public not creatable object by way of
+' a public object
+Private Sub cmdPublic_Click()
+   Dim pubobj As PublicClass
+   Dim pubNCobj As PublicNotCreatable
+   ' Create an instance of the public class
+   Set pubobj = New PublicClass
+   ' Now use it to obtain an instance of the public not creatable class
+   Set pubNCobj = pubobj.GetOtherClass()
+   ' Show that it worked
+   pubNCobj.Message
+
+   ' The following line won't even compile!
+   ' Set pubNCobj As New PublicNotCreatable
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The GetOtherClass method of the public object creates and retrieves
+the PublicNotCreatable object.
+<P>
+This type of class is extremely common. It allows you to create
+a hierarchy of objects in which the only way to access the object
+model is through a limited number of externally creatable objects
+that act as gatekeepers to the other objects in the hierarchy.
+PublicNotCreatable objects are supported by all types of ActiveX
+components but are not supported by standard Visual Basic 5.0
+executables.
+<H3><A NAME="SingleUse">
+SingleUse</A></H3>
+<P>
+Earlier in this chapter you saw that there are two ways for an
+EXE server to support objects. You can have a single server support
+multiple objects, in which case all of the objects run in the
+same execution thread. Or you can have each object launch its
+own instance of the server, in which case each object runs in
+its own process, implying that it runs in its own thread. The
+class instancing property determines which approach your server
+takes.
+<P>
+When SingleUse instancing is chosen, each time you create an object
+of this type, a new instance of the EXE server is run. This is
+a rather inefficient way of implementing objects and is typically
+used only for the top-level object in a complex object model that
+consists of PublicNotCreatable objects. Because of the high overhead
+involved, you are unlikely to want too many of these types of
+objects running on your system at any given time.
+<P>
+SingleUse objects can be created by applications using the New
+operator or the CreateObject function. This type of object can
+only be used with an ActiveX EXE server. 
+<H3><A NAME="MultiUse">
+MultiUse</A></H3>
+<P>
+This instancing option allows a single server to support any number
+of objects of a given class. The objects can be created by applications
+using the New operator or the CreateObject function.
+<P>
+In the case of an EXE server, all instances of the object run
+in the process space of a single instance of the server. In the
+case of a DLL server, each object runs in the process space of
+the calling application, as described earlier.
+<P>
+MultiUse objects can be used with ActiveX EXE servers or ActiveX
+DLL servers.
+<H3><A NAME="GlobalMultiUse">
+GlobalMultiUse</A></H3>
+<P>
+If you've been using Visual Basic for a while, you are probably
+familiar with something called a <I>global object,</I> though
+you may not know it under that name. For example, when you add
+a form named Form1 to your application, you can refer to it in
+your code by simply typing in: Form1.method. For example, the
+command: Form1.Show, shows the form. 
+<P>
+In the same way, you can refer to the global Printer object. In
+each case you can reference the object without actually creating
+an instance of the object. You don't actually have to create a
+Printer object or Form1 object in order to use it.
+<P>
+Visual Basic 5.0 allows you to create your own global objects.
+<P>
+The GlblTest.vbg group contains two projects that demonstrate
+creation and use of global objects. This demonstration can be
+run entirely within the Visual Basic environment. The GlobalTest
+project (GlblTst.vbp) contains class MyGlobalClass, which is set
+to GlobalMultiUse instancing. It contains the following method:
+<BLOCKQUOTE>
+<PRE>
+Public Sub Message()
+   MsgBox &quot;I've been accessed&quot;
+End Sub
+
+Private Sub Class_Initialize()
+   Debug.Print &quot;MyGlobalClassObject created&quot;
+End Sub
+
+Private Sub Class_Terminate()
+   Debug.Print &quot;MyGlobalClassObject deleted&quot;
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+The object's Initialize and Terminate events are used to keep
+track of when instances of the object are created and deleted.
+<P>
+The GlobalTestClient project contains a form with two command
+buttons. The form code is shown below:
+<BLOCKQUOTE>
+<PRE>
+' Demonstration of global instancing
+Private Sub cmdGlobal_Click()
+   Message  ' This works
+   GlobalTest.Message   ' Fully qualified - also works
+End Sub
+
+' The other way works as well
+Private Sub cmdObject_Click()
+   Dim gbtest As New MyGlobalClass
+   gbtest.Message
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+As you can see, you can access the object with either the fully
+qualified project.method name (GlobalTest.Message) or by simply
+typing in the method name. In either case Visual Basic automatically
+creates an instance of the object when you access the method.
+This instance seems to remain for the life of the application
+(I have yet to see one destroyed) and is used for all global access
+from the application.
+<P>
+Objects that are marked as GlobalMultiUse have the same characteristics
+as InSameProcess instanced objects except that they can be accessed
+globally. This type of object is supported by ActiveX EXE servers
+and ActiveX DLL servers.
+<H3><A NAME="GlobalSingleUse">
+GlobalSingleUse</A></H3>
+<P>
+This one is easy. It is exactly like the SingleUse option except
+that the object is global (See GlobalMultiUse).
+<P>
+This type of object is supported by ActiveX EXE servers and ActiveX
+DLL servers.
+<P>
+We can now move on to look at some interesting implications related
+to these Instancing options.
+<H3><A NAME="VariationsonInstancing">
+Variations on Instancing</A></H3>
+<P>
+One important point to consider is that the Instancing properties
+only affect how an object is exposed and used externally. The
+component itself can create as many instances of objects as it
+wishes without restriction. This opens the door to some interesting
+possibilities.
+<P>
+The EXESingle project (EXESgle.vbp) contains a single class called
+EXESingleUse, which has its instancing property set to SingleUse.
+Be sure to register the executable EXESgle.exe before running
+the test program. (Don't try to demonstrate this functionality
+within the Visual Basic environment, because it cannot provide
+more than one SingleUse object.) The EXESingleUse class contains
+the following code: 
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed
+' Single use executable example
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Private Declare Function GetCurrentProcessId Lib &quot;Kernel32&quot; () As Long
+
+Public Sub Message()
+   MsgBox &quot;Accessed EXESingle use in process &quot; &amp;_
+   Hex$(GetCurrentProcessId())
+End Sub
+
+' Create a new instance of the object and return it
+Public Function GetNewObject() As EXESingleUse
+   Dim newobj As New EXESingleUse
+   Set GetNewObject = newobj
+End Function
+</PRE>
+</BLOCKQUOTE>
+<P>
+The Message function in this example displays the unique process
+identifier in which the Object method is running. This makes it
+easy to see if two objects are being implemented by the same server
+or not.
+<P>
+The ExeSingleTest project EXESgTst.vbp has a single form with
+two command buttons. These command buttons trigger the following
+event code:
+<BLOCKQUOTE>
+<PRE>
+' Guide to the Perplexed
+' SingleUse instance test program
+' Copyright (c) 1997 by Desaware Inc. All Rights Reserved
+
+Option Explicit
+
+Private Sub cmdTest1_Click()
+   Dim newobj1 As New EXESingleUse
+   Dim newobj2 As New EXESingleUse
+   ' These objects are in different processes
+   newobj1.Message
+   newobj2.Message
+End Sub
+
+Private Sub cmdTest2_Click()
+   Dim newobj1 As New EXESingleUse
+   Dim newobj2 As EXESingleUse
+   Set newobj2 = newobj1.GetNewObject()
+   ' Both of these objects are in the same process!
+   newobj1.Message
+   newobj2.Message
+End Sub
+</PRE>
+</BLOCKQUOTE>
+<P>
+When you click on the Test1 button, two different objects are
+created. As you will see, each of these objects runs in its own
+instance of the server-they will have different process identifiers.
+<P>
+However, when you click on the Test2 button, you will see that
+the two objects that are created will run in the same process.
+Why is this? Because when the newobj1 object creates a second
+instance of the object in its GetNewObject method, it creates
+it in the same process space (just as if it were an ordinary class).
+Since this object is public, it can be returned as a result to
+the calling application.
+<P>
+This technique provides you with additional control over the Instancing
+of objects in your object model when using SingleUse objects in
+ActiveX EXE servers.
+<H3><A NAME="ImpactofInstancingonSharingClassModulesBetweenProjects">
+Impact of Instancing on Sharing Class Modules Between Projects
+</A></H3>
+<P>
+The Instancing property has an impact on your ability to share
+a class between projects. Earlier in this chapter we explored
+several possible mechanisms for sharing code, including cut-and-paste,
+sharing classes between projects, and creating components.
+<P>
+Let's say you've created an ActiveX DLL that contains a really
+cool Text Validation object. This object is exposed by the DLL.
+Thus, it has its Instancing property set to something other than
+Private.
+<P>
+Later you're working on a standard executable project. You realize
+you could really use that Text Validation object in your application,
+but it is the <I>only</I> object in the ActiveX DLL you need,
+and you would rather not distribute the component with the application.
+You might think that an easy solution is to simply add that particular
+class to your project.
+<P>
+But when you do so, Visual Basic will change the Instancing property
+of the class to Private (posting a highly<I> </I>informative warning
+message in the process). The class will work fine in the application,
+but when you save the project, its Instancing property will be
+Private. Next time you try to rebuild your ActiveX DLL that uses
+the class, the build operation will almost certainly fail (typically
+with a compatibility warning-more on this later).
+<P>
+So how can you share a class that has a particular Instancing
+property with a project type that does not support that Instancing
+property value?
+<P>
+You can't. You'll have to create a second copy of the class module
+to do this. Or implement the component in a server and have your
+project access the object in that manner.
+<P>
+What if you see this problem ahead of time (which you might, if
+you've turned some attention towards designing your object model).
+In that case, you can head the problem off at the pass. Create
+a private class that implements the functionality you need. Then,
+in your ActiveX component, use aggregation to create a new public
+class that acts as a wrapper for the private class.
+<H2><A NAME="ProjectProperties"><FONT SIZE=5 COLOR=#FF0000>
+Project Properties</FONT></A></H2>
+<P>
+Once you've determined the type of project to use for your component
+and given some thought to the object model, you can actually go
+ahead and create the project. To be fair, you don't really need
+to go through the design process first. You can almost always
+change the Visual Basic project type (though doing so later in
+a project may cause Visual Basic to change the Instancing properties
+on your project's classes).
+<P>
+Which brings us to the properties of a project. You will want
+to give some attention to these properties on all but the most
+trivial projects.
+<P>
+Project settings are accessed through the VB5 Properties menu
+command under the Project menu, or by right-clicking on the project
+in the Project window and selecting the Properties option. Be
+sure you've selected the right project in the Project window if
+you are using a project group; it's frustrating to complete the
+property settings and find that you've just completed the work
+for the wrong project.
+<H3><A NAME="GeneralPropertySettings">
+General Property Settings</A></H3>
+<P>
+Figure 8.6 shows the general Project Properties page for a project.
+Let's consider these settings in turn.
+<P>
+<A HREF="f8-6.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f8-6.gif"><B>Figure 8.6 :</B> <I>General property settings</I>.</A>
+<H4>Project Type</H4>
+<P>
+Choosing the project type has been one of the main focuses of
+this chapter. Anything here would be superfluous.
+<H4>Startup Object</H4>
+<P>
+You have a choice of startup objects depending on the type of
+component you are building and the modules in your project. This
+option gives you some control over what will happen when your
+component is launched.
+<P>
+Standard EXE projects require a startup object. It can be any
+form in the project or in Sub Main. If you choose a form, the
+form will be loaded and its Initialization and Load events triggered
+when the application starts. If you choose Sub Main, the Main
+subroutine in a standard module within the project will run. This
+subroutine can then create additional forms as needed.
+<P>
+ActiveX servers do not require a startup object. You can just
+specify (none). In this case the first code in the component that
+runs will be code-executed during the initialization of one of
+the component's objects, or during an object method or property
+call if no initialization code is present.
+<P>
+ActiveX servers may also specify Sub Main as the startup object.
+The Sub Main procedure will run before any object's initialization
+code. Note, however, that the Sub Main procedure will not be executed
+until creation of the first object by the server. Once the server
+is loaded, Sub Main will not be run again until the server is
+unloaded and reloaded again. This occurrence may not be predictable,
+as VB5 does not necessarily unload servers immediately after their
+last object is destroyed.
+<P>
+ActiveX EXE servers under Visual Basic 5.0 may not specify a form
+as the startup object.  If you wish to display a form on startup,
+you should select Sub Main as the startup object. During this
+subroutine you should show the form you wish to use as a startup
+form. You can check the StartMode property of the App object to
+determine if the component was started as a stand-alone object
+or as a server.
+<P>
+You can set the value of this property for test purposes for projects
+run within the Visual Basic environment by selecting the appropriate
+StartMode within the Components tab of the Project Properties
+dialog box. Remember that when you choose the ActiveX component
+server start mode, the Sub Main routine will not be executed until
+the first component is created by the server.
+<H4>Project Name</H4>
+<P>
+This is one of the most important properties you will choose,
+and you should always set it for your project. This property becomes
+the component name in the type library. For example: If you name
+your project MyProject and it contains objects MyObject1 and MyObject2,
+these objects will be referred to programmatically as MyProject.MyObject1
+and MyProject.MyObject2, respectively. If the objects are publicly
+creatable, you will be able to pass this program ID to the CreateObject
+function to create instances of those objects, as in the example:
+<BLOCKQUOTE>
+<PRE>
+Set newobj = CreateObject(&quot;MyProject.MyObject1&quot;).
+</PRE>
+</BLOCKQUOTE>
+<P>
+I don't have any great advice on choosing project names other
+than to try to make them somewhat descriptive and definitely unique.
+For example: the Stock Quote engine server that will be described
+in the next chapter has the project name StockMonitor.
+<H4>Project Description</H4>
+<P>
+At first glance you might think that this field exists just for
+documentation purposes, but it is actually quite important. This
+is the field used by object browsers to describe a component.
+Any time you use the object browser or try to add a reference
+or control to your project, this is the name that you see.
+<P>
+The Visual Basic object browser and component/reference dialog
+box sorts components in alphabetical order by description, using
+the project name only in cases where a description is not present.
+(It does not use strict alphabetical order; referenced components
+appear first.) This means that your choice of description has
+the side effect of determining your component's relative position
+in the list.
+<P>
+Does this mean you should produce components with descriptions
+like &quot;AAAA-Alpha my cool control&quot; in order to appear
+first in the list? Only if you think programmers blindly choose
+the first component they see in a list. (Personally, any control
+I see with a name like that is going to be removed from my system
+without a second thought.)
+<P>
+One useful convention that has developed is to precede the description
+with the company name. Thus the first word in the description
+for almost all of Microsoft's objects and controls is Microsoft,
+and these controls appear together in the browser and reference/components
+lists. All of the projects and controls in this book have one
+of two prefixes. If the description begins with gtp (for<I> Guide
+to the</I> <I>Perplexed</I>) you are dealing with a <I>trivial</I>
+<I>project</I> developed specifically for this book to illustrate
+some technique. It's unlikely you'll find it useful. If the description
+begins with Desaware, you are dealing with a component or control
+that was wholly or in part borrowed from Desaware's ActiveX Gallimaufry,
+which is a separate product.
+<H4>Help File Name and Project Help Context ID</H4>
+<P>
+The Help File Name is the name of the help file for the project.
+None of the projects included with this book include help files.
+Any commercial-quality component should have a help file, but
+the whole subject of developing help files is beyond the scope
+of this particular book.
+<P>
+The Project Help Context ID represents the help context that is
+called when you request help on the component from the object
+browser.
+<H4>Upgrade ActiveX Controls</H4>
+<P>
+Tells Visual Basic to upgrade obsolete ActiveX controls when loaded
+for this project.
+<H4>Require License Key</H4>
+<P>
+Licensing applies to ActiveX Controls and is discussed in Chapter
+26, &quot;Licensing and Distribution.&quot;
+<H4>Unattended Execution</H4>
+<P>
+Unattended execution applies to multithreading and is discussed
+in <A HREF="ch14.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch14.htm" >Chapter 14</A>, &quot;Multithreading.&quot;
+<H3><A NAME="MakePropertySettings">
+Make Property Settings</A></H3>
+<P>
+Figure 8.7 shows the Make property settings dialog box. The information
+placed here is used when Visual Basic compiles the component.
+Let's consider these settings in turn.
+<P>
+<A HREF="f8-7.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f8-7.gif"><B>Figure 8.7 :</B> <I>The Make property settings dialog box</I>.</A>
+<H4>Version Number and Auto Increment</H4>
+<P>
+The first thing you should do when you're ready to build your
+control for the first time is activate the Auto Increment checkbox.
+This will automatically increment the revision number (or build
+number) each time you compile your project. The Version Number
+is used by installation programs to determine that a component
+that is about to be installed is, in fact, newer than the one
+already on a system. As far as I'm concerned, Microsoft should
+have set this checkbox on by default.
+<H3><A NAME="ApplicationTitle">
+Application Title</A></H3>
+<P>
+The title of an application is different from the project name,
+which becomes the programmatic name of the component's objects.
+This title is the name by which the operating system knows the
+application. It is the name that appears in the system task list.
+You will typically set it to either the project name or the component
+file name. Intended for use with stand-alone applications or EXE
+servers.
+<H3><A NAME="ApplicationIcon">
+Application Icon</A></H3>
+<P>
+This is the icon representing the application in the taskbar,
+desktop icon, or explorer (depending on your operating system).
+It is intended for use with stand-alone applications or EXE servers.
+<H4>Version Information</H4>
+<P>
+The Type list box allows you to select from among a number of
+strings. You can then use the Value text box to set the contents
+of each string. You are highly encouraged to do so, but be aware
+that these strings have absolutely no impact on the behavior of
+your component. The version information you enter here can, however,
+be read by the Windows Explorer or File Manager when examining
+the properties of the server executable file.
+<H4>Command Line Arguments</H4>
+<P>
+This only applies when running an executable within the Visual
+Basic environment. It simulates running the program with the specified
+set of command line arguments.
+<H4>Conditional Compilation</H4>
+<P>
+This allows you to specify constants for use during conditional
+compilation. This is a fantastic tool for debugging (debug code
+can be enabled by these constants and removed for release). 
+<P>
+It used to be even more important with Visual Basic 4.0, since
+it allowed you to create both 16- and 32-bit applications from
+a single code base. However, Visual Basic 5.0 does not support
+16-bit compilation, so this particular usage has become obsolete.
+<H3><A NAME="CompilePropertySettings">
+Compile Property Settings</A></H3>
+<P>
+Figure 8.8 illustrates the Compile property settings dialog box.
+This information is used by Visual Basic when it compiles the
+component. Let's consider these settings in order of importance.
+<P>
+<A HREF="f8-8.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/f8-8.gif"><B>Figure 8.8 :</B> <I>The Compile property settings dialog box</I>.</A>
+<P>
+Before you release a DLL-based component (including ActiveX controls),
+be sure to reset this number to something over &amp;H10000000
+(and under &amp;H80000000). Choose any 64K boundary-this means
+that the rightmost four digits of the address will always be 0000.
+Microsoft suggests you choose a random base address in that range
+as the base for all of your controls, then allocate addresses
+from that point onward. Not a bad idea.
+<P>
+The reason for this is as follows: When Windows loads a DLL, it
+tries to load it at the specified DLL base address. If the memory
+space is available within the process space of the application
+that is loading the DLL, the DLL loads extremely quickly. If,
+however, another DLL component is already using that space, Windows
+must relocate the DLL data and code to a new location. This is
+a time-consuming operation and one that is wasteful because it
+may prevent Windows from sharing the DLL code with other applications.
+<P>
+Since many Visual Basic programmers will never read either the
+part of the documentation where this is mentioned or this book,
+you can expect a vast number of Visual Basic-created components
+to appear at the default base address of &amp;H11000000. Thus,
+the chance of a conflict at that address is frustratingly high.
+<H4>Compile to P-Code or Compile to Native Code</H4>
+<P>
+Your first reaction to the appearance of native code in Visual
+Basic might have been a cheer (or sigh of relief, depending on
+your situation). Your reaction once you test it might verge on
+depression.
+<P>
+You see, if your application makes heavy use of Visual Basic native
+functions, API calls, other custom controls, or database access,
+you might be shocked to discover that the benefit gained from
+native code is not even noticeable. In fact, the only result you
+may see is a larger executable size.
+<P>
+Many applications spend very little time actually running P-code
+(the intermediate level that Visual Basic interprets), so improving
+the performance of that code has little effect. Microsoft claims
+that their people profiled many sample applications and found
+that typically only 5 percent of the time was spent running P-code.
+The rest was spent in support code. This does not surprise me.
+<P>
+However, if your code is computationally intensive, go right ahead
+and choose native code-the benefits can be enormous. This is especially
+the case with in-process components such as ActiveX DLL servers
+and ActiveX controls that are more likely to have extensive internal
+processing.
+<P>
+My suggestion is to try compiling your component both ways. If
+you don't notice a difference, choose the one that gives you the
+smaller executable size.
+<P>
+Some Visual Basic 5.0 programmers were disappointed to find that
+you still have to distribute a large run-time file with your VB
+5 components and applications. Before giving up Visual Basic in
+frustration, allow me to point out two facts:
+<UL>
+<LI>If the VB5 runtime was not included, even the smallest Visual
+Basic executable would be hundreds of kilobytes, as with statically
+linked Microsoft Foundation Class (MFC)-based Visual C++ programs.
+<LI>Most Visual C++ components require both a C++ runtime and
+an MFC runtime. VB may not give you as many options as VC++ in
+this regard, but its approach is not unreasonable.
+</UL>
+<H4>Regarding Individual Native Code Compiler Options</H4>
+<P>
+If you have an external debugger (such as Visual C++) and want
+to compile debugging information into your executable, choose
+the Create Symbolic Debug Info checkbox and select No Optimizations.
+One common reason for doing this is when you are debugging a VB-created
+component that is being used by a Visual C++ application. Otherwise,
+choose the Fast code or Small code option as you prefer.
+<P>
+I'm inclined to avoid the Favor Pentium Pro option for now. Maybe
+next year.
+<H4>Regarding Advanced Native Code Compiler Options</H4>
+<P>
+Refer to the online help for details of each of these options.
+<P>
+I recommend avoiding any of these optimizations until after you
+are confident that your component has been thoroughly tested and
+debugged. Be sure to do so with Break On All Errors enabled in
+your environment settings (you don't want an overflow error to
+be masked by an error handler).
+<P>
+After you are confident that your component has no overflow or
+array bounds errors, feel free to turn on the Remove Array Bounds
+Checks, Remove Integer Overflow Checks, and Remove Floating Point
+Error Checks options.
+<P>
+I would never recommend using any of the other options. The benefits
+you gain will be negligible in almost every case, and you risk
+adding bugs to your application that can be incredibly difficult
+to track down, including intermittent errors, incorrect results,
+and errors that are highly data dependent.
+<H3><A NAME="ComponentPropertySettings">
+Component Property Settings</A></H3>
+<P>
+This dialog box contains some of the most important project settings
+with regards to developing and testing ActiveX components. So
+it only make sense that they be covered in the chapter that discusses
+problems relating to creating, testing, and versioning of components,
+which is <A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm" >Chapter 9</A>  
+<H2><A NAME="MovingOn"><FONT SIZE=5 COLOR=#FF0000>
+Moving On</FONT></A></H2>
+<P>
+We've looked at many different aspects of developing an ActiveX
+component in this chapter, ranging from the trade-offs involved
+in key design choices to the actual project settings. Along the
+way you've also learned a great deal about the different types
+of components and how they work.
+<P>
+One thing has been scarce, though. Other than a few trivial projects,
+there hasn't been much code. What happened to that stock quoting
+component that I've been promising?
+<P>
+Fear not, it's on its way. All of the examples in this chapter
+use the simplest possible code constructs: commands that any beginning
+Visual Basic programmer should be well acquainted with before
+reading this book. The stock quoting component takes advantage
+of more advanced language capabilities, including some that are
+new to Visual Basic 5.0.
+<P>
+But first, let's take a closer look at the process of creating
+and testing ActiveX components.
+<HR>
+
+<CENTER><P><A HREF="part2.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/part2.htm"><IMG SRC="pc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="index.html" tppabs="http://pbs.mcp.com/ebooks/1562765108/index.html"><IMG SRC="hb.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<A HREF="ch9.htm" tppabs="http://pbs.mcp.com/ebooks/1562765108/ch9.htm"><IMG SRC="nc.gif" tppabs="http://pbs.mcp.com/ebooks/1562765108/nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+<HR WIDTH="100%"></P></CENTER>
+</BODY>
+</HTML>

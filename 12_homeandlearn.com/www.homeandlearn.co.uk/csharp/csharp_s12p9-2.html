@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.ukcsharp/csharp_s12p9.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 08:09:40 GMT -->
+<HEAD>
+		<TITLE>Visual C# .NET: Adding records to the database</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-3.css">
+		<meta itemprop="name" content="Home and Learn">
+		<meta itemprop="description" content="Free C# .NET Course">
+		<meta itemprop="image" content="../logo5.jpg">
+		<link rel="publisher" href="https://plus.google.com/104045712242599534737" />
+		<link rel="author" href="https://plus.google.com/104045712242599534737" />
+		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="links-2.js"></SCRIPT>
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">C#.NET</SPAN> <SPAN class="Logo_Text">Course</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+<ul>
+<LI><a href="../index-3.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing-2.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2011.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord-2.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007-2.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel-2.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign-2.html">Web Design</a></LI>
+<LI><a href="../javascript/javascript-2.html">Javascript</a></LI>
+<LI><a href="../NET/vbNet-2.html">Visual Basic .NET</a></LI>
+<LI><a href="../php/php-2.html">Beginners PHP</a></LI>
+<LI><a href="csharp-2.html">C# .NET</a> <B>&lt; &lt;</B></LI>
+<LI><a href="../java/java-2.html">Java for Beginners</a></LI>
+</ul>
+		
+</NAV> <SECTION ID="Wrapper"> <ARTICLE> <HEADER> 
+<H1 ID="Article">Add, Update, Delete a Record</H1>
+</HEADER> <SECTION> 
+<p align="center"> 
+  <script language="JavaScript">
+				writeImageCsharp()
+			</script>
+</p>
+<P>&nbsp;</P>
+<P>When you add a new record, you'll want to add it to the Dataset and the underlying 
+  database. Let's see how. </P>
+<p>Add two new buttons to the form. Set the following properties for your buttons:</p>
+<p class="indent_big_no_bold"><b>Name</b>: btnAddNew<br>
+  <b>Text</b>: Add New</p>
+<p class="indent_big_no_bold"><b>Name</b>: btnSave<br>
+  <b>Text</b>: Save</p>
+<p>The Add New button won't actually add a new record. The only thing it will 
+  do is to clear the text boxes, ready for a new record to be added. The Save 
+  button is where we'll add the record to the Dataset and to the Database.</p>
+<p>Double click your Add New button, and add code to clear the text boxes:</p>
+<p class="indent_big">textBox1.Clear();<br>
+  textBox2.Clear();<br>
+  textBox3.Clear();<br>
+  textBox4.Clear();</p>
+<p>That's all we need to do here. You can test it out, if you want. But all the 
+  code does is to clear the four text boxes of text. The user can then enter a 
+  new record.</p>
+<p>After a new record has been entered into the text boxes, we can Save it. So 
+  double click your Save button to get at the code.</p>
+<p>To save a record, you need to do two things: save it to the Dataset, and save 
+  it to the underlying database. You need to do it this way because the Dataset 
+  with its copy of the records is disconnected from the database. Saving to the 
+  Dataset is NOT the same as saving to the database.</p>
+<p>To add a record to the Dataset, you need to create a new Row:</p>
+<p class="indent_small">DataRow dRow = ds1.Tables[&quot;Workers&quot;].NewRow();</p>
+<p>This creates a New DataRow called <b>dRow</b>. But the Row will not have any 
+  data. To add data to the row, the format is this:</p>
+<p class="indent_small">dRow[1] = textBox1.Text;</p>
+<p>So after your DataRow variable (<b>dRow</b>) you need a pair of square brackets. 
+  In between the square brackets type its position in the Row. This is the Column 
+  number. dRow[1] refers to the <b>first_name</b> column, for us. After an equals 
+  sign, you type whatever it is you want to add to that Column - the text from 
+  textBox1, in our case.</p>
+<p>Finally, you issue the Add command:</p>
+<p class="indent_small">ds1.Tables[&quot;Workers&quot;].Rows.Add( dRow );</p>
+<p>After Add, and in between a pair of round brackets, you type the name of the 
+  Row you want to add, which was dRow in our example. The new Row will then get 
+  added to the end of the Dataset.</p>
+<p>So add this code to your Save button:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/save_button-2.gif" width="396" height="245" alt="Saving a record to a database in C# .NET"></p>
+<p>Notice the last two lines:</p>
+<p class="indent_big">MaxRows = MaxRows + 1; <br>
+  inc = MaxRows - 1;</p>
+<p>Because we have added a new Row to the Dataset, we also need to add 1 to the 
+  MaxRows variable. The inc variable can be set to the last record in the Dataset.</p>
+<p>Try it out. When you start your programme, click the Add New button to clear 
+  the text boxes. Enter a new record in the blank text boxes and then click your 
+  Save button. Click your Previous and Next buttons. You'll see that the new record 
+  appears. </p>
+<p>(Obviously, you'll want to add error checking code to check that the Save button 
+  is not clicked before the Add button. Or simply set the Enabled property to 
+  false for the Save button when the form loads. You can then set Enabled to true 
+  in your Add button.)</p>
+<p>If you close the programme down, and start it back up again you'll find that 
+  the new record has disappeared! It's disappeared because we haven't yet added 
+  it to the underlying database. We've only added it to the Dataset.</p>
+<p>To add a new record to the Database, you need to use something called a Command 
+  Builder. You use the Command Builder in conjunction with a DataAdapter. This 
+  has an Update method that will do the job for you. The only thing you need to 
+  do is tell it which Dataset and table holds all the records. Let's see how.</p>
+<p>Add the following line to your Save button: (Add it after ds1.Tables but before 
+  the MaxRows line)</p>
+<p class="indent_small">System.Data.SqlServerCe.SqlCeCommandBuilder cb;</p>
+<p>This sets up a SqlCeCommandBuilder variable. We've called it cb. Next, you 
+  can create an object from your variable:</p>
+<p class="indent_small">cb = new System.Data.SqlServerCe.SqlCeCommandBuilder( 
+  <i>da</i> );</p>
+<p>Notice that the SqlCeCommandBuilder now has a pair of round brackets. In between 
+  the round brackets you type the name of a DataAdapter. We set one up at the 
+  top of the code called da, so we can use this.</p>
+<p>The Command Builder has its own DataAdapter, which in turn has an Update method. 
+  The next line to add, therefore, is this:</p>
+<p class="indent_small">cb.DataAdapter.Update( ds1.Tables[&quot;Workers&quot;] 
+  );</p>
+<p>In between the round brackets of update, you need a dataset. You then refer 
+  to the table associated with the dataset. For us this was ds1.Tables[&quot;Workers&quot;].</p>
+<p>Your code for the Save button, then, should look like this:</p>
+<p></p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/save_button_2-2.gif" width="441" height="362" alt="C# Code to update a dataset"></p>
+<p>Notice that we've disabled the Save button but enabled the AddNew button. We 
+  did the reverse with the AddNew button:</p>
+<p class="indent_big">textBox1.Clear();<br>
+  textBox2.Clear();<br>
+  textBox3.Clear();<br>
+  textBox4.Clear();</p>
+<p class="indent_big">btnAddNew.Enabled = false;<br>
+  btnSave.Enabled = true;</p>
+<p>You can try your programme out, now. Click your <b>Add New </b>button and add 
+  a new record. Click the <b>Save</b> button. When you close the programme down 
+  and reopen it, the new record should be there.</p>
+<p>&nbsp;</p>
+<h3>Update a Record</h3>
+<p>Sometimes, all you want to do is to update a record in the database. This is 
+  very similar to Adding a new record. Examine the following code:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/update_code-2.gif" width="459" height="334" alt="Updating the dataset"></p>
+<p>The first thing to notice is that we've set up a method called <b>UpdateDB</b>. 
+  This has all the code for the Command Builder and is doing the actual updating. 
+  We can then remove this same code from the Save button:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/save_button_3-2.gif" width="396" height="338" alt="Saving the dataset"></p>
+<p>Notice the call to our new method:</p>
+<p class="indent_big">UpdateDB( );</p>
+<p>For the Update button, the first line of the code is this:</p>
+<p class="indent_big">= ds1.Tables[&quot;Workers&quot;].Rows[inc];</p>
+<p>The only thing you're not doing is adding a new Row. After creating a new Row 
+  called dRow2, we set it to the current Row, using our <b>inc</b> variable. Whatever 
+  is in the text boxes then gets transferred to dRow2[1], dRow2[2], dRow2[3] and 
+  dRow2[4]. These are the Columns in the Row.</p>
+<p>When you run your form again, amend one of your records. Close down the form 
+  and open it back up again. You should find that your amendments are still there.</p>
+<p>&nbsp;</p>
+<h3>Delete a Record</h3>
+<p>To delete a record from the Dataset, you use the Delete method:</p>
+<p>ds1.Tables[&quot;Workers&quot;].Rows[inc].Delete( );</p>
+<p>This is enough to Delete the entire Row ( Rows[inc] ). But it is only deleted 
+  from the Dataset. Here's the code to delete the record from the database, as 
+  well:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/con_new/con_code_3-2.gif" width="407" height="153" alt="Deleting a record from the dataset"></p>
+<p>After the Delete( ) line, we make a call to our <b>UpdateDB</b> method again. 
+  This will commit the changes to the database. Because we've deleted a record, 
+  we need to reset the <b>MaxRows</b> count, because it will be one less. We also 
+  need to deduct one from the inc variable. After this, we can make a call to 
+  <b>NavigateRecords</b>. The final line just displays a message that the record 
+  was deleted.</p>
+<p>&nbsp;</p>
+<p><b>Exercise P</b><br>
+  Examine this version of our form:</p>
+<p align="center"><img src="images/csharp_2012/chapter_databases/form_done-2.gif" width="368" height="456" alt="The complete data entry form in C# .NET"></p>
+<p>If you look at the bottom, you'll see a label that says &quot;Record 1 of 10&quot;. 
+  Implement this in your own programme. If you set up a method, you can just call 
+  it when the form loads, and again from NavigateRecords.</p>
+  <p align="right"><a href = "csharp_answers-2.html#exP" target="_blank">Answer to Exercise P</a></p>
+<p>&nbsp;</p>
+<p>In the next lesson, you'll learn how to find a record.</p>
+</SECTION></ARTICLE> </SECTION> <FOOTER> 
+<p align="right"><a href="csharp_s12p8-2.html">&lt;-- Scrolling through the database</a> | <a href="csharp_s12p10-2.html">Find a record --&gt;</a></P>
+		<P><A HREF="csharp-2.html">Back to the C# NET Contents Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.ukcsharp/csharp_s12p9.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 08:09:40 GMT -->
+</HTML>
+

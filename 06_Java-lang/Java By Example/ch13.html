@@ -1,0 +1,1553 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Chapter 13 -- Arrays</TITLE>
+
+
+
+<META>
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#CE2910">
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Chapter&nbsp;13</FONT></H1>
+
+<H1><FONT SIZE=6 COLOR=#Ff0000>Arrays</FONT></H1>
+
+<HR>
+
+<P>
+
+<CENTER><B><FONT SIZE=5><A NAME="CONTENTS">CONTENTS</A></FONT></B></CENTER>
+
+<UL>
+
+<LI><A HREF="#AnIntroductiontoArrays">
+
+An Introduction to Arrays</A>
+
+<UL>
+
+<LI><A HREF="#ExampleCreatinganArray">
+
+Example: Creating an Array</A>
+
+<LI><A HREF="#ExampleUsingaVariableasaSubscript">
+
+Example: Using a Variable as a Subscript</A>
+
+</UL>
+
+<LI><A HREF="#MultidimensionalArrays">
+
+Multidimensional Arrays</A>
+
+<UL>
+
+<LI><A HREF="#ExampleCreatingaTwoDimensionalArray">
+
+Example: Creating a Two-Dimensional Array</A>
+
+</UL>
+
+<LI><A HREF="#ExampleUsingTwoDimensionalArraysinanApplet">
+
+Example: Using Two-Dimensional Arrays in an Applet</A>
+
+<LI><A HREF="#Summary">
+
+Summary</A>
+
+<LI><A HREF="#ReviewQuestions">
+
+Review Questions</A>
+
+<LI><A HREF="#ReviewExercises">
+
+Review Exercises</A>
+
+</UL>
+
+
+
+<HR>
+
+<P>
+
+As you've learned by now, using variables makes your programs
+
+flexible. Thanks to variables, you can conveniently store data
+
+in your programs and retrieve it by name. You can also get input
+
+from your program's user. The best thing about variables is that
+
+they can constantly change value. (They're called variables, after
+
+all, because they're variable.)
+
+<P>
+
+Until now, you've learned about various types of numerical variables,
+
+including integers, long integers, floating-point, and double
+
+floating-point variables. You also know about string variables,
+
+which can hold text. Now that you have a good understanding of
+
+these data types, it's time to explore one last data type-a handy
+
+data structure called an array.
+
+<H2><A NAME="AnIntroductiontoArrays"><FONT SIZE=5 COLOR=#Ff0000>
+
+An Introduction to Arrays</FONT></A></H2>
+
+<P>
+
+Often in your programs, you'll want to store many values that
+
+are related in some way. Suppose you manage a bowling league,
+
+and you want to keep track of each player's average. One way to
+
+do this is to give each player a variable in your program, as
+
+shown in Listing 13.1. Figure 13.1 shows the applet running under
+
+Appletviewer.
+
+<P>
+
+<IMG SRC="f13-1.gif"><B> Figure 13.1 : </B><I>This is Applet16 running under Appletviewer.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 13.1&nbsp;&nbsp;Applet16.java: Using Variables to Track
+
+Scores.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class Applet16 extends Applet
+
+
+
+{
+
+    TextField textField1, textField2, textField3;
+
+    int avg1, avg2, avg3;
+
+
+
+    public void init()
+
+    {
+
+        textField1 = new TextField(5);
+
+        textField2 = new TextField(5);
+
+        textField3 = new TextField(5);
+
+        add(textField1);
+
+        add(textField2);
+
+        add(textField3);
+
+        textField1.setText(&quot;0&quot;);
+
+        textField2.setText(&quot;0&quot;);
+
+        textField3.setText(&quot;0&quot;);
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(&quot;Your bowlers' averages are: &quot;, 50, 80);
+
+        String s = textField1.getText();
+
+        g.drawString(s, 75, 110);
+
+        avg1 = Integer.parseInt(s);
+
+        s = textField2.getText();
+
+        g.drawString(s, 75, 125);
+
+        avg2 = Integer.parseInt(s);
+
+        s = textField3.getText();
+
+        g.drawString(s, 75, 140);
+
+        avg3 = Integer.parseInt(s);
+
+    }
+
+
+
+    public boolean action(Event event, Object arg)
+
+    {
+
+        repaint();
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+When you run Applet16, you can enter bowling scores into the three
+
+boxes at the top of the applet's display area. After you enter
+
+these averages, they're displayed on-screen as well as copied
+
+into the three variables <TT>avg1</TT>, <TT>avg2</TT>, and <TT>avg3</TT>.
+
+<P>
+
+Nothing too tricky going on here, right?
+
+<P>
+
+Now examine the listing. Remember in <A HREF="ch10.html" >Chapter 10</A>, &quot;The <TT>while</TT>
+
+and <TT>do-while</TT> Loops,&quot; when you learned to keep an
+
+eye out for repetitive program code? How about all those calls
+
+to <TT>getText()</TT>, <TT>drawString()</TT>, and <TT>valueOf()</TT>
+
+in Listing 13.1? The only real difference between them is the
+
+specific bowler's score that's being manipulated. If you could
+
+find some way to make a loop out of this code, you could shorten
+
+the program significantly. How about a <TT>for</TT> loop that
+
+counts from 1 to 3?
+
+<P>
+
+But how can you use a loop when you're stuck with three different
+
+variables? The answer is an array. An array is a variable that
+
+can hold more than one value. When you first studied variables,
+
+you learned that a variable is like a box in memory that holds
+
+a single value. Now, if you take a bunch of these boxes and put
+
+them together, what do you have? You have an array. For example,
+
+to store the bowling averages for your three bowlers, you'd need
+
+an array that can hold three values. You could call this array
+
+<TT>avg</TT>. You can even create an array for a set of objects
+
+like the <TT>TextField</TT> objects Applet16 uses to get bowling
+
+scores from the user. You could call this array <TT>textField</TT>.
+
+<P>
+
+Now you have an array called <TT>avg</TT> that can hold three
+
+bowling averages and an array called <TT>textField</TT> that can
+
+hold three <TT>TextField</TT> objects. But how can you retrieve
+
+each individual average or object from the array? You do this
+
+by adding something called a subscript to the array's name. A
+
+subscript (also called an index) is a number that identifies the
+
+element of an array in which a value is stored. For example, to
+
+refer to the first average in your <TT>avg</TT> array, you'd write
+
+<TT>avg[0]</TT>. The subscript is the number in square brackets.
+
+In this case, you're referring to the first average in the array
+
+(array subscripts always start from zero.) To refer to the second
+
+average, you'd write avg<TT>[1]</TT>. The third average is <TT>avg[2]</TT>.
+
+<P>
+
+If you're a little confused, look at Figure 13.2, which shows
+
+how the <TT>avg[]</TT> array might look in memory. In this case,
+
+the three bowling averages are 145, 192, and 160. The value of
+
+<TT>avg[0]</TT> is 145, the value of <TT>avg[1]</TT> is 192, and
+
+the value of <TT>avg[2]</TT> is 160.
+
+<P>
+
+<IMG SRC="f13-2.gif"><B> Figure 13.2 : </B><I>An array can hold many values of the same type.
+
+
+
+</I></A><P>
+
+<H3><A NAME="ExampleCreatinganArray">
+
+Example: Creating an Array</A></H3>
+
+<P>
+
+Suppose that you need an array that can hold 30 floating-point
+
+numbers. First, you'd declare the array like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+float numbers[];
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Another way to declare the array is to move the square brackets
+
+to after the data type, like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+float[] numbers;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+After declaring the array, you need to create it in memory. Java
+
+lets you create arrays only using the <TT>new</TT> operator, like
+
+this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+numbers = new float[30];
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The last step is to initialize the array, a task that you might
+
+perform using a <TT>for</TT> loop:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+for (int x=0; x&lt;30; ++x)
+
+    numbers[x] = (float)x;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+These lines of Java source code initialize the <TT>numbers[]</TT>
+
+array to the numbers 0.0 to 29.0. Notice how the loop only goes
+
+up to 29. This is because, although there are 30 elements in the
+
+<TT>numbers[]</TT> array, those elements are indexed starting
+
+with 0, rather than 1. That is, the subscript is always one less
+
+than the number of the element you're accessing. The first element
+
+has a subscript of 0, the second a subscript of 1, the third a
+
+subscript of 2, and so on.
+
+<H3><A NAME="ExampleUsingaVariableasaSubscript">
+
+Example: Using a Variable as a Subscript</A></H3>
+
+<P>
+
+As you learned in a previous chapter, most numerical literals
+
+in a Java program can be replaced by numerical variables. Suppose
+
+you were to use the variable <TT>x</TT> as the subscript for the
+
+array <TT>avg[]</TT>. Then (based on the averages in Figure 13.2)
+
+if the value of <TT>x</TT> is 1, the value of avg[x] is 192. If
+
+the value of <TT>x</TT> is 3, the value of <TT>avg[x]</TT> is
+
+160.
+
+<P>
+
+Now take one last, gigantic, intuitive leap (c'mon, you can do
+
+it) and think about using your subscript variable <TT>x</TT> as
+
+both the control variable in a <TT>for</TT> loop and the subscript
+
+for the <TT>avg[]</TT> and <TT>textField</TT> arrays. If you use
+
+a <TT>for</TT> loop that counts from 0 to 2, you can handle all
+
+three averages with much less code than in the original program.
+
+Listing 13.2 shows how this is done.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 13.2&nbsp;&nbsp;Applet17.java: Using Arrays.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class Applet17 extends Applet
+
+{
+
+    TextField textField[];
+
+    int avg[];
+
+
+
+    public void init()
+
+    {
+
+        textField = new TextField[3];
+
+        avg = new int[3];
+
+
+
+        for (int x=0; x&lt;3; ++x)
+
+        {
+
+            textField[x] = new TextField(5);
+
+            add(textField[x]);
+
+            textField[x].setText(&quot;0&quot;);
+
+        }
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        g.drawString(&quot;Your bowlers' averages are: &quot;, 50, 80);
+
+
+
+        for (int x=0; x&lt;3; ++x)
+
+        {
+
+            String s = textField[x].getText();
+
+            g.drawString(s, 75, 110 + x*15);
+
+            avg[x] = Integer.parseInt(s);
+
+        }
+
+    }
+
+
+
+    public boolean action(Event event, Object arg)
+
+    {
+
+        repaint();
+
+        return true;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the program uses classes in the <TT>awt</TT> package.
+
+<BR>
+
+Tell Java that the program uses classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>Applet17</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare <TT>TextField</TT> and <TT>int</TT> arrays.<BR>
+
+    Override the <TT>Applet</TT> class's <TT>init()</TT> method.
+
+<BR>
+
+        Create the <TT>textField</TT> and <TT>int</TT> arrays
+
+with three elements each.<BR>
+
+        Loop from 0 to 2.<BR>
+
+            Create a new <TT>TextField</TT> object and store it
+
+in the array.<BR>
+
+            Add the new <TT>TextField</TT> object to the applet.
+
+<BR>
+
+            Set the new <TT>TextField</TT> object's text.<BR>
+
+    Override the <TT>Applet</TT> class's <TT>paint()</TT> method.
+
+<BR>
+
+        Display a line of text.<BR>
+
+        Loop from 0 to 2.<BR>
+
+            Get the text from the currently indexed <TT>TextField</TT>
+
+object.<BR>
+
+            Draw the retrieve text on the applet's display area.
+
+<BR>
+
+            Convert the value and store it in the integer array.
+
+<BR>
+
+    Override the <TT>Applet</TT> object's <TT>action()</TT> method.
+
+<BR>
+
+        Force Java to redraw the applet's display area.<BR>
+
+        Tell Java everything went okay.
+
+</BLOCKQUOTE>
+
+<P>
+
+At the beginning of Listing 13.2, you'll see a couple of strange
+
+new variable declarations that look like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+TextField textField[];
+
+int avg[];
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+These declarations are much like other declarations you've seen,
+
+except both of the variable names end with a set of square brackets.
+
+The square brackets tell Java that you're declaring arrays rather
+
+than conventional variables.
+
+<P>
+
+Once you have the arrays declared, you must create them. In Applet17,
+
+this is done like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+textField = new TextField[3];
+
+avg = new int[3];
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+Here you use the <TT>new</TT> operator to create the arrays. To
+
+tell Java the type of arrays to create, you follow <TT>new</TT>
+
+with the data type and the size of the array in square brackets.
+
+In other words, the first line above creates an array that can
+
+hold three <TT>TextField</TT> objects. The second line creates
+
+an array that can hold three integers.
+
+<P>
+
+Once you have your arrays created, you can use a loop to reduce
+
+the amount of code needed to initialize the arrays. For example,
+
+the long way to initialize the arrays (without using a loop) would
+
+look something like Listing 13.3:
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 13.3&nbsp;&nbsp;LST13_3.TXT: Initializing an Array
+
+without Looping.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+textField[0] = new TextField(5);
+
+add(textField[0]);
+
+textField[0].setText(&quot;0&quot;);
+
+textField[1] = new TextField(5);
+
+add(textField[1]);
+
+textField[1].setText(&quot;0&quot;);
+
+textField[2] = new TextField(5);
+
+add(textField[2]);
+
+textField[2].setText(&quot;0&quot;);
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+As you learned, however, you can use a variable-specifically,
+
+a loop control variable-as the array subscript. That's what Applet17
+
+does, which enables it to initialize the <TT>textField</TT> array
+
+as shown in Listing 13.4.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 13.4&nbsp;&nbsp;LST13_4.TXT: Initializing an Array
+
+Using a Loop.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+for (int x=0; x&lt;3; ++x)
+
+{
+
+    textField[x] = new TextField(5);
+
+    add(textField[x]);
+
+    textField[x].setText(&quot;0&quot;);
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+The first time through the loop, <TT>x</TT> is equal to 0, so
+
+that element 0 (the first element) of the <TT>textField</TT> array
+
+is being manipulated. The next time through the loop, <TT>x</TT>
+
+is 1, so that element 1 of the array is being manipulated in the
+
+body of the loop. Finally, when <TT>x</TT> is 2, the program takes
+
+care of the third array element. As you can see, using a loop
+
+with an array can greatly simplify handling a group of related
+
+values. Imagine how many lines of source code you'd save if the
+
+array had 1,000 elements instead of only three. To accommodate
+
+the larger array, you'd only have to change <TT>x&lt;3</TT> to
+
+<TT>x&lt;1000</TT> in the first line of the <TT>for</TT> loop.
+
+
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>CAUTION</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+Be careful not to try accessing a nonexistent array element. For example, in Listing 13.4, if you tried to access <TT>textField[3]</TT>, you'd be beyond the boundaries of the array. Java will generate an exception when this happens, which means your 
+applet may or may not perform the way you want it to. (You'll learn more about exceptions in <A HREF="ch30.html" >Chapter 30</A>, &quot;Exceptions.&quot;)
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<P>
+
+The <TT>init()</TT> method isn't the only place Applet17 takes
+
+advantage of a loop to handle the program's arrays. In the <TT>paint()</TT>
+
+method, you can see the loop shown in Listing 13.5.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 13.5&nbsp;&nbsp;LST13_5.TXT: The </B><I>for</I><B>
+
+Loop from the </B><I>paint(&nbsp;)</I><B> Method.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+for (int x=0; x&lt;3; ++x)
+
+{
+
+    String s = textField[x].getText();
+
+    g.drawString(s, 75, 110 + x*15);
+
+    avg[x] = Integer.parseInt(s);
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+This loop simplifies the printing of the bowlers' scores and the
+
+loading of the <TT>avg[]</TT> array with the scores. Again, imagine
+
+how much time and space you'd save if the arrays in question had
+
+thousands of elements rather than only three. It's at times like
+
+those that you really learn to appreciate arrays.
+
+<P>
+
+<CENTER>
+
+<TABLE BORDER=1 WIDTH=80%>
+
+<TR VALIGN=TOP><TD><B>NOTE</B></TD></TR>
+
+<TR VALIGN=TOP><TD>
+
+<BLOCKQUOTE>
+
+The memory locations that make up an array are called <I>elements</I> of the array. For example, in an array named <TT>numbers[]</TT>, <TT>numbers[0]</TT> is the first element of the array, <TT>numbers[1]</TT> is the second element, and so on. The reason 
+<TT>numbers[0]</TT> is the first element of the array is because of the number 0 inside the subscript.It is the number inside the subscript that defines which array location is being referred to.
+
+</BLOCKQUOTE>
+
+
+
+</TD></TR>
+
+</TABLE>
+
+</CENTER>
+
+<P>
+
+<H2><A NAME="MultidimensionalArrays"><FONT SIZE=5 COLOR=#Ff0000>
+
+Multidimensional Arrays</FONT></A></H2>
+
+<P>
+
+So far, you've looked at simple arrays that hold their data in
+
+a list. However, most programming languages also support multidimensional
+
+arrays, which are more like tables than lists. For example, take
+
+a look at Figure 13.3. The first array in the figure is a one-dimensional
+
+array, which is like the arrays you've used so far in this chapter.
+
+The next type of array in the figure is two-dimensional, which
+
+works like the typical spreadsheet type of table you're used to
+
+seeing.
+
+<P>
+
+<IMG SRC="f13-3.gif"><B> Figure 13.3 : </B><I>Arrays can have more than one dimension.
+
+
+
+</I></A><P>
+
+<P>
+
+Although Java doesn't support multidimensional arrays in the conventional
+
+sense, it does enable you to create arrays of arrays, which amount
+
+to the same thing. For example, to create a two-dimensional array
+
+of integers like the second array in Figure 13.3, you might use
+
+a line of code like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+int table[][] = new int[4][4];
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+This line of Java code creates a table that can store 16 values-four
+
+across and four down. The first subscript selects the column and
+
+the second selects the row. To initialize such an array with values,
+
+you might use the lines shown in Listing 13.6, which would give
+
+you the array shown in Figure 13.4.
+
+<P>
+
+<IMG SRC="f13-4.gif"><B> Figure 13.4 : </B><I>Here's the two-dimensional array as initialized in Listing 13.6.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 13.6&nbsp;&nbsp;LST13_6.TXT: Initializing a Two-Dimensional
+
+Array.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+table[0][0] = 0;
+
+table[1][0] = 1;
+
+table[2][0] = 2;
+
+table[3][0] = 3;
+
+table[0][1] = 4;
+
+table[1][1] = 5;
+
+table[2][1] = 6;
+
+table[3][1] = 7;
+
+table[0][2] = 8;
+
+table[1][2] = 9;
+
+table[2][2] = 10;
+
+table[3][2] = 11;
+
+table[0][3] = 12;
+
+table[1][3] = 13;
+
+table[2][3] = 14;
+
+table[3][3] = 15;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+You refer to a value stored in a two-dimensional array by using
+
+subscripts for both the column and row in which the value you
+
+want is stored. For example, to retrieve the value 11 from the
+
+<TT>table[][]</TT> array shown in Figure 13.4, you use a line
+
+like this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+int value = table[3][2];
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+A quick way to initialize a two-dimensional array is to use nested
+
+<TT>for</TT> loops, as shown in Listing 13.7.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 13.7&nbsp;&nbsp;LST13_11.TXT: Using Loops to Initialize
+
+a Two-Dimensional Array.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+for (int x=0; x&lt;3; ++x)
+
+{
+
+    for (int y=0; y&lt;3; ++y)
+
+    {
+
+        table[x][y] = 5;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+If you've never seen nested loops before, you're about to discover
+
+how handy they can be. In the case of Listing 13.7, the outside
+
+loop (the <TT>x</TT> loop) starts first, setting <TT>x</TT> to
+
+0. But the body of the loop is another loop. So the inside loop
+
+(the <TT>y</TT> loop) starts, setting <TT>y</TT> to 0, which brings
+
+the program to the line that initializes an element of the array.
+
+Because <TT>x</TT> and <TT>y</TT> both equal 0, the array element
+
+<TT>table[0][0]</TT> gets set to 5. Then the inside loop sets
+
+<TT>y</TT> to 1, which means <TT>table[0][1]</TT> gets set to
+
+5. When the inner loop finishes, the program branches back to
+
+the outer loop, setting <TT>x</TT> to 1. The inner loop repeats
+
+again, only this time with <TT>x</TT> equal to 1 and <TT>y</TT>
+
+going from 0 to 2. Finally, when both loops finish, the entire
+
+array is initialized.
+
+<P>
+
+Of course, to create the array shown in Figure 13.4 with loops,
+
+you have to be a little more tricky, as shown in Listing 13.8.
+
+Work through each loop to see how the array gets initialized.
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 13.8&nbsp;&nbsp;LST13_8.TXT: Initializing the Array
+
+Elements to Different Values.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+for (int x=0; x&lt;3; ++x)
+
+{
+
+    for (int y=0; y&lt;3; ++y)
+
+    {
+
+        table[x][y] = x + y * 4;
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<H3><A NAME="ExampleCreatingaTwoDimensionalArray">
+
+Example: Creating a Two-Dimensional Array</A></H3>
+
+<P>
+
+Suppose that you need a table-like array that can hold 80 integers
+
+in eight columns and 10 rows. First, you'd declare the array like
+
+this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+int numbers[][];
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+After declaring the array, you need to create it in memory, like
+
+this:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+numbers = new int[8][10];
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+The last step is to initialize the array, probably using nested
+
+<TT>for</TT> loops:
+
+<BLOCKQUOTE>
+
+<PRE>
+
+for (int x=0; x&lt;8; ++x)
+
+    for (int y=0; y&lt;10; ++y)
+
+        numbers[x][y] = 0;
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<P>
+
+These lines initialize the <TT>numbers[][]</TT> array to all zeroes.
+
+<H2><A NAME="ExampleUsingTwoDimensionalArraysinanApplet"><FONT SIZE=5 COLOR=#Ff0000>
+
+Example: Using Two-Dimensional Arrays in an Applet</FONT></A></H2>
+
+<P>
+
+To be sure you understand how arrays work, you'll put a two-dimensional
+
+array to work in a program called Applet18. The Applet18 applet
+
+creates and initializes a two-dimensional array with six columns
+
+and eight rows. (Try to imagine the elements of this array as
+
+the rows and columns of a spreadsheet.) The program then prints
+
+the contents of the array in the Applet's display area, so you
+
+can see that the array truly holds the values to which it was
+
+initialized. Listing 13.9 is the program, whereas Figure 13.5
+
+shows the applet running under the Appletviewer application.
+
+<P>
+
+<IMG SRC="f13-5.gif"><B> Figure 13.5 : </B><I>This is Applet18 running under Appletviewer.
+
+
+
+</I></A><P>
+
+<HR>
+
+<BLOCKQUOTE>
+
+<B>Listing 13.9&nbsp;&nbsp;Applet18.java: Using a Two-Dimensional
+
+Array.<BR>
+
+</B>
+
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+
+<PRE>
+
+import java.awt.*;
+
+import java.applet.*;
+
+
+
+public class Applet18 extends Applet
+
+{
+
+    int table[][];
+
+
+
+    public void init()
+
+    {
+
+        table = new int[6][8];
+
+
+
+        for (int x=0; x&lt;6; ++x)
+
+            for (int y=0; y&lt;8; ++y)
+
+                table[x][y] = x+y*6;
+
+    }
+
+
+
+    public void paint(Graphics g)
+
+    {
+
+        for (int x=0; x&lt;6; ++x)
+
+            for (int y=0; y&lt;8; ++y)
+
+            {
+
+                String s = String.valueOf(table[x][y]);
+
+                g.drawString(s, 50+x*25, 50+y*15);
+
+            }
+
+    }
+
+}
+
+</PRE>
+
+</BLOCKQUOTE>
+
+<HR>
+
+<P>
+
+<IMG ALIGN=RIGHT SRC="pseudo.gif" HEIGHT=94 WIDTH=94 BORDER=1>
+
+<BLOCKQUOTE>
+
+Tell Java that the program uses classes in the <TT>awt</TT> package.
+
+<BR>
+
+Tell Java that the program uses classes in the <TT>applet</TT>
+
+package.<BR>
+
+Derive the <TT>Applet18</TT> class from Java's <TT>Applet</TT>
+
+class.<BR>
+
+    Declare a two-dimensional integer array.<BR>
+
+    Override the <TT>Applet</TT> class's <TT>init()</TT> method.
+
+<BR>
+
+        Create an array with six columns and eight rows.<BR>
+
+        Loop from 0 to 5.<BR>
+
+            Loop from 0 to 7.<BR>
+
+                Initialize the currently indexed array element.
+
+<BR>
+
+    Override the <TT>Applet</TT> class's <TT>paint()</TT> method.
+
+<BR>
+
+        Loop from 0 to 5.<BR>
+
+            Loop from 0 to 7.<BR>
+
+                Convert the array element to a string.<BR>
+
+                Display the array element's value.
+
+</BLOCKQUOTE>
+
+<P>
+
+Notice in <TT>init()</TT> and <TT>paint()</TT> how the nested
+
+loops don't have curly braces like the example shown in Listing
+
+13.8. This is because when you have only one statement in a program
+
+block, the curly braces are optional. In Applet18's <TT>init()</TT>
+
+method, the outside loop contains only one statement, which is
+
+the inner <TT>for</TT> loop. The inner <TT>for</TT> loop also
+
+contains only a single statement, which is the line that initializes
+
+the currently indexed element of the array. In the <TT>paint()</TT>
+
+method, the outer loop contains only one statement, which is the
+
+inner <TT>for</TT> loop. However, the inner loop contains two
+
+statements, so the curly braces are required in order to mark
+
+off that program block.
+
+<H2><A NAME="Summary"><FONT SIZE=5 COLOR=#Ff0000>
+
+Summary</FONT></A></H2>
+
+<P>
+
+Arrays are a powerful data structure that enable you to store
+
+many related values using the same variable name. A one-dimensional
+
+array is a lot like a list of values that you can access by telling
+
+Java the appropriate subscript (or index). But because array subscripts
+
+always start at 0, the subscript is always one less than the number
+
+of the associated element. You can also create multidimensional
+
+arrays (or, to be more precise, arrays of arrays). A two-dimensional
+
+array is organized much like a table. To access the elements of
+
+a two-dimensional array, you need two subscripts. The first subscript
+
+identifies the column of the table and the second identifies the
+
+row.
+
+<H2><A NAME="ReviewQuestions"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Questions</FONT></A></H2>
+
+<OL>
+
+<LI>What is an array?
+
+<LI>Why are arrays easier to use than a bunch of related variables?
+
+<LI>What is an array subscript? How is a subscript like an index?
+
+<LI>What is a two-dimensional array?
+
+<LI>If you had an array of 50 integers, what is the largest valid
+
+subscript?
+
+<LI>What happens if you try to access a nonexistent array element?
+
+<LI>Describe why a <TT>for</TT> loop is appropriate for accessing
+
+an array?
+
+<LI>How would you use <TT>for</TT> loops to initialize a two-dimensional
+
+array?
+
+</OL>
+
+<H2><A NAME="ReviewExercises"><FONT SIZE=5 COLOR=#Ff0000>
+
+Review Exercises</FONT></A></H2>
+
+<OL>
+
+<LI>Declare an array that can hold 50 integers.
+
+<LI>Write the code that creates the array you declared in exercise
+
+1.
+
+<LI>Write a <TT>for</TT> loop that initializes the array to the
+
+values 50 through 99.
+
+<LI>Write the Java code to declare and create a two-dimensional
+
+array with 10 columns and 15 rows.
+
+<LI>Write nested <TT>for</TT> loops that initialize the array
+
+from exercise 4 to the values 0 through 149.
+
+<LI>Write the Java code needed to display, in table form, the
+
+values in the array from exercise 5.
+
+<LI>Modify Applet17 so that it stores and displays not only the
+
+bowlers' scores, but also the bowlers' names. Create three <TT>TextField</TT>
+
+objects to enable the user to enter names and three for entering
+
+the scores. Name the program <TT>ScoreApplet.java</TT>. Figure
+
+13.6 shows what the final applet should look like at startup.
+
+(You can find the solution to this programming problem in the
+
+CHAP13 folder of this book's CD-ROM.)<BR>
+
+<IMG SRC="f13-6.gif"><B> Figure 13.6 : </B><I>This is the ScoreApplet applet running under Appletviewer.
+
+
+
+</I></A><P>
+
+</OL>
+
+<HR>
+
+
+
+<CENTER><P><A HREF="ch12.html"><IMG SRC="pc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="#CONTENTS"><IMG SRC="cc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="index.html"><IMG SRC="hb.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<A HREF="ch14.html"><IMG SRC="nc.gif" BORDER=0 HEIGHT=88 WIDTH=140></A>
+
+<HR WIDTH="100%"></P></CENTER>
+
+</BODY>
+
+</HTML>

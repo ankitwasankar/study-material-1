@@ -1,0 +1,1938 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+//-->
+</SCRIPT>
+
+<META>
+<TITLE>Special Edition Using Visual FoxPro 6 -- Ch 7 - Advanced Queries and Views</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<center><img src="que.gif">
+<H1>Special Edition Using Visual FoxPro 6</H1>
+
+<A HREF="ch06.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch08.htm"><IMG SRC="next.gif" BORDER=0></A>
+</CENTER>
+<HR>
+
+<H1>Chapter&nbsp;7</H1>
+<H1>Advanced Queries and Views</H1>
+
+<UL>
+<LI><A HREF="#JoiningtheResultsofMultipleQueries">
+Joining the Results of Multiple Queries</A>
+<UL>
+<LI><A HREF="#RetrievingCurrentCustomerRecords">
+Retrieving Current Customer Records</A>
+<LI><A HREF="#UsingTTDISTINCTTTVersusTTGROUPBYTT">
+Using <TT>DISTINCT</TT> Versus
+<TT>GROUP BY</TT></A>
+<LI><A HREF="#RetrievingSupplierRecordsCorrespondingtoPurchases">
+Retrieving Supplier Records Corresponding to Purchases</A>
+<LI><A HREF="#RetrievingEmployeeRecords">
+Retrieving Employee Records</A>
+<LI><A HREF="#UsingTTUNIONTTtoJoinTTSELECTTTResults">
+Using <TT>UNION</TT> to Join <TT>SELECT</TT> Results</A>
+<LI><A HREF="#CreatingInnerJoins">
+Creating Inner Joins</A>
+<LI><A HREF="#CreatingOuterJoins">
+Creating Outer Joins</A>
+<LI><A HREF="#CreatingaSelfJoin">
+Creating a Self-Join</A>
+</UL>
+<LI><A HREF="#OptimizingQueryGeneration">
+Optimizing Query Generation</A>
+<UL>
+<LI><A HREF="#BasicRulesforUsingRushmore">
+Basic Rules for Using Rushmore</A>
+<LI><A HREF="#MinimizingFieldsinaQuery">
+Minimizing Fields in a Query</A>
+</UL>
+<LI><A HREF="#CreatingCrossTabs">
+Creating Cross-Tabs</A>
+<LI><A HREF="#UsingViewsandUpdatableQueries">
+Using Views and Updatable Queries</A>
+<UL>
+<LI><A HREF="#ViewsofLocalData">
+Views of Local Data</A>
+<LI><A HREF="#ViewUpdateOptions">
+View Update Options</A>
+<LI><A HREF="#UsingMemoryVariablesinSelectionCriteria">
+Using Memory Variables in Selection Criteria</A>
+<LI><A HREF="#ParameterizedQueryCriteria">
+Parameterized Query Criteria</A>
+</UL></UL>
+
+<HR>
+<H2><A NAME="JoiningtheResultsofMultipleQueries"><FONT SIZE=5 COLOR=#FF0000>
+Joining the Results of Multiple Queries</FONT></A></H2>
+<P>
+Several examples in <A HREF="ch06.htm" >Chapter 6</A> &quot;Creating Basic Queries,&quot;
+used subqueries to define subsets of data from which to draw records
+in the main <TT>SELECT</TT> statement. However, what if you need
+to combine the results of two separate <TT>SELECT</TT> statements?
+<P>
+Suppose that it is time to send out invitations to the Tasmanian
+Annual Appreciation Picnic. You want to send invitations to all
+current customers (ones who bought something this year), suppliers,
+and employees.
+<H3><A NAME="RetrievingCurrentCustomerRecords">
+Retrieving Current Customer Records</A></H3>
+<P>
+You have customer information stored in table <TT>CUSTOMER.DBF</TT>
+of the database <TT>TASTRADE.DBC</TT>. Table 7.1 shows the appropriate
+customer fields.<BR>
+<P>
+<CENTER><B>Table 7.1&nbsp;&nbsp;Customer Mailing Information Fields</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Field</B></CENTER></TD><TD WIDTH=192><CENTER><B>Type</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Size</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Customer_Id</TT></TD><TD WIDTH=192><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>&nbsp;6</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Contact_Name</TT></TD><TD WIDTH=192><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>30</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Company_Name</TT></TD><TD WIDTH=192><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>40</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Address</TT></TD><TD WIDTH=192><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>60</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>City</TT></TD><TD WIDTH=192><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>15</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Region</TT></TD><TD WIDTH=192><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>15</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Postal_Code</TT></TD><TD WIDTH=192><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>10</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192><TT>Country</TT></TD><TD WIDTH=192><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>15</CENTER></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Because you want to include only customers who made purchases
+in the current year, you need to use <TT>ORDERS.DBF</TT> to identify
+records for current year purchases. Then match the customer ID
+field, <TT>Customer_Id</TT>, with a record in <TT>CUSTOMER.DBF</TT>.
+The SQL <TT>SELECT</TT> statement in the following example extracts
+the needed records:
+<BLOCKQUOTE>
+<PRE>
+SELECT Customer.contact_name, Customer.company_name, Customer.address,;
+  Customer.city, Customer.region, Customer.postal_code, Customer.country;
+ FROM  tastrade!customer INNER JOIN tastrade!orders ;
+   ON  Customer.customer_id = Orders.customer_id;
+ WHERE YEAR(Orders.order_date) = 1998 ;
+INTO CURSOR MyResult<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+By fully qualifying the table names, you can successfully run <TT>SELECT</TT>s from any directory.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+These commands display the records in a browse window. The first
+thing to observe is the use of an alias name, as defined in the
+database, rather than the table name when specifying the fields.
+Instead of repeating the table name with each field, you can use
+a local alias to reduce the amount of typing and the spelling
+errors associated with typing SQL <TT>SELECT</TT> statements.
+Note that this alias is independent of the work-area alias.
+<P>
+Observe also that the selected records do not appear in any particular
+order. If you want to see the customers in order by name, you
+need to add the following clause to the <TT>SELECT</TT> statement:
+<BLOCKQUOTE>
+<PRE>
+ORDER BY Customer.Contact_Name
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="UsingTTDISTINCTTTVersusTTGROUPBYTT">
+Using <TT>DISTINCT</TT> Versus
+<TT>GROUP BY</TT></A></H3>
+<P>
+ After putting the records in order, you see that the names of
+many customers occur several times. You get this result because
+the <TT>SELECT</TT> statement includes a record for each customer
+order in <TT>ORDERS.DBF</TT> during 1995. Adding the <TT>DISTINCT</TT>
+clause at the beginning of the field list includes each customer
+one time only. The <TT>SELECT</TT> now looks like the following:
+<BLOCKQUOTE>
+<PRE>
+SELECT DISTINCT Customer.contact_name, Customer.company_name, &Acirc;Customer.address,;
+  Customer.city, Customer.region, Customer.postal_code, Customer.country;
+ FROM  tastrade!customer INNER JOIN tastrade!orders ;
+   ON  Customer.customer_id = Orders.customer_id;
+ WHERE YEAR(Orders.order_date) = 1995;
+ ORDER BY Customer.contact_name ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+This command generates a list of all active customers in 1995,
+listed alphabetically by contact name. However, the <TT>ORDER
+BY</TT> clause is no longer needed. When you include <TT>DISTINCT</TT>,
+<TT>SELECT</TT> automatically orders the records alphabetically
+based on the field sequence. As long as you place the fields in
+order beginning with the first one you want to sort on, you do
+not need a separate <TT>ORDER BY</TT> clause.
+<P>
+You can perform the same <TT>SELECT</TT> with improved performance
+in yet another way. Rather than use <TT>SELECT DISTINCT</TT>,
+select all the records and then include a <TT>GROUP BY</TT> clause.
+When <TT>SELECT</TT> uses <TT>DISTINCT</TT>, it checks all the
+fields in the added record to see whether anything has changed.
+On the other hand, <TT>GROUP BY</TT> works with the result table
+and combines records with the same selected group field or fields.
+In this case, group on <TT>CONTACT_NAME</TT>. The resulting <TT>SELECT</TT>,
+shown in the following example, executes faster:
+<BLOCKQUOTE>
+<PRE>
+SELECT Customer.contact_name, Customer.company_name, Customer.address,;
+  Customer.city, Customer.region, Customer.postal_code, Customer.country;
+ FROM  tastrade!customer INNER JOIN tastrade!orders ;
+   ON  Customer.customer_id = Orders.customer_id;
+ WHERE YEAR(Orders.order_date) = 1995;
+ GROUP BY Customer.contact_name ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<H3><A NAME="RetrievingSupplierRecordsCorrespondingtoPurchases">
+Retrieving Supplier Records Corresponding to Purchases</A></H3>
+<P>
+Using similar logic, you can retrieve records of suppliers from
+which you purchased products during the year. Table 7.2 shows
+the appropriate Supplier fields.<BR>
+<P>
+<CENTER><B>Table 7.2&nbsp;&nbsp;Supplier Mailing Information Fields</B></CENTER>
+<CENTER><TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=190><CENTER><B>Field</B></CENTER></TD><TD WIDTH=192><CENTER><CENTER><B>Type</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Size</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>Supplier_Id</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>&nbsp;6</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>Contact_Name</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>30</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>Company_Name</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>40</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>Address</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>60</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>City</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>15</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>Region</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>15</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>Postal_Code</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>10</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>Country</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>15</CENTER></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The required <TT>SELECT</TT> statement to retrieve supplier names
+and addresses selects suppliers based on which products Tasmanian
+Traders sold during the year. Product-supplier information appears
+in the <TT>Products</TT> file. Therefore, you need to work from
+<TT>ORDERS</TT>, through <TT>ORDER_LINE_ITEMS</TT>, and then <TT>Products</TT>
+to identify the current suppliers.  The following <TT>SELECT</TT>
+captures this information:
+<BLOCKQUOTE>
+<PRE>
+SELECT Supplier.contact_name, Supplier.company_name, ;
+       Supplier.address, Supplier.city, Supplier.region, ;
+       Supplier.postal_code, Supplier.country;
+ FROM  tastrade!supplier INNER JOIN tastrade!products;
+    INNER JOIN tastrade!order_line_items;
+    INNER JOIN tastrade!order_line_items ;
+   ON  Orders.order_id = Order_line_items.order_id ;
+   ON  Products.product_id = Order_line_items.product_id ;
+   ON  Supplier.supplier_id = Products.supplier_id;
+ WHERE YEAR( Orders.order_date) = 1995;
+ GROUP BY Supplier.contact_name ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+This <TT>SELECT</TT> is similar to the customer <TT>SELECT</TT>,
+except that it requires several files to determine which suppliers
+to invite. Both <TT>SELECT</TT> statements use fields in tables
+to select records for the result table, even though those fields
+do not appear in the result. This is not a problem. Selection
+criteria looks at the source tables, not the result table.
+<H3><A NAME="RetrievingEmployeeRecords">
+Retrieving Employee Records</A></H3>
+<P>
+Finally, you need an employee list. Table 7.3 shows the appropriate
+Employee fields. Unfortunately, the <TT>Employee</TT> table includes
+only a hire date; it doesn't include a termination date. <BR>
+Perhaps everyone is so happy working for Tasmanian Traders that
+no one ever leaves, and all the employees are model employees.
+<BR>
+<P>
+<CENTER><B>Table 7.3&nbsp;&nbsp;Employee Mailing Information Fields</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=190><CENTER><B>Field</B></CENTER></TD><TD WIDTH=192><CENTER><CENTER><B>Type</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Size</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>LAST_NAME</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>20</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>FIRST_NAME</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>10</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>ADDRESS</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>60</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>CITY</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>15</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>REGION</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>15</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>POSTAL_CODE</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>10</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=190><TT>COUNTRY</TT></TD><TD WIDTH=192><CENTER><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>15</CENTER></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+This <TT>SELECT</TT> is the simplest of the three:
+<BLOCKQUOTE>
+<PRE>
+SELECT Employee.last_name, Employee.first_name, ;
+       Employee.address, Employee.city, ;
+       Employee.region, Employee.postal_code, ;
+       Employee.country;
+ FROM tastrade!employee;
+ GROUP BY Employee.last_name, Employee.first_name ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can now run each of these three <TT>SELECT</TT> statements
+and obtain three separate mailing lists. However, what you really
+want is a single list. For that job, the <TT>UNION</TT> clause
+helps.
+<H3><A NAME="UsingTTUNIONTTtoJoinTTSELECTTTResults">
+Using <TT>UNION</TT> to Join <TT>SELECT</TT> Results</A></H3>
+<P>
+<TT>UNION</TT> combines information from two or more separate
+<TT>SELECT</TT> statements in a single cursor or table. To use
+<TT>UNION</TT> to combine the result sets of multiple <TT>SELECT</TT>
+commands, you must follow these rules:
+<UL>
+<LI>You can have up to 10 <TT>UNION</TT>s
+in a <TT>SELECT</TT> command, connecting each <TT>SELECT</TT>
+to the preceding one. The important point to remember is that
+the result set created by the first <TT>SELECT</TT> determines
+the required structure of the rest.
+<LI>The order, number, size, and type of fields
+in the first <TT>SELECT</TT> define the structure required
+in all subsequent <TT>SELECT</TT>s. Visual FoxPro 6 does not require
+that the corresponding fields in each <TT>SELECT</TT> have the
+same names. However, the first <TT>SELECT</TT> does define the
+field name used in the result set. It uses the field order to
+determine how to combine two or more <TT>SELECT</TT>s. This means
+that if you accidentally switch the order of two fields, Visual
+FoxPro appends the data that way. If this operation results in
+the wrong field type, Visual FoxPro generates this vague error:
+<TT>SELECTs are not UNION-compatible</TT>. (Could <TT>SELECT</TT>s
+be a synonym for management?)
+</UL>
+<P>
+Observe that the <TT>SELECT</TT>s for <TT>CUSTOMER</TT> and <TT>SUPPLIER</TT>
+have a contact name of 30 characters, which includes both the
+first and last names. On the other hand, <TT>EMPLOYEE</TT> uses
+a separate field for first and last names, although the sum of
+their lengths is also 30. Another difference is that <TT>CUSTOMER</TT>
+and <TT>SUPPLIER</TT> have a company field; <TT>EMPLOYEE</TT>
+does not.
+<P>
+To combine these result sets, you must reconcile these differences.
+Listing 7.1 combines the three <TT>SELECT</TT>s to    create a
+single result table.<P>
+
+<HR>
+<B>Listing 7.1&nbsp;&nbsp;</B><TT><B>07CODE01</B></TT><B>-Using
+</B><TT><B>UNION</B></TT><B> to
+Join Multiple </B><TT><B>SELECT</B></TT><B>
+Statements<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Creates an annual picnic invitation list from customers,
+* suppliers, and employees for Tasmanian Traders
+
+* Create mailing list of employees, suppliers and customers
+SELECT Customer.contact_name, Customer.company_name, ;
+       Customer.address, Customer.city, ;
+       Customer.region, Customer.postal_code, ;
+       Customer.country;
+ FROM  tastrade!customer INNER JOIN tastrade!orders;
+   ON  Customer.customer_id = Orders.customer_id;
+ WHERE YEAR(Orders.order_date) = 1995;
+ UNION ;
+ SELECT SPACE(40) AS Company_Name, ;
+   PADR(ALLTRIM(Employee.first_name) + ' ' + ;
+        ALLTRIM(Employee.last_name),30) AS Contact,;
+   Employee.address, Employee.city, Employee.region, ;
+   Employee.postal_code, Employee.country ;
+ FROM tastrade!employee ;
+ UNION ;
+ SELECT Supplier.contact_name, Supplier.company_name, ;
+        Supplier.address, Supplier.city, Supplier.region, ;
+        Supplier.postal_code, Supplier.country ;
+ FROM  tastrade!supplier INNER JOIN tastrade!products ;
+    INNER JOIN tastrade!order_line_items ;
+    INNER JOIN tastrade!order_line_items ;
+   ON  Orders.order_id = Order_line_items.order_id ;
+   ON  Products.product_id = Order_line_items.product_id ;
+   ON  Supplier.supplier_id = Products.supplier_id ;
+ WHERE YEAR(Orders.order_date) = 1995 ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Notice the use of the following clause:
+<BLOCKQUOTE>
+<PRE>
+SPACE(40) as Company
+</PRE>
+</BLOCKQUOTE>
+<P>
+This expression is a placeholder that corresponds to the company
+field in the <TT>CUSTOMER</TT> and <TT>SUPPLIER</TT> files. This
+clause fills the company field in the combined result table with
+spaces because the <TT>EMPLOYEE</TT> file has no company field.
+Without it, Visual FoxPro cannot perform the <TT>UNION</TT> correctly,
+and an error occurs.
+<P>
+You must put a placeholder in any <TT>SELECT</TT> statement in
+which you need to satisfy the rule that all fields, data types,
+and widths must match. You can put it in the first <TT>SELECT</TT>
+statement of a group to reserve space for a field that exists
+only in later <TT>SELECT</TT>s. Alternatively, as in this example,
+you can include it in a later <TT>SELECT</TT> to match the columns
+of the first (master) <TT>SELECT</TT>.
+<P>
+To ensure that employees are not confused with customers or suppliers,
+you could replace the preceding clause with the following:
+<BLOCKQUOTE>
+<PRE>
+PADR(&quot;Tastrade&quot;,30) AS Company_Name
+</PRE>
+</BLOCKQUOTE>
+<P>
+Next, the <TT>SELECT</TT> statement concatenates the employee
+first- and lastname fields to match the contact names in <TT>CUSTOMER</TT>
+and <TT>SUPPLIER</TT>. It uses <TT>ALLTRIM</TT> with the employee's
+first name to remove trailing blanks and uses the <TT>PADR()</TT>
+function to produce a field that is of equal length to the other
+<TT>SELECT</TT>s. However, a blank must then be added to separate
+it from the employee's last name. The employee first name can
+store up to 10 characters, and the last name can have 20 characters,
+according to the <TT>Employee</TT> table structure. Thus, with
+the addition of a blank between these two fields, the total field
+size might exceed the 30-character limit of <TT>CONTACT</TT>.
+In that case, Visual FoxPro truncates the last character.
+<P>
+You can define placeholders for variables of other types as well.
+The following are some examples:
+<BLOCKQUOTE>
+<PRE>
+.T. AS InStock
+000.00 AS UnitPrice
+00000 AS OnHand
+{//} AS OrderDate
+</PRE>
+</BLOCKQUOTE>
+<P>
+Observe that in the case of numeric values, the picture used determines
+the size of the field and number of decimal places.
+<P>
+Sometimes, a field exists in all <TT>SELECT</TT>s combined with
+<TT>UNION</TT>s, but the field sizes differ. Suppose, for the
+sake of this example, that the Employee files use a 30-character
+address field. The <TT>Address</TT> field in <TT>CUSTOMER</TT>
+and <TT>SUPPLIER</TT> has 60 characters. Although you do not have
+to do anything when subsequent fields are smaller, you could pad
+the employee address in the third <TT>SELECT</TT> with 30 trailing
+blanks, as follows:
+<BLOCKQUOTE>
+<PRE>
+PADR(AEmployee.Address,30) AS Address<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Make sure that field definition in the first <TT>SELECT</TT> is large enough for its associated fields in the other <TT>SELECT</TT>s. If it is not, Visual FoxPro truncates the data.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+A set of <TT>SELECT</TT> statements combined by multiple instances of <TT>UNION</TT> is actually one line of code. Therefore, any error occurring anywhere within a set of <TT>SELECT</TT>s connected with <TT>UNION</TT> causes the entire statement to fail. Often, you cannot easily determine which <TT>SELECT</TT> caused the failure. Therefore, consider testing each <TT>SELECT</TT> individually before combining them with <TT>UNION</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The following are some other considerations in combining <TT>SELECT</TT>s
+with <TT>UNION</TT>:
+<UL>
+<LI>Because <TT>ORDER BY</TT> and <TT>INTO</TT>
+clauses work with the final result set, they can appear only in
+the final <TT>SELECT</TT>. After all, it would not make sense
+to <TT>UNION</TT> result sets sorted by different fields or output
+to different files or devices.
+<LI>On the other hand, <TT>GROUP BY</TT>
+and <TT>HAVING</TT> work with the selected records in creating
+the final result set. Because each <TT>SELECT</TT> creates an
+intermediate result set before <TT>UNION</TT> combines them, these
+clauses can appear in each <TT>SELECT</TT>. They affect only records
+from the <TT>SELECT</TT> that they are in.
+</UL>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Surprisingly, you can put a single <TT>ORDER BY</TT> or <TT>INTO</TT> clause in any of the <TT>SELECT</TT> statements, and Visual FoxPro uses it appropriately for the entire result table. However, if more than one <TT>SELECT</TT> has an <TT>ORDER BY</TT> or <TT>INTO</TT> clause, Visual FoxPro displays the nonspecific error message <TT>Unrecognized phrase/keyword in command</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+To sort the output of the company picnic list, you could include the clause <TT>ORDER BY Company_Name</TT>. However, the program would fail. In individual <TT>SELECT</TT> statements, you can sort the result table by adding an <TT>ORDER BY</TT> clause, followed by the name of the field, as follows:
+<P>
+<TT>
+ORDER BY Company_Name</TT>
+<P>
+However, when combining <TT>SELECT</TT> results with <TT>UNION</TT>, you must refer to the relative field position of the column to sort on, such as
+<P>
+<TT>
+ORDER BY 2</TT>
+<P>
+to sort on one field, or<P>
+<TT>
+ORDER BY 6, 2</TT>
+<P>
+to sort on multiple fields. Attempts to reference a field by its name in one of the original tables will result in the error <TT>SQL Invalid ORDER BY</TT>.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Perhaps you also noticed that the records in the result set were
+already sorted by contact name. Whenever you create a <TT>UNION</TT>
+between two or more <TT>SELECT</TT>s, and you do not specify a
+sort order, Visual FoxPro automatically sorts them, using the
+selected field order to define a default sort. Thus, the Tasmanian
+Trader picnic <TT>SELECT</TT> sorts by contact.
+<P>
+Unlike the basic <TT>SELECT</TT> statement, which automatically
+includes duplicate records as long as they match the selection
+criteria, <TT>UNION</TT> performs an automatic <TT>DISTINCT</TT>.
+This means that it checks each record added to the result table
+to ensure that no other records in the result table match it exactly,
+field for field. Obviously, this process takes additional time.
+To help, VFP places the records in a default sorted order if the
+code does not specify an order.
+<P>
+If you know that the <TT>SELECT</TT> statements do not create
+duplicate records, or you don't care about the duplicates that
+might be created, you can replace <TT>UNION</TT> with <TT>UNION
+ALL</TT>. Adding <TT>ALL</TT> eliminates the test for duplicates,
+thus reducing the overall execution time.
+<P>
+Visual FoxPro uses <TT>UNION</TT> only between queries, not subqueries.
+Suppose that you want to see the names of all employees who do
+not live in a country where you have suppliers or customers. (Pink-slip
+time!) You might want to perform the following query:
+<BLOCKQUOTE>
+<PRE>
+SELECT Em.First_Name, Em.Last_Name ;
+  FROM \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!EMPLOYEE Em ;
+WHERE Country NOT IN (SELECT customer.Country ;
+         FROM \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!CUSTOMER, ;
+         UNION ;
+         SELECT supplier.Country
+           FROM \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!SUPPLIER) ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+Visual FoxPro does not support this use of <TT>UNION</TT>. In
+fact, it generates the error <TT>SQL Invalid use of union in subquery</TT>.
+Rather, you need to ask the following:
+<BLOCKQUOTE>
+<PRE>
+SELECT Em.First_Name, Em.Last_Name ;
+  FROM EMPLOYEE Em ;
+ WHERE Country NOT IN (SELECT customer.Country) ;
+       FROM \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!CUSTOMER) ;
+         OR Country NOT IN (SELECT supplier.Country ;
+       FROM \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!SUPPLIER) ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+Following is a summary of Visual FoxPro's <TT>UNION</TT> rules:
+<UL>
+<LI>Any field included in the first field
+list must be represented by a field or placeholder in subsequent
+field lists.
+<LI>Any field from a subsequent field list
+that is not part of the first field list must be represented by
+a placeholder in the first field list.
+<LI>No calculated fields can appear in the
+first field list.
+<LI><TT>ORDER BY</TT> and <TT>INTO</TT> clauses can appear in
+any <TT>SELECT</TT> in the <TT>UNION</TT>, but only one time,
+and they apply to the entire result.
+<LI><TT>ORDER BY</TT> must reference the column by numeric position
+rather than by name.
+<LI>If no <TT>ORDER BY</TT> clause
+exists, Visual FoxPro uses the field order as the default order.
+<LI><TT>GROUP BY</TT> and <TT>HAVING</TT> clauses can appear in
+each <TT>SELECT</TT> in the <TT>UNION</TT>, and they apply to
+only the partial results generated by that <TT>SELECT</TT>.
+<LI>You are limited to 10 <TT>UNION</TT>
+clauses.
+<LI><TT>UNION</TT> cannot combine the results of subqueries (<TT>SELECT</TT>s
+used within the <TT>WHERE</TT> clause of other <TT>SELECT</TT>s).
+</UL>
+<H3><A NAME="CreatingInnerJoins">
+Creating Inner Joins</A></H3>
+<P>
+Actually, you have been creating inner joins for the past chapter
+and a half. An inner join includes only the records from each
+table that match a join condition.
+<P>
+The following SQL <TT>SELECT</TT> command from Visual FoxPro 6
+shows the syntax that supports the <TT>JOIN</TT> argument:
+<BLOCKQUOTE>
+<PRE>
+SELECT Customer.contact_name, Customer.company_name, ;
+       Customer.address, Customer.city, ;
+       Customer.region, Customer.postal_code, ;
+       Customer.country;
+ FROM  tastrade!customer INNER JOIN tastrade!orders;
+  ON Customer.customer_id = Orders.customer_id ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+These <TT>SELECT</TT>s include records for customer IDs that exist
+in both <TT>CUSTOMER.DBF</TT> and <TT>ORDERS.DBF</TT>.
+<H3><A NAME="CreatingOuterJoins">
+Creating Outer Joins</A></H3>
+<P>
+In an inner join, Visual FoxPro gets from the first table the
+records that have at least one corresponding record in the second
+table.
+<P>
+Suppose that you want to create a SQL <TT>SELECT</TT> that sums
+the quantity of each product sold by Tasmanian Traders. The following
+<TT>SELECT</TT> counts the sales, using <TT>ORDER_LINE_ITEMS</TT>:
+<BLOCKQUOTE>
+<PRE>
+SELECT Oi.Product_ID, SUM(Oi.Quantity) AS Total_Sales, ;
+       Pr.Product_Name ;
+  FROM \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!ORDER_LINE_ITEMS Oi, ;
+       \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!PRODUCTS Pr ;
+ WHERE Oi.Product_ID = Pr.Product_ID ;
+ GROUP BY Oi.Product_ID ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+The problem with this <TT>SELECT</TT> is that it includes only
+records for items with sales. You might have products without
+sales. To include them, you need an outer join.
+<P>
+Outer joins come in three flavors: <I>left outer join</I>, which
+includes all records for the table on the left side of the join
+statement and only matching records from the table on the right;
+<I>right outer join</I>, which includes all records from the table
+on the right side of the join condition and only matching records
+from the table on the left; and <I>full outer join</I>, which
+includes all records from both tables and matches up those that
+it can.
+<P>
+<B>Left Outer Join&nbsp;&nbsp;</B>One way to implement a left
+outer join is to perform two <TT>SELECT</TT>s: one for all records
+with children and one for all records without children. Then combine
+the results of these two <TT>SELECT</TT>s with a <TT>UNION</TT>.
+Listing 7.2 creates the necessary list.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+To show that this example really does include products without sales, modify the <TT>PRODUCTS.DBF</TT> table in <TT>\VFP\SAMPLES\DATA</TT> before running this program. Add a few records with new <TT>Product_ID</TT> values. Include at least product names (for example, <TT>Discontinued Product #1</TT>) to help you identify the ones that were added.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<HR>
+<B>Listing 7.2&nbsp;&nbsp;</B><TT><B>07CODE02</B></TT><B>-A
+Simple Left Outer Join<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Creates an outer-join to list all products and their sales.
+
+
+  SELECT Oi.Product_ID, SUM(Oi.Quantity) AS TotalSales, ;
+         Pr.Product_Name ;
+    FROM \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!ORDER_LINE_ITEMS Oi, ;
+         \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!PRODUCTS Pr ;
+   WHERE Oi.Product_ID = Pr.Product_ID ;
+   GROUP BY Pi.Product_ID ;
+  UNION ALL ;
+  SELECT Pr.Product_ID, 0, Pr.Product_Name ;
+    FROM \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!PRODUCTS Pr ;
+   WHERE Product_ID NOT IN (SELECT DISTINCT Product_ID ;
+         FROM \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE!ORDER_LINE_ITEMS) ;
+INTO CURSOR MyResult
+
+
+*/ Using a JOIN clause
+SELECT Products.product_id,;
+  SUM(Order_line_items.quantity) AS totalsales, Products.product_name;
+ FROM  tastrade!products LEFT OUTER JOIN tastrade!order_line_items ;
+   ON  Products.product_id = Order_line_items.product_id;
+ GROUP BY Products.product_id ;
+INTO CURSOR MyResult<BR>
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+A left outer join should never have an overlap of records. Therefore, use <TT>UNION ALL</TT> to optimize performance when you're combining the two record sets.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Right Outer Join&nbsp;&nbsp;</B>A right outer join is required
+when you want all the records from the table on the right side
+of the join criteria. The following example shows the use of a
+right outer join:
+<BLOCKQUOTE>
+<PRE>
+SELECT Customer.Cust_id,;
+  SUM(Invoice.Amount) AS totalsales ;
+ FROM  Customer RIGHT OUTER JOIN Invoices ;
+   ON  Customer.Cust_id = Invoices.Cust_id;
+ GROUP BY Cust_id ;
+INTO CURSOR MyResult<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+A right outer join combines all the records that satisfy the relational criteria, as well as all child records without parent records.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+This example will produce a result that includes only the names
+of customers who have invoices, but it also includes any invoices
+that have no corresponding customer records.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You might object to the right outer join, saying that sound referential integrity would prevent &quot;orphaned&quot; invoice records. The answer to your objection would lie in the business rules for the system. Some businesses might, for instance, want to record cash sales as invoices without customers.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<B>Full Outer Join&nbsp;&nbsp;</B>What happens if you want all
+customers and all invoices, and you want the ones that match to
+be combined? The answer lies in the full outer join. The following
+example shows the full outer join syntax:
+<BLOCKQUOTE>
+<PRE>
+SELECT Customer.Cust_id,;
+  SUM(Invoice.Amount) AS totalsales ;
+ FROM  Customer FULL OUTER JOIN Invoices ;
+   ON  Customer.Cust_id = Invoices.Cust_id;
+ GROUP BY Cust_id ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+This type of join will produce a set of records that includes
+all customers and all invoices, and for those invoices that have
+customers, the data will be combined into one record.
+<H3><A NAME="CreatingaSelfJoin">
+Creating a Self-Join</A></H3>
+<P>
+A <I>self-join</I> is a query that needs to form a relation between
+two fields in the same table. See the section &quot;Creating Self-Referencing
+Relations&quot; in <A HREF="ch04/ch04.htm" >Chapter 4</A> &quot;Advanced Database Management
+Concepts&quot;; there, you used a self-join in an employee file
+to find the names of each employee's supervisor. Listing 7.3 shows
+the necessary <TT>SELECT</TT> statement to generate the required
+result.<P>
+
+<HR>
+<B>Listing 7.3&nbsp;&nbsp;</B><TT><B>07CODE03</B></TT><B>-A
+Simple Self-Join Example<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Creates a self-join to find the suppliers
+* of both products 16 and 17.
+
+
+  SELECT E1.cEmpId, ;
+         E1.cLastName AS Employee_Last_Name, ;
+         E1.cFirstName AS Employee_First_Name, ;
+         E2.cLastName AS Supervisor_Last_Name, ;
+         E2.cFirstName AS Supervisor_First_Name ;
+    FROM \USINGFOX.300\DATA\PTOFSALE!EMPL2 E1, ;
+         \USINGFOX.300\DATA\PTOFSALE!EMPL2 E2 ;
+   WHERE E1.cSupervisor = E2.cEmpId ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<P>
+Observe that to form a self-join, you must open the table more
+than once, with a different alias for each occurrence. This example
+opens the file <TT>EMPL2.DBF</TT>, using the simple character
+aliases <TT>E1</TT> and <TT>E2</TT>. It then forms a relation
+between the supervisor ID in one instance and the employee ID
+in the other.
+<P>
+Another situation that calls for a self-join occurs when you need
+to find records that match two or more occurrences of the same
+field. Suppose that you want to know which Tasmanian Traders supplier,
+if any, provides both product ID 16 and 18. Because this request
+requires comparing products across multiple records, a simple
+query will not solve it. Listing 7.4 opens <TT>PRODUCT.DBF</TT>
+twice, once to find each product. If the supplier ID for both
+is the same, it retrieves the name of the supplier for the result
+table.<P>
+
+<HR>
+<B>Listing 7.4&nbsp;&nbsp;</B><TT><B>07CODE04</B></TT><B>-An
+Advanced Self-Join Example<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Creates a self-join to find the suppliers of both products 16 and 18.
+* Ensure the Products.Supplier_Id for both products 16 and 18 are the same.
+
+  SELECT Pa.Product_Name, Pb.Product_Name, ;
+         Su.Company_Name, Pa.Product_ID, Pb.Product_id ;
+    FROM TASTRADE!PRODUCTS Pa,;
+         TASTRADE!PRODUCTS Pb,;
+         TASTRADE!SUPPLIER Su ;
+   WHERE Pa.Product_ID = '    16' AND ;
+         Pb.Product_ID = '    18' AND ;
+         Su.Supplier_ID = Pb.Supplier_ID AND ;
+         Pa.Supplier_ID = Su.Supplier_ID ;
+INTO CURSOR MyResult
+
+* Visual FoxPro 6.0
+CLOSE ALL
+SELECT 0
+USE products ALIAS products
+SELECT 0
+USE products ALIAS products_a AGAIN
+SELECT 0
+USE supplier
+SELECT Products.product_name, Products_a.product_name, ;
+  Supplier.company_name, Products.product_id, Products_a.product_id;
+ FROM  tastrade!products INNER JOIN tastrade!supplier;
+    INNER JOIN tastrade!products Products_a ;
+   ON  Products.supplier_id ==Supplier.supplier_id ;
+   ON  Products.supplier_id == Products_a.supplier_id;
+ WHERE Products.product_id == '    16';
+   AND (Products_a.product_id == '    18');
+ ORDER BY Products.product_id ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<H2><A NAME="OptimizingQueryGeneration"><FONT SIZE=5 COLOR=#FF0000>
+Optimizing Query Generation</FONT></A></H2>
+<P>
+A poorly designed query can require minutes or even hours to return
+a result set that a properly designed query can return in seconds.
+This section examines techniques that improve the performance
+time of queries.
+<H3><A NAME="BasicRulesforUsingRushmore">
+Basic Rules for Using Rushmore</A></H3>
+<P>
+Rushmore can improve the performance of most queries when used
+properly. However, many developers don't understand how Rushmore
+really works; therefore, they create queries that do not perform
+at their optimal level.
+<P>
+Rushmore uses existing indexes whenever possible to process a
+query. If an index does not exist, Rushmore creates a &quot;virtual&quot;
+index in memory for the request. However, creating an index takes
+more time than using an existing one.
+<P>
+Many developers, knowing that Rushmore uses indexes, try to &quot;help&quot;
+it along by setting the order of the tables before running the
+query. In commands that use the Rushmore optimizable <TT>FOR</TT>
+clauses, such as <TT>BROWSE</TT>, <TT>LIST</TT>, and <TT>SCAN</TT>,
+this practice slows the command. It does not turn off Rushmore,
+however. Rushmore finds the records that match the criteria; then
+it has to go back to the index to determine the order in which
+to display them.
+<P>
+When you create queries using <TT>SELECT</TT>, Visual FoxPro ignores
+any established order for selected tables. Therefore, you do not
+need to go back and turn off indexes to benefit from Rushmore.
+But setting them doesn't help either. You still have to phrase
+all <TT>WHERE</TT> clause criteria using Rushmore-optimizable
+clauses for the best performance.
+<P>
+The main criterion in determining whether a clause is Rushmore-optimizable
+is whether it exactly matches a current index expression. If it
+does, Rushmore optimizes the expression. For this reason, many
+developers create a separate index tag on each field in the table
+(this process is called <I>inverting</I> the table). Consider
+this example:
+<BLOCKQUOTE>
+<PRE>
+INDEX ON Company_Name TAG company
+INDEX ON Employee_ID TAG employee
+</PRE>
+</BLOCKQUOTE>
+<P>
+Here, Visual FoxPro must update each index every time it adds,
+changes, or deletes a record. Alternatively, you can define a
+concatenated index like the following:
+<BLOCKQUOTE>
+<PRE>
+INDEX ON Company_Name + Employee_Id TAG employee
+</PRE>
+</BLOCKQUOTE>
+<P>
+This index performs searches only slightly slower than indexes
+on individual fields. It reduces the total number of indexes that
+Visual FoxPro must maintain, however. If you look at your applications,
+you usually don't need indexes on every field. In fact, only a
+few indexes might really be necessary to form relations and queries.
+A good goal is to minimize the total number of indexes while providing
+an index for every defined need.
+<P>
+On the other hand, if you need individual indexes on Company and
+Employee ID, don't create a third index on the concatenation of
+the two; doing so actually slows Rushmore.
+<P>
+Even a seemingly minor change to the index expression can turn
+off Rushmore. Using the preceding index expression on <TT>Company_Name</TT>,
+for example, Rushmore will not optimize the following expression:
+<BLOCKQUOTE>
+<PRE>
+UPPER(Company_Name) = 'FRANS'
+</PRE>
+</BLOCKQUOTE>
+<P>
+The function <TT>UPPER()</TT> invalidates the use of Rushmore.
+On the other hand, if you know that the application stores all
+company names in uppercase, Rushmore will optimize the following
+expression:
+<BLOCKQUOTE>
+<PRE>
+Company_Name = UPPER('frans')<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Don't control case in conditional statements. Use the <TT>InputMask</TT> or <TT>Format</TT> properties of the data input objects to control case.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+If the <TT>WHERE</TT> clause contains several conditions connected
+with <TT>AND</TT>, Rushmore optimizes each condition separately.
+This situation can result in a <I>partially optimized expression</I>
+when all the expressions connected with <TT>AND</TT> are Rushmore-optimizable.
+<P>
+Unless you want to display all records in the table regardless
+of their delete status, you should create an index on <TT>DELETED()</TT>.
+Rushmore uses this index to determine which records it can use
+when <TT>SET DELETED ON</TT> is set. If Rushmore has to read the
+table to determine the delete flag on each record, the <TT>SELECT</TT>
+cannot be fully optimized.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You might not have realized that deleted records can cause a problem for Rushmore. <TT>SET DELETED ON</TT> is equivalent to <TT>SET FILTER TO NOT DELETED()</TT>. Remember that the command <TT>SET DELETED ON</TT> can be set elsewhere in the current program, a previous program, the FoxPro <TT>CONFIG.FPW</TT> file, or even interactively. If you want to skip deleted records and want optimal performance from Rushmore, you must have a tag defined on the <TT>DELETED()</TT> function.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Rushmore will not use indexes that contain <TT>NOT</TT> or <TT>FOR</TT>
+when optimizing an expression. However, you can use <TT>NOT</TT>
+in the condition. For example, you can have a <TT>SELECT</TT>
+like the following:
+<BLOCKQUOTE>
+<PRE>
+SELECT Company_Name FROM customer WHERE NOT (State='TX')
+</PRE>
+</BLOCKQUOTE>
+<P>
+As long as an index exists on the field <TT>STATE</TT>, Rushmore
+will optimize the expression.
+<P>
+Sometimes, you can benefit from previous Rushmore optimization.
+Suppose that you begin by searching the <TT>ORDERS</TT> table
+for all orders in 1995, as follows:
+<BLOCKQUOTE>
+<PRE>
+BROWSE FOR YEAR(Order_Date) = 1995
+</PRE>
+</BLOCKQUOTE>
+<P>
+Next, suppose that you need only orders from customer <TT>'FRANS'</TT>
+in 1995:
+<BLOCKQUOTE>
+<PRE>
+BROWSE FOR YEAR(Order_Date) = 1995 AND Customer_ID = 'FRANS'
+</PRE>
+</BLOCKQUOTE>
+<P>
+Now, assume that the following indexes exist:
+<BLOCKQUOTE>
+<PRE>
+INDEX ON YEAR(Order_Date) TAG year
+INDEX ON Customer_ID TAG customer
+</PRE>
+</BLOCKQUOTE>
+<P>
+In this case, Rushmore optimizes the first expression, finding
+all orders for 1995. When it begins the second browse, it recognizes
+that it already has information about orders in 1995. Therefore,
+it examines those records only for customer <TT>'FRANS'</TT>.
+<P>
+The biggest potential danger with Rushmore is that it creates
+a solution set for any given optimizable expression only once.
+If you use a <TT>SCAN FOR</TT> clause, Rushmore determines which
+records to process the first time it executes the <TT>FOR</TT>.
+In a shared environment, another user could make a change that
+would affect Rushmore's solution set while <TT>SCAN</TT> is processing.
+However, because Rushmore does not check for changes, you might
+process the wrong records. For the average application, the benefits
+of using Rushmore outweigh this remote but possible problem. However,
+you should be aware of it if you have very high transaction rate
+tables. If you decide that the potential danger is too great,
+turn optimization off by using the <TT>NOOPTIMIZE</TT> option
+on the command you are using to get the data.
+<P>
+Suppose that you need to reference selected records from a single
+table and need no special column functions, groups, or orders.
+<TT>SELECT</TT> creates a special cursor that effectively reopens
+the table in a different work area and applies a filter to it.
+It performs this activity almost instantaneously. Therefore, rather
+than use this code
+<BLOCKQUOTE>
+<PRE>
+SELECT orders
+SCAN FOR Customer_Name = 'TAZMAN'
+  &lt;&lt; <I>commands that process each selected order</I> &gt;&gt;
+ENDSCAN
+</PRE>
+</BLOCKQUOTE>
+<P>
+you might instead use this code
+<BLOCKQUOTE>
+<PRE>
+SELECT * FROM orders WHERE Customer_Name = 'TAZMAN'
+SCAN
+  &lt;&lt; <I>commands that process each selected order</I> &gt;&gt;
+ENDSCAN<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Rushmore will not use a <TT>UNIQUE</TT> index, and you shouldn't, either. In <A HREF="ch03/ch03.htm" >Chapter 3</A> &quot;Defining Databases, Tables, and Indexes,&quot; I explained why <TT>UNIQUE</TT> indexes are not recommended except for the rare situation in which you might create one, use it, and then erase it.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="MinimizingFieldsinaQuery">
+Minimizing Fields in a Query</A></H3>
+<P>
+All too often, it seems easy to just include the <TT>*</TT> character
+in a <TT>SELECT</TT> statement to include all the fields in a
+table. However, you should include only the fields that you absolutely
+need. The most time-consuming aspect of any <TT>SELECT</TT> is
+getting the data for the result, and the fewer fields you ask
+for, the faster the <TT>SELECT</TT> will get them.
+<P>
+If you want only <TT>DISTINCT</TT> records, <TT>SELECT</TT> compares
+every field in every record to determine whether the new record
+is distinct. This process consumes time. Reducing the number of
+fields in the <TT>SELECT</TT> reduces the number of comparisons.
+However, a better solution is to use the <TT>GROUP BY</TT> clause
+wherever possible.
+<P>
+Another trap is the assumption that forming relations between
+<TT>SELECT</TT> results and other existing tables is easier than
+including all the fields in the <TT>SELECT</TT>. Actually, the
+most likely reason for doing so is reluctance to include all the
+field references. It is true that large multiple-table <TT>SELECT</TT>s
+consume a great deal of memory and often need to be stored partially
+on disk. Further, the more fields included in the <TT>SELECT</TT>,
+the more memory it needs or the more disk access time it requires.
+Of course, any disk access slows a <TT>SELECT</TT> considerably.
+You might be tempted to include only those fields that are necessary
+to uniquely identify the records in the <TT>SELECT</TT> and then
+form relations to other physical tables. This solution generally
+is not good. The main reason is that accessing all the other physical
+tables to form and access the relations definitely involves slower
+disk access.
+<H2><A NAME="CreatingCrossTabs"><FONT SIZE=5 COLOR=#FF0000>
+Creating Cross-Tabs</FONT></A></H2>
+<P>
+Cross-tabs are special types of queries in which you define column
+and row headings of a table and calculate results for the intersecting
+cells. Suppose that you want to create a monthly sales summary,
+by customer, for Tasmanian Traders. This report needs to display
+12 column headings, each one representing a different month. Each
+row represents a different customer. You probably would not normally
+store a table with a structure like the following:
+<BLOCKQUOTE>
+<PRE>
+CustomerId        Character         8
+JanuarySales      Numeric           8     2
+FebruarySales     Numeric           8     2
+MarchSales        Numeric           8     2
+AprilSales        Numeric           8     2
+MaySales          Numeric           8     2
+JuneSales         Numeric           8     2
+JulySales         Numeric           8     2
+AugustSales       Numeric           8     2
+SeptemberSales    Numeric           8     2
+OctoberSales      Numeric           8     2
+NovemberSales     Numeric           8     2
+DecemberSales     Numeric           8     2
+</PRE>
+</BLOCKQUOTE>
+<P>
+Instead, the data file looks like this:
+<BLOCKQUOTE>
+<PRE>
+CustomerId        Character         8
+SalesDate         Date              8
+SalesAmt          Numeric           8      2
+</PRE>
+</BLOCKQUOTE>
+<P>
+How do you get from the first form to the second? Visual FoxPro
+includes a special program called <TT>VFPXTAB</TT>, which converts
+a <TT>SELECT</TT> cursor that contains the necessary information
+to a cross-tab table. To gather the necessary information for
+the cross-tab, you first need a cursor with three fields:
+<UL>
+<LI>The row headings
+<LI>The column headings
+<LI>The row-column intersection values
+</UL>
+<P>
+The first <TT>SELECT</TT> statement in Listing 7.5 gathers the
+required data for 1994 and stores it in a cursor named <TT>MyTab</TT>.
+The second <TT>SELECT</TT> creates the cross-tab, using the data
+from <TT>MyTab</TT> to provide the row, column, and data. Function
+<TT>SYS(2015)</TT> generates a unique name for the cursor.<P>
+
+<HR>
+<B>Listing 7.5&nbsp;&nbsp;</B><TT><B>07CODE05</B></TT><B>-Creating
+a Cross-Tab from a SELECT Cursor<BR>
+</B>
+<BLOCKQUOTE>
+<PRE>
+* Creates a cross-tab
+
+
+*/ Create the source information for row, column, and data
+  SELECT Or.Customer_id, Pe.Monthid, ;
+         (Oi.Unit_Price*Oi.Quantity) AS Order_Net ;
+    FROM TASTRADE!ORDERS Or, ;
+         TASTRADE!ORDER_LINE_ITEMS Oi, ;
+         PERIOD Pe ;
+   WHERE YEAR(Oi.Order_Date) = 1994 AND ;
+         MONTH(Oi.Order_Date) = Pe.MonthId AND ;
+         Oi.Order_Id = Or.Order_Id ;
+   GROUP BY Oi.Customer_Id, Pe.MonthId ;
+    INTO CURSOR MyTab
+
+ */ Create the cross-tab
+ SELECT MyTab.customer_i, MyTab.monthid, SUM(MyTab.order_net);
+ FROM MyTab;
+ GROUP BY MyTab.customer_i, MyTab.monthid;
+ ORDER BY MyTab.customer_i, MyTab.monthid;
+ INTO CURSOR MyXTab
+ DO (_GENXTAB)
+BROWSE NOMODIFY
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+In Listing 7.5, you might notice the use of <TT>_GENXTAB</TT>. This system memory variable, which is created by Visual FoxPro, holds the name of the program to use for creating cross-tabs. The default program is <TT>VFPXTAB.PRG</TT>, but you can replace that program with one you've written by adding the following in the command window:
+<BR>
+<PRE>
+_GENXTAB = &quot;C:\VFP\MyXTab.prg&quot;</PRE>
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+This <TT>SELECT</TT> requires a special table that is not included
+with the Tasmanian Trader example. You can quickly create this
+table, based on the structure shown in Table 7.4. Table 7.5 shows
+the contents of all 12 records. Place this table in directory
+<TT>\USINGFOX.500\DATA</TT>.<BR>
+<P>
+<CENTER><B>Table 7.4&nbsp;&nbsp;Table Structure for PERIOD.DBF
+Used in the Cross-Tab</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=144><CENTER><B>Field</B></CENTER></TD><TD WIDTH=144><CENTER><B>Type</B></CENTER>
+</TD><TD WIDTH=96><CENTER><B>Size</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>MonthID</TT></TD><TD WIDTH=144><TT>Numeric</TT>
+</TD><TD WIDTH=96><CENTER>&nbsp;2</CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=144><TT>MonthName</TT></TD><TD WIDTH=144><TT>Character</TT>
+</TD><TD WIDTH=96><CENTER>10</CENTER></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<CENTER><B>Table 7.5&nbsp;&nbsp;Records in PERIOD.DBF</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><B>Record #</B></CENTER></TD><TD WIDTH=96><CENTER><B>MonthID</B></CENTER>
+</TD><TD WIDTH=192><CENTER><B>MonthName</B></CENTER></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>&nbsp;1</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>&nbsp;1</TT></CENTER>
+</TD><TD WIDTH=192><TT>January</TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>&nbsp;2</CENTER></TD><TD WIDTH=96><CENTER>&nbsp;2</CENTER>
+</TD><TD WIDTH=192>February</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>&nbsp;3</CENTER></TD><TD WIDTH=96><CENTER>&nbsp;3</CENTER>
+</TD><TD WIDTH=192>March</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>&nbsp;4</CENTER></TD><TD WIDTH=96><CENTER>&nbsp;4</CENTER>
+</TD><TD WIDTH=192>April</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>&nbsp;5</CENTER></TD><TD WIDTH=96><CENTER>&nbsp;5</CENTER>
+</TD><TD WIDTH=192>May</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>&nbsp;6</CENTER></TD><TD WIDTH=96><CENTER>&nbsp;6</CENTER>
+</TD><TD WIDTH=192>June</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>&nbsp;7</CENTER></TD><TD WIDTH=96><CENTER>&nbsp;7</CENTER>
+</TD><TD WIDTH=192>July</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>&nbsp;8</CENTER></TD><TD WIDTH=96><CENTER>&nbsp;8</CENTER>
+</TD><TD WIDTH=192>August</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>&nbsp;9</CENTER></TD><TD WIDTH=96><CENTER>&nbsp;9</CENTER>
+</TD><TD WIDTH=192>September</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>10</CENTER></TD><TD WIDTH=96><CENTER>10</CENTER>
+</TD><TD WIDTH=192>October</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER>11</CENTER></TD><TD WIDTH=96><CENTER>11</CENTER>
+</TD><TD WIDTH=192>November</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=96><CENTER><TT>12</TT></CENTER></TD><TD WIDTH=96><CENTER><TT>12</TT></CENTER>
+</TD><TD WIDTH=192><TT>December</TT></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+The <TT>SELECT</TT> in Listing 7.5 creates a cursor with one record
+for each customer-month combination. It first has to link <TT>ORDERS</TT>
+with <TT>ORDER_LINE_ITEMS</TT> to calculate the product of the
+<TT>Unit_Price</TT> and <TT>Quantity</TT>. It stores this product
+in the result set field <TT>ORDER_NET</TT>. The <TT>GROUP BY</TT>
+clause then sums <TT>ORDER_NET</TT> if the customer ordered more
+than one item in any month.
+<P>
+The result table from this <TT>SELECT</TT> is not a cross tabulation.
+However, you can create a cross-tab report with it if you sort
+and group by customer ID. First, you need to define report variables
+such as the following:
+<BLOCKQUOTE>
+<PRE>
+JanSales = IIF(MonthName = 'JANUARY', Order_Net, 0)
+</PRE>
+</BLOCKQUOTE>
+<P>
+This expression totals sales for January. You need to create 11
+similar expressions, defining total sales for other months. Then
+add these report variables to the customer ID group footer, and
+set the calculation method to <TT>SUM</TT>. This report does not
+need detail lines-only group footers.
+<P>
+This solution works for a report. However, displaying the information
+in a form, using the results with another table, or generating
+a graph would not be as easy. For that reason, you need to use
+<TT>VFPXTAB</TT>.
+<P>
+<TT>VFPXTAB</TT> reads the cursor created by the preceding <TT>SELECT</TT>
+and determines the number of distinct columns. Next, it creates
+a new table with the same first column (<TT>Customer_Id</TT>,
+in this case) and columns for each distinct value in the cursor's
+second field. Then it creates one record for each customer and
+puts the corresponding total sales in the correct column. The
+net result is a cross-tab table with 13 columns and 1 row for
+each customer. Now you can directly use this table to generate
+reports or graphs.
+<P>
+To execute <TT>VFPXTAB</TT>, you can call it directly, as follows:
+<BLOCKQUOTE>
+<PRE>
+DO \VFP\VFPXTAB
+</PRE>
+</BLOCKQUOTE>
+<P>
+This statement assumes that the root directory for Visual FoxPro
+is <TT>\VFP\</TT>. If your root directory is different, adjust
+this statement appropriately. If you have never run <TT>VFPXTAB</TT>
+before, Visual FoxPro must first compile it.
+<P>
+<TT>VFPXTAB</TT> uses, as input, the table in the current work
+area. Therefore, the table does not have to be named in the command
+that executes <TT>VFPXTAB</TT>. However, <TT>VFPXTAB</TT> has
+nine other possible parameters. All these parameters have default
+values and can be omitted. The parameters are as follow:<BLOCKQUOTE>
+<TABLE>
+<TR VALIGN=TOP><TD WIDTH=95>
+<TT>Parm1</TT>
+</TD><TD WIDTH=495>
+Specifies the output file/cursor name (default: <TT>XTAB.DBF</TT>)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=95>
+<TT>Parm2</TT>
+</TD><TD WIDTH=495>
+Creates a cursor only (default: <TT>.F.</TT>)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=95>
+<TT>Parm3</TT>
+</TD><TD WIDTH=495>
+Closes the input table after use (default: <TT>.T.</TT>)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=95>
+<TT>Parm4</TT>
+</TD><TD WIDTH=495>
+Shows a progress thermometer (default: <TT>.T.</TT>)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=95>
+<TT>Parm5</TT>
+</TD><TD WIDTH=495>
+Specifies the row field (field number to use as row) (default: <TT>1</TT>)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=95>
+<TT>Parm6</TT>
+</TD><TD WIDTH=495>
+Specifies the column field (field number to use as column) (default: <TT>2</TT>)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=95>
+<TT>Parm7</TT>
+</TD><TD WIDTH=495>
+Specifies the data field (field number to use as data) (default: <TT>3</TT>)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=95>
+<TT>Parm8</TT>
+</TD><TD WIDTH=495>
+Calculates the row total ) (default: <TT>.F.</TT>)
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=95>
+<TT>Parm9</TT>
+</TD><TD WIDTH=495>
+Indicates the totaling options (<TT>0</TT>:<TT> </TT>sum, <TT>1</TT>:<TT> </TT>count, <TT>2</TT>: % of total)
+</TD></TR>
+</TABLE></BLOCKQUOTE>
+<P>
+<P>
+The following command creates a cross-tab with one row per customer;
+then it sums all the customer's sales by month and displays one
+column per month:
+<BLOCKQUOTE>
+<PRE>
+DO \VFP\VFPXTAB WITH 'CUSTSALE.DBF', .F., .F., .T., 1, 2, 3, .T.
+</PRE>
+</BLOCKQUOTE>
+<P>
+The eighth parameter has been set to <TT>.T.</TT>; thus, it creates
+an additional column at the end to total all the sales for the
+preceding columns. In this case, because the <TT>SELECT</TT> limited
+records to a single year, this column represents the annual sales
+to each customer.
+<P>
+When you add <TT>2</TT> as the ninth parameter, the cross-tab
+calculates the percentage of total sales attributed to each customer
+during the year. Then you can sort the resulting cross-tab table
+to display the customers in order of total sales percentage, as
+follows:
+<BLOCKQUOTE>
+<PRE>
+DO \VFP\VFPXTAB WITH 'CUSTSALE.DBF', .F., .F., .T., 1, 2, 3, .T., 2
+<BR>
+</PRE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>CAUTION</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+A maximum of 254 unique values are allowed for the &quot;columns&quot; side of the cross-tab.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H2><A NAME="UsingViewsandUpdatableQueries"><FONT SIZE=5 COLOR=#FF0000>
+Using Views and Updatable Queries</FONT></A></H2>
+<P>
+Views and queries are almost the same thing. The principal difference
+is that you can use views to update data in the source tables.
+Also, Visual FoxPro stores views in the database, not as separate
+<TT>.QPR</TT> files; as a result, you can access them only while
+the database is open. Because you can update data in a view, views
+provide an excellent way to access and edit data stored in multiple
+related files. They also provide access to remote data on the
+same machine or on a remote server. When you are working with
+server data, you do not have to download all the records to your
+local machine to accomplish a change. The view can retrieve a
+subset of data, process it, and return it.
+<H3><A NAME="ViewsofLocalData">
+Views of Local Data</A></H3>
+<P>
+This section starts by showing you how to create views of local
+data. Creating a view is similar to creating a query. You can
+create a view in two primary ways:
+<UL>
+<LI>Choose File, New, View from the system menu.
+<LI>Type <TT>CREATE VIEW</TT> in the command window.
+</UL>
+<P>
+Both methods open the View Designer. The View Designer is similar
+to the Query Designer, with the addition of an Update Criteria
+Page. Suppose that you want to create a view between tables <TT>CUSTOMER</TT>
+and <TT>ORDERS</TT> in Tasmanian Traders. Figure 7.1 shows the
+opening screen of the View Designer, with the Add Table or View
+dialog box open and ready to add the second table.
+<P>
+<IMG SRC="f7-1.gif"><B>Figure 7.1 : </B><I>To begin a view, open the Add Table or View
+dialog box, and add the tables or views that will be the data
+source for the view you are creating</I>.</A>
+<P>
+The first five pages and the last page in the page frame provide
+the same options as queries. For further information about how
+to use these pages, refer to <A HREF="ch06.htm" >Chapter 6</A> &quot;Creating Basic Queries.&quot;
+<P>
+The first page, shown in Figure 7.2, displays a list of selected
+fields.
+<P>
+<IMG SRC="f7-2.gif"><B>Figure 7.2 : </B><I>The Fields page of the View Designer enables
+you to select fields from the available tables and to rearrange
+their order</I>.</A>
+<P>
+You can add or remove fields from this list by doing the following:
+<UL>
+<LI>Double-clicking the field name in the
+Table View area. Double-clicking the asterisk at the top of each
+table copies all fields to the output list.
+<LI>Dragging the selected fields from the
+Table View area to the Selected Fields list.
+<LI>Double-clicking the field names in the
+Available Fields list and Selected Fields list, or clicking the
+buttons that are positioned between the lists.
+</UL>
+<P>
+The order in which you select fields becomes the fields' default
+order in the selected output list. You can easily change this
+order by clicking and dragging the button to the left of each
+field name, moving it up or down in the list. Defining the field
+order is important because it defines the field order in the result
+set.
+<P>
+Figure 7.3 shows the Properties dialog box that appears when you
+click the Properties button in the Fields page. In this dialog
+box, you can specify validation, display, and mapping options,
+as well as enter a comment for each field in the view.
+<P>
+<IMG SRC="f7-3.gif"><B>Figure 7.3 : </B><I>The View Field Properties dialog box provides
+field-property options</I>.</A>
+<P>
+On the Join page of the View Designer, you can set up inner, left,
+right, and full joins when a view or query has more than one table
+(see Figure 7.4).
+<P>
+<IMG SRC="f7-4.gif"><B>Figure 7.4 : </B><I>The Join page displays the join condition(s)
+for the tables in the top pane of the designer</I>.</A>
+<P>
+There are two check boxes on the Miscellaneous tab of the View
+Designer. The one labeled No Duplicates creates a <TT>DISTINCT</TT>
+result set, and the one labeled Cross Tabulate creates a cross-tab
+result. Thus, you can use the Query or View Designer to create
+the necessary intermediate table for <TT>VFPXTAB</TT>, described
+in the preceding section. This check box is disabled if the memory
+variable <TT>_GENXTAB</TT> is empty (Visual FoxPro, by default,
+points <TT>_GENXTAB</TT> to the <TT>VFPXTAB</TT> program). You
+also have to select at least three fields.
+<P>
+On the Filter page, you enter the conditions that are expressed
+in the <TT>WHERE</TT> clause of the <TT>SELECT</TT> statement
+(see Figure 7.5). Fields do not have to be included in the Selected
+Fields list to be used in filter conditions.
+<P>
+<IMG SRC="f7-5.gif"><B>Figure 7.5 : </B><I>Exclude records from the view by selecting
+filter conditions</I>.</A>
+<P>
+The Order By page (see Figure 7.6) determines a sort order for
+the fields. Order criteria enable you to establish a sort order
+based on selected fields and expressions. You can sort each selected
+field in ascending or descending order. The order of the fields
+in the Ordering Criteria list determines the sort hierarchy. To
+change the sort hierarchy, simply click and drag the button to
+the left of each field name.
+<P>
+<IMG SRC="f7-6.gif"><B>Figure 7.6 : </B><I>Define the order of the records in the result
+set by selecting fields in the Order By page of the View Designer</I>.</A>
+<P>
+The Group By page (see Figure 7.7) provides an alternative to
+using No Duplicates.
+<P>
+<IMG SRC="f7-7.gif"><B>Figure 7.7 : </B><I>Use the Group By tab of the View Designer
+to sum records by one or more of the selected fields</I>.</A>
+<P>
+The section &quot;Using <TT>DISTINCT</TT> Versus <TT>GROUP BY</TT>&quot;
+earlier in this chapter describes the advantage of using <TT>GROUP
+BY</TT> over the <TT>DISTINCT</TT> clause in SQL statements. The
+Group By page also enables you to add a <TT>HAVING</TT> clause
+by clicking the Having button. Remember that the <TT>HAVING</TT>
+clause operates on the selected records in the result set. Therefore,
+you can use <TT>GROUP BY</TT> to collect and sum records by customer
+ID. Then you can select customers who made total purchases of
+more than $1,000 by using a <TT>HAVING</TT> clause such as the
+following:
+<BLOCKQUOTE>
+<PRE>
+HAVING TotalPurchases &gt; 1000
+</PRE>
+</BLOCKQUOTE>
+<P>
+For a local table view, Visual FoxPro supports only buffering.
+All views are buffered with optimistic row buffering by default.
+By using the <TT>CURSORSETPROP()</TT> function, however, you can
+change the buffering mode to one of the following values:
+<BLOCKQUOTE>
+<TT>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pessimistic row
+buffering on
+<BR>
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Optimistic row buffering
+on (Default)
+<BR>
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pessimistic table
+buffering on
+<BR>
+4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Optimistic table
+buffering on</TT>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You cannot turn buffering off for a view.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+To use buffering, you must first turn on <TT>MULTILOCKS</TT>.
+Then, using the <TT>CURSORSETPROP()</TT> function, you can select
+one of the buffering methods. The following code turns on optimistic
+table buffering for the <TT>CUSTOMER</TT> table:
+<BLOCKQUOTE>
+<PRE>
+SET MULTILOCKS ON
+CURSORSETPROP('BUFFERING', 5, 'CUSTOMER')
+</PRE>
+</BLOCKQUOTE>
+<P>
+Notice that this function requires three parameters. The first
+tells <TT>CURSORSETPROP()</TT> which cursor property you want
+to change; in the example, we are changing the <TT>BUFFERING</TT>
+property. The second is a numeric value to identify the new value
+for the property; acceptable values depend on the property being
+changed. The last parameter identifies the alias to be affected.
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+The Miscellaneous page of the View Designer contains check boxes for the duplicate-records and cross-tabulate options. The cross-tabulate option is enabled when you select three fields. These fields must represent the X axis, the Y axis, and data for the cross-tab. Record selections include all records, a specified number of values, or a percentage of the values that meet the selection criteria. (See Figure 7.8.)</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+<IMG SRC="f7-8.gif"><B>Figure 7.8 : </B><I>The Miscellaneous page of the View Designer
+specifies duplicate records, cross-tabular format, and how records
+are selected for the result set</I>.</A>
+<H3><A NAME="ViewUpdateOptions">
+View Update Options</A></H3>
+<P>
+The Update Criteria page of the View Designer page frame contains
+options that are specifically related to the capability of views
+to update the data that they represent. Figure 7.9 shows the options
+on this page.
+<P>
+<IMG SRC="f7-9.gif"><B>Figure 7.9 : </B><I>The Update Criteria page of the View Designer
+defines how Visual FoxPro updates the tables when changes are
+made to the view result set</I>.</A>
+<P>
+Within a view, you can control which tables and fields the user
+can update and how Visual FoxPro performs the updates. By default,
+Visual FoxPro prohibits all field updates in the view. To enable
+updates, first select the table to which the field belongs, using
+the table combo box in the upper-left corner of this page. You
+can select individual tables or all tables involved in the view.
+When you select a table, Visual FoxPro displays its fields in
+the center list box. Observe that it does not display all the
+fields from the table-just those that are included in the output
+set.
+<P>
+If a table has a primary index, and if that field appears in the
+output set, a check mark appears in the first column, below the
+key symbol. You can change the field(s) used to uniquely identify
+records in the original table. However, you should select only
+the primary-key field or a candidate-key field. These fields must
+appear in the selected fields.
+<P>
+The Reset Key button immediately below the table combo box returns
+the key-field status to the original setting used by the source
+table.
+<P>
+The Update All button places check marks in the second column
+of the field list, below the pencil icon. This column determines
+which fields VFP will update. You can select individual fields
+for updating by clicking the button in this column next to the
+field name. Conversely, you can click the Update All button and
+turn off individual fields that you do not want to update.
+<P>
+By default, the Update All button does not select the key field
+as an updatable field. Although you can mark the key field as
+updatable by manually clicking its second column, you normally
+do not want to update the key field. Before enabling updates to
+a key field, you should define referential-integrity rules by
+using the RI Builder or by using the append, delete, and update
+triggers. Then you should enable updates only from the primary
+table field.
+<P>
+Even if you mark fields as updatable, SQL does not send the updates
+back to the original files unless you also select the Send SQL
+Updates option. When you enable updates, you must also select
+one of the four update options shown in Table 7.6.<BR>
+<P>
+<CENTER><B>Table 7.6&nbsp;&nbsp;Update Options for the SQL WHERE
+Clause</B></CENTER><CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=192><CENTER><B>Option</B></CENTER></TD><TD WIDTH=384><CENTER><B>Description</B></CENTER>
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Key Fields Only</TD><TD WIDTH=384>Tells VFP to use only the key field in finding records to update in the source data.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Key and Updatable Fields</TD><TD WIDTH=384>Tells VFP to use the key field and all the updatable fields, even if they haven't been changed, to locate records to be updated.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Key and Modified Fields</TD><TD WIDTH=384>Tells VFP to use the key and any modifiable fields that have been modified to locate records to be updated.
+</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=192>Key and Timestamp</TD><TD WIDTH=384>Causes the update to fail if the key value or the time stamp in the original table has changed. (Not all database servers support a time stamp.) This option is disabled for local views.
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+In all the options in Table 7.6, the original value for the referenced fields is used to find a record to update. Even the Key and Modified option uses the original values of the modified fields.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<P>
+Observe that the most severe test in this sequence is the last
+one, but it is also the safest. It can cause an update to fail
+even if the only field in the original table to change is one
+that is not selected as updatable in the current view.
+<P>
+The next-most-severe test checks the key and updatable fields.
+Usually, this test does not cause a problem because views cannot
+update nonupdatable fields. Therefore, changes made by other users
+are safe.
+<P>
+The option that checks only modified fields leaves open the possibility
+of overwriting changes to updatable fields in the original table.
+Overwriting occurs if you do not change an updatable field that
+someone else changes before you send the update back.
+<P>
+A similar problem occurs if you check only whether the key field
+has changed-the least severe test. Another user could change one
+of the other updatable fields, and you could easily overwrite
+these changes. However, if other users have only add or delete
+rights to a file, this less restrictive update test performs better
+because it has fewer fields to check for changes.
+<P>
+The last two options in the Update Criteria page determine which
+technique to use when the original data is updated. SQL can either
+delete the original records first and then insert a new one or
+simply update the existing record. The reason for two methods
+is to enable for the fact that certain database servers are much
+faster at deleting and inserting records than they are at updating
+records. This option creates SQL <TT>DELETE</TT> and SQL <TT>INSERT</TT>
+commands to update the data. For local views, you can choose either
+of these methods, but there is little reason to use the delete
+and insert method.
+<P>
+Updating the existing record creates a SQL <TT>UPDATE</TT> command
+to update the source table. This option preserves changes to fields
+that are not used in the SQL <TT>WHERE</TT> clause.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>NOTE</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+Although you can include a memo field in a view, it is not updatable.</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>Creating a SQL View in Code</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You also can create a view directly within your program code by first opening the database and then using the <TT>CREATE SQL VIEW</TT> command, as follows:
+<BR>
+<PRE>
+OPEN DATABASE \VFP\SAMPLES\MAINSAMP\DATA\TASTRADE
+     CREATE SQL VIEW CustInfo_View AS ;
+     SELECT Customer.customer_id, Customer.company_name,;
+      Customer.contact_name, Orders.order_number, Orders.order_date;
+     FROM  tastrade!customer INNER JOIN tastrade!orders ;
+     ON  Customer.customer_id = Orders.customer_id;
+     WHERE YEAR(Orders.order_date) = 1995;
+     GROUP BY Customer.customer_id;
+     ORDER BY Customer.customer_id</PRE>
+<BR>
+To make this view updatable, you must set table properties with the <TT>DBSETPROP()</TT> function. You can easily create the view ahead of time and then just open the database and <TT>USE</TT> the view. This method has the added advantage of enabling you to define the table properties more easily.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<H3><A NAME="UsingMemoryVariablesinSelectionCriteria">
+Using Memory Variables in Selection Criteria</A></H3>
+<P>
+In all the examples so far, the selection criteria used to limit
+the selected records used actual values in the sample portion
+of the criteria. Unfortunately, this approach limits the query
+to extracting only a fixed set of records each time the query
+is run, unless you modify the query. You might perform the following
+query, using the field <TT>Region</TT> to select records from
+the table <TT>CUSTOMER</TT> of <TT>TASTRADE</TT>:
+<BLOCKQUOTE>
+<PRE>
+SELECT CUSTOMER.Customer_Id, CUSTOMER.Company_Name, ;
+       CUSTOMER.Region, CUSTOMER.Max_Order_Amt ;
+  FROM TASTRADE!Customer ;
+ WHERE CUSTOMER.Region = &quot;PA&quot;;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+This <TT>WHERE</TT> clause returns those records for customers
+from Pennsylvania (<TT>PA</TT>). Every time you run the query,
+however, it returns the same records. To change the records that
+are returned, you have to modify the statement.
+<P>
+This operation might be fine for users who are familiar and comfortable
+with working in interactive mode. However, suppose that you need
+to put the query in a program. Further suppose that you want the
+user to still be able to select from which state to retrieve records.
+<P>
+One solution involves the use of memory variables. You must define
+a memory variable to hold the state code. Then you need to create
+a way to enable the user to enter a state code in this variable.
+The easiest way is to give the user a simple form that asks for
+the state. Alternatively, you can give the user a list from which
+he or she can pick valid state codes.
+<P>
+In either case, the next step is for you to redefine the <TT>SELECT</TT>
+statement with a memory variable that holds the selection for
+the criteria's example rather than use a fixed value. The following
+statement shows the new <TT>SELECT</TT>, assuming that the user
+enters the state code in the <TT>lcGetState</TT> variable:
+<BLOCKQUOTE>
+<PRE>
+SELECT CUSTOMER.Customer_Id, CUSTOMER.Company_Name, ;
+       CUSTOMER.Region, CUSTOMER.Max_Order_Amt ;
+  FROM TASTRADE!Customer ;
+ WHERE CUSTOMER.Region = lcGetState ;
+INTO CURSOR MyResult
+</PRE>
+</BLOCKQUOTE>
+<P>
+You can try this example interactively simply by assigning a value
+to <TT>lcGetState</TT> through the Command window before executing
+the <TT>SELECT</TT>. In a program, this technique enables the
+user to customize the records returned by the <TT>SELECT</TT>.
+<P>
+This method works for both queries and views. However, views support
+another way to obtain a value from the user.
+<H3><A NAME="ParameterizedQueryCriteria">
+Parameterized Query Criteria</A></H3>
+<P>
+Fixing the record-selection criteria at design time is not always
+possible, or even desirable. Neither do you necessarily want to
+create a separate form just to prompt for criteria values. Yet
+you still want the user to determine the condition. You can do
+so relatively easily by using a view.
+<P>
+First, you need to define a view parameter by choosing Query,
+View Parameters. In the View Parameters dialog box, you can enter
+any valid variable name, along with its type. Then click OK to
+save it. In Figure 7.10, the parameter <TT>GroupDiscount</TT>
+has been defined as numeric.
+<P>
+<IMG SRC="f7-10.gif"><B>Figure 7.10: </B><I>To enable the user to control the criteria
+values used in the selection criteria of a view, you must define
+the criteria with a view parameter</I>.</A>
+<P>
+After you define the parameter, place the view parameter in the
+Example box of the appropriate selection criteria. To tell Visual
+FoxPro that this parameter is a view parameter, precede it with
+a question mark. Do not put a space between the question mark
+and the parameter. For example, you enter the <TT>GroupDiscount</TT>
+parameter as follows:
+<BLOCKQUOTE>
+<PRE>
+?GroupDiscount
+</PRE>
+</BLOCKQUOTE>
+<P>
+A view parameter is a memory variable. The only difference is
+that when a view is opened, if the variable does not exist, Visual
+FoxPro will prompt the user for a value to replace the parameter.
+<P>
+When the view runs, a dialog box appears, asking the user to enter
+a value of the view parameter. VFP then uses the entered value
+to select records for the view. If you run the view and respond
+with a value of <TT>2</TT>, VFP creates a view of customers who
+have a 2 percent discount.<P>
+<CENTER>
+<TABLE BORDER=1>
+<TR VALIGN=TOP><TD WIDTH=600><B>TIP</B></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=600>
+<BLOCKQUOTE>
+You might want to use a parameterized view in a form and not want the user to be prompted for the value while the form loads. In this case, you can change the <TT>NODATAONLOAD</TT> property for the view in the form's data environment to <TT>.T.</TT>, thus not running the <TT>SELECT</TT> for the view when it is initially opened. Then, at a later time after you have created the variable and assigned the proper value to it, you can use the <TT>Requery()</TT> function to execute the <TT>SELECT</TT> statement that makes up the view definition.
+<BR>
+Actually, you can requery a view any time you want by using the <TT>Requery()</TT> function. The most likely time to do so is when the value of the parameters change. The <TT>Requery()</TT> function takes one argument: the name of the view to be requeried.
+</BLOCKQUOTE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<HR>
+<CENTER>
+
+<A HREF="ch06.htm"><IMG SRC="previous.gif" BORDER="0"></A>
+<A HREF="index.htm"><IMG SRC="contents.gif" BORDER=0></A>
+<A HREF="ch08.htm"><IMG SRC="next.gif" BORDER=0></A>
+
+<P>&#169; <A HREF="copy.htm">Copyright</A>, Sams Publishing. All
+rights reserved.
+</CENTER>
+</BODY>
+</HTML>

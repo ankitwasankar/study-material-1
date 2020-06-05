@@ -1,0 +1,1574 @@
+
+
+<HTML>
+<HEAD>
+<TITLE>Sams Teach Yourself C in 24 Hours: What You Can Do Now</TITLE>
+</head>
+
+<BODY BGCOLOR="#FFFFFF">
+
+
+<!-- ISBN=0672310686 //-->
+<!-- TITLE=Sams Teach Yourself C in 24 Hours//-->
+<!-- AUTHOR=Tony Zhang//-->
+<!-- PUBLISHER=Macmillan Computer Publishing//-->
+<!-- IMPRINT=Sams//-->
+<!-- CHAPTER=24 //-->
+<!-- PAGES=0383-0406 //-->
+<!-- UNASSIGNED1 //-->
+
+
+
+<H2 align="center">Sams Teach Yourself C in 24 Hours</H2>
+
+
+
+
+<P><CENTER>
+<a href="ch23.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch23/ch23.htm">Previous</A> | <a href="index.html" tppabs="http://pbs.mcp.com/ebooks/0672310686/index.html">Table of Contents</A> |
+</CENTER></P>
+
+<h2 align="center"><A NAME="ch24_ 1">Hour 24</A> - What You Can Do Now</H2>
+
+<P>It's not what you know, but what you can.</p>
+
+<P><B>&#151;A. Alekhine</B></p>
+
+<P>Congratulations! You're now in the last chapter of this book. You just
+need to spend one more hour to complete your 24-hour journey. In this lesson
+you'll learn more about the C language from the following topics:</p>
+
+<UL>
+<LI>          Programming style
+<LI>          Modular programming
+<LI>          Debugging
+</UL>
+
+<P>Also, a brief review of what you've learned from this book is included in
+this lesson. Before we start to cover these topics, let's have a look at the last
+example in this book.</p>
+
+<H3><A NAME="ch24_ 2">
+Creating a Linked List
+</A></H3>
+
+<P>In this section, I'm going to build functions that can create a linked list, 
+  and add items to or delete items from that linked list. I save those functions 
+  into a source file (that is, a module; refer to the section &quot;Modular Programming&quot; 
+  in this lesson). In addition, I will set up an interface between the module 
+  file and the user. In other words, the user can call one of the functions saved 
+  in the module via the interface. The interface is invoked in the main() function 
+  that is saved in another source file. I will put data declarations and function 
+  prototypes in a separate header file.</p>
+
+<P>A linked list is a chain of nodes (or elements). Each node consists of data items and a
+pointer that points to the next node in the list. A linked list with N nodes is shown in Figure 24.1.</p>
+
+<P>As you can see from Figure 24.1, the first node in the list is pointed to by another
+pointer that is a start pointer for the list. The pointer in the last
+(Nth) node is a null pointer.</p>
+
+<P><a href="javascript:popUp('ch24fg01.jpg', 264, 37)"><img src="tn_ch24fg01.jpg" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch24/tn_ch24fg01.jpg"></a><BR>
+  <b>Figure 24.1.</b> <i>A linked list with N nodes.</i></p>
+
+<P>The linked list I'm going to build is a very simple one, in which each element contains
+only two items: student name and ID number. Listing 24.1 contains the module program,
+which is saved in the source file named 24L01.c.</p>
+
+<h4>TYPE<BR>
+  Listing 24.1. Putting cohesive functions in the module program.</h4>
+
+<!-- CODE //-->
+<PRE>
+1:   /* 24L01.c: A module file */
+2:   #include &quot;24L02.h&quot;
+3:
+4:   static NODE *head_ptr = NULL;
+5:
+6:   /**
+7:    ** main_interface()
+8:    **/
+9:   void main_interface(int ch)
+10:  {
+11:     switch (ch){
+12:       case `a':
+13:          list_node_add();
+14:          break;
+15:       case `d':
+16:          if (!list_node_delete())
+17:             list_node_print();
+18:          break;
+19:       case `p':
+20:          list_node_print();
+21:          break;
+22:       default:
+23:          break;
+24:     }
+25:  }
+26:  /**
+27:   ** list_node_create()
+28:   **/
+29:  NODE *list_node_create(void)
+30:  {
+31:     NODE *ptr;
+32:
+33:     if ((ptr=(NODE *)malloc(sizeof(NODE))) == NULL)
+34:        ErrorExit(&quot;malloc() failed.\n&quot;);
+35:
+36:     ptr-&gt;next_ptr = NULL;  /* set the next pointer to NULL */
+37:     ptr-&gt;id = 0; /* initialization */
+38:     return ptr;
+39:  }
+40:
+41:  /**
+42:   ** list_node_add()
+43:   **/
+44:  void list_node_add(void)
+45:  {
+46:     NODE *new_ptr, *ptr;
+47:
+48:     new_ptr = list_node_create();
+49:     printf(&quot;Enter the student name and ID: &quot;);
+50:     scanf(&quot;%s%ld&quot;, new_ptr-&gt;name, &amp;new_ptr-&gt;id);
+51:
+52:     if (head_ptr == NULL){
+53:        head_ptr = new_ptr;
+54:     } else {
+55:        /* find the last node in the list */
+56:        for (ptr=head_ptr;
+57:             ptr-&gt;next_ptr != NULL;
+58:             ptr=ptr-&gt;next_ptr)
+59:           ; /* doing nothing here */
+60:        /* link to the last node */
+61:        ptr-&gt;next_ptr = new_ptr;
+62:     }
+63:  }
+64:  /**
+65:   ** list_node_delete()
+66:   **/
+67:  int list_node_delete(void)
+68:  {
+69:     NODE *ptr, *ptr_saved;
+70:     unsigned long id;
+71:     int deleted = 0;
+72:     int reval = 0;
+73:
+74:     if (head_ptr == NULL){
+75:        printf(&quot;Sorry, nothing to delete.\n&quot;);
+76:        reval = 1;
+77:     } else {
+78:        printf(&quot;Enter the student ID: &quot;);
+79:        scanf(&quot;%ld&quot;, &amp;id);
+80:
+81:        if (head_ptr-&gt;id == id){
+82:           ptr_saved = head_ptr-&gt;next_ptr;
+83:           free(head_ptr);
+84:           head_ptr = ptr_saved;
+85:           if (head_ptr == NULL){
+86:              printf(&quot;All nodes have been deleted.\n&quot;);
+87:              reval = 1;
+88:           }
+89:        } else {
+90:           for (ptr=head_ptr;
+91:                ptr-&gt;next_ptr != NULL;
+92:                ptr=ptr-&gt;next_ptr){
+93:              if (ptr-&gt;next_ptr-&gt;id == id){
+94:                 ptr_saved = ptr-&gt;next_ptr-&gt;next_ptr;
+95:                 free(ptr-&gt;next_ptr);
+96:                 ptr-&gt;next_ptr = ptr_saved;
+97:                 deleted = 1;
+98:                 break;
+99:              }
+100:          }
+101:          if (!deleted){
+102:             printf(&quot;Can not find the student ID.\n&quot;);
+103:          }
+104:       }
+105:    }
+106:    return reval;
+107: }
+108: /**
+109:  ** list_node_print()
+110:  **/
+111: void list_node_print(void)
+112: {
+113:    NODE *ptr;
+114:
+115:    if (head_ptr == NULL){
+116:       printf(&quot;Nothing to display.\n&quot;);
+117:    } else {
+118:       printf(&quot;The content of the linked list:\n&quot;);
+119:       for (ptr = head_ptr;
+120:            ptr-&gt;next_ptr != NULL;
+121:            ptr = ptr-&gt;next_ptr){
+122:          printf(&quot;%s:%d -&gt; &quot;,
+123:             ptr-&gt;name,
+124:             ptr-&gt;id);
+125:       }
+126:       printf(&quot;%s:%d -&gt;|&quot;,
+127:          ptr-&gt;name,
+128:          ptr-&gt;id);
+129:       printf(&quot;\n&quot;);
+130:    }
+131: }
+132: /**
+133:  ** list_node_free()
+134:  **/
+135: void list_node_free()
+136: {
+137:    NODE *ptr, *ptr_saved;
+138:
+139:    for (ptr=head_ptr; ptr != NULL; ){
+140:       ptr_saved = ptr-&gt;next_ptr;
+141:       free(ptr);
+142:       ptr = ptr_saved;
+143:    }
+144:    free(ptr);
+145: }
+146: /**
+147:  ** ErrorExit()
+148:  **/
+149: void ErrorExit(char *str)
+150: {
+151:    printf(&quot;%s\n&quot;, str);
+152:    exit(ERR_FLAG);
+153: }
+</PRE>
+<!-- END CODE //-->
+<BLOCKQUOTE> <b>ANALYSIS</b><BR>  
+There is no direct output from the module program in Listing 24.1.
+</BLOCKQUOTE>
+
+
+<P>The purpose of the program in Listing 24.1 is to provide a module program
+that contains all cohesive functions for linked list creation, node addition, and
+node reduction. Figure 24.2 demonstrates the tasks performed by functions, such
+as list_node_create(), list_node_add(), and list_node_delete(), from the program.</p>
+
+<P><a href="javascript:popUp('ch24fg02.jpg')"><img src="tn_ch24fg02.jpg" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch24/tn_ch24fg02.jpg"></a><BR>
+  <b>Figure 24.2.</b> <i>Use functions defined in 24L01.c (refer to the following 
+  paragraphs for explanation).</i></p>
+
+<P>As you can see in Figure 24.2 (a), the first linked list node is created by calling
+the list_node_create() function, and the data items are added with the help of the
+list_node_add() function. Also, the node is pointed to by the
+head_ptr pointer. Here Peter is the student name;
+1234 is his ID number. Because there are no more nodes linked, the
+next_ptr pointer of the first node is set to be null.</p>
+
+<P>In Figure 24.2 (b), another node is added to the linked list, with
+Paul as the student name and 5678 as the ID number. Note that the
+next_ptr pointer of the first node is reset to
+point to the second node, while the next_ptr pointer of the second node is set to be null.</p>
+
+<P>Likewise, in Figure 24.2  (c) , the third node is added to the linked list. The
+next_ptr pointer of the third node is a null pointer. The pointer in the second node is reset to point to
+the third node.</p>
+
+<P>If I want to delete one of the nodes, I can call the
+list_node_delete() function. As shown in Figure 24.2 (d) , the second node is deleted, so the pointer of the first node has to be reset
+to point to the former third node that contains the student name
+Mary and her ID number, 7777.</p>
+
+<P>In Figure 24.2 (e), the first node is deleted by applying the
+list_node_delete() function again. There is only one node left in the linked list. The
+head_ptr pointer has to be reset to point to the last node.</p>
+
+<P>The header file, 24L02.h, included in the module program
+24L01.c, is shown in Listing 24.2. (The header file is also included by the driver program in Listing 24.3.)</p>
+
+<P>TYPE<BR>
+Listing 24.2. Putting data declarations and function prototypes into
+the header file.</p>
+
+<!-- CODE //-->
+<PRE>
+1:  /* lnk_list.h: the header file */
+2:  #include &lt;stdio.h&gt;
+3:  #include &lt;stdlib.h&gt;
+4:
+5:  #ifndef LNK_LIST_H
+6:  #define LNK_LIST_H
+7:  #define ERR_FLAG  1
+8:  #define MAX_LEN   16
+9:
+10: struct lnk_list_struct
+11: {
+12:    char name[MAX_LEN];
+13:    unsigned long id;
+14:    struct lnk_list_struct *next_ptr;
+15: };
+16:
+17: typedef struct lnk_list_struct NODE;
+18:
+19: NODE *list_node_create(void);
+20: void list_node_add(void);
+21: int list_node_delete(void);
+22: void list_node_print(void);
+23: void list_node_free(void);
+24: void ErrorExit(char *);
+25: void main_interface(int);
+26:
+27: #endif /* for LNK_LIST_H */
+</PRE>
+<!-- END CODE //-->
+<BLOCKQUOTE> <b>ANALYSIS</b><BR>  
+There is no direct output from the program in Listing 24.2.
+</BLOCKQUOTE>
+
+<P>The purpose of the program in Listing 24.2 is to declare a structure with the
+tag name of lnk_list_struct in lines 10_15, and define a new variable name, of the
+structure NODE, in line 17.</p>
+
+<P>The prototypes of the functions defined in the module program in Listing 24.1, such
+as list_node_create(), list_node_add(), and
+list_node_delete(), are listed in lines 19_25.</p>
+
+<P>Note that the #ifndef and #endif preprocessor directives are used in lines 5 and 27.
+The declarations and definitions located between the two directives are compiled only if
+the macro name LNK_LIST_H has not been defined. Also, line 6 defines the macro name if
+it's not been defined. It's a good idea to put the
+#ifndef and #endif directives in a header file so as to avoid cross-inclusions when the header file is included by more than one source
+file. In this case, the declarations and definitions in the
+24L02.h header file will not be included more than one time.</p>
+
+<P>The module program in Listing 24.3 provides an interface that the user can use to call
+the functions saved in the source file (24L01.c).</p>
+
+<h4>TYPE<BR>
+  Listing 24.3. Calling functions saved in the module file.</h4>
+
+<!-- CODE //-->
+<PRE>
+1:  /* 24L03.c:  The driver file */
+2:  #include &quot;24L02.h&quot;    /* include header file */
+3:
+4:  main(void)
+5:  {
+6:    int ch;
+7:
+8:    printf(&quot;Enter a for adding, d for deleting,\n&quot;);
+9:    printf(&quot;p for displaying, and q for exit:\n&quot;);
+10:   while ((ch=getchar()) != `q'){
+11:      main_interface(ch);   /* process input from the user */
+12:   }
+13:
+14:   list_node_free();
+15:   printf(&quot;\nBye!\n&quot;);
+16:
+17:   return 0;
+18: } <!-- END CODE SNIP //-->  </PRE>
+<BLOCKQUOTE> <b>OUTPUT</b><BR>  
+I compile the source files, 24L01.c and 24L03.c, separately with Microsoft Visual
+C++, and then link their object files and C library functions together to produce a single
+executable program called 24L03.exe. I have the following output shown on the screen after I run
+the executable 24L03.exe, and enter or delete several student names and their ID numbers
+(the bold characters or numbers in the output section are what I entered from the
+keyboard):
+</BLOCKQUOTE>
+<!-- CODE //-->
+<PRE>
+C:\app&gt;24L03
+Enter a for adding, d for deleting,
+p for displaying, and q for exit:
+a
+Enter the student name and ID: Peter 1234
+a
+Enter the student name and ID: Paul 5678
+a
+Enter the student name and ID: Mary 7777
+p
+The content of the linked list:
+Peter:1234 -&gt; Paul:5678 -&gt; Mary:7777 -&gt;|
+d
+Enter the student ID: 1234
+The content of the linked list:
+Paul:5678 -&gt; Mary:7777 -&gt;|
+d
+Enter the student ID: 5678
+The content of the linked list:
+Mary:7777 -&gt;|
+d
+Enter the student ID: 7777
+All nodes have been deleted.
+q
+
+Bye!
+C:\app&gt;
+</PRE>
+<!-- END CODE //-->
+<BLOCKQUOTE> <b>ANALYSIS</b><BR>  
+The purpose of the program in Listing 24.3 is to provide the user with an
+interface. The functions, such as
+list_node_create(), list_node_add(), and
+list_node_delete(), can be invoked through the interface. Also, the
+main() function is located inside the program of Listing 24.3.
+</BLOCKQUOTE>
+
+<P>The content of a linked list node can be printed out in the format of</p>
+<!-- CODE SNIP //-->
+<PRE>
+name:id -&gt;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>The following is an example:</p>
+<!-- CODE SNIP //-->
+<PRE>
+Peter:1234 -&gt; Paul:5678 -&gt; Mary:7777 -&gt;|
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here the sign | is used to indicate that the pointer of the last node is a null pointer.</p>
+
+<P>Figure 24.3 shows the relationship among the 24L01.c, 24L02.h, and 24L03.c files.</p>
+
+<P><a href="javascript:popUp('ch24fg03.jpg')"><b><img src="tn_ch24fg03.jpg" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch24/tn_ch24fg03.jpg"></b></a><b><BR>
+  Figure 24.3.</b> <i>The relationship among the 24L01.c, 24L02.h, and 24L03.c 
+  files.</i></p>
+
+
+<P>To learn to compile separate source files and link their object files together to make a
+single executable program, you need to check the technical reference from your C
+compiler vendor. </p>
+
+<H3><A NAME="ch24_ 3">
+Programming Style
+</A></H3>
+
+<P>In this section, I'd like to briefly highlight some points that will help you write
+clean programs that can easily be read, understood, and maintained.</p>
+
+<P>First, make sure the variable or function names in your program describe the
+meanings of the variables or tasks of the functions precisely and concisely.</p>
+
+<P>Put comments into your code so that you or the other readers can have clues as to
+what your code is doing, or at least what the code intends to do, but might do incorrectly.</p>
+
+<P>Whenever possible, keep using local variables, not global variables. Try to avoid
+sharing global data among functions; instead, pass the shared data as arguments to functions.</p>
+
+<P>You should be careful when using C operators, especially the assignment operator 
+  (=) and the conditional operator (==), because misuse of these two operators 
+  can lead to an unexpected result and make the debugging very difficult.</p>
+
+
+
+<P>Avoid using the goto statement; instead, use other control flow statements whenever needed.</p>
+
+<P>Use named constants in your program, instead of numeric
+constants, because named constants can make your program more readable, and you will have to go to only one
+place to update the values of constants.</p>
+
+<P>You should put parentheses around each constant
+expression or argument defined by a preprocessor directive to avoid side effects.</p>
+
+<P>Also, you should set up a reasonable rule for spacing and indentation so that you can
+follow the rule consistently in all the programs you write. The rule should help make
+your programs easy to read.</p>
+
+<H3><A NAME="ch24_ 4">
+Modular Programming
+</A></H3>
+
+<P>It's not a good programming practice to try to solve a complex problem with a
+single function. The proper way to approach it is to break the problem into several smaller
+and simpler pieces that can be understood in more details, and then start to define and
+build functions to solve those smaller and simpler problems. Keep in mind that each of
+your functions should do only one task, but do it well.</p>
+
+<P>As your program continues to grow, you should consider breaking it into several
+source files, with each source file containing a small group of cohesive functions. Such source
+files are also called modules. Put data declarations and function prototypes into header files
+so that any changes to the declarations or prototypes can be automatically signified to
+all source files that include the header file.</p>
+
+<P>For instance, in the section &quot;Creating a Linked List,&quot; all functions that can be used to
+create a linked list and add or delete a node are put into the same module
+(24L01.c). Data structure and variable declarations, and function prototypes are saved into a header file
+(24L02.h). The main() function and the interface are saved into another module
+(24L03.c).</p>
+
+<P>You can use a software-engineering technique known as
+information hiding to reduce the complexity of programming. Simply speaking, information hiding requires a module
+to withhold information from other modules unless it's necessary.</p>
+
+<P>The C compiler enables you to compile and debug different source
+files separately. In this way, you can focus on one source file at a time, and complete the compiling before
+you move to the next one. With the separate compilation, you can compile only those
+source files that have been changed and leave the source files that have already been compiled</p>
+
+<A NAME="PAGENUM-393"><P>Page 393</P></A>
+
+
+<P>and debugged unattached.</p>
+
+<P>If you're interested in knowing more about software engineering, study Ian
+Sommerville's classic book, Software Engineering, which is on the list of recommended books at the
+end of this lesson.</p>
+
+
+<H3><A NAME="ch24_ 5">
+Debugging
+</A></H3>
+
+<P>I've mentioned debugging several times in this lesson. What is a bug, anyway?</p>
+
+<P>A bug in this context refers to any erroneous behavior of a computer system or a
+software program. Debugging means finding bugs and fixing them. Please be aware that
+no computer system or software program is immune to bugs. Programmers, like you and
+I, make bugs, because we're human beings.</p>
+
+<P>When you're debugging your program, learn how to isolate the erroneous
+behavior performed by your program. Many C compilers provide built-in debuggers that you
+can use. Also, there are quite a few debugging tools available from third-party software vendors.</p>
+
+<P>As has been said, debugging requires patience, ingenuity, and experience. I
+recommend that you read a good book that will teach you all the techniques of debugging; in fact,
+I recommend one in the list of the books in the next section.</p>
+
+<H3><A NAME="ch24_ 6">
+A Brief Review
+</A></H3>
+
+<P>The following subsections provide you with a brief review of the basics of the C
+language. The review is a summary that you will find useful to brush up on what you've learned
+in the previous hours.</p>
+
+<H4><A NAME="ch24_ 7">
+C Keywords
+</A></H4>
+
+<P>In C, certain words have been reserved. These reserved words, called C
+keywords, have special meaning in the C language. The following are the C keywords:</p>
+
+
+<TABLE>
+
+<TR><TD>
+auto
+</TD><TD>
+int
+</TD></TR><TR><TD>
+break
+</TD><TD>
+long
+</TD></TR><TR><TD>
+case
+</TD><TD>
+register
+</TD></TR><TR><TD>
+char
+</TD><TD>
+return
+</TD></TR><TR><TD>
+const
+</TD><TD>
+short
+</TD></TR><TR><TD>
+continue
+</TD><TD>
+signed
+</TD></TR><TR><TD>
+default
+</TD><TD>
+sizeof
+</TD></TR><TR><TD>
+do
+</TD><TD>
+static
+</TD></TR><TR><TD>
+double
+</TD><TD>
+struct
+</TD></TR><TR><TD>
+else
+</TD><TD>
+switch
+</TD></TR><TR><TD>
+enum
+</TD><TD>
+typedef
+</TD></TR></TABLE>
+
+
+
+
+<TABLE>
+
+<TR><TD>
+extern
+</TD><TD>
+union
+</TD></TR><TR><TD>
+float
+</TD><TD>
+unsigned
+</TD></TR><TR><TD>
+for
+</TD><TD>
+void
+</TD></TR><TR><TD>
+goto
+</TD><TD>
+volatile
+</TD></TR><TR><TD>
+if
+</TD><TD>
+while
+</TD></TR></TABLE>
+
+
+<H4><A NAME="ch24_ 8">
+Operators
+</A></H4>
+
+<P>Operators can help you manipulate data. C provides you with a rich set of operators.
+Table 24.1 contains a list of the operators used in C.</p>
+
+<h4>Table 24.1. The operators in C.</h4>
+
+
+
+<TABLE>
+
+<TR><TD>
+Operator
+</TD><TD>
+Description
+</TD></TR><TR><TD>
+=
+</TD><TD>
+Assignment operator
+</TD></TR><TR><TD>
++=
+</TD><TD>
+Addition assignment operator
+</TD></TR><TR><TD>
+-=
+</TD><TD>
+Subtraction assignment operator
+</TD></TR><TR><TD>
+*=
+</TD><TD>
+Multiplication assignment operator
+</TD></TR><TR><TD>
+/=
+</TD><TD>
+Division assignment operator
+</TD></TR><TR><TD>
+%=
+</TD><TD>
+Remainder assignment operator
+</TD></TR><TR><TD>
+-
+</TD><TD>
+Unary minus operator
+</TD></TR><TR><TD>
+++
+</TD><TD>
+Increment operator
+</TD></TR><TR><TD>
+--
+</TD><TD>
+Decrement operator
+</TD></TR><TR><TD>
+==
+</TD><TD>
+Equal to
+</TD></TR><TR><TD>
+!=
+</TD><TD>
+Not equal to
+</TD></TR><TR><TD>
+&gt;
+</TD><TD>
+Greater than
+</TD></TR><TR><TD>
+&lt;
+</TD><TD>
+Less than
+</TD></TR><TR><TD>
+&gt;=
+</TD><TD>
+Greater or equal to
+</TD></TR><TR><TD>
+&lt;=
+</TD><TD>
+Less or equal to
+</TD></TR><TR><TD>
+sizeof
+</TD><TD>
+Size-of operator
+</TD></TR><TR><TD>
+&amp;&amp;
+</TD><TD>
+Logical AND operator
+</TD></TR><TR><TD>
+||
+</TD><TD>
+Logical OR operator
+</TD></TR><TR><TD>
+!
+</TD><TD>
+Logical negation operator
+</TD></TR><TR><TD>
+&amp;
+</TD><TD>
+Bitwise AND operator
+</TD></TR><TR><TD>
+|
+</TD><TD>
+Bitwise OR operator
+</TD></TR><TR><TD>
+^
+</TD><TD>
+Bitwise exclusive OR (XOR) operator
+</TD></TR></TABLE>
+
+
+
+
+<TABLE>
+
+<TR><TD>
+~
+</TD><TD>
+Bitwise complement operator
+</TD></TR><TR><TD>
+&gt;&gt;
+</TD><TD>
+Right shift operator
+</TD></TR><TR><TD>
+&lt;&lt;
+</TD><TD>
+Left shift operator
+</TD></TR><TR><TD>
+?:
+</TD><TD>
+Conditional operator
+</TD></TR></TABLE>
+
+<H4><A NAME="ch24_ 9">
+Constants
+</A></H4>
+
+<P>Constants are elements whose values in the program do not change. In C, there are
+several different types of constants.</p>
+
+<P><B>Integer Constants</B><BR>
+Integer constants are decimal numbers. You can suffix an integer constant with
+u or U to specify that the constant is of the
+unsigned data type. An integer constant suffixed with
+l or L is a long int constant.</p>
+
+<P>An integer constant is prefixed with a 0 (zero) to indicate that the constant is in the
+octal format. If an integer constant is prefixed with
+0X or 0x, the constant is a hexadecimal number.</p>
+
+<P><B>Character Constants</B><BR>
+A character constant is a character enclosed by single quotes. For instance,
+`C' is a character constant.</p>
+
+<P>In C, there are several character constants that represent certain special characters.
+(See Table 24.2.)</p>
+
+<h4>Table 24.2. Special characters in C.</h4>
+
+
+<TABLE>
+
+<TR><TD>
+Character
+</TD><TD>
+Meaning
+</TD></TR><TR><TD>
+\a
+</TD><TD>
+Audible alert
+</TD></TR><TR><TD>
+\b
+</TD><TD>
+Backspace
+</TD></TR><TR><TD>
+\f
+</TD><TD>
+Form feed
+</TD></TR><TR><TD>
+\n
+</TD><TD>
+New line
+</TD></TR><TR><TD>
+\r
+</TD><TD>
+Carriage return
+</TD></TR><TR><TD>
+\t
+</TD><TD>
+Horizontal tab
+</TD></TR><TR><TD>
+\v
+</TD><TD>
+Vertical tab
+</TD></TR><TR><TD>
+\&quot;
+</TD><TD>
+Double quote
+</TD></TR><TR><TD>
+\'
+</TD><TD>
+Single quote
+</TD></TR><TR><TD>
+\0
+</TD><TD>
+Null
+</TD></TR><TR><TD>
+\\
+</TD><TD>
+Backslash
+</TD></TR></TABLE>
+
+
+<TABLE>
+
+<TR><TD>
+\N
+</TD><TD>
+Octal constant (Here N is an octal constant.)
+</TD></TR><TR><TD>
+\xN
+</TD><TD>
+Hexadecimal constant (Here N is a hexadecimal constant.)
+</TD></TR></TABLE>
+
+<P><B>Floating-Point Constants</B><BR>
+Floating-point constants are decimal numbers that can be suffixed with
+f, F, l, or L to specify</p>
+
+
+<P>float or long double. A floating-point constant without a suffix is of the
+double data type by default. For instance, the following statements declare and initialize a
+float variable (flt_num) and a double variable
+(db_num):</p>
+<!-- CODE SNIP //-->
+<PRE>
+float  flt_num = 1234.56f;
+double  db_num = 1234.56;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>A floating-point can also be represented in scientific notation.</p>
+
+<P><B>String Constants</B><BR>
+A string constant is a sequence of characters enclosed by double quotes. For instance,
+&quot;This is a string constant.&quot; is a string constant. Note that the double quotes are not part of the
+content of the string. Also, the C compiler automatically adds a null character
+(\0) at the end of a string constant to indicate the end of the string.</p>
+
+<H4><A NAME="ch24_ 10">
+Data Types
+</A></H4>
+
+<P>The basic data types provided by the C language are
+char, int, float, and double. In addition, there are array,
+enum, struct, and union data types which you can declare and use in your
+C programs.</p>
+
+<P>The general form to define a list of variables with a specified data type is</p>
+<!-- CODE SNIP //-->
+<PRE>
+data_type   variable_name_list;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here data_type can be one of the keywords of the data types.
+variable_name_list represents a list of variable names separated by commas.</p>
+
+<P><B>The Array Data Type</B><BR>
+An array is a collection of variables that are of the same data type. The following is
+the general form to declare an array:</p>
+<!-- CODE SNIP //-->
+<PRE>
+data-type  array-name[array-size];
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here data-type is the type specifier that indicates the data type of the array elements.
+array-name is the name of the declared array.
+array-size defines how many elements the array can
+contain. Note that the brackets ([ and ]) are required in declaring an array. The pair of
+[ and ] is also called the array subscript
+operator.</p>
+
+<P>In addition, C supports multidimensional arrays.</p>
+
+<P><B>The enum Data Type</B><BR>
+  enum is a short name for enumerated. The enumerated data type is used to declare 
+  named integer constants. The general form of the enum data type declaration 
+  is</p>
+
+<!-- CODE SNIP //-->
+<PRE>
+enum tag_name {enumeration_list} variable_list;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here tag_name is the name of the enumeration.
+variable_list gives a list of variable names that are of the
+enum data type. Both tag_name and variable_list are optional.
+enumeration_list contains defined enumerated names that are used to represent integer constants. Names
+represented by variable_list or enumeration_list are separated by commas.</p>
+
+<P><B>The struct Data Type</B><BR>
+In C, a structure collects different data items in such a way that they can be referenced
+as a single unit. The general form to declare a structure is</p>
+
+<!-- CODE //-->
+<PRE>
+struct struct_tag {
+     data_type1 variable1;
+     data_type2 variable2;
+     data_type3 variable3;
+     .
+     .
+     .
+     };
+</PRE>
+<!-- END CODE //-->
+
+<P>Here struct is the keyword used in C to start a structure declaration.
+struct_tag is the tag name of the structure.
+variable1 , variable2, and variable3 are the members of the structure. Their
+data types are specified respectively by
+data_type1, data_type2, and data_type3. The declarations of
+the members have to be enclosed within the opening and closing braces
+({ and }) in the structure declaration, and a semicolon
+(;) has to be included at the end of the declaration.</p>
+
+<P>The following is an example of a structure declaration:</p>
+<!-- CODE SNIP //-->
+<PRE>
+struct automobile {
+     int year;
+     char model[8];
+     int engine_power;
+     float weight;
+     };
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here struct is used to start a structure declaration.
+automobile is the tag name of the structure. In the example here, there are three types of variables:
+char, int, and float. The variables have their own names, such as
+year, model, engine_power, and weight. They are all members of
+the structure, and are declared within the braces
+({ and }).</p>
+
+<P><B>The union Data Type</B><BR>
+A union is a block of memory that is used to hold data items of different types. In C, a
+union is similar to a structure, except that data items saved in the union are overlaid in order
+to share the same memory location. The syntax for declaring a union is similar to the
+syntax for a structure. The general form to declare a union is</p>
+<!-- CODE SNIP //-->
+<PRE>
+union union_tag {
+     data_type1 variable1;
+     data_type2 variable2;
+     data_type3 variable3;
+     .
+     .
+     .
+     };
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here union is the keyword used in C to start a union declaration.
+union_tag is the tag name of the union. variable1 ,
+variable2, and variable3 are the members of the union. Their data
+types are specified respectively by data_type1,
+data_type2, and data_type3. The union declaration
+is ended with a semicolon (;).</p>
+
+
+<P>The following is an example of a union declaration:</p>
+<!-- CODE SNIP //-->
+<PRE>
+union automobile {
+     int year;
+     char model[8];
+     int engine_power;
+     float weight;
+};
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here union specifies the union data type.
+automobile is the tag name of the union. The
+variables, such as year, model, engine_power, and
+weight, are the members of the union and are
+declared within the braces ({ and }).</p>
+
+<P><B>Defining New Type Names with typedef</B><BR>
+You can create your own names for data types with the help of the
+typedef keyword in C, and use those names as synonyms for the data types. For instance, you can declare
+TWO_BYTE as a synonym for the int data type:</p>
+<!-- CODE SNIP //-->
+<PRE>
+typedef  int  TWO_BYTE;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Then, you can use TWO_BYTE to declare integer variables like this,</p>
+<!-- CODE SNIP //-->
+<PRE>
+TWO_BYTE i, j;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>which is equivalent to</p>
+<!-- CODE SNIP //-->
+<PRE>
+int i, j;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Remember that a typedef definition must be made before the synonym made in the
+definition is used in any declarations in your program.</p>
+
+<H4><A NAME="ch24_ 11">
+Expressions and Statements
+</A></H4>
+
+<P>An expression is a combination of constants or variables that is used to
+denote computations.</p>
+
+<P>For instance,</p>
+<!-- CODE SNIP //-->
+<PRE>
+(2 + 3) * 10
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>is an expression that adds 2 and 3 first, and then multiplies the sum by
+10.</p>
+
+
+<P>In the C language, a statement is a complete instruction, ended with a semicolon. In
+many cases, you can turn an expression into a statement by simply adding a semicolon at the
+end of the expression.</p>
+
+<P>A null statement is represented by an isolated semicolon.</p>
+
+<P>A group of statements can form a statement
+block that starts with an opening brace ({) and ends with a closing brace
+(}). The C compiler treats a statement block as a single statement.</p>
+
+
+<H4><A NAME="ch24_ 12">
+Control Flow Statements
+</A></H4>
+
+<P>In C, there is a set of control flow statements that can be divided into two
+categories: looping and conditional branching.</p>
+
+<P>The for, while, and do-while Loops</p>
+
+<P>The general form of the for statement is</p>
+<!-- CODE //-->
+<PRE>
+for (expression1; expression2; expression3) {
+   statement1;
+   statement2;
+   .
+   .
+   .
+}
+</PRE>
+<!-- END CODE //-->
+
+<P>The for statement first evaluates expression1, which is usually an expression that initializes
+one or more variables. The second expression,
+expression2, is the conditional part that is
+evaluated and tested by the for statement for each looping. If
+expression2 returns a nonzero value, the statements within the braces, such as
+statement1 and statement2, are executed. Usually,
+the nonzero value is 1 (one). If expression2 returns
+0 (zero), the looping is stopped and the execution of the
+for statement is finished. The third expression in the
+for statement, expression3, is evaluated after each looping before the statement goes back to test
+expression2 again.</p>
+
+<P>The following for statement makes an infinite loop:</p>
+<!-- CODE SNIP //-->
+<PRE>
+for ( ; ; ){
+  /* statement block */
+}
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>The general form of the while statement is</p>
+<!-- CODE //-->
+<PRE>
+while (expression) {
+   statement1;
+   statement2;
+   .
+   .
+   .
+}
+</PRE>
+<!-- END CODE //-->
+
+<P>Here expression is the field of the expression in the while statement. The 
+  expression is evaluated first. If it returns a nonzero value, the looping continues; 
+  that is, the statements inside the statement block, such as statement1 and statement2, 
+  are executed. After the execution, the expression is evaluated again. Then the 
+  statements are executed one more time if the expression still returns a nonzero 
+  value. The process is repeated over and over until the expression returns zero.</p>
+
+<P>You can also make a while loop infinite by putting 1 (one) in the expression field like this:</p>
+<!-- CODE SNIP //-->
+<PRE>
+while (1) {
+   /* statement block */
+}
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>The general form for the do-while statement is</p>
+<!-- CODE //-->
+<PRE>
+do {
+   statement1;
+   statement2;
+   .
+   .
+   .
+} while (expression);
+</PRE>
+<!-- END CODE //-->
+
+<P>Here expression is the field for the expression that is evaluated in order to determine
+whether the statements inside the statement block are executed one more time. If the
+expression returns a nonzero value, the do-while loop continues; otherwise, the looping stops. Note
+that the do-while statement ends with a semicolon, which is an important distinction.
+The statements controlled by the do-while statement are executed at least once before
+the expression is evaluated. Note that a do-while loop ends with a semicolon
+(;).</p>
+
+<P><B>Conditional Branching</B><BR>
+The if, if-else, switch, break, continue, and goto statements fall into the conditional
+branching category.</p>
+
+<P>The general form of the if statement is</p>
+<!-- CODE SNIP //-->
+<PRE>
+if (expression) {
+   statement1;
+   statement2;
+   .
+   .
+   .
+}
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here expression is the conditional criterion. If
+expression is logical TRUE (that is, nonzero), the statements inside the braces
+({ and }), such as statement1 and statement2, are executed. If
+expression is logical FALSE (0), the statements are skipped.</p>
+
+<P>As an expansion of the if statement, the if-else statement has the following form:</p>
+<!-- CODE //-->
+<PRE>
+if (expression) {
+   statement1;
+   statement2;
+   .
+   .
+   .
+}
+else {
+   statement_A;
+   statement_B;
+   .
+   .
+   .
+}
+</PRE>
+<!-- END CODE //-->
+
+<P>Here if expression is logical TRUE, the statements controlled by
+if, including statement1 and statement2, are executed. Otherwise, the statements, such as
+statement_A and statement_B, inside the statement block following the else keyword are executed, if
+expression is logical FALSE.</p>
+
+
+<P>The general form of the switch statement is</p>
+<!-- CODE //-->
+<PRE>
+switch (expression) {
+   case expression1:
+        statement1;
+   case expression2:
+        statement2;
+   .
+   .
+   .
+   default:
+        statement-default;
+}
+</PRE>
+<!-- END CODE //-->
+
+<P>Here the conditional expression, expression, is evaluated first. If the return value of
+expression is equal to the constant expression
+expression1, then execution begins at the
+statement statement1. If the value of expression is the same as the value of
+expression2, execution then begins at statement2. If, however, the value of
+expression is not equal to any values of the
+constant expressions labeled by the case keyword, the statement,
+statement-default, following the default keyword is executed.</p>
+
+<P>You can add a break statement at the end of the statement list following each
+case label if you want to exit the switch construct after the statements within a selected case have
+been executed.</p>
+
+<P>Also, the break statement can be used to break an infinite loop.</p>
+
+<P>There are times when you want to stay in a loop but skip over some of the statements
+within the loop. To do this, you can use the
+continue statement provided by C.</p>
+
+<P>The following gives the general form of the goto statement:</p>
+<!-- CODE SNIP //-->
+<PRE>
+label-name:
+   statement1;
+   statement2;
+   .
+   .
+   .
+   goto  label-name;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here label-name is a label name that tells the
+goto statement where to jump. You have to place
+label-name in two places: at the place where the
+goto statement is going to jump and at the place following the
+goto keyword. Also, the place for the goto statement to jump to can appear
+either before or after the statement. Note that a colon
+(:) must follow the label name at the place where the
+goto statement will jump to.</p>
+
+<H4><A NAME="ch24_ 13">
+Pointers
+</A></H4>
+
+<P>A pointer is a variable whose value is used to point to another variable. The general
+form of a pointer declaration is</p>
+<!-- CODE SNIP //-->
+<PRE>
+data-type  *pointer-name;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here data-type specifies the type of data to which the pointer points.
+pointer-name is the name of the pointer variable, which can be any valid variable name in C. When the compiler
+sees the asterisk (*) prefixed to the variable name in the declaration, it makes a note in its
+symbol table so that the variable can be used as a pointer.</p>
+
+<P>Usually, the address associated with a variable name is called the
+left value of the variable. When a variable is assigned with a value, the value is stored in the reserved memory
+location of the variable as the content. The content is also called the
+right value of the variable.</p>
+
+<P>A pointer is said to be a null pointer when its right value is
+0. Remember that a null pointer can never point to valid data.</p>
+
+<P>The dereference operator (*) is a unary operator that requires only one operand.
+For instance, the *ptr_name expression returns the value pointed to by the pointer variable
+ptr_name, where ptr_name can be any valid variable name in C.</p>
+
+<P>The &amp; operator is called the address-of
+operator because it can return the address (that
+is, left value) of a variable.</p>
+
+<P>Several pointers can point to the same location of a variable in the memory. In C, you
+can move the position of a pointer by adding or subtracting integers to or from the pointer.</p>
+
+<P>Note that for pointers of different data types, the integers added to or subtracted from
+the pointers have different scalar sizes.</p>
+
+<P><B>Pointing to Objects</B><BR>
+You can access an element in an array by using a pointer. For instance, given an
+array, an_array, and a pointer, ptr_array, if
+an_array and ptr_array are of the same data type, and
+ptr_array is assigned with the start address of the array like this:</p>
+
+<!-- CODE SNIP //--> 
+<PRE>
+ptr_array = an_array;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>the expression</p>
+<!-- CODE SNIP //-->
+<PRE>
+an_array[n]
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>is equivalent to the expression</p>
+<!-- CODE SNIP //-->
+<PRE>
+*(ptr_array + n)
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Here n is a subscript number in the array.</p>
+
+<P>In many cases, it's useful to declare an array of pointers and access the contents
+pointed to by the array through dereferencing each pointer. For instance, the following
+declaration declares an int array of pointers:</p>
+<!-- CODE SNIP //-->
+<PRE>
+int *ptr_int[3];
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>In other words, the variable ptr_int is a three-element array of pointers with the
+int type.</p>
+
+<P>Also, you can define a pointer of struct and refer to an item in the structure via the
+pointer. For example, given the following structure declaration:</p>
+<!-- CODE SNIP //-->
+<PRE>
+struct computer {
+   float cost;
+   int year;
+   int cpu_speed;
+   char cpu_type[16];
+};
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>a pointer can be defined like this:</p>
+<!-- CODE SNIP //-->
+<PRE>
+struct computer *ptr_s;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Then, the items in the structure can be accessed by dereferencing the pointer. For
+instance, to assign the value of 1997 to the int variable
+year in the computer structure, you can have the following assignment statement:</p>
+<!-- CODE SNIP //-->
+<PRE>
+(*ptr_s).year = 1997;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Or, you can use the arrow operator (-&gt;) for the assignment, like this:</p>
+<!-- CODE SNIP //-->
+<PRE>
+ptr_s-&gt;year = 1997;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>Note that the arrow operator (-&gt;) is commonly used to reference a structure member
+with a pointer.</p>
+
+<H4><A NAME="ch24_ 14">
+Functions
+</A></H4>
+
+<P>Functions are the building blocks of C programs. Besides the standard C library 
+  functions, you can also use some other functions made by you or by another programmer 
+  in your C program. The opening brace ({) signifies the start of a function body, 
+  while (}), the closing brace, marks the end of the function body.</p>
+
+
+
+<P>According to the ANSI standard, the declaration of a
+variable or function specifies the interpretation and attributes of a set of identifiers.
+The definition, on the other hand, requires the C
+compiler to reserve storage for a variable or function named by an identifier.</p>
+
+<P>In fact, a variable declaration is a definition. But the same is not true for functions.
+A function declaration alludes to a function that is defined elsewhere, and specifies what
+kind of value returned by the function. A function
+definition defines what the function does, as well as the number and type of arguments passed to the function.</p>
+
+<P>With the ANSI standard, the number and types of arguments passed to a function
+are allowed to be added into the function declaration. The number and types of argument
+are called the function prototype.</p>
+
+<P>The general form of a function declaration, including its prototype, is as follows:</p>
+
+<!-- CODE //-->
+<PRE>
+data_type_specifier  function_name(
+      data_type_specifier argument_name1,
+      data_type_specifier argument_name2,
+      data_type_specifier argument_name3,
+      .
+      .
+      .
+      data_type_specifier argument_nameN,
+);
+</PRE>
+<!-- END CODE //-->
+
+<P>Here data_type_specifier determines the type of the return value made by the function
+or specifies the data types of arguments, such as
+argument_name1, argument_name2, argument_name3,
+and argument_nameN, passed to the function with the name of
+function_name.</p>
+
+<P>The purpose of using a function prototype is to help the compiler to check whether the
+data types of arguments passed to a function match what the function expects. The
+compiler issues an error message if the data types do not match. The
+void data type is needed in the declaration of a function that takes no argument.</p>
+
+<P>To declare a function that takes a variable number of arguments, you have to specify at
+least the first argument and use the ellipsis (...) to represent the rest of the arguments passed
+to the function.</p>
+
+<P>A function call is an expression that can be used as a single statement or within
+other expressions or statements.</p>
+
+<P>It's more efficient to pass the address of an argument, instead of its copy, to a function
+so that the function can access and manipulate the original value of the argument.
+Therefore, it's a good idea to pass the name of a pointer, which points to an array, as an
+argument to a function, instead of the array elements themselves.</p>
+
+
+<P>You can also call a function via a pointer that holds the address of the function.</p>
+
+<H4><A NAME="ch24_ 15">
+Input and Output (I/O)
+</A></H4>
+
+<P>In C, a file refers to a disk file, a terminal, a printer, or a tape drive. In other words, a
+file represents a concrete device with which you want to exchange information. A
+stream, on the other hand, is a series of bytes through which you read or write data to a file.
+Unlike a file, a stream is device-independent. All streams have the same behavior.</p>
+
+<P>In addition, there are three file streams that are pre-opened for you:</p>
+
+<UL>
+<LI>          stdin&#151;The standard input for reading.
+<LI>          stdout&#151;The standard output for writing.
+<LI>          stderr&#151;The standard error for writing error message.
+</UL>
+
+<P>Usually, the standard input stdin links to the keyboard, while the standard output
+stdout and the standard error stderr point to the screen. Also, many operating systems allow you
+to redirect these file streams.</p>
+
+<P>By default, all I/O streams are buffered. The buffered I/O is also called the
+high-level I/O.</p>
+
+<P>The FILE structure is the file control structure defined in the header file
+stdio.h. A pointer of type FILE is called a file
+pointer and references a disk file. A file pointer is used by a
+stream to conduct the operation of the I/O functions. For instance, the following defines a
+file pointer called fptr:</p>
+<!-- CODE SNIP //-->
+<PRE>
+FILE *fptr;
+</PRE>
+<!-- END CODE SNIP //-->
+
+<P>In the FILE structure, there is a member, called the
+file position indicator, that points to the position in a file where data will be read from or written to.</p>
+
+<P>The C language provides a set of rich library functions to perform I/O operations.
+Those functions can read or write any types of data to files. Among them,
+fopen(), fclose(), fgetc(), fputc(), fgets(),
+fputs(), fread(), fwrite(), feof(), fscanf(),
+fprintf(), fseek(), ftell(), rewind(), and
+freopen() have been introduced in this book.</p>
+
+<H4><A NAME="ch24_ 16">
+The C Preprocessor
+</A></H4>
+
+<P>The C preprocessor is not part of the C compiler. The C preprocessor runs before
+the compiler. During preprocessing, all occurrences of a macro name are replaced by
+the macro body that is associated with the macro name. Note that a macro statement ends
+with a newline character, not a semicolon.</p>
+
+<P>The C preprocessor also enables you to include additional source files to the program
+or compile sections of C code conditionally.</p>
+
+<P>The #define directive tells the preprocessor to replace every occurrence of a macro
+name defined by the directive with a macro body that is associated with the macro name.
+You can specify one or more arguments to a macro name defined by the
+#define directive.</p>
+
+<P>The #undef directive is used to remove the definition of a macro name that has
+been previously defined.</p>
+
+<P>The #ifdef directive controls whether a given group of statements is to be included as
+part of the program. The #ifndef directive is a mirror directive to the
+#ifdef directive; it enables you to define code that is to be included when a particular macro name is not defined.</p>
+
+<P>The #if, #elif, and #else directives enable you to filter out portions of code to compile.
+#endif is used to mark the end of an #ifdef,
+#ifndef, or #if block because the statements under the
+control of these preprocessor directives are not enclosed in braces.</p>
+
+<H3><A NAME="ch24_ 17">
+The Road Ahead&#133;
+</A></H3>
+
+<P>I believe that you can start to run now after you learn to walk in the world of the C
+language through this book. Although you're on your own, you're not alone. You can revisit this
+book whenever you feel like it. Besides, the following books, which I recommend to you,
+can send you in the right direction to continue your journey in the C world:</p>
+
+<BLOCKQUOTE>
+The C Programming Language<BR>
+by Brian Kernighan and Dennis Ritchie, published by Prentice Hall<BR><BR>
+
+C Interfaces and Implementations<BR>
+by David Hanson, published by Addison-Wesley<BR><BR>
+
+Practical C Programming<BR>
+by Steve Oualline, published by O'Reilly &amp; Associates, Inc.<BR><BR>
+
+No Bugs!&#151;Delivering Error-Free Code in C and C++<BR>
+by David Thielen, published by Addison-Wesley<BR><BR>
+
+Software Engineering<BR>
+by Ian Sommerville, published by Addison-Wesley<BR><BR>
+
+The Mythical Man-Month: Essays on Software Engineering<BR>
+by F. P. Brooks, Jr., published by Addison-Wesley
+</BLOCKQUOTE>
+
+
+<H3><A NAME="ch24_ 18">
+Summary
+</A></H3>
+
+<P>Before you close this book, I'd like to thank you for your patience and the effort you
+have put into learning the basics of the C language in the past 24 hours. Now, it's your turn
+to apply what you've learned from this book to solving the problems in the real world.
+Good luck!</p>
+
+
+<P><CENTER>
+<a href="ch23.htm" tppabs="http://pbs.mcp.com/ebooks/0672310686/ch23/ch23.htm">Previous</A> | <a href="index.html" tppabs="http://pbs.mcp.com/ebooks/0672310686/index.html">Table of Contents</A>
+</CENTER></P>
+
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,764 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Using Visual Basic 6 -- Ch 6 -- Working with Properties, Methods, and Events</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"><BR>
+Using Visual Basic 6</H1>
+<CENTER>
+<P><A HREF="ch05.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch05/ch05.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch07.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch07/ch07.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1 ALIGN="CENTER">- 6 -<BR>
+Working with Properties, Methods, and Events</H1>
+
+<UL>
+	<LI><A HREF="#Heading1">What Are Properties, Methods, and Events?</A>
+	<LI><A HREF="#Heading2">The Relationship Between Properties, Methods, and Events</A>
+	<LI><A HREF="#Heading3">The Importance of Event-Driven Programming</A>
+	<LI><A HREF="#Heading4">Using Properties, Methods, and Events in a Sample Program</A>
+	<UL>
+		<LI><A HREF="#Heading5">Creating the Interface</A>
+		<LI><A HREF="#Heading6">Programming the Form_Load() Event Procedure</A>
+		<LI><A HREF="#Heading7">Programming the Click() Event</A>
+		<LI><A HREF="#Heading8">Adding Event Notification</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<H1 ALIGN="CENTER"></H1>
+<H2><A NAME="Heading1"></A>What Are Properties, Methods, and Events?</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using containers</STRONG></P>
+	<P>Remember that a container is an object--such as a form or the Frame or PictureBox
+	controls--that can contain other controls. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Put simply, <I>properties</I> describe objects. <I>Methods</I> cause an object
+to do something. <I>Events</I> are what happens when an object does something.</P>
+<P>Every object, such as a form or control, has a set of properties that describe
+it. Although this set isn't identical for all objects, some properties--such as those
+listed in Table 6.1--are common to most controls. You can see every property for
+a given control by looking at the Properties window in the IDE.</P>
+<P>
+<H4>TABLE 6.1&nbsp;&nbsp;Common Properties of Visual Basic Controls</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Left</TD>
+		<TD ALIGN="LEFT">The position of the left side of a control with respect to its container</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Top</TD>
+		<TD ALIGN="LEFT">The position of the top of a control with respect to its container</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Height</TD>
+		<TD ALIGN="LEFT">A control's height</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Width</TD>
+		<TD ALIGN="LEFT">A control's width</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">The string value used to refer to a control</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Enabled</TD>
+		<TD ALIGN="LEFT">The Boolean (True/False) value that determines whether users can manipulate the control</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Visible</TD>
+		<TD ALIGN="LEFT">The Boolean (True/False) value that determines whether users can see the control</TD>
+	</TR>
+</TABLE>
+</P>
+<P>Another important property to consider is BorderStyle, which determines the <I>window
+elements</I> (title bar, Maximize and Minimize buttons, and so forth) a form will
+have. Table 6.2 summarizes the six BorderStyle settings; Figure 6.1 shows the same
+form, displayed with each setting.</P>
+<P>
+<H4>TABLE 6.2&nbsp;&nbsp;The Six Settings of the BorderStyle Property</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">0-None</TD>
+		<TD ALIGN="LEFT">No borders, no title bar, not movable. Use this as a backdrop for a splash screen.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Setting</TD>
+		<TD ALIGN="LEFT">Description</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">1-Fixed Single</TD>
+		<TD ALIGN="LEFT">Not sizable by dragging borders but can have Maximize and Minimize buttons. Use this
+			for any fixed-size window for which you want a button to appear in the taskbar.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">2-Sizable (default)</TD>
+		<TD ALIGN="LEFT">Sizable by dragging borders and by using Maximize and Minimize buttons. Use this
+			for typical programs.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">3-Fixed Dialog</TD>
+		<TD ALIGN="LEFT">Not sizable and no Maximize/Minimize buttons. Use this for simple forms such as a
+			password dialog.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">4-Fixed ToolWindow</TD>
+		<TD ALIGN="LEFT">Similar to 3-Fixed Dialog except that the title bar is shorter and the title bar
+			font and Close button are correspondingly smaller. Use this for floating toolbars.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">5-Sizable ToolWindow</TD>
+		<TD ALIGN="LEFT">Similar to a 4-Fixed ToolWindow except that it's sizable by dragging the border.
+			Use this for windows such as the Visual Basic Properties window.</TD>
+	</TR>
+</TABLE>
+</P>
+<P><A HREF="javascript:popUp('06fig01.gif')"><B>FIGURE 6.1</B></A> <I>The BorderStyle
+property of a form can be set to one of six different styles. Notice that some styles
+can look exactly the same</I> <I>as other styles.</I></P>
+<P>Methods are blocks of code designed into a control that tell the control how to
+do things, such as move to another location on a form. Just as with properties, not
+all controls have the same methods, although some common methods do exist, as shown
+in Table 6.3.</P>
+<P>
+<H4>TABLE 6.3&nbsp;&nbsp;Common Methods of Visual Basic Controls</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Method</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Use</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Move</TD>
+		<TD ALIGN="LEFT">Changes an object's position in response to a code request</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Drag</TD>
+		<TD ALIGN="LEFT">Handles the execution of a drag-and-drop operation by the user</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SetFocus</TD>
+		<TD ALIGN="LEFT">Gives focus to the object specified in the method call</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ZOrder</TD>
+		<TD ALIGN="LEFT">Determines the order in which multiple objects appear onscreen</TD>
+	</TR>
+</TABLE>
+</P>
+<P>Events are what happen in and around your program. For example, when a user clicks
+a button, many events occur: The mouse button is pressed, the CommandButton in your
+program is clicked, and then the mouse button is released. These three things correspond
+to the MouseDown event, the Click event, and the MouseUp event. During this process,
+the GotFocus event for the CommandButton and the LostFocus event for whichever object
+previously held the focus also occur.</P>
+<P>Again, not all controls have the same events, but some events are shared by many
+controls (see Table 6.4). These events occur as a result of some specific user action,
+such as moving the mouse, pressing a key on the keyboard, or clicking a text box.
+These types of events are <I>user-initiated events</I> and are what you will write
+code for most often.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Using GotFocus and LostFocus</STRONG></P>
+	<P>The GotFocus and LostFocus events relate to most other events because they occur
+	whenever a new control becomes active to receive user input. This makes GotFocus
+	and LostFocus useful for data validation, the process of making sure that data is
+	in the proper format for your program. Be careful, though! Improperly coding these
+	two events can cause your program to begin an endless loop, which will cause your
+	program to stop responding. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>TABLE 6.4&nbsp;&nbsp;Common Events of Visual Basic Controls</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Event</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Occurrence</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Change</TD>
+		<TD ALIGN="LEFT">The user modifies text in a combo box or text box.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Click</TD>
+		<TD ALIGN="LEFT">The user clicks the primary mouse button on an object.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">DblClick</TD>
+		<TD ALIGN="LEFT">The user double-clicks the primary mouse button on an object.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">DragDrop</TD>
+		<TD ALIGN="LEFT">The user drags an object to another location.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">DragOver</TD>
+		<TD ALIGN="LEFT">The user drags an object over another control.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">GotFocus</TD>
+		<TD ALIGN="LEFT">An object receives focus.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">KeyDown</TD>
+		<TD ALIGN="LEFT">The user presses a keyboard key while an object has focus.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">KeyPress</TD>
+		<TD ALIGN="LEFT">The user presses and releases a keyboard key while an object has focus.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">KeyUp</TD>
+		<TD ALIGN="LEFT">The user releases a keyboard key while an object has focus.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Event</TD>
+		<TD ALIGN="LEFT">Occurrence</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">LostFocus</TD>
+		<TD ALIGN="LEFT">An object loses focus.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">MouseDown</TD>
+		<TD ALIGN="LEFT">The user presses any mouse button while the mouse pointer is over an object.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">MouseMove</TD>
+		<TD ALIGN="LEFT">The user moves the mouse pointer over an object.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">MouseUp</TD>
+		<TD ALIGN="LEFT">The user releases any mouse button while the mouse pointer is over an object.</TD>
+	</TR>
+</TABLE>
+
+<H2><A NAME="Heading2"></A>The Relationship Between Properties, Methods, and Events</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Right and bottom properties</STRONG></P>
+	<P>It's important to remember that right and bottom properties don't exist in Visual
+	Basic. Later, you'll see how to position an object by using the Top, Height, Left,
+	and Width properties. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Although properties, methods, and events do different things, it's important to
+realize that they're often interrelated. For example, if you move a control with
+the Move method (most likely in response to an event), one or more of the control's
+position properties (Top, Height, Left, and Width) will change as a result. Because
+the control's size has changed, the Resize event occurs.</P>
+<P>This interdependence means that you can sometimes accomplish the same task multiple
+ways in your code by manipulating object properties or methods. Consider the following
+code, which shows two ways to move a CommandButton:</P>
+<P>
+<PRE>`************************************************
+`Move the commandbutton by setting the properties
+`************************************************
+cmdMove.Left = 100
+cmdMove.Top = 100
+`********************************************
+`Move the commandbutton by using the Move method
+`********************************************
+txtMove.Move 100, 100
+</PRE>
+<P>As another example, you can make a form appear and disappear from the screen by
+using its Visible property or its Show and Hide methods, as follows:</P>
+<P>
+<PRE>`***********************************************
+` Make the form visible by setting the property
+`***********************************************
+frmMyForm.Visible=True
+`***************************************
+` Hide the form by setting the property
+`***************************************
+frmMyForm.Visible=False
+`*********************************************
+` Make the form visible by using the Show method
+`*********************************************
+frmMyForm.Show
+`*************************************
+` Hide the form by using the Hide method
+`*************************************
+frmMyForm.Hide
+</PRE>
+<H2><A NAME="Heading3"></A>The Importance of Event-Driven Programming</H2>
+<P>When you create a program in Visual Basic, you'll generally be doing <I>event-driven
+programming</I>. Event-driven programming means that most of the code you write will
+be run as users do things within your program or even when certain things happen
+in Windows--when events occur. Of course, programming this way means that you have
+to know when events occur and have to write code that will make your program do something
+in response to the event.</P>
+<P>Fortunately, Windows and Visual Basic do most of the work for you. Whenever an
+event takes place, Windows sends out a message to your program. Your program reads
+this message, and then runs the code you've attached to the event. If you don't specify
+code for an event, your program will simply ignore the event.</P>
+<P>Generally, this code is known as a <I>procedure</I>, defined as any block of code
+that can be called from within your application. This code might be used to move
+objects around on a form, calculate a value from a formula, or write data to a database.
+No matter the purpose, a procedure always uses this format:</P>
+<P>
+<PRE>[Public|Private] [Static] Sub|Function|Property _
+   <I>function_name</I> (<I>arguments</I>) [As Type]
+{...<I>Your procedure code</I>...}
+End Sub|Function|Property
+</PRE>
+<P>An <I>event procedure</I> is the place in your project where you put the code
+that will run when an event occurs. To write an event procedure, you must access
+the Code window for your object by doing one of the following:</P>
+
+<UL>
+	<LI>Double-clicking the object
+	<P>
+	<LI>Selecting the object with the mouse and pressing <B>F7</B>
+	<P>
+	<LI>Selecting the object and choosing <B>Code</B> from the <B>View</B> menu
+	<P>
+	<LI>Selecting the object's form in the Project Explorer, clicking the <B>View Code</B>
+	button, and choosing the object from the Code window
+</UL>
+
+<P><A HREF="javascript:popUp('06fig07.gif')"><B>FIGURE 6.2</B></A> <I>The code you
+write in an event procedure will run whenever the event occurs.</I></P>
+<P>Visual Basic automatically generates an event procedure when you select an event
+in the Code Window. In Figure 6.2, notice that you name event procedures by joining
+the object's name and the event name with an underscore character (cmdExit_Click()).
+When the event procedure in this example is run, it will display a dialog when the
+user clicks the CommandButton named cmdExit.</P>
+<P>
+<H2><A NAME="Heading4"></A>Using Properties, Methods, and Events in a Sample Program</H2>
+<P>Now is a good time to bring together everything you've learned about properties,
+methods, and events in an application named MoveIt (see Figure 6.3).</P>
+<P><A HREF="javascript:popUp('06fig08.gif')"><B>FIGURE 6.3</B></A><I> The MoveIt
+program can be moved around onscreen when users click the buttons on its interface.</I></P>
+<P>MoveIt consists of the form frmMove, which contains four CommandButtons placed
+in its corners. When you run MoveIt, clicking one of these buttons will move the
+form to the corresponding corner of the screen. In the center of the form is a label
+that will provide <I>event notification</I>--in other words, it will report information
+such as mouse movement and which button has the focus.</P>
+<P><B>Create MoveIt (general steps)</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create the graphical user interface (GUI).
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Program the Form_Load() event procedure.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Program the Click() event procedures.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Add the event notification.
+	<P>
+</DL>
+
+<H3><A NAME="Heading5"></A>Creating the Interface</H3>
+<P><B>Create MoveIt's GUI</B>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project by choosing <B>New Project</B> from the <B>File
+	</B>menu. Select <B>Standard EXE</B> from the New Project dialog.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>In the Properties window, change the name of the project's form to
+	frmMove. (You can call it something else if you want, but make sure that you're consistent.)
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Add four CommandButtons to frmMove's corners and add a label in the
+	center. You don't have to position the buttons and label exactly because you'll later
+	put them in the proper locations by using code.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>In the Properties window, name the label and the four buttons according
+	to Figure 6.4.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('06fig09.gif')"><B>FIGURE 6.4</B></A> <I>Remember, you
+can add controls to a form by double-clicking them in the ToolBox.</I></P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Form_Load() event procedure naming</STRONG></P>
+	<P>Whereas the event procedures for controls are named by joining the names of the
+	object and the event with an underscore character, forms are different. No matter
+	what you name your form, Visual Basic will always use the generic name Form instead
+	of the name you choose. For example, even though the form in this example is frmMove,
+	the name of the Load event procedure is Form_Load(). 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Now set the <B>BorderStyle</B> property of the form to <B>1-Fixed</B>
+	<B>Single</B>. This ensures that the form can't be resized while the program is running.
+	Also, set the label's <B>Alignment</B> property to <B>2-Center</B> and its <B>BorderStyle</B>
+	property to <B>1-Fixed Single </B>to give the label a finished appearance.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Save the form and the project, using friendly names such as frmMove.frm
+	for the form and MoveIt.vbp for the project.
+	<P>
+</DL>
+
+<H3><A NAME="Heading6"></A>Programming the Form_Load() Event Procedure</H3>
+<P>You can use the Form_Load() event procedure to prepare the form before showing
+it onscreen when your program is run. You will use this procedure to</P>
+
+<UL>
+	<LI>Set the Caption property of the CommandButtons
+	<P>
+	<LI>Set the initial text of the label
+	<P>
+	<LI>Set the form's title bar text
+	<P>
+	<LI>Set the position of the four CommandButtons, the label, and the form onscreen
+</UL>
+
+<P>Open the Code window for the Form_Load() event procedure by double-clicking anywhere
+on the form except the buttons, label, or title bar. Then, enter the code in Listing
+6.1, being careful to change the names if you named your control differently.</P>
+<P>
+<H4></H4>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Commenting the code</STRONG></P>
+	<P>You don't have to type in the comments (lines that start with the apostrophe (`))
+	because these lines are for your information only. Be sure to read them, though.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>LISTING 6.1&nbsp;&nbsp;The Form_Load() Event Procedure Code for MoveIt</H4>
+<PRE><B>01 </B>`Set the Caption property of the CommandButtons</PRE>
+<PRE><B>02 </B>cmdTopLeft.Caption = &quot;Top Left&quot;</PRE>
+<PRE><B>03 </B>cmdTopRight.Caption = &quot;Top Right&quot;</PRE>
+<PRE>04 cmdBottomLeft.Caption = &quot;Bottom Left&quot;</PRE>
+<PRE><B>05 </B>cmdBottomRight.Caption = &quot;Bottom Right&quot;</PRE>
+<PRE><B>06</B></PRE>
+<PRE><B>07 </B>`Clear the initial text of the label</PRE>
+<PRE><B>08 </B>lblNotify.Caption = &quot;&quot;</PRE>
+<PRE><B>09</B></PRE>
+<PRE><B>10 </B>`Set the form's title bar text</PRE>
+<PRE><B>11 </B>frmMove.Caption = &quot;MoveIt&quot;</PRE>
+<PRE><B>12</B></PRE>
+<PRE><B>13 </B>`The rest of the code centers the form on the</PRE>
+<PRE><B>14 </B>`screen, sets the position of the four</PRE>
+<PRE><B>15 </B>`CommandButtons, and sets the size and</PRE>
+<PRE><B>16 </B>`position of the label.</PRE>
+<PRE><B>17</B></PRE>
+<PRE><B>18 </B>`Center the form on the screen. This works by</PRE>
+<PRE><B>19 </B>`setting the Left side of the form to the center</PRE>
+<PRE><B>20 </B>`of the screen, less half the width of the form.</PRE>
+<PRE><B>21 </B>`Also, the Top of the form is set to the center</PRE>
+<PRE><B>22 </B>`of the screen, less half the height of the form.</PRE>
+<PRE><B>23 </B>frmMove.Left = (Screen.Width - frmMove.Width) / 2</PRE>
+<PRE><B>24 </B>frmMove.Top = (Screen.Height - frmMove.Height) / 2</PRE>
+<PRE><B>25</B></PRE>
+<PRE><B>26 </B>`Set the Left edge of the buttons. The 200 setting</PRE>
+<PRE><B>27 </B>`for the left buttons sets a space between the edge</PRE>
+<PRE><B>28 </B>`of the form and the buttons. The right buttons are</PRE>
+<PRE><B>29 </B>`set by subtracting the width of the button from</PRE>
+<PRE><B>30 </B>`the width of the form, and subtracting 300 to</PRE>
+<PRE><B>31 </B>`set a space between the button and the form edge.</PRE>
+<PRE><B>32 </B>cmdTopLeft.Left = 200</PRE>
+<PRE><B>33 </B>cmdBottomLeft.Left = 200</PRE>
+<PRE><B>34 </B>cmdTopRight.Left = _</PRE>
+<PRE>frmMove.Width - cmdTopRight.Width - 300</PRE>
+<PRE><B>35 </B>cmdBottomRight.Left = _</PRE>
+<PRE>frmMove.Width - cmdBottomRight.Width - 300</PRE>
+<PRE><B>36</B></PRE>
+<PRE><B>37 </B>`Set the Top edge of the buttons. This is done</PRE>
+<PRE><B>38 </B>`similar to setting the Left edge.</PRE>
+<PRE><B>39 </B>cmdTopLeft.Top = 200</PRE>
+<PRE><B>40 </B>cmdBottomLeft.Top = _</PRE>
+<PRE>frmMove.Height - cmdBottomLeft.Height - 500</PRE>
+<PRE><B>41 </B>cmdTopRight.Top = 200</PRE>
+<PRE><B>42 </B>cmdBottomRight.Top = _</PRE>
+<PRE>frmMove.Height - cmdBottomRight.Height - 500</PRE>
+<PRE><B>43</B></PRE>
+<PRE><B>44 </B>`Set the size of the label</PRE>
+<PRE><B>45 </B>lblNotify.Height = 360</PRE>
+<PRE><B>46 </B>lblNotify.Width = 3000</PRE>
+<PRE><B>47</B></PRE>
+<PRE><B>48 </B>`Center the label within the form. This is done</PRE>
+<PRE><B>49 </B>`similar to centering the form.</PRE>
+<PRE><B>50 </B>lblNotify.Left = _</PRE>
+<PRE>(frmMove.Width - lblNotify.Width) / 2</PRE>
+<PRE><B>51 </B>lblNotify.Top = _</PRE>
+<PRE>(frmMove.Height - lblNotify.Height) / 2 - 200</PRE>
+<P>Figure 6.5 shows what the IDE will look like when you enter this code into the
+Code window. Setting these starting values is called <I>initialization</I>.</P>
+<P><A HREF="javascript:popUp('06fig10.gif')"><B>FIGURE 6.5</B></A> <I>You write event
+procedures by adding code to the code window within the IDE.</I></P>
+<P>
+<H3><A NAME="Heading7"></A>Programming the Click() Event</H3>
+<P>We'll use the Click() event procedure to move the form around the screen. To do
+so, double-click a CommandButton to view the Code window. Then, enter that part of
+the code from Listing 6.2 that applies to that CommandButton. Note that you don't
+have to enter the first and last line, because Visual Basic already creates that
+part of the event procedure. (Again, you don't have to type the comments.) For example,
+you only have to add lines 8 and 12 to the cmdBottomLeft_Click() event procedure.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>The Screen object</STRONG></P>
+	<P>As you add the code for the Form_Load event procedure, notice a reference to an
+	object called Screen. The Screen object refers to your monitor screen. For a detailed
+	description of the Screen properties, read the online documentation that comes with
+	Visual Basic. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H4>LISTING 6.2&nbsp;&nbsp;The Click() Event Procedures for the CommandButtons</H4>
+<PRE><B>01 </B>Private Sub cmdBottomLeft_Click()</PRE>
+<PRE><B>02</B></PRE>
+<PRE><B>03 </B>`Set the value of the form's TOP property</PRE>
+<PRE><B>04 </B>`to the bottom of the screen but bring</PRE>
+<PRE><B>05 </B>`it up the height of the screen so that the</PRE>
+<PRE><B>06 </B>`bottom of the form is on the bottom of</PRE>
+<PRE><B>07 </B>`the screen</PRE>
+<PRE><B>08 </B>frmMove.Top = Screen.Height - frmMove.Height</PRE>
+<PRE><B>09</B></PRE>
+<PRE><B>10 </B>`Set the value of the form's LEFT property</PRE>
+<PRE><B>11 </B>`to the far left of the screen.</PRE>
+<PRE><B>12 </B>frmMove.Left = 0</PRE>
+<PRE><B>13</B></PRE>
+<PRE><B>14 </B>End Sub</PRE>
+<PRE><B>15</B></PRE>
+<PRE>16 Private Sub cmdBottomRight_Click()</PRE>
+<PRE><B>17</B></PRE>
+<PRE><B>18 </B>`Set the value for the form's TOP property to</PRE>
+<PRE><B>19 </B>`the bottom of the screen, but bring the TOP</PRE>
+<PRE><B>20 </B>`up the HEIGHT of the form so that the bottom</PRE>
+<PRE><B>21 </B>`of the form is on the bottom of the screen.</PRE>
+<PRE><B>22 </B>frmMove.Top = Screen.Height - frmMove.Height</PRE>
+<PRE><B>23</B></PRE>
+<PRE><B>24 </B>`Set the value of the form's LEFT property to</PRE>
+<PRE><B>25 </B>`the right of the screen but bring it across</PRE>
+<PRE><B>26 </B>`the screen the width of the form so that the</PRE>
+<PRE><B>27 </B>`right side of the form is on the right</PRE>
+<PRE><B>28 </B>`side of the screen</PRE>
+<PRE><B>29 </B>frmMove.Left = Screen.Width - frmMove.Width</PRE>
+<PRE><B>30</B></PRE>
+<PRE><B>31 </B>End Sub</PRE>
+<PRE><B>32</B></PRE>
+<PRE><B>33</B> Private Sub cmdTopLeft_Click()</PRE>
+<PRE><B>34</B></PRE>
+<PRE><B>35 </B>`Set the value of the form's TOP property</PRE>
+<PRE><B>36 </B>`to the top of the screen.</PRE>
+<PRE><B>37 </B>frmMove.Top = 0</PRE>
+<PRE><B>38</B></PRE>
+<PRE><B>39 </B>`Set the value of the form's LEFT property</PRE>
+<PRE><B>40 </B>`to the left of the screen.</PRE>
+<PRE><B>41 </B>frmMove.Left = 0</PRE>
+<PRE><B>42</B></PRE>
+<PRE><B>43 </B>End Sub</PRE>
+<PRE><B>44</B></PRE>
+<PRE><B>45 </B>Private Sub cmdTopRight_Click()</PRE>
+<PRE><B>46</B></PRE>
+<PRE><B>47 </B>`Set the value of the form's TOP property</PRE>
+<PRE><B>48 </B>`to the top of the screen.</PRE>
+<PRE><B>49 </B>frmMove.Top = 0</PRE>
+<PRE><B>50</B></PRE>
+<PRE><B>51 </B>`Set the value of the form's LEFT property to</PRE>
+<PRE><B>52 </B>`the right of the screen but bring it back across</PRE>
+<PRE><B>53 </B>`the screen the width of the form, so that the</PRE>
+<PRE><B>54 </B>`right side of the form is on the right</PRE>
+<PRE><B>55 </B>`side of the screen</PRE>
+<PRE><B>56 </B>frmMove.Left = Screen.Width - frmMove.Width</PRE>
+<PRE><B>57</B></PRE>
+<PRE><B>58 </B>End Sub</PRE>
+<P>Moving the form to the top or left of the screen is easy--set the Top or Left
+property of the form to zero. This always corresponds to the top or left of your
+monitor, respectively.</P>
+<P>Lining up the form on the right side or bottom of the screen is a little harder
+because right and bottom properties don't exist. To place a form on the right side
+of the screen, you must set the Left property of the form to the Width property of
+the Screen object, minus the Width of the form (because the Width of the screen would
+be the right property of the screen, if the right property existed).</P>
+<P>A similar technique is used to determine the bottom of the screen. If you were
+to set the form's Top property equal to the screen's Height property, you wouldn't
+see the form because it would be just below the bottom of the screen. To set the
+bottom of the form to the bottom of the screen, you subtract the value of the form's
+Height property from the value of the screen's Height property. This raises the form
+so that you can see it (see Figure 6.6).</P>
+<P>
+<H3><A NAME="Heading8"></A>Adding Event Notification</H3>
+<P>To finish MoveIt, let's add some code that will tell when certain events occur
+for the form and the CommandButtons. When users press or release the mouse button
+over the form, the text in lblNotify will change to reflect the state of the button.
+Also, when users use the Tab key or the mouse button to move from one CommandButton
+to another (which changes the focus from one button to the next), the text in lblNotify
+will change. Doing this requires you to write code in three different event procedures:
+the MouseUp and MouseDown event procedures for the form and the GotFocus event procedure
+for each CommandButton.</P>
+<P><A HREF="javascript:popUp('06fig11.gif')"><B>FIGURE 6.6</B></A> <I>Be careful
+when placing a form on the right side or bottom of the screen; otherwise, you might
+place it offscreen.</I></P>
+<P>Enter the code from Listing 6.3 into the MouseUp and MouseDown event procedures
+for frmMain. (Remember that you don't have to enter the first and last lines.) To
+do this, open the Code window for the MouseDown event procedure by double-clicking
+the form and selecting <B>MouseDown</B> from the event procedures drop-down list
+(see Figure 6.7).</P>
+<P>
+<H4>LISTING 6.3&nbsp;&nbsp;Code for Reporting When Users Click and Release the Mouse
+Button</H4>
+<PRE><B>01 </B>Private Sub Form_MouseDown(Button As Integer, _</PRE>
+<PRE>Shift As Integer, X As Single, Y As Single)</PRE>
+<PRE><B>02</B></PRE>
+<PRE><B>03 </B>lblNotify.Caption = &quot;MouseDown Event&quot;</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>End Sub</PRE>
+<PRE><B>06</B></PRE>
+<PRE><B>07 </B>Private Sub Form_MouseUp(Button As Integer, _</PRE>
+<PRE>Shift As Integer, X As Single, Y As Single)</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>lblNotify.Caption = &quot;MouseUp Event&quot;</PRE>
+<PRE><B>10</B></PRE>
+<PRE><B>11 </B>End Sub</PRE>
+<P><A HREF="06fig12.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch06/06fig12.gif"><B>FIGURE 6.7</B></A> <I>You can select an event procedure
+from the object's Code window.</I></P>
+<P>When the program runs, if your mouse is over the form (not the CommandButtons
+or the label) and you click the mouse button, the text MouseDown Event appears in
+lblNotify. When you release your mouse button, the text MouseUp Event appears.</P>
+<P>Last, add the code that will report which CommandButton has the focus. Enter the
+code from Listing 6.4 into the GotFocus event procedures for each CommandButton.
+Do this by double-clicking one of the CommandButtons and selecting the <B>GotFocus</B>
+event procedure (notice that Visual Basic selects the Click event by default). Repeat
+this procedure for each CommandButton.</P>
+<P>
+<H4>LISTING 6.4&nbsp;&nbsp;Code for Reporting Which CommandButton Has the Focus</H4>
+<PRE><B>01 </B>Private Sub cmdBottomLeft_GotFocus()</PRE>
+<PRE><B>02</B></PRE>
+<PRE><B>03 </B>lblNotify.Caption = &quot;cmdBottomLeft has the Focus&quot;</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>End Sub</PRE>
+<PRE><B>06</B></PRE>
+<PRE><B>07 </B>Private Sub cmdBottomRight_GotFocus()</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>lblNotify.Caption = &quot;cmdBottomRight has the Focus&quot;</PRE>
+<PRE><B>10</B></PRE>
+<PRE><B>11 </B>End Sub</PRE>
+<PRE><B>12</B></PRE>
+<PRE><B>13 </B>Private Sub cmdTopLeft_GotFocus()</PRE>
+<PRE><B>14</B></PRE>
+<PRE><B>15 </B>lblNotify.Caption = &quot;cmdTopLeft has the Focus&quot;</PRE>
+<PRE><B>16</B></PRE>
+<PRE><B>17 </B>End Sub</PRE>
+<PRE><B>18</B></PRE>
+<PRE><B>19 </B>Private Sub cmdTopRight_GotFocus()</PRE>
+<PRE><B>20</B></PRE>
+<PRE><B>21 </B>lblNotify.Caption = &quot;cmdTopRight has the Focus&quot;</PRE>
+<PRE><B>22</B></PRE>
+<PRE><B>23 </B>End Sub</PRE>
+<P>That's it! Now you can run the program--just press the F5 key (see Figure 6.8).</P>
+<P><A HREF="javascript:popUp('06fig13.gif')"><B>FIGURE 6.8</B></A> <I>When you click
+a CommandButton, it automatically receives the focus. In MoveIt, the focus is reported
+in lblNotify.</I></P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch05.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch05/ch05.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch07.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch07/ch07.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> <BR>
+</P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>

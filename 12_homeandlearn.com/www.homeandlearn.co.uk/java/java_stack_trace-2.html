@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<HTML>
+	
+<!-- Mirrored from www.homeandlearn.co.ukjava/java_stack_trace.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 08:10:18 GMT -->
+<HEAD>
+		<meta name="description" content="The stack trace in Java">
+<TITLE>Java For Complete Beginners - stack trace</TITLE>
+	<LINK REL=Stylesheet TYPE ="text/css" HREF="two_col_style_1-3.css">
+	</HEAD>
+
+
+	<BODY>
+		<HEADER ID="Banner"><P>&nbsp;</P>
+			<H1><SPAN class="Logo_Text">Free</SPAN> <SPAN class="Logo_Text2">Java</SPAN> <SPAN class="Logo_Text">Course</SPAN></H1>
+		</HEADER>
+<HR />
+
+		<NAV ID="left_menu">
+		<P>&nbsp;</P>
+<P>&nbsp;</P>
+		<H3>Computer Courses</H3>
+			<ul>
+	
+<LI><a href="../index-3.html">Home</a></LI>
+<LI><a href="../BC/BeginnersComputing-2.html">Beginners Computing </a></LI>
+<LI><a href="../word2007_2010/Word-2007-2011.html">Word 2007 to 2010</a></LI>
+<LI><a href="../MW/MicrosoftWord-2.html">Word 2000 to 2003</a></LI>
+<LI><a href="../excel2007/Excel2007-2.html">Excel 2007 to 2010</a></LI>
+<LI><a href="../ME/MicrosoftExcel-2.html">Excel to 2003</a></LI>
+<LI><a href="../WD/WebDesign-2.html">Web Design</a></LI>
+<LI><a href="../NET/vbNet-2.html">Visual Basic .NET</a></LI>
+<LI><a href="../php/php-2.html">Beginners PHP</a></LI>
+<LI><a href="../csharp/csharp-2.html">C# .NET</a></LI>
+<LI><a href="java-2.html">Java for Beginners</a></LI>
+
+			</ul>
+<P>&nbsp;</P>
+<P>
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-3498263538959058";
+/* Java_sidebar */
+google_ad_slot = "8180620610";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="../../pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</P>
+</NAV> <SECTION ID="Wrapper"> <ARTICLE>
+<HEADER> 
+<H1 ID="Article">The Java Stack Trace</H1>
+</HEADER><SECTION>
+<p align="center">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-3498263538959058";
+/* java_banner_1 */
+google_ad_slot = "4586086164";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="../../pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</p>
+<P>In the normal flow of a programme, when the Java Virtual Machine is running 
+  your code, one method after another will be executed, starting with the main 
+  method. When a method has its turn at the head of the programming queue it said 
+  be on top of the <b>stack</b>. After the whole of the method has been executed, 
+  it is taken off the stack to be replaced by the next method in the queue. To 
+  illustrate the principal, change <a href="java_error_handling-2.html">your programme 
+  code</a> to this:</P>
+<p align="center"><img src="images/errors/stack_methods_A-2.gif" width="370" height="327" border="1" alt="Sample Java code examining the stack"></p>
+<p>We now have a Main method and two others: a method called <b>m1</b>, and a 
+  method called <b>m2</b>. When the programme first starts, the Main method is 
+  on top of the stack. However, inside of the Main method we have a call to the 
+  m1 method. When this method is called it jumps to the top of the stack. The 
+  m1 method in turn calls the m2 method. When m2 is called, it jumps to the top 
+  of the stack, pushing m1 aside temporarily. After m2 finishes, control is given 
+  back to m1. When m1 is finished, it gets pushed off the top of the stack, and 
+  control is handed back to the Main method.</p>
+<p>Run your programme and watch the Output window to see what gets printed out:</p>
+<p align="center"><img src="images/errors/stack_methods_output-2.gif" width="170" height="80" border="1" alt="Programme output"></p>
+<p>If something goes wrong in method m2, the JVM will look for any error handling, 
+  like a <b>try &#133; catch</b> block. If there is no error handling, the Exception 
+  will get handed to m1 to see if it is dealing with the error. We don't have 
+  any error handling in m1 so again the Exception gets passed up the stack, this 
+  time to the Main method. If the Main method doesn't deal with the Exception 
+  then you'll get a strange error message printed to the Output window. As an 
+  example, adapt your <b>m2</b> method to this:</p>
+<p class="TextIndent2"><b>static void m2( ) {</b></p>
+<p> <b><span class="TextIndent3">int x = 10;</span><br>
+  <span class="TextIndent3">int y = 0;</span><br>
+  <span class="TextIndent3">double z = x / y;</span></b></p>
+<p> <b><span class="TextIndent3">System.out.println( z );</span><br>
+  <span class="TextIndent3">System.out.println(&quot;Method Two - m2&quot;);</span></b></p>
+<p class="TextIndent2"><b>}</b></p>
+<p>The method contains the divide by zero error again. Your code should now look 
+  like ours below:</p>
+<p align="center"><img src="images/errors/stack_methods_C-2.gif" width="371" height="402" border="1" alt=" A divide by zero error in Java"></p>
+<p>Run the programme and watch what happens in the Output window:</p>
+<p align="center"><img src="images/errors/stack_trace_output-2.gif" width="481" height="120" border="1" alt="A Java exception message"></p>
+<p>What you're looking at is something called a stack trace. The three lines in 
+  blue underline refer to your methods, and where they can be found: </p>
+<p class="TextIndent2"><b>package_name.class_name.method_name</b></p>
+<p>The one at the top is where the error first occurred, in <b>m2</b>. Java was 
+  looking for this to be handled by an <b>ArithmeticException</b>, which is where 
+  divide by zero errors should be caught. There was no error handling in m2, m1, 
+  or main. So the programme outputted to the default error handler.</p>
+<p>Change you m1 method to this:</p>
+<p> <span class="TextIndent2"><b>try {</b></span><b><br>
+  <span class="TextIndent3">System.out.println(&quot;Method One - m1&quot;);</span><br>
+  <span class="TextIndent3">m2( );</span><br>
+  <span class="TextIndent2">}</span><br>
+  <span class="TextIndent2">catch (ArithmeticException err) {</span><br>
+  <span class="TextIndent3">System.out.println( err.getMessage( ) );</span><br>
+  <span class="TextIndent2">}</span></b></p>
+<p>We've now wrapped up the method called m2 in a <b>try</b> block. In the <b>catch</b> 
+  part, we've used the Exception type that was reported in the stack trace - ArithmeticException.</p>
+<p>Run the code again, and the Output window will display the following:<br>
+</p>
+<p align="center"><img src="images/errors/stack_trace_output2-2.gif" width="164" height="73" border="1" alt="Java has handled the error"></p>
+<p>Notice that the error message is printed out: &quot;/ by zero&quot;. The whole 
+  of the m2 method was not executed, but was stopped where the error occurred. 
+  Control was then passed back to m1. Because there was a catch block to handle 
+  the error, the JVM saw no need to a default error handler, but printed out the 
+  message between the curly brackets of catch.</p>
+<p>The programme itself was not stopped, however. Control was passed back to the 
+  Main method, where the m1 method was called. The final line in the Main method, 
+  printing out &quot;End Main method&quot;, was executed. This has important implications. 
+  Suppose you needed the value from m1, because you were going to do something 
+  with it in Main. The value wouldn't be there, and your programme may not behave 
+  as expected.</p>
+<p>But if you see a stack trace in the Output window, just remember that first 
+  line is where the problem occurred; the rest of the lines, if any, are where 
+  the Exception was handed up the stack, usually finishing at the main method.</p>
+<p>In the next part, we'll look at Logic Errors.</p>
+<p align="right"><a href="java_error_handling-2.html">&lt;-- Errors and Exceptions</a> | <a href="logic_errors-2.html">Logic Errors --&gt;</a></p>
+</SECTION></ARTICLE> </SECTION> <FOOTER> 
+<P><A HREF="java-2.html">Back to the Home Page</A>
+      		<P>&copy; All course material copyright Home and Learn</P>
+    	</FOOTER>
+
+  </BODY>
+
+<!-- Mirrored from www.homeandlearn.co.ukjava/java_stack_trace.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 24 Jan 2013 08:10:18 GMT -->
+</HTML>
+

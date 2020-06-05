@@ -1,0 +1,826 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>Using Visual Basic 6 -- Ch 19 -- Saving and Retrieving Your Data with Visual Basic</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<CENTER>
+<H1><IMG SRC="que.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/que.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM" BORDER="0"><BR>
+Using Visual Basic 6</H1>
+</CENTER>
+<CENTER>
+<P><A HREF="ch18.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch18/ch18.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch20.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch20/ch20.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<CENTER>
+<H1>- 19 -<BR>
+Saving and Retrieving Your Data with Visual Basic</H1>
+</CENTER>
+
+<UL>
+	<LI><A HREF="#Heading1">Understanding Persistence</A>
+	<LI><A HREF="#Heading2">Working with Files to Store and Retrieve Data</A>
+	<LI><A HREF="#Heading3">Saving Data with the Open Statement</A>
+	<LI><A HREF="#Heading4">Retrieving Data with Input Statements</A>
+	<LI><A HREF="#Heading5">Manipulating Graphics with LoadPicture() and SavePicture()</A>
+	<LI><A HREF="#Heading6">Saving and Retrieving Data with the Visual Basic Registry
+	Functions</A>
+	<UL>
+		<LI><A HREF="#Heading7">Retrieving Values with GetSetting()</A>
+		<LI><A HREF="#Heading8">Saving Values to the Registry with the SaveSetting Statement</A>
+		<LI><A HREF="#Heading9">Retrieving an Array of Settings with GetAllSettings()</A>
+		<LI><A HREF="#Heading10">Deleting a Key Section with the DeleteString Statement</A>
+	</UL>
+	<LI><A HREF="#Heading11">Using File System Objects</A>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<CENTER>
+<H1></H1>
+</CENTER>
+<H2><A NAME="Heading1"></A>Understanding Persistence</H2>
+<P>For your program to keep information from session to session, you must be able
+to store data on the hard drive. Otherwise, when your application terminates, all
+the program's data in memory will vanish. Therefore, to have any sort of data <I>persistence</I>,
+your program must be able to save data to and retrieve data from the hard disk.</P>
+<P>You can save data to and retrieve data from disk in several ways. You can use
+a <I>binary</I> or text file to work with information of varying size and formats.
+You can read from and write to the Windows Registry to accommodate small bits of
+binary or text information. Also, you can use a database for more complex persistence
+issues.</P>
+<P>
+<H2><A NAME="Heading2"></A>Working with Files to Store and Retrieve Data</H2>
+<P>Data lives in computer memory, and a file lives on the hard drive. Your program
+never works directly with a file on a hard drive. The program asks the operating
+system to mediate between the hard drive and your program.</P>
+<P>You find the location of a file on a hard drive by asking the operating system
+for a<I> file handle</I>. You use the FreeFile function to obtain a file handle number
+from the operating system. After you have a file handle, you use the Open statement
+to assign the handle to the file that you want to write to or read from. When your
+program hooks up a file handle to a file, it can write data to the file by using
+the Print (or Write) statement or read lines of data from a file on disk by using
+the Line Input statement. Figure 19.1 illustrates this concept.</P>
+<P><A HREF="javascript:popUp('19fig01.gif')"><B>FIGURE 19.1</B></A> <I>Writing to
+a file is the inverse of reading from a file. You still need a file handle, and you
+need to use the Open statement.</I></P>
+<P>
+<H2><A NAME="Heading3"></A>Saving Data with the Open Statement</H2>
+<P>Look at the project AdvTedit.vbp, which you can download from http://www.mcp.com/info.
+This program is a text editor that uses the Open statement to save and retrieve data
+from a file on your hard disk.</P>
+<P>To use the program, when you want to save data, you click the File menu's <B>Open</B>
+command. A common dialog appears, into which you enter a filename and select a location
+on the hard disk. Then you click the common dialog's <B>Save</B> button to commit
+the data to disk (see Figure 19.2).</P>
+<P><A HREF="javascript:popUp('19fig02.gif')"><B>FIGURE 19.2</B></A> <I>Using the
+common dialog is an easy way to create a filename and location for your data.</I></P>
+<P>Behind the scenes you're using the Open and Print statements.</P>
+<P>The syntax for the Open statement is as follows:</P>
+<P>
+<PRE>Open <I>FilePath</I> [For <I>Mode</I>] [Access <I>AcessType</I> [<I>LockType</I>] As [#]<I>FileNumber</I> [Len=<I>CharInBuffer</I>%]
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>Open is the statement name.
+	<P>
+	<LI><I>FilePath</I> is the exact location of the file to read or save, with the drive
+	and directory included.
+	<P>
+	<LI>For is the keyword that specifies the file mode to follow.
+	<P>
+	<LI><I>Mode</I> is the file access type (see Table 19.1).
+</UL>
+
+<H4>TABLE 19.1&#160;&#160;File Modes</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Mode</TD>
+		<TD ALIGN="LEFT">Description</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Append</TD>
+		<TD ALIGN="LEFT">Add data to the end of an existing file. If the file doesn't exist, it will be created.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Binary</TD>
+		<TD ALIGN="LEFT">Open a file as pure binary--bits and bytes. If the file doesn't exist, it will be
+			created.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Input</TD>
+		<TD ALIGN="LEFT">Open file for reading.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Output</TD>
+		<TD ALIGN="LEFT">Open file for writing. If the file doesn't exist, it will be created.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Random</TD>
+		<TD ALIGN="LEFT">Open file for random access. This is used for simple record storage. If the file
+			doesn't exist, it will be created.</TD>
+	</TR>
+</TABLE>
+</P>
+
+<UL>
+	<LI>Access is the optional keyword that specifies access type to follow.
+	<P>
+	<LI><I>AccessType</I> is the choice of Read, Write, or Read Write.
+	<P>
+	<LI><I>LockType</I> (optional) specifies whether others can read the file while your
+	program is working with the file. The values supported are Shared, Lock Read, Lock
+	Write, and Lock Read Write. Normally, these values relate to use of a data file in
+	a networking environment. When the value is shared, specified users can access the
+	file; however, if the value is specified as Lock Read, users can only read data from
+	the file. The same holds true for Lock Write, in which case users can write to the
+	file, whereas Lock Read Write allows Read and Write access. These values also could
+	be used on a single PC environment, but it's more common in networking situations.
+	<P>
+	<LI>As is a keyword that signifies the file handle is about to follow.
+	<P>
+	<LI># is the symbol that denotes that the <I>FileNumber</I> integer is a file handle.
+	<P>
+	<LI><I>FileNumber</I> is the file handle.
+	<P>
+	<LI>Len is the optional keyword that introduces the record-length parameter.
+	<P>
+	<LI><I>CharInBuffer</I>% is the optional record length for a file opened for random
+	access.
+</UL>
+
+<P>You open a file for reading as follows:</P>
+<P>
+<PRE>`Get a free file handle and assign it to
+`the file handle variable
+FileHandle% = FreeFile
+`Open a file for writing
+Open strFileName For Output As #FileHandle%
+</PRE>
+<P>Listing 19.1 shows the Click() event procedure for the <B>Save</B> menu item.
+The procedure opens a file with the Open statement (line 28) and saves the contents
+of a TextBox to the file by using the Print method (line 34). After the write takes
+place, the event procedure closes the file by using the Close statement (line 40).
+The Close statement takes the file handle as an argument.</P>
+<P>
+<H4>LISTING 19.1&#160;&#160;19LIST01.TXT--Saving the Contents of a TextBox to a File
+on Disk by Using a Common Dialog</H4>
+<PRE><B>01 </B>Private Sub itmSave_Click()</PRE>
+<PRE><B>02 </B>Dim strFileName As String `String of file to open</PRE>
+<PRE><B>03 </B>Dim strText As String `Contents of file</PRE>
+<PRE><B>04 </B>Dim strFilter As String `Common Dialog filter string</PRE>
+<PRE><B>05 </B>Dim strBuffer As String `String buffer variable</PRE>
+<PRE><B>06 </B>Dim FileHandle% `Variable to hold file handle</PRE>
+<PRE><B>07</B></PRE>
+<PRE><B>08 </B>`Set the Common Dialog filter</PRE>
+<PRE><B>09 </B>strFilter = &quot;Text (*.txt)|*.txt|All Files (*.*)|*.*&quot;</PRE>
+<PRE><B>10 </B>cdMain.Filter = strFilter</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>`Open the common dialog in save mode</PRE>
+<PRE><B>13 </B>cdMain.ShowSave</PRE>
+<PRE><B>14</B></PRE>
+<PRE><B>15 </B>`Make sure the retrieved filename is not a blank string</PRE>
+<PRE><B>16 </B>If cdMain.filename &lt;&gt; &quot;&quot; Then</PRE>
+<PRE><B>17 </B>`If it is not blank, open the file</PRE>
+<PRE><B>18 </B>strFileName = cdMain.filename</PRE>
+<PRE><B>19</B></PRE>
+<PRE><B>20 </B>`Assign a value to the text variable</PRE>
+<PRE><B>21 </B>strText = txtMain.Text</PRE>
+<PRE><B>22</B></PRE>
+<PRE><B>23 </B>`Get a free file handle and assign it to the file</PRE>
+<PRE><B>24 </B>`handle variable</PRE>
+<PRE><B>25 </B>FileHandle% = FreeFile</PRE>
+<PRE><B>26</B></PRE>
+<PRE><B>27 </B>`Open a file for writing</PRE>
+<PRE><B>28 </B>Open strFileName For Output As #FileHandle%</PRE>
+<PRE><B>29</B></PRE>
+<PRE><B>30 </B>`Set an hour glass pointer just in case it takes a while</PRE>
+<PRE><B>31 </B>MousePointer = vbHourglass</PRE>
+<PRE><B>32</B></PRE>
+<PRE><B>33 </B>`Do the write</PRE>
+<PRE><B>34 </B>Print #FileHandle%, strText</PRE>
+<PRE><B>35</B></PRE>
+<PRE><B>36 </B>`Reset the pointer to the Windows default.</PRE>
+<PRE><B>37 </B>MousePointer = vbDefault</PRE>
+<PRE><B>38</B></PRE>
+<PRE><B>39 </B>`Close the file when completed</PRE>
+<PRE><B>40 </B>Close #FileHandle%</PRE>
+<PRE><B>41 </B>End If</PRE>
+<PRE><B>42</B></PRE>
+<PRE><B>43 </B>End Sub</PRE>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Closing a file</STRONG></P>
+	<P>It's important to remember to Close a file when you're finished with it. The Close
+	statement frees the file handle from memory. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<H2><A NAME="Heading4"></A>Retrieving Data with Input Statements</H2>
+<P>You retrieve data from disk much the same way you write data to disk. The only
+difference is that, rather than use Append, Output, Binary, or Random mode, you use
+Input mode. Also, rather than use the Print or Write method to write the data, you
+read the lines of data in the file, line by line, by using the Line Input statement.
+The syntax for the Line Input statement is as follows:</P>
+<P>
+<PRE>Line Input #<I>FileHandle</I>, <I>strBuffer</I>
+</PRE>
+<P>In this syntax</P>
+
+<UL>
+	<LI>Line Input are the keywords for the statement.
+	<P>
+	<LI># is the character denoting a file handle.
+	<P>
+	<LI><I>FileHandle</I> is a valid file handle of an open file.
+	<P>
+	<LI><I>strBuffer</I> is the string into which to put the data retrieved by the statement.
+</UL>
+
+<P>Simple text files are saved to disk in lines. If you were to do some data entry
+in NotePad and never press the Enter key, you would have entered one line of code.
+Every time you press Enter, VB adds the string Chr(13) &amp; Chr(10) (carriage return
+and line feed) to the TextBox to mark the end of a line; when you save the file,
+these characters are also written to the file. VB has a constant defined for this
+string: vbCrLf. The Line Input statement will read into a file until it encounters
+the end-of-line sequence (vbCrLf). At the end of a line, the statement will take
+the characters it finds and send them to the string buffer argument, discarding the
+vbCrLf.</P>
+<P>To traverse all the lines in the entire file, use a Do While loop. You use the
+Visual Basic EOF() function to determine whether the end of the file has been reached.
+This function takes the file handle number as an argument. As long are you aren't
+at the end of the file, the Line Input statement continues reading the lines of the
+file from within the Do While loop.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>LEARNING FROM THE ADVTEDIT.VBP PROJECT</STRONG></P>
+	<P>You might want to take some time to study the AdvTEdit.vbp project. You can use
+	many useful programming techniques in the code in many situations where you have
+	to accommodate user input and save it to disk. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Listing 19.2 shows the event procedure for the <B>Open</B> menu item from the
+AdvTedit.vbp project. The user clicks this menu item to open a file into the text
+editor. The event procedure uses a common dialog to enable the user to identify a
+file to open.</P>
+<P>
+<H4>LISTING 19.2&#160;&#160;19LIST02.TXT--Using the Line Input Statement to Read
+a Text File</H4>
+<PRE><B>01 </B>Private Sub itmOpen_Click()</PRE>
+<PRE><B>02 </B>Dim strFileName As String `String of file to open</PRE>
+<PRE><B>03 </B>Dim strText As String `Contents of file</PRE>
+<PRE><B>04 </B>Dim strFilter As String `Common Dialog filter string</PRE>
+<PRE><B>05 </B>Dim strBuffer As String `String buffer variable</PRE>
+<PRE><B>06 </B>Dim FileHandle% `Variable to hold file handle</PRE>
+<PRE><B>07</B></PRE>
+<PRE><B>08 </B>`Set the Common Dialog filter</PRE>
+<PRE><B>09 </B>strFilter = &quot;Text (*.txt)|*.txt|All Files (*.*)|*.*&quot;</PRE>
+<PRE><B>10 </B>cdMain.Filter = strFilter</PRE>
+<PRE><B>11</B></PRE>
+<PRE><B>12 </B>`Open the common dialog</PRE>
+<PRE><B>13 </B>cdMain.ShowOpen</PRE>
+<PRE><B>14</B></PRE>
+<PRE><B>15 </B>`Make sure the retrieved filename is not a blank string</PRE>
+<PRE><B>16 </B>If cdMain.filename &lt;&gt; &quot;&quot; Then</PRE>
+<PRE><B>17</B></PRE>
+<PRE><B>18 </B>`If it is not blank, open the file</PRE>
+<PRE><B>19 </B>strFileName = cdMain.filename</PRE>
+<PRE><B>20</B></PRE>
+<PRE><B>21 </B>`Get a free file handle and assign it to the file</PRE>
+<PRE><B>22 </B>`handle variable</PRE>
+<PRE><B>23 </B>FileHandle% = FreeFile</PRE>
+<PRE><B>24</B></PRE>
+<PRE><B>25 </B>`Open the file</PRE>
+<PRE><B>26 </B>Open strFileName For Input As #FileHandle%</PRE>
+<PRE><B>27</B></PRE>
+<PRE><B>28 </B>`Make the mouse pointer an hourglass</PRE>
+<PRE><B>29 </B>MousePointer = vbHourglass</PRE>
+<PRE><B>30</B></PRE>
+<PRE><B>31 </B>`Traverse the lines of the file</PRE>
+<PRE><B>32 </B>Do While Not EOF(FileHandle%) `Check for end of file</PRE>
+<PRE><B>33</B></PRE>
+<PRE><B>34 </B>`Read a line of the file</PRE>
+<PRE><B>35 </B>Line Input #FileHandle%, strBuffer.</PRE>
+<PRE><B>36</B></PRE>
+<PRE><B>37 </B>`Add the line from the output buffer</PRE>
+<PRE><B>38 </B>strText = strText &amp; strBuffer &amp; vbCrLf</PRE>
+<PRE><B>39 </B>Loop</PRE>
+<PRE><B>40</B></PRE>
+<PRE><B>41 </B>`Change the mousepointer back to the arrow</PRE>
+<PRE><B>42 </B>MousePointer = vbDefault</PRE>
+<PRE><B>43</B></PRE>
+<PRE><B>44 </B>`Close the file when completed</PRE>
+<PRE><B>45 </B>Close #FileHandle%</PRE>
+<PRE><B>46</B></PRE>
+<PRE><B>47 </B>`Assign the retrieved text to the text box</PRE>
+<PRE><B>48 </B>txtMain.Text = strText</PRE>
+<PRE><B>49</B></PRE>
+<PRE><B>50 </B>`Put the filename in the form caption</PRE>
+<PRE><B>51 </B>frmMain.Caption = &quot;Text Editor- [&quot; &amp; strFileName &amp; &quot;]&quot;</PRE>
+<PRE><B>52 </B>End If</PRE>
+<PRE><B>53 </B>End Sub</PRE>
+<P>
+<H2><A NAME="Heading5"></A>Manipulating Graphics with LoadPicture() and SavePicture()</H2>
+<P>As well as save and retrieve text from a file, you can also save and retrieve
+graphics. You use the LoadPicture() function to load a bitmap or icon file from disk
+and assign it to the Picture property of a PictureBox or Image control. The syntax
+for LoadPicture() is as follows:</P>
+<P>
+<PRE><I>ImageCtrl</I>.<I>Picture</I> = LoadPicture(<I>FilePath</I>)
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI><I>ImageCtrl</I> is a PictureBox control, Image control, or form.
+	<P>
+	<LI><I>Picture</I> is the Picture property of that object.
+	<P>
+	<LI>LoadPicture is the function name.
+	<P>
+	<LI><I>FilePath</I> is the exact location on disk of the file to load.
+</UL>
+
+<P>You save a picture that has been assigned to a PictureBox control, Image control,
+or form by using the SavePicture statement. The syntax for SavePicture is as follows:</P>
+<P>
+<PRE>SavePicture <I>Picture</I>, <I>strFilePath</I>
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>SavePicture is the name of the statement.
+	<P>
+	<LI><I>Picture</I> is the picture assigned to or embedded in the Picture property
+	of a PictureBox control, Image control, or form.
+	<P>
+	<LI><I>StrFilePath</I> is the exact location and filename on disk to which you want
+	to save the file.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>SavePicture has an elementary use</STRONG></P>
+	<P>Because of the graphics environment on the Internet and in Windows, you may find
+	yourself using more and more graphics. The SavePicture statement allows you to manipulate,
+	control, and save graphic elements from within your programming code. Manipulating
+	them requires advanced programming skills as well as knowledge of the way Windows
+	handles graphical device contexts. If you want to do advanced graphics work in Visual
+	Basic--even just saving graphic files in multiple formats--you can use many third-party
+	ActiveX controls. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>Listing 19.3 shows the SavePicture statement used to save a Picture in an Image
+control to a location on disk. The program uses a common dialog to determine what
+to name the file and where to store it. The complete code for this program is in
+project SaveGrfx.vbp, which you can download from <A target="_new" HREF="javascript:if(confirm('http://www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mcp.com/info'" tppabs="http://www.mcp.com/info">http://www.mcp.com/info</A>.</P>
+<P>
+<H4>LISTING 19.3&#160;&#160;19LIST03.TXT--Using the SavePicture Statement</H4>
+<PRE><B>01 </B>Private Sub cmdImgSave_Click()</PRE>
+<PRE><B>02 </B>Dim strFilter As String `common dialog filter</PRE>
+<PRE><B>03 </B>Dim strFileName As String `Filename variable</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>`Set the CommonDialog filter</PRE>
+<PRE><B>06 </B>strFilter = &quot;Bitmaps (*.bmp)|*.bmp&quot;</PRE>
+<PRE><B>07</B></PRE>
+<PRE><B>08 </B>`Assign the filter</PRE>
+<PRE><B>09 </B>cdMain.Filter = strFilter</PRE>
+<PRE><B>10</B></PRE>
+<PRE><B>11 </B>`Show the dialog</PRE>
+<PRE><B>12 </B>cdMain.ShowSave</PRE>
+<PRE><B>13</B></PRE>
+<PRE><B>14 </B>`Make sure a value was entered in the</PRE>
+<PRE><B>15 </B>`common dialog.</PRE>
+<PRE><B>16 </B>If cdMain.filename &lt;&gt; &quot;&quot; Then</PRE>
+<PRE><B>17 </B>strFileName = cdMain.filename</PRE>
+<PRE><B>18</B></PRE>
+<PRE><B>19 </B>`Save the Picture in the image control</PRE>
+<PRE><B>20 </B>SavePicture imgMain.Picture, strFileName</PRE>
+<PRE><B>21</B></PRE>
+<PRE><B>22 </B>`Tell the user the file's been saved</PRE>
+<PRE><B>23 </B>MsgBox strFileName &amp; &quot; saved.&quot;</PRE>
+<PRE><B>24 </B>End If</PRE>
+<PRE><B>25 </B>End Sub</PRE>
+<P>
+<H2><A NAME="Heading6"></A>Saving and Retrieving Data with the Visual Basic Registry
+Functions</H2>
+<P>You can use the Windows Registry to store small pieces of information custom to
+your program. You can use the Registry to store information about the location and
+size of your program's forms or user preferences. Some programmers use the Registry
+to store a list of the last files used. No matter what the need is, as long as the
+information is relatively small, you'll find that using the Registry is a fast, easy
+way to persist information.</P>
+<P>Visual Basic comes with four easy-to-use procedures for accessing the Windows
+Registry: DeleteSetting, GetSetting, GetAllSettings, and SaveSetting. These internal
+Registry functions have one major drawback, however--Visual Basic can get and write
+data only to a specific key in the Registry, MyComputer\HKEY_CURRENT\USER\Software\VB
+and VBA Program Settings. This process is automatic to VB; Visual Basic can't write
+to or read from any other keys in the Registry without the aid of the Win32 API functions.</P>
+<P>Figure 19.3 shows the location of the Visual Basic applications keys in the Windows
+Registry.</P>
+<P><A HREF="javascript:popUp('19fig03.gif')"><B>FIGURE 19.3</B></A> <I>When you use
+the Registry functions internal to VB, data is saved in a key dedicated to all VB
+and VBA applications.</I></P>
+
+<P>
+<H3><A NAME="Heading7"></A>Retrieving Values with GetSetting()</H3>
+<P>You use the GetSetting() function to retrieve a value from a particular section
+in Visual Basic key of the Windows Registry:</P>
+<P>
+<PRE><I>MyString</I> = GetSetting(<I>VBKeyName</I>, <I>Section</I>, <I>Key</I>[, <I>Default</I>])
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI><I>MyString</I> is the string value returned by GetSetting().
+	<P>
+	<LI>GetSetting is the name of the function.
+	<P>
+	<LI><I>VBKeyName</I> is a string value that's the name of the key within the VB/VBA
+	area of the Registry.
+	<P>
+	<LI><I>Section</I> is a string value representing the section or subkey for the specific
+	applications setting.
+	<P>
+	<LI><I>Key</I> is a string value that represents the name of a specific entry within
+	the section. A section can have many keys.
+	<P>
+	<LI>The optional <I>Default</I> argument is a string value that represents the value
+	to return if GetSettings() fails or encounters an error. If the function is successful,
+	it returns the string found at the key setting; if it's unsuccessful, it returns
+	the string value assigned to the <I>Default</I> argument.
+</UL>
+
+<P>Thus, the following code snippet</P>
+<P>
+<PRE>Return$ = GetSetting(App.Title, &quot;FormInit&quot;, &quot;Left&quot;, DefaultLeft$)
+</PRE>
+<P>looks for a Registry entry as shown in Figure 19.4. If it fails, it returns the
+value assigned to the sample string, DefaultLeft$.</P>
+<P><A HREF="javascript:popUp('19fig04.gif')"><B>FIGURE 19.4</B></A> <I>The VB Registry
+functions can save your data under your program's key.</I></P>
+<P>
+<H3><A NAME="Heading8"></A>Saving Values to the Registry with the SaveSetting Statement</H3>
+<P>If you want to save a value to the MyComputer\HKEY_CURRENT\USER\Software\VB and
+VBA Program Settings key in the Registry, you use the SaveSetting statement:</P>
+<P>
+<PRE>SaveSetting <I>VBKeyName</I>, <I>Section</I>, <I>Key</I>, <I>Setting</I>
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>SaveSetting is the statement name.
+	<P>
+	<LI><I>VBKeyName</I> is a string value that's the name of the key within the VB/VBA
+	area of the Registry.
+	<P>
+	<LI><I>Section</I> is a string value representing the section or subkey for the specific
+	applications setting.
+</UL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Hands-on code</STRONG></P>
+	<P>For a detailed look at how to use the SaveSetting statement and the GetSetting()
+	function, look at the user-defined procedures SetFormPos and GetFormPos in the module
+	modAlign.bas in the project Dynamic.vbp, which you can download from <A target="_new" HREF="javascript:if(confirm('http:// www.mcp.com/info  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http:// www.mcp.com/info'" tppabs="http:// www.mcp.com/info">http://
+	www.mcp.com/info</A>. 
+<HR>
+
+
+</BLOCKQUOTE>
+
+
+<UL>
+	<LI><I>Key</I> is a string value that represents the name of a specific entry within
+	the section. A section can have many keys.
+	<P>
+	<LI><I>Setting</I> is a string value that you want to set to a given key.
+</UL>
+
+<P>This procedure relates closely to the GetSetting() function--it's the inverse.
+Whereas you use GetSetting() to retrieve a VB value from a specified key in the Registry,
+you use SaveSetting to set a value to the given VB key. All arguments, except for
+the last one, are identical.</P>
+<P>Thus, the following code snippet</P>
+<P>
+<PRE>SaveSetting App.Title, &quot;FormInit&quot;, &quot;Left&quot;, &quot;975&quot;
+</PRE>
+<P>produces the Registry setting shown in Figure 19.4.</P>
+<P>
+<H3><A NAME="Heading9"></A>Retrieving an Array of Settings with GetAllSettings()</H3>
+<P>You use the Visual Basic function GetAllSettings() to retrieve an array from the
+Registry that contains all the key settings and those keys' respective values of
+a particular section within MyComputer\HKEY_CURRENT\USER\Software\VB and VBA Program
+Settings. The syntax for GetAllSettings() is as follows:</P>
+<P>
+<PRE><I>MyVariant</I> = GetAllSettings(<I>VBKeyName</I>, <I>Section</I>)
+</PRE>
+<P>In this syntax</P>
+
+<UL>
+	<LI><I>MyVariant</I> is an array of values returned by the function, of type Variant.
+	<P>
+	<LI>GetAllSettings is the function name.
+	<P>
+	<LI><I>VBKeyName</I> is a string value that's the name of the key within the VB/VBA
+	area of the Registry.
+	<P>
+	<LI><I>Section</I> is the string value representing the section to query.
+</UL>
+
+<P>When you use GetAllSettings(), the function returns a two-dimensional array in
+the form of a variant. To obtain the values, you transverse the array as you would
+any other.</P>
+<H3><A NAME="Heading10"></A>Deleting a Key Section with the DeleteString Statement</H3>
+<P>If you want to delete an entire section from a key, you use the DeleteSetting
+statement:</P>
+<P>
+<PRE>DeleteSetting <I>VBKeyName</I>, <I>Section</I>[, <I>Key</I>]
+</PRE>
+<P>In this syntax,</P>
+
+<UL>
+	<LI>DeleteSetting is the statement name.
+	<P>
+	<LI><I>VBKeyName</I> is a string value that's the name of the key within the VB/VBA
+	are of the Registry.
+	<P>
+	<LI><I>Section</I> is the string value representing the section to delete.
+	<P>
+	<LI><I>Key</I> is the string value representing a specific subkey to delete. If you
+	don't set this optional parameter, all the subKeys of the section will be deleted.
+</UL>
+
+<P>Thus, the following code snippet</P>
+<P>
+<PRE>DeleteSetting App.Title, &quot;FormInit
+</PRE>
+<P>deletes the Registry setting shown in Figure 19.4.</P>
+<P>
+<H2><A NAME="Heading11"></A>Using File System Objects</H2>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>File system objects versus FileSystemObjects</STRONG></P>
+	<P>The file system objects are all the objects that enable you to work with the file
+	system of a computer: the Drive, Folder, File, TextStream, and FileSystemObject objects.
+	The FileSystemObject is a central object that gives you access to the various file
+	system objects by way of a return from the various methods of the FileSystemObject.
+	
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>New to Visual Basic 6 are the file system objects, which <I>encapsulate </I>the
+objects, methods, and data that you use to work with files, directories, and drives
+within a computer's file system. Before you can use the file system objects, you
+must add the DLL that contains the object into the Visual Basic IDE. After you open
+the References dialog (choose <B>References</B> from the <B>Project</B> menu), select
+<B>Microsoft Scripting Runtime</B> (SCRRUN.DLL). This process is similar to adding
+any COM object to the VB IDE (see Figure 19.5).</P>
+<P><A HREF="javascript:popUp('19fig05.gif')"><B>FIGURE 19.5</B></A> <I>You can use
+the file system objects to access methods and objects necessary to work with files
+on your hard drive.</I></P>
+<P>Table 9.2 shows the various file system objects.</P>
+<P>
+<H4>TABLE 19.2&#160;&#160;The File System Objects</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>Name</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Drive</TD>
+		<TD ALIGN="LEFT">Enables you to access various drives on a system. These drives can be CD-ROM drives,
+			RAM disks, or mapped network drives.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Folder</TD>
+		<TD ALIGN="LEFT">Enables you to work with folders (directories) on a system. You can find out names
+			and location. You also can create and delete folders with methods of the Folder object.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">File</TD>
+		<TD ALIGN="LEFT">Enables you to open, create, or move files.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">FileSystemObject</TD>
+		<TD ALIGN="LEFT">The central file system object. You use the FileSystemObject to access other file
+			system objects.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextStream</TD>
+		<TD ALIGN="LEFT">Enables you to read, write, and append text files.</TD>
+	</TR>
+</TABLE>
+
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<STRONG>Working with objects</STRONG></P>
+	<P>To receive the full benefit of the FileSystemObject, you need to have a basic
+	knowledge of object-oriented programming (OOP). For an overview of OOP, read Chapter
+	26, &quot;Making Object-Oriented Programs with Visual Basic.&quot; 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P>You declare a FileSystemObject by using the New keyword. Thus, to make the fso
+FileSystemObject, you use the following code:</P>
+<P>
+<PRE>Dim fso As New FileSystemObject
+</PRE>
+<P>When you have a FileSystemObject, you can use that object to access other file
+system objects, such as the TextStream object (line 15 of Listing 19.4). The TextStream
+object enables you to treat the contents of text files as a very big string of text.
+Thus, you can avoid having to read the contents of the file a line at a time. Listing
+19.4 shows you how to use a TextStream object to read the contents of a text file.
+Notice that line 21 uses the Read method of the TextStream object ts to read the
+contents of a text file from within a loop that traverses the entire contents of
+the TextStream object (lines 20 and 22).</P>
+<P>
+<H4>LISTING 19.4&#160;&#160;19LIST04.TXT--Reading the Contents of a TextStream Object</H4>
+<PRE><B>01 </B>Dim fso As New FileSystemObject</PRE>
+<PRE><B>02 </B>Dim ts As TextStream</PRE>
+<PRE><B>03 </B>Dim strData As String</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>`Set a common dialog filter to show only</PRE>
+<PRE><B>06 </B>`text files</PRE>
+<PRE><B>07 </B>cdlgMain.Filter = &quot;Text (*.txt)|*.txt&quot;</PRE>
+<PRE><B>08</B></PRE>
+<PRE><B>09 </B>`Open the common dialog in Show Open mode</PRE>
+<PRE><B>10 </B>cdlgMain.ShowOpen</PRE>
+<PRE><B>11 </B>gf_strOpenFile = cdlgMain.FileName</PRE>
+<PRE><B>12</B></PRE>
+<PRE><B>13 </B>`Get a Text Stream Object using the</PRE>
+<PRE><B>14 </B>`OpenTextFile method of the FileSystemObject</PRE>
+<PRE><B>15 </B>Set ts = fso.OpenTextFile(gf_strOpenFile)</PRE>
+<PRE><B>16</B></PRE>
+<PRE><B>17 </B>`Traverse to the end of the TextStream</PRE>
+<PRE><B>18 </B>`concatenating the contents onto a string</PRE>
+<PRE><B>19 </B>`buffer variable.</PRE>
+<PRE><B>20 </B>Do While ts.AtEndOfStream &lt;&gt; True</PRE>
+<PRE><B>21 </B>strData = strData &amp; ts.Read(1)</PRE>
+<PRE><B>22 </B>Loop</PRE>
+<PRE><B>23</B></PRE>
+<PRE><B>24 </B>`Close the TextStream</PRE>
+<PRE><B>25 </B>ts.Close</PRE>
+<PRE><B>26</B></PRE>
+<PRE><B>27 </B>`Assign the contents of the string buffer</PRE>
+<PRE><B>28 </B>`to the Text property of a TextBox.</PRE>
+<PRE><B>29 </B>txtData.Text = strData</PRE>
+<P>You can use the CreateTextFile() method of the FileSystemObject to create a file.
+Then you can use the Write method of the TextStream object to write data to that
+created file. Listing 19.5 shows you the code to do this. Notice the Write method
+is at line 15.</P>
+<P>
+<H4>LISTING 19.5&#160;&#160;19LIST05.TXT--Saving Data with the Write Method in a
+TextSteam Object</H4>
+<PRE><B>01 </B>`Set a common dialog filter for text</PRE>
+<PRE><B>02 </B>cdlgMain.Filter = &quot;Text (*.txt)|*.txt&quot;</PRE>
+<PRE><B>03 </B>`Open a save dialog</PRE>
+<PRE><B>04 </B>cdlgMain.ShowSave</PRE>
+<PRE><B>05 </B>`Get a filename for saving the data</PRE>
+<PRE><B>06 </B>gf_strOpenFile = cdlgMain.FileName</PRE>
+<PRE><B>07 </B>`Create a TextStream objet to the</PRE>
+<PRE><B>08 </B>`filename</PRE>
+<PRE><B>09 </B>Set ts = fso.CreateTextFile(gf_strOpenFile, True)</PRE>
+<PRE><B>11 </B>`Get the text to write to the file from</PRE>
+<PRE><B>12 </B>`the Text property of the TextBox</PRE>
+<PRE><B>13 </B>strData = txtData.Text</PRE>
+<PRE><B>14 </B>`Do the write</PRE>
+<PRE><B>15 </B>ts.Write (strData)</PRE>
+<PRE><B>16 </B>`Close the TextSteam</PRE>
+<PRE><B>17 </B>ts.Close</PRE>
+<P>In addition to using the file system objects to manipulate files and data, you
+can query properties of the objects to get information. Listing 19.6 shows you how
+to use various properties of the File object file to report statistics about a file.
+Figure 19.6 shows you the result of the code.</P>
+<P>
+<H4>LISTING 19.6&#160;&#160;19LIST06.TXT--Using File Object Properties to Report
+File Information</H4>
+<PRE><B>01 </B>Dim fso As New FileSystemObject</PRE>
+<PRE><B>02 </B>Dim fil As File</PRE>
+<PRE><B>03 </B>Dim strData As String</PRE>
+<PRE><B>04</B></PRE>
+<PRE><B>05 </B>`Get a file by using the global variable filename</PRE>
+<PRE><B>06 </B>Set fil = fso.GetFile(gf_strOpenFile)</PRE>
+<PRE><B>07 </B>`Get the filename</PRE>
+<PRE><B>08 </B>strData = &quot;Name: &quot; &amp; fil.Name &amp; vbCrLf</PRE>
+<PRE><B>09 </B>`Get the date created</PRE>
+<PRE><B>10 </B>strData = strData &amp; &quot;Created: &quot; &amp; fil.DateCreated _</PRE>
+<PRE>&amp; vbCrLf</PRE>
+<PRE><B>11 </B>`Get the date last modified</PRE>
+<PRE><B>12 </B>strData = strData &amp; &quot;Modifed: &quot; _</PRE>
+<PRE>&amp; fil.DateLastModified &amp; vbCrLf</PRE>
+<PRE><B>13 </B>`Get the date last accessed</PRE>
+<PRE><B>14 </B>strData = strData &amp; &quot;Last Access: &quot; _</PRE>
+<PRE>&amp; fil.DateLastAccessed &amp; vbCrLf</PRE>
+<PRE><B>15 </B>`Get the size in bytes</PRE>
+<PRE><B>16 </B>strData = strData &amp; &quot;Size: &quot; &amp; CStr(fil.Size) &amp; _</PRE>
+<PRE>&quot; characters&quot; &amp; vbCrLf</PRE>
+<PRE><B>17 </B>`Get the file type</PRE>
+<PRE><B>18 </B>strData = strData &amp; &quot;Type: &quot; &amp; fil.Type &amp; vbCrLf</PRE>
+<PRE><B>19 </B>`Get the parent folder</PRE>
+<PRE><B>20 </B>strData = strData &amp; &quot;Parent: &quot; _</PRE>
+<PRE>&amp; fil.ParentFolder.Name &amp; vbCrLf</PRE>
+<PRE><B>21 </B>`Get the file path</PRE>
+<PRE><B>22 </B>strData = strData &amp; &quot;Path: &quot; &amp; fil.Path &amp; vbCrLf</PRE>
+<PRE><B>23 </B>`Report the findings</PRE>
+<PRE><B>24 </B>MsgBox strData, vbOKCancel, &quot;File Statistics&quot;</PRE>
+<P><A HREF="javascript:popUp('19fig06.gif')"><B>FIGURE 19.6</B></A> <I>Use the various
+properties of the File object to obtain information about a file.</I></P>
+<P>The file system objects make coding a computer's file system easier over the long
+term. In the beginning, however, becoming accustomed to them might seem difficult.
+The sample project prjFSObj.vbp that you can download shows you how to open a file
+for reading and writing with file system objects. The code also shows how to create
+files and obtain file statistics. The code in Listings 19.4 through 19.6 comes from
+that code. You also might find it useful to take an in-depth look at the File System
+Object model on the Help files that accompany your copy of VB6. File system objects
+are powerful, but they take time to master. You will find it time well spent.</P>
+<H1></H1>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch18.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch18/ch18.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch20.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/ch20/ch20.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-38.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/078971633X/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> </P>
+
+<P>&#169; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/078971633X/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+
+</BODY>
+
+</HTML>

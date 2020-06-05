@@ -1,0 +1,3897 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+
+function popUp(pPage) {
+ var fullURL = document.location;
+ var textURL = fullURL.toString();
+ var URLlen = textURL.length;
+ var lenMinusPage = textURL.lastIndexOf("/");
+ lenMinusPage += 1;
+ var fullPath = textURL.substring(0,lenMinusPage);
+ popUpWin = window.open('','popWin','resizable=yes,scrollbars=no,width=525,height=394');
+ figDoc= popUpWin.document;
+ zhtm= '<HTML><HEAD><TITLE>' + pPage + '</TITLE>';
+ zhtm += '</head>';
+ zhtm += '<BODY bgcolor="#FFFFFF">';
+ zhtm += '<IMG SRC="' + fullPath + pPage + '">';
+ zhtm += '<P><B>' + pPage + '</B>';
+ zhtm += '</BODY></HTML>';
+ window.popUpWin.document.write(zhtm);
+ window.popUpWin.document.close();
+ // Johnny Jackson 4/28/98
+ }
+
+//-->
+                                                                
+</SCRIPT>
+<link rel="stylesheet" href="ebooks.css" tppabs="http://pbs.mcp.com/includes/stylesheets/ebooks.css">
+
+	<META NAME="GENERATOR" Content="Symantec Visual Page Mac 1.1.1">
+	<TITLE>Visual Basic 6 Database How-To -- Ch 6 -- Connecting to an ODBC Server</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="CENTER"><IMG SRC="sams.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/sams.gif" WIDTH="171" HEIGHT="66" ALIGN="BOTTOM"
+BORDER="0"></H1>
+
+<H1 ALIGN="CENTER">Visual Basic 6 Database How-To</H1>
+<CENTER>
+<P><A HREF="ch05.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch05/ch05.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch07.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch07/ch07.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A> 
+<HR>
+
+</CENTER>
+<H1></H1>
+<H1 ALIGN="CENTER">- 6 -<BR>
+Connecting to an ODBC Server</H1>
+<H2></H2>
+
+<UL>
+	<LI>How do I...
+	<UL>
+		<LI><A HREF="#Use the ODBC Administrator ...">6.1 Use the ODBC Administrator to maintain
+		data sources?</A>
+		<LI><A HREF="#Use ODBC with the Visual Basic ...">6.2 Use ODBC with the Visual Basic
+		Data control?</A>
+		<LI><A HREF="#Create an ODBC-accessible data ...">6.3 Create an ODBC-accessible data
+		source by using RegisterDatabase?</A>
+		<LI><A HREF="#Prevent the login dialog box ...">6.Prevent the login dialog box from
+		being displayed when I open an ODBC database?</A>
+		<LI><A HREF="#Determine what services ...">6.5 Determine what services an ODBC server
+		provides?</A>
+		<LI><A HREF="#Use ODBCDirect to connect ...">6.6 Use ODBCDirect to connect to database
+		servers?</A>
+	</UL>
+</UL>
+
+<P>
+<HR SIZE="4">
+
+<H3></H3>
+<P>The Open Database Connectivity (ODBC) standard has made accessing disparate database
+formats much easier than in older versions of Visual Basic. Starting with version
+3.0, Visual Basic data access methods and properties include built-in support for
+ODBC data sources. This means you can use Visual Basic and ODBC together, either
+through the Jet database engine that comes with Visual Basic or through direct calls
+to the ODBC Application Programming Interface (API) or by using both together.</P>
+<P>When using Visual Basic to completely handle the connection to the ODBC system,
+just make a few changes to the Visual Basic OpenDatabase method. This is the syntax
+of the statement:</P>
+
+
+<BLOCKQUOTE>
+	<PRE>Set database = workspace.OpenDatabase(dbname[, exclusive[, read-only[, _
+       source]]])</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P>The source argument is the main difference when you're using ODBC. In the How-To's
+throughout this chapter, you'll see how an ODBC connect string is used in the source
+to specify to which ODBC data source to connect. If you're not sure which data source
+you want to use, just make the source argument &quot;ODBC&quot; and Visual Basic
+will team up with ODBC and automatically present a list of the available data sources.
+Few things in Visual Basic are as straightforward as this.</P>
+<P>You can perform many ODBC tasks--including running Structured Query Language (SQL)
+queries, retrieving results, looping through recordsets, and sending pass-through
+queries--in Visual Basic without getting any more involved in ODBC than making this
+change to the OpenDatabase method. Essentially, if Visual Basic has a data access
+method or property to do what you want, you can almost always use Visual Basic directly
+without knowing anything about ODBC beyond the existence of the data source you want
+to use.</P>
+<P>ODBC can add a whole new dimension to your application's database access, going
+far beyond the functionality of Visual Basic's data access function. You can retrieve
+a wealth of information about a database and manipulate it to your heart's--or client's--content.</P>
+<P>Through the How-To's in this chapter, you'll get the details of using straight
+Visual Basic to access the ODBC API, using the ODBC API directly and bypassing Visual
+Basic, and combining the two techniques to get the job done.</P>
+<P>The guiding philosophy of this chapter is that if there is a way to do it in Visual
+Basic, that's the way it should be done--unless there is a good reason not to do
+it that way. The main reason for going straight to the ODBC API is when Visual Basic
+can't perform the particular task by itself. But there are a few other reasons you'll
+see along the way.</P>
+<P><B>Using Visual Basic and ODBC Together</B></P>
+<P>If you are going to do any serious work with ODBC, get a copy of <I>Microsoft
+ODBC 3.0 Programmer's Reference and SDK Guide</I>, published by Microsoft Press.
+The Software Development Kit (SDK) has all the detailed information you need and
+a list of all the ODBC functions. This section covers most of the details you'll
+need in order to use ODBC with Visual Basic.</P>
+<P>The ODBC system has four components. Figure 6.1 shows the relationship of these
+four elements in a Visual Basic ODBC application.</P>
+<P><A HREF="javascript:popUp('06fig01.gif')"><B>Figure 6.1.</B></A><B> </B><I>An
+overview of ODBC architecture.</I></P>
+
+<UL>
+	<LI><I>Application:</I> This is your application program. Whether it makes calls
+	through the Visual Basic data access methods and properties or makes direct calls
+	to the ODBC API, the application sends SQL statements to ODBC and receives data as
+	the results of those statements.
+	<P>
+	<LI><I>ODBC Driver Manager:</I> The ODBC Driver Manager is the layer of the ODBC
+	system that sits between your application and the database driver. Some of the ODBC
+	API calls are handled directly by the Driver Manager, but many are passed on to the
+	driver. For some functions, the Driver Manager passes the call on to the driver if
+	the function is implemented in the driver; if not, the Driver Manager handles the
+	task itself.
+	<P>
+	<LI><I>Driver:</I> An ODBC driver is software, virtually always a dynamic link library
+	(DLL), that handles the connection between the ODBC Driver Manager and the database
+	server. A driver is usually written by the manufacturer of a database system, but
+	many drivers are available from third parties.
+	<P>
+	<LI><I>Data source:</I> A data source is an installed database server that ODBC has
+	associated with a particular ODBC driver and a specific database with its location
+	on your local hard drive or network.
+</UL>
+
+<P>Following are a few other terms you'll encounter when reading about the ODBC system:</P>
+
+<UL>
+	<LI><I>Connect string:</I> To make a connection to an ODBC data source, the ODBC
+	system needs certain information. The first piece of information it always needs
+	is the <I>data source name</I> (DSN). This is the descriptive name ODBC uses to keep
+	track of installed databases, and it is used any time you are presented with a list
+	of data sources. The connect string varies by database, driver, and network setup,
+	but a typical string would be the data source name, user ID, password, and authorization
+	string. The particular database server might have other required and optional items.
+	In How-To 6.5, you'll learn exactly what connect string a database requires.
+	<P>
+	<LI><I>Translator:</I> When you've worked with ODBC for a while, you'll probably
+	encounter the term <I>translator</I>. A translator translates data flowing through
+	the ODBC system. A common use is to translate between different character sets, such
+	as between ASCII and EBCDIC on IBM mainframes and minis.
+	<P>
+	<LI><I>ODBC input and output buffers:</I> ODBC requires the use of input and output
+	buffers to hold data it passes back and forth between the database and your application.
+	The good news is that in most cases in Visual Basic, you won't be calling any ODBC
+	API functions directly that need to have a buffer allocated. More good news is that
+	a NULL pointer to a buffer sometimes works. The really good news is that Visual Basic,
+	through the Jet engine, manages all this for you most of the time.
+</UL>
+
+<P><B>ODBC Handles</B></P>
+<P>Before making any direct calls to functions in the ODBC API, you must allocate
+memory and receive a handle from ODBC for the particular operation. All this means
+is that ODBC is setting aside a small chunk of memory, through its DLL, to hold information
+about some aspect of the ODBC system. The handle is essentially a pointer in the
+Windows environment. As usual, if you are using ODBC through Visual Basic methods
+only, without direct calls to the ODBC API, you don't need to know or worry about
+handles at all.</P>
+<P>Three handles are necessary for calls to the different ODBC functions:</P>
+
+<UL>
+	<LI><I>Environment handle (</I>hEnv<I>):</I> Your application needs to allocate and
+	use one environment handle. The environment handle manages the overall connection
+	between your application and ODBC.
+	<P>
+	<LI><I>Connection handle (</I>hDbc<I>):</I> For each connection you make to a database,
+	you must allocate and use one connection handle. Your application can have virtually
+	any number of connection handles at any given time, and many databases can even have
+	multiple simultaneous handles to a single data source.
+	<P>
+	<LI><I>Statement handle (</I>hStmt<I>):</I> For each SQL statement you send to a
+	database, you must allocate and use a statement handle. The statement handle is how
+	ODBC keeps straight what statement you are referring to for information. You can
+	also have multiple statement handles active at any given time.
+</UL>
+
+<P>All ODBC handles must be released before terminating your application. Otherwise,
+there is no guarantee that the allocated memory will be released at the end of the
+application, and that is just not good Windows program manners! Eventually, the program
+will &quot;leak&quot; enough memory to cause performance problems with Windows or
+even disrupt the operating system entirely.</P>
+<P>The handles form a hierarchy. All connection handles in your application are associated
+with a single environment handle, and all statement handles are associated with one
+and only one connection handle. In general, all the lower-level handles in the hierarchy
+must be freed before the next handle in the hierarchy is freed. All the handles can
+be released and then reused.</P>
+<P><B>ODBC API Conformance Levels</B></P>
+<P>In response to the wide variety of database system capabilities available on every
+hardware and software platform, ODBC breaks its function list into three levels of
+conformance. A driver must support, at minimum, the Core-level conformance to be
+considered an ODBC driver. ODBC also specifies SQL grammar conformance levels, which
+are not directly related to the API conformance level, as listed here:</P>
+
+<UL>
+	<LI><I>Core:</I> The Core level is the minimum API conformance level a driver and
+	database must support. This level corresponds to the X/Open and SQL Access Group
+	Call Level Interface specification of 1992.
+	<P>
+	<LI><I>Level 1:</I> Conformance Level 1 adds significant functionality to ODBC's
+	capabilities. All drivers used with Visual Basic's data access object must be Level
+	1 compliant because Visual Basic assumes that certain services are available for
+	it to use with the database. You can use a Core-level driver, however, if you limit
+	the use of ODBC strictly to direct Level 1 ODBC API calls.
+	<P>
+	<LI><I>Level 2:</I> Conformance Level 2 is the highest conformance level. It adds
+	another large jump in functionality.
+</UL>
+
+<P>It is important to understand that just because a driver calls itself, say, a
+Level 1 ODBC driver doesn't necessarily mean that it supports <I>all </I>the options
+of <I>every </I>function at that level. The amount of support is usually tied directly
+to the capabilities of the underlying database, its limitations, and how aggressively
+a driver manufacturer is in building capabilities into its driver.</P>
+
+
+<BLOCKQUOTE>
+	<P>
+<HR>
+<B><STRONG>WARNING</STRONG></B><STRONG> </STRONG>No independent body certifies drivers
+	as meeting the requirements of an ODBC conformance level. The developer of each driver
+	makes the conformance claim. Buyer beware! 
+<HR>
+
+
+</BLOCKQUOTE>
+
+<P><B>The ODBC API: Visual Basic </B>Declare<B> Statements and ODBC Constants</B></P>
+<P>Because ODBC is implemented in Windows as a DLL, you must include a Declare statement
+for any ODBC functions you call from a Visual Basic application. By requiring a Declare
+statement, Visual Basic knows what DLL file to load and the types of parameters each
+function uses so that it can perform type checking and flag any incorrect types you
+try to use in a function. The ODBCAPI.BAS file, on the CD-ROM that accompanies this
+book, contains these ODBC Declare statements and other ODBC constants and user-defined
+types, ready to be copied to your application.</P>
+<P><B>Debugging ODBC Applications</B></P>
+<P>Even if you don't have access to the ODBC SDK, ODBC provides one valuable tool
+for debugging applications: the <I>trace log</I> (sometimes called the <I>trace file</I>).
+This is a log of all calls made by your application and Visual Basic through the
+ODBC system. The log can be quite educational about how ODBC works, and it lets you
+see exactly what is being done.</P>
+<P><B>Data Type Conversions Between ODBC and Visual Basic</B></P>
+<P>The correspondence between ODBC and Visual Basic data types is not one-to-one.
+Fortunately, with Visual Basic's slightly expanded list of data types, the correspondence
+is a bit closer. Table 6.1 lists the available ODBC data types and the Visual Basic
+equivalents.</P>
+<P>
+<H4>Table 6.1. Data type conversions between ODBC and Visual Basic.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>ODBC DATA TYPE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Grammar Level</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Visual Basic Data Type</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_BIT</TD>
+		<TD ALIGN="LEFT">Extended</TD>
+		<TD ALIGN="LEFT">Boolean</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_TINYINT</TD>
+		<TD ALIGN="LEFT">Extended</TD>
+		<TD ALIGN="LEFT">Byte</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_SMALLINT</TD>
+		<TD ALIGN="LEFT">Core</TD>
+		<TD ALIGN="LEFT">Integer</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_INTEGER</TD>
+		<TD ALIGN="LEFT">Core</TD>
+		<TD ALIGN="LEFT">Long</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_BIGINT</TD>
+		<TD ALIGN="LEFT">Extended</TD>
+		<TD ALIGN="LEFT">No equivalent</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_REAL</TD>
+		<TD ALIGN="LEFT">Core</TD>
+		<TD ALIGN="LEFT">Single</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_FLOAT, SQL_DOUBLE</TD>
+		<TD ALIGN="LEFT">Core</TD>
+		<TD ALIGN="LEFT">Double</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_TIMESTAMP, SQL_DATE</TD>
+		<TD ALIGN="LEFT">Extended</TD>
+		<TD ALIGN="LEFT">DateTime</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_TIME</TD>
+		<TD ALIGN="LEFT">Extended</TD>
+		<TD ALIGN="LEFT">Time</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_CHAR</TD>
+		<TD ALIGN="LEFT">Minimum</TD>
+		<TD ALIGN="LEFT">String</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_VARCHAR</TD>
+		<TD ALIGN="LEFT">Minimum</TD>
+		<TD ALIGN="LEFT">String</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_BINARY</TD>
+		<TD ALIGN="LEFT">Extended</TD>
+		<TD ALIGN="LEFT">Binary</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_VARBINARY</TD>
+		<TD ALIGN="LEFT">Extended</TD>
+		<TD ALIGN="LEFT">Binary</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_LONGVARBINARY</TD>
+		<TD ALIGN="LEFT">Extended</TD>
+		<TD ALIGN="LEFT">Binary</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_LONGVARCHAR</TD>
+		<TD ALIGN="LEFT">Minimum</TD>
+		<TD ALIGN="LEFT">String</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_DECIMAL</TD>
+		<TD ALIGN="LEFT">Core</TD>
+		<TD ALIGN="LEFT">Refer to Table 6.3.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQL_NUMERIC</TD>
+		<TD ALIGN="LEFT">Core</TD>
+		<TD ALIGN="LEFT">Refer to Table 6.3.</TD>
+	</TR>
+</TABLE>
+</P>
+<P>As reflected in Table 6.2, special handling is required for the SQL_DECIMAL and
+SQL_NUMERIC data types. Both data types supply a scale and precision to determine
+what range of numbers the fields can handle. Using this scale and precision, you
+can make a good determination of variable scope for Visual Basic. In addition, there
+are two exceptions to this rule because SQL Server can employ a Currency field. ODBC
+interprets this with two different scope and precision combinations, as mentioned
+in Table 6.2.</P>
+<P>
+<H4>Table 6.2. Numeric precision conversion between ODBC and Visual Basic.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>SCALE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Precision</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Visual Basic Data Type</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">0</TD>
+		<TD ALIGN="LEFT">1 to Integer</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">0</TD>
+		<TD ALIGN="LEFT">5 to 9</TD>
+		<TD ALIGN="LEFT">Long</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">0</TD>
+		<TD ALIGN="LEFT">10 to 15</TD>
+		<TD ALIGN="LEFT">Double</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">0</TD>
+		<TD ALIGN="LEFT">16+</TD>
+		<TD ALIGN="LEFT">Text</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">1 to 3</TD>
+		<TD ALIGN="LEFT">1 to 15</TD>
+		<TD ALIGN="LEFT">Double</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">1 to 15</TD>
+		<TD ALIGN="LEFT">Double</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">16+</TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">10 or 19</TD>
+		<TD ALIGN="LEFT">Currency (SQL Server only)</TD>
+		<TD ALIGN="LEFT"></TD>
+	</TR>
+</TABLE>
+</P>
+<P>ODBC data types correspond to the SQL grammar level that a driver and database
+support, similar to the conformance levels that ODBC's functions support. These are
+the SQL grammar conformance levels:</P>
+
+<UL>
+	<LI><I>Minimum:</I> This is the minimum SQL grammar that a driver must support to
+	be compliant with the ODBC standard. Only three data types are specified: SQL_CHAR,
+	SQL_VARCHAR, and SQL_LONGVARCHAR. You won't be limited to these data types very often.
+	<P>
+	<LI><I>Core:</I> The Core SQL grammar expands the number of data types available
+	to a far more workable number, and it includes many of the more common variable types.
+	<P>
+	<LI><I>Extended:</I> The Extended SQL grammar expands the list of variables to all
+	the data types listed in Table 6.1. As with the Minimum level, you won't see a database
+	that supports the full Extended level very often.
+</UL>
+
+<P>A database is not necessarily required to support all the data types at a given
+level, so an application should check to see what variables are available for a given
+data source by using the SQLGetTypeInfo function (an ODBC Conformance Level 1 function).
+See How-To 6.5 for a discussion of retrieving such information about an ODBC database.</P>
+<P><B>ODBC Catalog Functions and Search Pattern Arguments</B></P>
+<P>There are certain ODBC functions, called catalog functions, that return information
+about a data source's system tables or catalog. Most of the catalog functions are
+Conformance Level 2, so you probably won't encounter them when using Visual Basic
+and ODBC. Four of the functions, however, are Level 1: SQLColumns, SQLSpecialColumns,
+SQLStatistics, and SQLTables.</P>
+<P>All the catalog functions allow you to specify a search pattern argument, which
+can contain the metacharacters underscore (_) and percent (%), as well as a driver-defined
+escape character. A <I>metacharacter </I>in this context is nothing more than a character
+that has a meaning other than just the character itself. Following is a detailed
+explanation of the search pattern characters:</P>
+
+<UL>
+	<LI>Use the underscore to represent any single character. This is equivalent to an
+	MS-DOS question mark (?) when searching for files.
+	<P>
+	<LI>Use the percent character to represent any sequence of zero or more characters.
+	This is analogous to the asterisk (*) in MS-DOS.
+	<P>
+	<LI>The driver-defined escape characters allow you to search for one of the two metacharacters
+	as a literal character (that is, to search for a string with either an underscore
+	or a percent character in the string).
+	<P>
+	<LI>All other characters represent themselves.
+</UL>
+
+<P>For example, to search for all items with a <I>P</I>, use the search pattern argument
+%P%. To search for all table names having exactly four characters with a <I>B</I>
+in the second and last positions, use _B_B. Similarly, if the driver-defined escape
+character is a backslash, use %\_\% to find all strings of any length with an underscore
+in the second-to-last position and a percent in the last position of the string.</P>
+<P>The driver-defined escape character can be found for any ODBC driver using the
+SQLGetInfo technique demonstrated in How-To 6.6.</P>
+<P><B>Miscellaneous ODBC Topics</B></P>
+<P>This section covers a few miscellaneous details that will make using ODBC and
+Visual Basic together a bit easier.</P>
+
+<UL>
+	<LI>Some ODBC databases support default drivers and data sources. A [Default] section
+	in ODBCINST.INI (default driver) and/or ODBC.INI (default data source) is created
+	during installation of the ODBC system or driver. In general, you won't want a default
+	driver; you usually want to connect with one and only one specific data source and/or
+	driver.
+	<P>
+	<LI>If the driver uses a translator, it will be installed with the driver, and the
+	usage should be transparent to you and your Visual Basic application.
+	<P>
+	<LI>Get the <I>Microsoft ODBC 3.0 Programmer's Reference and SDK Guide</I>! If you
+	are going to do any continuing work with ODBC at almost any level, buy the SDK. It
+	has detailed references for all the functions, including various functions for installing
+	ODBC drivers and systems. It also comes with some very useful debugging tools, including
+	ODBC Test, which lets you interactively test various function calls, and ODBC Spy,
+	which gives you a detailed record of which ODBC calls are being made. ODBC Spy also
+	provides the capability to emulate either an application or a driver, letting you
+	test applications without a driver. The SDK is highly recommended, and it is a must-have
+	if you plan to develop your own drivers.
+	<P>
+	<LI>In Windows NT and Windows 95, information on ODBC data sources, configuration,
+	and tuning parameters is stored in the system registry, as is configuration information
+	for Visual Basic. You should never need to modify that by hand, but if you do, at
+	least now you know where to look.
+	<P>
+	<LI>Any default installation of ODBC installs the ODBC Administrator. This is a handy
+	utility you can use to set up drivers and data sources, as well as to get information
+	about installed ODBC drivers. Everything you can do with the ODBC Administrator you
+	can do in code with the ODBC API, but the utility simplifies some of the tasks.
+</UL>
+
+<P><B>Assumptions</B></P>
+<P>This chapter assumes some things about what you are doing and the tools you are
+using:</P>
+
+<UL>
+	<LI>You are using ODBC version 2 or later. Many things changed between versions 1
+	and 2. You can take advantage of these changes even if you are working with a driver
+	that supports only a previous version, as long as ODBC itself is the latest version.
+	<P>
+	<LI>ODBC is installed on your development system. It would be quite difficult to
+	develop ODBC applications with no access to ODBC.
+	<P>
+	<LI>There are no heavy-duty data conversion issues. Most data conversions, if they
+	go beyond those listed in Table 6.1 and 6.2, require some very specialized processing
+	and will be very unusual. If you have such a situation, <I>definitely </I>get the
+	ODBC SDK.
+</UL>
+
+<H4>6.1 Use the ODBC Administrator to Maintain Data Sources</H4>
+<P>Under Windows 95 and Windows NT, ODBC data sources, explained in greater detail
+in this How-To, have become more complex entities, especially when it comes to issues
+such as security and network administration. This How-To explains how a simple Control
+Panel applet turns the administration of these data sources into a simple task.</P>
+<P>
+<H4>6.2 Use ODBC with the Visual Basic Data Control</H4>
+<P>Using Visual Basic's Data control to access ODBC demonstrates the power of both
+Visual Basic and ODBC. Accessing databases through ODBC without using the ODBC API
+is a simple matter, whether that data is on your own hard disk in a format Visual
+Basic doesn't directly support or half a world away on your network. This How-To
+shows how easy it is to make the connection.</P>
+<P>
+<H4>6.3 Create an ODBC-Accessible Data Source by Using RegisterDatabase</H4>
+<P>Even though ODBC might install the driver you need for your application, a data
+source name must exist before the database can be used by any application. The RegisterDatabase
+method provides a way to enter a new data source if one doesn't exist (or even if
+it does!) so that your application can use the database through ODBC.</P>
+<P>
+<H4>6.Prevent the Login Dialog Box from Being Displayed When I Open an ODBC Database</H4>
+<P>As long as you have the correct and complete connect string to feed to ODBC, you
+should be able to connect with any database to which you have access. But how do
+you discover the exact connect string for each database? ODBC pro-vides the functionality
+and Visual Basic makes it easy to use, as discussed in this How-To.</P>
+<P>
+<H4>6.5 Determine What Services an ODBC Server Provides</H4>
+<P>Even though ODBC makes connecting with databases through a standard interface
+much easier, and provides some of the services itself, it still relies on database
+systems to do most of the work. Not all databases are created equal, with equal capabilities.
+You'll discover how you can find out what services a database provides, all within
+your applications.</P>
+<P>
+<H4>6.6 Use ODBCDirect to Connect to Database Servers</H4>
+<P>ODBCDirect, like DAO (Data Access Objects) and RDO (Remote Data Objects), is a
+way to access databases. Unlike DAO and RDO, however, ODBCDirect is just a thin,
+but well-behaved, wrapper around the ODBC API. This How-To shows the first step in
+using this new technology by connecting to a data source and providing detailed information
+on the ODBCDirect Connection object.</P>
+<P>
+<H2>6.1 How do I...</H2>
+<H3><A NAME="Use the ODBC Administrator ..."></A><B>Use the ODBC Administrator to
+maintain data sources?</B></H3>
+<P><B>Problem</B></P>
+<P>My Visual Basic program needs access to a Microsoft SQL Server database on another
+computer. How do I use the ODBC Administrator to connect to that database?</P>
+<P><B>Technique</B></P>
+<P>Visual Basic is a very powerful tool when it comes to quick database application
+development. At times, however, Visual Basic's native database tools are simply not
+enough, such as whenever a connection to SQL Server or Oracle databases is needed.
+ODBC makes the gap between Visual Basic and these databases easy to navigate by providing
+a way to bridge the two resources with an ODBC connection.</P>
+<P>ODBC connections usually start with a data source, an alias used by ODBC to refer
+an ODBC driver to a specified database so that an ODBC connection can happen. Although
+you can create an ODBC data source with code, it's much easier to use the ODBC Administrator,
+a tool specifically designed to perform data source-related tasks.</P>
+<P>Data sources under Windows 95 and Windows NT are divided into three major types,
+as explained in Table 6.3. These three types make a difference in your application;
+the user DSN, for example, won't work with another user logged in to the same machine.
+The system DSN assumes that all users on the same machine have security access, and
+the file DSN is used on a case-by-case basis.</P>
+<P>
+<H4>Table 6.3. Data source name types.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>TYPE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Purpose</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">System DSN</TD>
+		<TD ALIGN="LEFT">This DSN is usable by all users on a workstation, regardless of user security.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">User DSN</TD>
+		<TD ALIGN="LEFT">The default, this DSN is usable only by certain users on a workstation (usually the
+			user who created it).</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">File DSN</TD>
+		<TD ALIGN="LEFT">A &quot;portable&quot; data source, this DSN can be very useful with network-based
+			applications. The DSN can be used by any user who has the correct ODBC driver(s)
+			installed.</TD>
+	</TR>
+</TABLE>
+</P>
+<P><B>Steps</B></P>
+<P>The ODBC Administrator is a Control Panel applet, so the first step is to locate
+the ODBC Administrator icon.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Double-click your Control Panel icon. You should see a window appear
+	similar to the one shown in Figure 6.2. In that window, you should find an icon like
+	the one highlighted in the figure.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('06fig02.gif')"><B>Figure 6.2.</B></A><B> </B><I>The
+Control Panel, with ODBC Administrator highlighted.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>2. </B>Double-click the ODBC Administrator icon (usually titled &quot;32bit
+	ODBC&quot;) to start the Administrator applet. A dialog box similar to the one shown
+	in Figure 6.3 should appear, displaying several property pages. The first three property
+	pages deal with DSN entries, with each page representing a level of security. The
+	User DSN property page provides ODBC access for a data source to a given user on
+	a given workstation only; the System DSN allows ODBC access for a data source to
+	a given workstation only, but to any user on that workstation. A File DSN entry is
+	a file-based data source, usable by any and all who have the needed ODBC drivers
+	installed, and it does not need to be local to a user or a workstation
+	<P>
+	<DT></DT>
+	<DD>Also, you'll notice three more property pages. The ODBC Drivers property page
+	allows the display of all installed ODBC drivers, including the version and file
+	information. The Tracing property page offers the capability of tracking all ODBC
+	activity for a given data source and saving it to a log file for debugging purposes.
+	And, last of all, the About property page gives version and file information on the
+	core components that compose the ODBC environment.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>For your needs, you are going to create a User DSN. Click the Add button
+	to start the process of adding a new data source. The first dialog box that appears
+	gives you the list of available ODBC drivers from which to choose. One thing you'll
+	want to note is the helpful information on each dialog box and property page, summarizing
+	its purpose.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('06fig03.gif')"><B>Figure 6.3.</B></A><B> </B><I>ODBC
+Data Source Administrator property pages.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>4. </B>Select the Microsoft Access Driver from the list of drivers and then
+	click the Finish button. The next step is to provide the database-related infor-mation
+	for the data source, and to that end a dialog box appears, similar to that displayed
+	in Figure 6.4. The dialog box that appears is driver specific; that is, if you had
+	selected a different ODBC driver, you would probably have gotten a dialog box with
+	a completely different set of properties.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Type Biblio in the Data Source Name field. Then click the Select button
+	in the Database frame and choose your copy of BIBLIO.MDB. Then click the OK button.
+	<P>
+</DL>
+
+<P><B>How It Works</B></P>
+<P>Based on your selections, the ODBC Administrator adds entries to the Registry
+(or to a file, if you are creating a File DSN.) These Registry entries are vital
+to the ODBC drivers that require them; in many cases, the entries can determine not
+only the database that the driver will access but also how and by whom it will be
+accessed. The only other recommended method for adding ODBC information to the Registry
+is the RegisterDatabase method, which is covered later in this chapter. Avoid attempting
+to manually edit ODBC driver Registry entries without first researching the settings
+to ensure that you fully understand how they work.</P>
+<P><A HREF="javascript:popUp('06fig04.gif')"><B>Figure 6.4.</B></A><B> </B><I>The
+ODBC Microsoft Access 97 Setup dialog box.</I></P>
+<P><B>Comments</B></P>
+<P>It is important to emphasize the fact that each ODBC driver's setup dialog box
+will be different; if you're creating data sources by hand and using only one driver,
+this isn't a difficult thing to support. If, however, you really want to ensure a
+wide degree of compatibility for your programs, you might want to use the method
+detailed in How-To 6.3 to create your data sources. This technique uses the RegisterDatabase
+method to create data sources, and it can support a wide variety of options (even
+running &quot;silently,&quot; displaying nothing to the user, if all the information
+needed for the data source is supplied.)</P>
+<P>
+<H2>6.2 How do I...</H2>
+<H3><A NAME="Use ODBC with the Visual Basic ..."></A><B>Use ODBC with the Visual
+Basic Data control?</B></H3>
+<P><B>Problem</B></P>
+<P>I'm using the Visual Basic Data control to process and display data in my application.
+However, the data I need to access is on the network, in a format that Visual Basic
+doesn't directly support. How can I get the data and display it in a form? Can I
+use the Data control?</P>
+<P><B>Technique</B></P>
+<P>The steps necessary to bind the Visual Basic Data control and other bound controls
+are simple--not that much different from connecting to one of Visual Basic's native
+data formats using the Jet database engine. This How-To shows exactly what is necessary
+to set up the controls to make the connection.</P>
+<P><B>Steps</B></P>
+<P>Open the Person.VBP project file. Modify the project to use an existing ODBC data
+source, or use the database on the CD-ROM included with this book. Having your OBDC
+source point to that database might make this How-To easier to follow. Run the project.
+Use the Visual Basic Data control's navigation buttons at the bottom of the form,
+as shown in Figure 6.5, to move through the database, and then click Quit when you
+are finished.</P>
+<P><A HREF="javascript:popUp('06fig05.gif')"><B>Figure 6.5.</B></A><B> </B><I>Chapter
+6.2 example.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project, name it Person.VBP, and add a new form with property
+	settings as listed in Table 6.4. Save the form as PERSON.FRM.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    `Set up the form and connect to data source
+    Dim dbfTemp As Database, recTemp As Recordset
+    `Connect to the database
+    `Change this to your data source
+    dtaData.Connect = &quot;ODBC;DSN=Personnel Database&quot;
+    `Set the Data control's RecordSource property
+    `Change this to your table name
+    dtaData.RecordSource = &quot;SELECT * FROM Contacts&quot;
+    `Connect each of the text boxes with the appropriate fieldname
+    txtContact.DataField = &quot;Contact&quot;
+    txtName.DataField = &quot;Name&quot;
+    txtAddress1.DataField = &quot;Addr1&quot;
+    txtAddress2.DataField = &quot;Addr2&quot;
+    txtCity.DataField = &quot;City&quot;
+    txtState.DataField = &quot;State&quot;
+    txtZip.DataField = &quot;Zip&quot;
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+
+<BLOCKQUOTE>
+	<H4>Table 6.4. Objects and properties for PERSON.FRM.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmODBC</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Chapter 6.2 Example</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">StartUpPosition</TD>
+		<TD ALIGN="LEFT">2 - CenterScreen</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdQuit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;Quit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Default</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtZip</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtState</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtCity</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtAddress2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtAddress1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtName</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtContact</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DataSource</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Data</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">dtaData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Align</TD>
+		<TD ALIGN="LEFT">2 - Align Bottom</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Personnel Database</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">RecordSource</TD>
+		<TD ALIGN="LEFT">&quot;&quot;</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">DefaultType</TD>
+		<TD ALIGN="LEFT">1 - UseODBC</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPerson</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Zip:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">1 - Right Justify</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">5</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPerson</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">1 - Right Justify</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">State:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">4</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPerson</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">1 - Right Justify</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">City:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPerson</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">1 - Right Justify</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Address:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPerson</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">1 - Right Justify</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Company:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblPerson</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">1 `Right Justify</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Contact:</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>2. </B>Add the following code to the declarations section of the form. To
+	avoid naming problems, Option Explicit tells Visual Basic to make sure that you declare
+	all variables and objects before using them.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the form's Load event procedure. After centering
+	the form, set the Connect and RecordSource properties of the Data control, as well
+	as the DataField properties of the text boxes that will hold the fields of the database.
+	This step links each needed field with the text boxes that hold each record's data.
+	<P>
+	<DT></DT>
+	<DD>Change the data source name in the Connect property statement indicated to an
+	available name in ODBC--or leave the DSN part of the Connect string out, and ODBC
+	will prompt you for the information it needs. Also, set the SQL statement to a table
+	in that data source, and change the text boxes to actual fields in that table.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code to the Click event of the cmdQuit command button.
+	This is the exit point that terminates the program.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdQuit_Click()
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The preceding code is all that is required to use ODBC with Visual Basic's Data
+control. With the built-in navigation controls, you can move about the database.</P>
+<P>Several important details are involved in setting up this procedure for use with
+ODBC. Note that in this How-To most of the setup and initialization is done in code,
+but you can easily set the properties of the Data control and bound text boxes when
+designing the form and then simply load the form. In this case, Visual Basic will
+make the connection for you and display the data directly, and you won't need any
+code in the form's Load event. To ensure that this happens smoothly, follow the steps
+outlined here:</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Leave the Data control's DatabaseName property blank to use an ODBC
+	data source. If you enter a database name here, Visual Basic attempts to open the
+	database using its native data formats.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Set the Connect property of the Data control to the connect string
+	that ODBC needs to connect to the database. This is the same connect string that
+	other How-To's in this chapter use for defining a QueryDef, in RegisterDatabase,
+	and in setting up other uses of ODBC directly. You can also simply set this property
+	to ODBC, and ODBC will prompt the user at runtime for information it needs in order
+	to make the connection.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Set the Data control's RecordSource property to a SQL statement or
+	the name of a table you want to use to select the data from the database. Any SQL
+	statement that creates a resultset can be used by Visual Basic to populate the bound
+	text boxes.
+	<P>
+	<DT></DT>
+	<DD><B>4. </B>Set each text box's DataSource to the name of the Data control--dtaData
+	in this example. This is the normal Visual Basic way of binding a control to a Data
+	control. Remember too that you can have as many Data controls on a form as you want,
+	with different sets of controls bound to different bound controls and, therefore,
+	to different databases.
+	<P>
+	<DT></DT>
+	<DD><B>5. </B>Set the Data control's DefaultType to 1 - UseODBC. If this property
+	is not set, trying to access an ODBC database with the Data control will cause Visual
+	Basic to hang.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Lastly, set each text box's DataField property to the particular field
+	name in the resultset of data records. This might be the name of the field in the
+	database itself, but it is actually the name of the field that is returned in the
+	resultset. The two can be the same, but the SQL statement can rename the fields or
+	even return calculated fields that don't exist in the database.
+	<P>
+</DL>
+
+<P><B>Comments</B></P>
+<P>The method for ODBC access presented previously is usually the first, and simplest,
+method employed by programmers when delving into the ODBC library. You will find,
+however, that for more complex applications, your needs will quickly outstrip the
+capabilities of the Data control. For a quick application or basic database access,
+though, this is a great way to start.</P>
+<P>
+<H2>6.3 How do I...</H2>
+<H3><A NAME="Create an ODBC-accessible data ..."></A><B>Create an ODBC-accessible
+data source by using </B>RegisterDatabase<B>?</B></H3>
+<P><B>Problem</B></P>
+<P>ODBC provides a program, ODBC Administrator, to make manual changes to a data
+source, but how can I install a new ODBC data source name using code? I can't make
+the users of the application do it, and I can't expect them to have the information
+to give to ODBC. Does this mean that I have to make direct calls to the ODBC API?</P>
+<P><B>Technique</B></P>
+<P>The RegisterDatabase method of Visual Basic is a quick and easy way to register
+a new data source with ODBC. The method takes four arguments: dbname, driver, silent,
+and attributes, which are discussed more fully later in this section. After a data
+source name is created, it becomes available to any application using ODBC, whether
+it's a Visual Basic application or not.</P>
+<P><B>Steps</B></P>
+<P>Open the REGISTER.VBP file. The ODBC Data Sources form loads, shown in Figure
+6.6, getting the list of currently installed drivers and data source names through
+direct calls to the ODBC system. Enter a name for the new data source, an optional
+description, and the driver that ODBC will use to connect with the database. Click
+the New Data Source command button to add it to the ODBC system. If any additional
+information is necessary to make a connection to the database, another dialog box
+appears, prompting for any missing items. (Figure 6.4 shows the dialog box for adding
+a Microsoft Access data source.) The list of data sources then updates to show a
+current list of installed data sources.</P>
+
+<DL>
+	<DT></DT>
+	<DD><B>1. </B>Create a new project named REGISTER.VBP. Add the form ODBCErrors.FRM
+	and the code module ODBC API Declarations.BAS, using Visual Basic's File | Add menu
+	command. The code module contains all the declarations needed for the ODBC API functions
+	and the constants used in many of the functions, and the form makes it easier to
+	examine ODBC errors.
+	<P>
+</DL>
+
+<P><A HREF="javascript:popUp('06fig06.gif')"><B>Figure 6.6.</B></A><B> </B><I>The
+project's ODBC Data Sources form, displaying the data source list.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>2. </B>Make sure that the Microsoft Common Controls components are available
+	to this project. To add, select the Project | Components menu item. When the dialog
+	box appears, look for a component titled Microsoft Windows Common Controls 6.0, and
+	ensure that it is checked. Click OK. The ODBCErrors.FRM form uses the TreeView control
+	to display ODBC errors in a hierarchical fashion.
+	<P>
+	<DT></DT>
+	<DD><B>3. </B>Name the new project's default form frmODBC and save the file as REGISTER.FRM.
+	Add the controls shown in Figure 6.6, setting the properties as given in Table 6.5.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 6.5. Objects and properties for REGISTER.FRM.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmODBC</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">ODBC Data Sources</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdCreateDSN</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;New Data Source</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Frame</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">fraRegister</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">New Data Source</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtDSNdesc</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtDSNname</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ComboBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstODBCdrivers</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Sorted</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Style</TD>
+		<TD ALIGN="LEFT">2 - Dropdown List</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblRegister</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">1 `Right Justify</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">2</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Select ODBC Driver:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblRegister</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">1 `Right Justify</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Description:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblRegister</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Alignment</TD>
+		<TD ALIGN="LEFT">1 `Right Justify</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Name:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdQuit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;Quit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstODBCdbs</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Sorted</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">TabStop</TD>
+		<TD ALIGN="LEFT">0 `False</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblRegister</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">3</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Installed ODBC Data Sources:</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Put the following code in the declarations section of frmODBC. Option
+	Explicit tells Visual Basic to check the variables for you. The dynamic arrays hold
+	the information about installed drivers and data sources retrieved from calls to
+	the ODBC API.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+`Dynamic arrays to hold data
+Dim strDBNames() As String
+Dim strDBDescs() As String
+Dim strDvrDescs() As String
+Dim strDvrAttr() As String</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the following code to the Load event of frmODBC. This code handles
+	all the setup chores, including centering the form on the screen and allocating an
+	ODBC environment handle. Each ODBC application that calls the API needs to have one,
+	and only one, environmental handle. ODBC keeps track of what information goes where
+	through the use of this handle, along with the connection and statement handles.
+	The actual work of extracting the lists of data sources and drivers is handled in
+	other procedures in this form, but called from here.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    `Allocate the ODBC environment handle
+    If SQLAllocEnv(glng_hEnv) = SQL_SUCCESS Then
+        `Load the current list of data sources to list box
+        GetODBCdbs
+        `Get the list of installed drivers
+        GetODBCdvrs
+        lstODBCdrivers.ListIndex = 0
+        frmODBC.Show
+        txtDSNname.SetFocus
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Insert these procedures into frmODBC. The first procedure, cmdCreateDSN_Click,
+	calls the procedure that validates data and actually creates the data source name
+	in ODBC. The second procedure, cmdQuit_Click, creates an exit point in the application.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdCreateDSN_Click()
+    CreateNewDSN
+End Sub
+Private Sub cmdQuit_Click()
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the following subroutine to frmODBC. Here is the first of two subroutines
+	that extract the existing lists of data sources and drivers from ODBC. GetODBCdbs
+	obtains the list of data source names and the descriptions of each, employing a function
+	named ODBCDSNList in the ODBC API Declarations.BAS as a wrapper for the SQLDataSources
+	API call. The ODBCDSNList function does all the work; the Do While loop extracts
+	one data source name at a time with a call to SQLDataSources. If no error is returned
+	from the function call, the data source name and its description are concatenated
+	and added to the lstODBCdbs list box, showing all the data sources that are already
+	installed. When the last data source has been returned to this function, the SQLDataSources
+	function returns the SQL_NO_DATA_FOUND result, and the loop terminates. The function
+	returns a variant array, if successful, or nothing, if unsuccessful.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub GetODBCdbs()
+    Dim varTemp As Variant, I As Integer
+    lstODBCdbs.Clear
+    `Call the ODBCDSNList function in ODBC API Declarations.BAS.
+    varTemp = ODBCDSNList(glng_hEnv, True)
+    `If the ODBCDSNList function returns an array, populate
+    `the list box.
+    If IsArray(varTemp) Then
+        For I = LBound(varTemp) To UBound(varTemp)
+            lstODBCdbs.AddItem varTemp(I)
+        Next
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>The next function, GetODBCdvrs, gets a list of the drivers that ODBC
+	has installed. Put the following code in frmODBC. This function operates very similarly
+	to GetODBCdbs, calling a function named ODBCDriverList, which loops through calls
+	to the ODBC SQLDrivers function, returning one driver name at a time, and returning
+	the names and descriptions in a local variant array to be added to the cboODBCdrivers
+	drop-down list.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub GetODBCdvrs()
+    Dim varTemp As Variant, I As Integer
+    cboODBCdrivers.Clear
+    varTemp = ODBCDriverList(glng_hEnv, True)
+    `If the ODBCDriverList function returns an array,
+    `populate the list box.  If not, let the user know.
+    If IsArray(varTemp) Then
+        For I = LBound(varTemp) To UBound(varTemp)
+            cboODBCdrivers.AddItem varTemp(I)
+        Next
+    Else
+        MsgBox &quot;No ODBC drivers installed or available.&quot;, _
+        vbExclamation
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Add the following code to frmODBC. The CreateNewDSN procedure sets
+	up and calls RegisterDatabase so that the new data source name is recorded in the
+	ODBC system. The procedure first checks to make sure that a name is entered in the
+	txtDSNname text box so that a descriptive name will be in the list (the description
+	is optional). If all is well, the procedure assembles the following set of variables
+	to pass to RegisterDatabase:
+	<P>
+</DL>
+
+
+<UL>
+	<LI>The new data source name
+	<P>
+	<LI>The driver to be used to connect to the physical data
+	<P>
+	<LI>Connection information
+</UL>
+
+
+<DL>
+	<DT></DT>
+	<DD>Before actually making the call to RegisterDatabase, the Visual Basic error handler
+	is set to go to the CantRegister error-handling routine if there is any problem registering
+	the data source. If there is an error, a MsgBox informs the user of what the trouble
+	is and continues the procedure--giving the user the opportunity to rectify any problems
+	and try again. If the error is anything other than error 3146, it is passed on to
+	the default Visual Basic error-handling routines.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Sub CreateNewDSN()
+    `Add a new data source name to the ODBC system
+    Dim strDSNname As String, strDSNattr As String, strDSNdriver _
+        As String
+    Dim intResult As Integer, intSaveCursor As Integer
+    If txtDSNname = &quot;&quot; Then
+        MsgBox &quot;You must enter a name for the new data source.&quot;
+        txtDSNname.SetFocus
+    Else
+        intSaveCursor = Screen.MousePointer
+        Screen.MousePointer = vbHourglass
+        `Format the arguments to RegisterDatabase
+        strDSNname = txtDSNname.text
+        strDSNattr = &quot;Description=&quot; &amp; txtDSNdesc.text
+        strDSNdriver = _
+            cboODBCdrivers.List(cboODBCdrivers.ListIndex)
+        On Error GoTo CantRegister
+            `Trap any errors so we can respond to them
+            DBEngine.RegisterDatabase strDSNname, strDSNdriver, _
+            False, strDSNattr
+        On Error GoTo 0
+        `Now, rebuild the list of data source names
+        GetODBCdbs
+        Screen.MousePointer = intSaveCursor
+    End If
+    Exit Sub
+CantRegister:
+    If Err.Number = 3146 Then
+        `ODBC couldn't find the setup driver specified
+        `for this database in ODBCINST.INI.
+        MsgBox &quot;Cannot find driver installation DLL.&quot;, vbCritical
+        Resume Next
+    Else
+        MsgBox Err.Number, vbExclamation
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Add this code in the Unload event of frmODBC. This code makes cleanup
+	calls to ODBC functions, releasing the memory and handles allocated to make the calls
+	to the ODBC API. The first call is to ODBCDisconnectDS, which releases and then frees
+	the connection handle and memory. The second call, SQLFreeEnv, releases the ODBC
+	environment handle and memory.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Unload(Cancel As Integer)
+    Dim intResult As Integer
+    `Clean up the ODBC connections that we allocated
+    `and opened.
+    intResult = ODBCDisconnectDS(glng_hEnv, glng_hDbc, glng_hStmt)
+    intResult = SQLCFreeEnv(ghEnv)
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>By providing the RegisterDatabase method, Visual Basic takes care of many details
+involved in establishing a new data source in ODBC. This is the syntax for the method:</P>
+
+
+<BLOCKQUOTE>
+	<PRE>DBEngine.RegisterDatabase <I>dbname, driver, silent, attributes</I></PRE>
+
+</BLOCKQUOTE>
+
+<PRE><I></I></PRE>
+<P>The first argument is <I>dbname</I>. The Visual Basic Help file describes <I>dbname</I>
+as &quot;a string expression that is the name used in the OpenDatabase method that
+refers to a block of descriptive information about the data source.&quot; All true,
+of course, but <I>dbname</I> is just a descriptive name that you chose to call the
+data source. The name could reflect the origins of the data (such as being from an
+Oracle database) or the nature of the data (such as Corporate Marketing Research
+Data).</P>
+<P>The <I>driver</I> argument is the name of the ODBC driver used to access the database.
+This is not the same as the name of the DLL file comprising the driver, but is instead
+a short, descriptive name that the author of the driver gave to it. SQL Server, Btrieve
+data, and Oracle are names of widely used drivers.</P>
+<P>The third argument is <I>silent</I>. No, the argument isn't silent, but it is
+your opportunity to control whether ODBC prompts the user for more information when
+ODBC doesn't have enough information to make the requested connection. The options
+are True for no dialog boxes and False for ODBC to prompt for the missing information.
+If <I>silent</I> is set to True and ODBC can't make the connection because of a lack
+of information, your application will need to trap the error that will occur.</P>
+<P>The fourth argument is <I>attributes</I>. Each database system you connect to
+has its own requirements for the information it needs in order to make a connection.
+For some items there is a default; for others there isn't. The more attributes you
+specify here, the fewer the user will need to specify. The <I>attributes</I> string
+is the string returned from the Connect property of the Data control or the Database,
+QueryDef, or TableDef objects after a connection is made. How-To 6.5 discusses this
+information in more detail and shows a way to easily obtain the exact information
+needed to connect with a particular database. In fact, this How-To and How-To 6.5
+give you all the information you need to make an ODBC connection.</P>
+<P>Essentially, all RegisterDatabase does is add information to the ODBC.INI file
+usually located in your \WINDOWS directory--with some validation routines thrown
+in by ODBC. It checks to make sure that you provide all the information needed to
+make a connection and that the database is out there someplace and is accessible.</P>
+<P>One error that might be returned from ODBC when you use the RegisterDatabase method
+is The configuration DLL ([<I>file name</I>]) for the [<I>driver name</I>] could
+not be loaded. When you request that a new data source be established, ODBC looks
+in an ODBCINST.INI file, located in the same place as the ODBC.INI file, for the
+name of the DLL that contains the setup routines for that driver. Here are some sample
+lines for different drivers (there is additional information in each section for
+each driver):</P>
+
+
+<BLOCKQUOTE>
+	<PRE> [Microsoft Access Driver (*.mdb)]
+Driver=C:\WINDOWS\SYSTEM\odbcjt16.dll
+Setup=C:\WINDOWS\SYSTEM\odbcjt16.dll
+[Microsoft Dbase Driver (*.dbf)]
+Driver=C:\WINDOWS\SYSTEM\odbcjt16.dll
+Setup=C:\WINDOWS\SYSTEM\oddbse16.dll
+[SQL Server Driver]
+Driver=C:\WINDOWS\SYSTEM\sqlsrvr.dll
+Setup=C:\WINDOWS\SYSTEM\sqlsrvr.dll</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P>As you can see, sometimes the setup driver is the same as the driver used for
+data access, but more commonly the two are different. If that driver is not available
+at the location specified, ODBC returns an error for the RegisterDatabase call.</P>
+<P><B>Comments</B></P>
+<P>One of the nice things about using ODBC is that it goes out of its way to give
+you the information you need in order to make the connections to databases. In this
+How-To, you have seen how ODBC prompts with its own dialog box if you don't give
+it enough information to make the connection. This is one area in which using Visual
+Basic to handle the conversation with ODBC doesn't hide any details from you. You'll
+see another example of using this ODBC feature to good advantage in How-To 6.5, in
+which the dialog box is used to construct connect strings that you can use directly
+in an application.</P>
+<P>Perhaps, to state the obvious, it is necessary for the ODBC driver to be installed
+before RegisterDatabase is used. If this method only added entries to the .INI file,
+the driver wouldn't need to be installed before a data source was created using that
+driver. But because ODBC does some validation from Visual Basic in response to this
+method, the driver needs to be available along with the information stored in ODBC.INI
+and ODBCINST.INI by the driver setup program.</P>
+<P>In response to the availability of RegisterDatabase in Visual Basic, it is logical
+to wonder whether there is an equivalent UnRegisterDatabase or DeleteDatabase. Alas,
+there is not. For that you would need to make a call to an ODBC Installer DLL function,
+SQLConfigDataSource, available since ODBC version 1.0. Some other interesting installation
+functions that were introduced with version 2.0 (SQLCreateDataSource, SQLGetAvailableDrivers,
+SQLGetInstalledDrivers, and SQLManageDataSources) give finer control over the ODBC
+setup. Driver manufacturers use these and other functions to install drivers and
+ODBC itself if necessary, but any application can use them. Information about these
+functions is available in the <I>Microsoft ODBC 3.0 Programmer's Reference and SDK
+Guide</I>.</P>
+<P>Another Visual Basic property that is useful in connection with RegisterDatabase
+is the Version property. Version is a property of both the Database object and the
+DBEngine object. When returned from the Database object, Version identifies the data
+format version of the object, usually as a major and minor version number, such as
+4.03. This gives you one more piece of information about the different components
+making up your applications.</P>
+<P>
+<H2>6.How do I...</H2>
+<H3><A NAME="Prevent the login dialog box ..."></A><B>Prevent the login dialog box
+from being displayed when I open an ODBC database?</B></H3>
+<P><B>Problem</B></P>
+<P>I'm trying to use an ODBC driver to open a data source that is on the network,
+but the driver documentation is not very helpful regarding the information needed
+to make a connection. I need my application to make the connection (if it is at all
+possible) without requiring users to make decisions or respond to dialog boxes. How
+can I get the right connect string without wasting time by guessing? If the connection
+can't be made, why not?</P>
+<P><B>Technique</B></P>
+<P>As long as you are able to tell Visual Basic that you want to make some sort of
+connection through ODBC, all you need to do is make a call to Visual Basic's OpenDatabase
+method with certain default arguments. ODBC responds by prompting for information
+about what data source you want (from those data sources installed on the system).
+Then you can define a temporary QueryDef, make the connection, and examine the Visual
+Basic Connect property. The Connect property at that point contains the fully formed
+connect string required to make a connection to that data source. The string stored
+in the Connect property can be copied and used directly in future attempts to connect
+to the database.</P>
+<P><B>Steps</B></P>
+<P>Open and run the CONNECT.VBP Visual Basic project file. The Retrieve ODBC Connect
+String window opens, as shown in Figure 6.7. Click on the Connect to Data Source
+command button, and the ODBC SQL Data Sources window appears, prompting you to select
+an installed data source name. Visual Basic and ODBC obtain from that data source
+a list of available tables and put them in the Tables Available list box on the main
+form. Either double-click on one of the tables or select one and click the Get Connect
+String command button. The application establishes a connection to that database
+table and returns the complete connect string, placing it in the Connect String text
+box, as shown in Figure 6.8. Click the Copy Connect String command button to put
+the string on the Windows clipboard, and then paste it into your application.</P>
+<P><A HREF="javascript:popUp('06fig07.gif')"><B>Figure 6.7.</B></A><B> </B><I>The
+project's main form on startup.</I></P>
+<P><A HREF="javascript:popUp('06fig08.gif')"><B>Figure 6.8.</B></A><B> </B><I>The
+project's main form, after ODBC connect string retrieval.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project named CONNECT.VBP. Add the form ODBCErrors.FRM
+	and the code module ODBC API Declarations.BAS, using Visual Basic's File | Add menu
+	command. The code module contains all the declarations needed for the ODBC API functions
+	and the constants used in many of the functions.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Name the default form frmODBC, and save the file as CONNECT.FRM. Add
+	the controls as shown in Figure 6.7, setting the properties as listed in Table 6.6.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 6.6. Objects and properties for CONNECT.FRM.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmODBC</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Chapter 6.4 Example</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdCopyConnect</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Cop&amp;y Connect String</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Enabled</TD>
+		<TD ALIGN="LEFT">0 - False</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdGetConnect</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;Get Connect String</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Enabled</TD>
+		<TD ALIGN="LEFT">0 - False</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdQuit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;Quit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtConnect</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">MultiLine</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">ScrollBars</TD>
+		<TD ALIGN="LEFT">2 - Vertical</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">TabStop</TD>
+		<TD ALIGN="LEFT">False</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdConnect</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;Connect to Data Source</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstTables</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Sorted</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblConnect</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">0</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Connect String:</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblConnect</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Index</TD>
+		<TD ALIGN="LEFT">1</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;Tables Available:</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the declarations section of frmODBC. To avoid
+	naming problems, Option Explicit tells Visual Basic to make sure that you declare
+	all variables and objects before using them.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+`Module level globals to hold connection info
+Dim dbfTemp As Database, recTemp As Recordset</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add this code to the form's Load event. After the form is loaded, memory
+	and a handle for the ODBC environment and connection are allocated. If either of
+	these fails, there is no need to proceed, so the program is exited.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    `Log on to an ODBC data source
+    `First, allocate ODBC memory and get handles
+    Dim intResult As Integer
+    `Allocate the ODBC environment handle
+    If SQLAllocEnv(glng_hEnv) &lt;&gt; SQL_SUCCESS Then End
+    intResult = SQLAllocConnect(glng_hEnv, glng_hDbc)
+    If intResult &lt;&gt; SQL_SUCCESS Then
+        intResult = frmODBCErrors.ODBCError(&quot;Dbc&quot;, glng_hEnv, &amp; _
+        glng_hDbc, 0, intResult, &quot;Error allocating connection _
+             handle.&quot;)
+        End
+    End If
+    frmODBC.Show
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the following code to the Click event of cmdConnect. Before you
+	can get connection data, you need to select a data source name for the connection
+	information you want. For this procedure, let the built-in ODBC dialog boxes do the
+	work. The line
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Set dbfTemp = OpenDatabase(&quot;&quot;, False, False, &quot;ODBC;&quot;)</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD>tells Visual Basic to open a database but gives no information about which one,
+	other than it is an ODBC database. ODBC responds by opening its Select Data Source
+	dialog box for selection of a data source, as shown in Figure 6.9.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdConnect_Click()
+    `Connect to a data source and populate lstTables
+    Dim I As Integer
+    Dim strConnect As String
+    Dim tbfTemp As TableDef
+    Screen.MousePointer = vbHourglass
+    lstTables.Clear
+    On Error GoTo ErrHandler
+        Set dbfTemp = OpenDatabase(&quot;&quot;, False, False, &quot;ODBC;&quot;)
+    On Error GoTo 0
+    For Each tbfTemp In dbfTemp.TableDefs
+        lstTables.AddItem tbfTemp.Name
+    Next
+    Screen.MousePointer = vbDefault
+    If lstTables.ListCount Then
+        cmdGetConnect.Enabled = True
+    Else
+        MsgBox &quot;No tables are available. &quot; &amp; _
+            &quot;Please connect to another data source.&quot;
+    End If
+Exit Sub
+ErrHandler:
+    Screen.MousePointer = vbDefault
+    Select Case Err.Number
+        Case 3423
+            `This data source can't be attached, (or the
+            `user clicked Cancel, so use ODBC API
+            APIConnect
+        Case 3059
+            `The user clicked on Cancel
+            Exit Sub
+        Case Else
+            `The error is something else, so send it back to
+            `the VB exception handler
+            MsgBox Err.Number, vbExclamation
+    End Select
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><A HREF="javascript:popUp('06fig09.gif')"><B>Figure 6.9.</B></A><B> </B><I>The
+Select Data Source selection dialog box.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD>After the user selects a data source name, the procedure loops through the TableDefs
+	collection using a Visual Basic For Each...Next loop, retrieves the table name of
+	each table available in that data source, and adds each table name to the lstTables
+	list box. If a connection is made and any tables are available, the cmdGetConnect
+	command button is Enabled for the next step, which is retrieving the connection information.
+	The error-handling routine is important in this procedure and is discussed with the
+	APIConnect procedure code.
+	<P>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code to the cmdGetConnect's Click event. This command
+	button is enabled only when a connection is made and tables are available for selection.
+	After you select a table name, a connection is made to that table by creating a dynaset.
+	This makes the connection information available. The connection information is retrieved
+	by copying the value of the dynaset's Connect property to the txtConnect text box,
+	running it through the AddSpaces function as discussed in the following text. Finally,
+	the cmdCopyConnect command button is enabled.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Screen.MousePointer = vbHourglass
+    txtConnect.text = &quot;&quot;
+    If Len(lstTables.text) Then
+        Set recTemp = dbfTemp.OpenRecordset(lstTables.text)
+        txtConnect.text = AddSpaces(dbfTemp.Connect)
+    Else
+        MsgBox &quot;Please select a table first.&quot;
+    End If
+    cmdCopyConnect.Enabled = True
+    Screen.MousePointer = vbDefault
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Add the following code to frmODBC. When you receive the raw connect
+	string back from ODBC after making the connection to the database table, it is strung
+	together with no spaces, unless a space happens to be in any of the strings enclosed
+	in quotation marks. Sometimes the connect string can become lengthy, so use a text
+	box with the MultiLine property set to True. Even with that, an unbroken string with
+	no spaces can exceed any width you make the text box. So this function simply loops
+	through the length of the string, replacing all the semicolon separators with a semicolon-space
+	pair of characters. ODBC uses semicolons to separate the different phrases in a connect
+	string.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Function AddSpaces (strC As String)
+    Dim I As Integer
+    Dim strNewStr As String, strNextChar As String
+    Dim strNextChar As String
+    For I = 1 To Len(strC)
+        strNextChar = Mid$(strC, I, 1)
+        If strNextChar = &quot;;&quot; Then
+            strNewStr = strNewStr &amp; strNextChar &amp; &quot; &quot;
+        Else
+            strNewStr = strNewStr &amp; strNextChar
+        End If
+    Next
+    AddSpaces = strNewStr
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Add the code for cmdCopyConnect's Click event as shown here. This is
+	added as a convenience for the programmer. When you have connected to the data source
+	and have received the connect string, just click the Copy Connect String command
+	button, and the full string is copied to the Windows Clipboard, ready to paste into
+	your application.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdCopyConnect_Click()
+    `Select the text in txtConnect
+    With txtConnect
+        .SetFocus: .SelStart = 0: .SelLength = _
+        Len(txtConnect.text)
+    End With
+    ` Copy selected text to Clipboard.
+    Clipboard.SetText Screen.ActiveControl.SelText
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Add the following code to the form's Unload event and the cmdQuit command
+	button's event. The cmdQuit command button ends the program, triggering the form's
+	Unload event. As usual for Visual Basic applications that make direct calls to the
+	ODBC API, the code needs to clean up after itself, releasing the memory and handles
+	needed for connection to ODBC.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+	<PRE>Private Sub cmdQuit_Click()
+    End
+End Sub
+Private Sub Form_Unload(Cancel As Integer)
+    Dim intResult As Integer
+    intResult = ODBCDisconnectDS(glng_hEnv, glng_hDbc, glng_hStmt)
+    intResult = ODBCFreeEnv(glng_hEnv)
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Add the following code to the DblClick event procedure of the lstTables
+	list box. This code simply adds the convenience of being able to double-click on
+	a table in lstTables to retrieve the connect string, saving the work of also clicking
+	the cmdGetConnect command button.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<P>
+	<PRE>Private Sub lstTables_DblClick()
+    cmdGetConnect_Click
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Add the following code to the code section of the form. Sometimes
+	it is necessary to handle errors generated by Visual Basic but caused by the ODBC
+	system. This is one example of such a situation.
+	<P>
+	<DT></DT>
+	<DD>There are two sorts of Visual Basic errors that need to be handled in the cmdConnect_Click
+	procedure. The first sort of error is when, for any of a number of reasons, there
+	is a problem making the connection to the data source (for example, the database
+	is not available, the connection couldn't be made because of network traffic, and
+	so on). One common error is the attempt to open an ODBC database that is one of the
+	databases Visual Basic handles natively, such as an Access .MDB file or one of the
+	ISAM databases.
+	<P>
+	<DT></DT>
+	<DD>This is where the APIConnect procedure comes in. Even though the error is generated
+	by the Visual Basic error handler, there is some reason lurking in ODBC for why the
+	connection can't be made, and a call to the ODBC SQLError function will usually (but
+	not always) give more information about the problem. SQLError doesn't always have
+	information to give, for whatever internal reason. Basically, APIConnect just calls
+	SQLError from within the error procedure, gets whatever additional information it
+	can obtain, disconnects the ODBC connection (but not the handle--you might need that
+	again for another attempt to make a connection), and returns to frmODBC.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Sub APIConnect()
+    `Can't connect through VB, so go direct
+    Dim intResult As Integer
+    Dim strConnectIn As String
+    Dim strConnectOut As String * SQL_MAX_OPTION_STRING_LENGTH
+    Dim intOutCount As Integer
+    strConnectIn = &quot;&quot;
+    intResult = SQLDriverConnect(glng_hDbc, Me.hWnd, _
+        strConnectIn, 
+        Len(strConnectIn), strConnectOut, Len(strConnectOut), _
+        intOutCount, SQL_DRIVER_PROMPT)
+    If intResult &lt;&gt; SQL_SUCCESS Then
+        intResult = frmODBCErrors.ODBCError(&quot;Dbc&quot;, glng_hEnv, _
+                  glng_hDbc, 0, _
+            intResult, &quot;Problem with call to SQLDriverConnect.&quot;)
+        Exit Sub
+    End If
+    txtConnect.text = AddSpaces(strConnectOut)
+    `Free the connection, but not the handle
+    intResult = SQLDisconnect(glng_hDbc)
+    If intResult &lt;&gt; SQL_SUCCESS Then
+        intResult = frmODBCErrors.ODBCError(&quot;Dbc&quot;, glng_hEnv, _
+           glng_hDbc, 0, _
+           intResult, &quot;Problem with call to SQLDriverConnect.&quot;)
+    End If
+    cmdCopyConnect.Enabled = True
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD>The other error that must be handled is one that occurs when the user clicks
+	Cancel when ODBC's Select Data Source dialog box is shown. If this happens, the Sub
+	procedure is exited and the user is returned to the main form.
+	<P>
+</DL>
+
+<P><B>How It Works</B></P>
+<P>Three functions are available in the ODBC API for making a connection to a data
+source: SQLConnect, SQLBrowseConnect, and SQLDriverConnect. Table 6.7 explains these
+functions in more detail.</P>
+<P>
+<H4>Table 6.7. ODBC functions for establishing data source connections.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>FUNCTION</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Version</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Conformance</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Primary Arguments</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQLConnect</TD>
+		<TD ALIGN="LEFT">1.0</TD>
+		<TD ALIGN="LEFT">Core</TD>
+		<TD ALIGN="LEFT">hDbc, data source name, user ID, authorization string</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQLDriverConnect</TD>
+		<TD ALIGN="LEFT">1.0</TD>
+		<TD ALIGN="LEFT">1</TD>
+		<TD ALIGN="LEFT">hDbc, Windows handle (hwnd), connect string in, connect string out, completion option</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">SQLBrowseConnect</TD>
+		<TD ALIGN="LEFT">1.0</TD>
+		<TD ALIGN="LEFT">2</TD>
+		<TD ALIGN="LEFT">hDbc, connect string in, connect string out</TD>
+	</TR>
+</TABLE>
+</P>
+<P><B>SQLConnect</B></P>
+<P>SQLConnect is the standard way of connecting to an ODBC data source. All the arguments
+must be complete and correct because if anything is wrong, ODBC generates an error.
+If everything is right, a connection is established. Valid <BR>
+return codes are SQL_SUCCESS, SQL_SUCCESS_WITH_INFO, SQL_ERROR, and SQL_INVALID_HANDLE.
+Because this function is in the Core conformance level, all ODBC drivers are guaranteed
+to support it (or as guaranteed as possible with drivers written by third-party developers
+attempting to adhere to a standard), so it is always available. The only flexibility
+that SQLConnect provides is when the specified data source name can't be found. In
+that case, the function looks for a default driver and loads that one if it is defined
+in ODBC.INI. If not, SQL_ERROR is returned, and you can obtain more information about
+the problem with a call to SQLError. This is the workhorse function of ODBC connections.</P>
+<P><B>SQLDriverConnect</B></P>
+<P>SQLDriverConnect offers a bit more flexibility for making ODBC connections. This
+function can handle data sources that require more information than the three arguments
+of SQLConnect (other than the connection handle hDbc, which all three functions require).
+SQLDriverConnect provides dialog boxes to prompt for any missing information needed
+for the connection, and it can handle connections not defined in the ODBC.INI file
+or registry. SQLDriverConnect provides three connection options:</P>
+
+<UL>
+	<LI>A connection string provided in the function call that contains all the data
+	needed, including data source name, multiple user IDs, multiple passwords, and any
+	other custom information required by the database.
+	<P>
+	<LI>A connection string that provides only some of the data required to make the
+	connection. The ODBC Driver Manager and the driver can prompt for any information
+	that either of them needs in order to make the connection.
+	<P>
+	<LI>A connection that is not defined in ODBC.INI or the registry. If any partial
+	information is provided, the function uses it however it can.
+</UL>
+
+<P>When a connection is successfully made, the function returns SQL_SUCCESS and returns
+a completed connection string that can be used to make future connections to that
+database. It is a pretty safe bet that SQLDriverConnect is the function that Visual
+Basic uses when this How-To is employed to discover the connect string.</P>
+<P>SQLDriverConnect can return SQL_SUCCESS, SQL_SUCCESS_WITH_INFO, SQL_NO_DATA_FOUND,
+SQL_ERROR, or SQL_INVALID_HANDLE. Valid choices for the completion option argument
+are SQL_DRIVER_PROMPT, SQL_DRIVER_COMPLETE, SQL_DRIVER_COMPLETE_REQUIRED, and SQL_DRIVER_NOPROMPT,
+as described here:</P>
+
+<UL>
+	<LI>SQL_DRIVER_PROMPT: This option displays dialog boxes (whether needed or not)
+	to prompt for connection information. Any initial values included in the function
+	call are used to fill in the appropriate controls in the dialog box.
+	<P>
+	<LI>SQL_DRIVER_COMPLETE: If the connection information provided in the function call
+	is sufficient to make the connection, ODBC goes ahead and makes the connection. If
+	anything is missing, this option acts like SQL_DRIVER_PROMPT.
+	<P>
+	<LI>SQL_DRIVER_COMPLETE_REQUIRED: This is the same as SQL_DRIVER_COMPLETE, except
+	that any information not needed to make the connection is grayed out in the dialog
+	box.
+	<P>
+	<LI>SQL_DRIVER_NOPROMPT: If the information in the connect string is sufficient to
+	make the connection, it goes ahead and makes the connection. If anything is missing,
+	it makes no connection, and the function returns SQL_ERROR.
+</UL>
+
+<P><B>SQLBrowseConnect</B></P>
+<P>The third function, SQLBrowseConnect, is perhaps the most interesting of the three
+functions. A call to this function initiates an interactive method of discovering
+what it takes to connect to a particular database. Each time SQLBrowseConnect is
+called, the function returns additional attributes that are needed to make a connection.
+An application making the call can parse out the resulting string containing missing
+attributes (which are marked as required or optional) and return successively more
+complete connect strings. Attributes that involve selection from a fixed list of
+items are returned as that full list so that an application can present a list box
+of choices to the user.</P>
+<P>The bad news, for Visual Basic anyway, is that SQLBrowseConnect is a Conformance
+Level 2 function. Because Visual Basic is designed to require only Level 1 drivers,
+it doesn't have any functions that can directly use this function. But it is available
+to any application, including those written in Visual Basic, through direct calls
+to the ODBC API, if the driver supports Level 2 conformance.</P>
+<P><B>Comments</B></P>
+<P>As mentioned in the introduction to the chapter, you can't make an ODBC connection
+through an attached table to a database that Visual Basic natively supports, such
+as a Microsoft Access .MDB file or the ISAM databases Btrieve and dBASE. There normally
+isn't any reason to do so, although you can always do it by using the ODBC API directly.</P>
+<H2>6.5 How do I...</H2>
+<H3><A NAME="Determine what services ..."></A><B>Determine what services an ODBC
+server provides?</B></H3>
+<P><B>Problem</B></P>
+<P>I'd like to be able to connect with the different data sources scattered throughout
+our network. But all the various drivers have different capabilities, even though
+they are all accessible through ODBC. How can I find out through code which services
+are available for each server and keep the code as flexible and portable as possible?</P>
+<P><B>Technique</B></P>
+<P>This example develops a useful ODBC viewer that gathers in one place much of the
+information needed to evaluate the data sources and drivers available to a particular
+workstation. You can use the same techniques whether the data is located on a single
+computer with one hard disk or connected to a network with data of widely varying
+formats on different hardware.</P>
+<P><B>Steps</B></P>
+<P>Open and run the Visual Basic SERVICES.VBP project. Select an ODBC data source
+name from the Installed ODBC Data Sources list, and then click the Get Functions
+command button. After a moment, a list of the functions that can be used with the
+data source appears in the bottom half of the form, similar to the form shown later
+in Figure 6.11. Scroll through the list to see the functions available. Then, with
+the same data source highlighted, click the Get Properties command button. The Get
+Info window appears, as shown in Figure 6.10. Make the selections you want (from
+one to all the items in the list), and click the Get Info command button. The list
+of properties and their current values appears in the Biblio Properties window, as
+shown in Figure 6.11.</P>
+<P><A HREF="javascript:popUp('06fig10.gif')"><B>Figure 6.10.</B></A><B> </B><I>The
+project's Get Info form, showing the selected properties.</I></P>
+<P><A HREF="javascript:popUp('06fig11.gif')"><B>Figure 6.11.</B></A><B> </B><I>The
+project's Details form, showing the available functions.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project called SERVICES.VBP. Add the form ODBCErrors.FRM
+	and the code module ODBC API Declarations.BAS using Visual Basic's File | Add menu
+	command. The code module contains all the declarations necessary for the ODBC API
+	functions and the constants used in many of the functions, and the form allows for
+	an easy-to-read display of ODBC errors.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Add a new form, frmODBC, and save the file as SERVICES.FRM. Add the
+	controls shown in Figure 6.11, setting the properties as given in Table 6.8. The
+	area under the Properties label is the MSFlexGrid control, grdResults.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 6.8. Objects and properties for SERVICES.FRM.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmODBC</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Chapter 6.5 Example - Details</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdProperties</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Get Properties</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdFunctions</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Get Functions</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdQuit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Quit</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstODBCdbs</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Sorted</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblGrid</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Properties</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">BorderStyle</TD>
+		<TD ALIGN="LEFT">1 - Fixed Single</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Grid</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">grdResults</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Visible</TD>
+		<TD ALIGN="LEFT">False</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Scrollbars</TD>
+		<TD ALIGN="LEFT">2 - flexScrollBarVertical</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Highlight</TD>
+		<TD ALIGN="LEFT">0 - flexHighlightNever</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblServices</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Installed ODBC Data Sources:</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Put the following code in the declarations section of the form. This
+	code declares the dynamic array that will be used to hold the names of the data sources
+	and drivers available to ODBC. To avoid naming problems, Option Explicit tells Visual
+	Basic to make sure you declare all variables and objects before using them.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+`Dynamic arrays to hold data
+Dim strDBNames() As String</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code to the form's Load event. First, the form is
+	centered onscreen so that all the controls and information can be seen. Then, as
+	with all applications that make direct calls to the ODBC API, the ODBC wrapper functions
+	are called to allocate memory and assign a handle for the ODBC environment and for
+	the database connection. This is followed by a call to the GetODBCdbs Sub procedure,
+	which the following text explains.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    `Log on to an ODBC data source
+    `First, allocate ODBC memory and get handles
+    Dim intResult As Integer
+    `Allocate the ODBC environment handle
+    If ODBCAllocateEnv(glng_hEnv) = SQL_SUCCESS Then
+        `Load the current list of data sources to list box
+        GetODBCdbs
+        `Show the form
+        frmODBC.Show
+    Else
+        End
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the following routine to frmODBC. This procedure extracts the existing
+	lists of data sources and drivers from ODBC. GetODBCdbs obtains the list of data
+	source names and the descriptions of each. The Do While loop extracts one data source
+	name at a time with a call to SQLDataSources. If no error is returned from the function
+	call, the data source name is added to the lstODBCdbs list box, showing all the data
+	sources that are already installed. When the last data source has been returned to
+	this function, the SQLDataSources function returns the SQL_NO_DATA_FOUND result,
+	and the loop terminates.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub GetODBCdbs()
+    Dim varTemp As Variant, I As Integer
+    lstODBCdbs.Clear
+    varTemp = ODBCDSNList(glng_hEnv, False)
+    If IsArray(varTemp) Then
+        For I = LBound(varTemp) To UBound(varTemp)
+            lstODBCdbs.AddItem varTemp(I)
+        Next
+    Else
+        MsgBox &quot;No ODBC data sources to load!&quot;, vbCritical
+        End
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following routine to frmODBC. This procedure first determines
+	whether a data source name has been selected in the lstODBCdbs list box. If none
+	has been selected, a message box lets the user know that and then exits the procedure.
+	<P>
+	<DT></DT>
+	<DD>Assuming that a data source is selected, a call is made to ODBCConnectDS to allocate
+	connection memory and a handle, which is required for a later call to SQLGetFunctions.
+	If a connection is made successfully, the call to SQLGetFunctions is made, which
+	does the actual work of retrieving the function list. The list is put into the FuncList
+	array, which has 100 elements. An element of this array is set to true (-1) or false
+	(0) if the referenced ODBC function is available with this data source. See the &quot;How
+	It Works&quot; section for a discussion about how this array is used to identify
+	available functions.
+	<P>
+	<DT></DT>
+	<DD>To set the number of rows in the grdResults grid, the number of array elements
+	that are True must be counted. The first For...Next loop handles that, so that j
+	is the number of true elements at the end of the loop. Then, after setting up the
+	grid with the numbers of rows and columns to fit the data, the intFuncList array
+	is looped through once again, to put the function names into each row of the grid.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdFunctions_Click()
+    Dim strDataSource As String
+    Dim strUserName As String, strPassword As String
+    Dim intResult As Integer, intErrResult As Integer
+    ReDim intFuncList(100) As Integer
+    Dim I As Integer, j As Integer
+    `First, check to see if anything is selected
+    `If not, notify user, then return to form.
+    If lstODBCdbs.ListIndex &gt;= 0 Then
+        Screen.MousePointer = vbHourglass
+        strDataSource = lstODBCdbs.List(lstODBCdbs.ListIndex)
+        If SQLAllocStmt(glng_hDbc, glng_hStmt) Then _
+            intResult = ODBCConnectDS(glng_hEnv, glng_hDbc, _
+                glng_hStmt, strDataSource, strUserName, _
+                strPassword)
+        If intResult = SQL_SUCCESS Then _
+            intResult = SQLGetFunctions(glng_hDbc, _
+                SQL_API_ALL_FUNCTIONS, intFuncList(0))
+        If intResult &lt;&gt; SQL_SUCCESS Then
+            intErrResult = frmODBCErrors.ODBCError(&quot;Dbc&quot;, _
+                glng_hEnv, 
+                glng_hDbc, 0, intResult, _
+                &quot;Error getting list of ODBC functions&quot;)
+        Else
+            `Run through the array and get the number of functions
+            j = 0
+            For I = 0 To 99
+                If intFuncList(I) Then j = j + 1
+            Next
+            `Start by clearing the frmODBC grid
+            With frmODBC.grdResults
+                .Rows = j
+                .Cols = 3
+                .FixedCols = 1
+                .FixedRows = 0
+                .ColWidth(0) = 8
+                .ColWidth(1) = 0.65 * frmODBC.grdResults.Width
+                .ColWidth(2) = 0.35 * frmODBC.grdResults.Width
+            End With
+            lblGrid.Caption = lstODBCdbs.text &amp; &quot;: &quot; &amp; _
+                              Trim(Val(j)) &amp; _
+                &quot; Functions&quot;
+            `Populate the grid with the function names
+            j = 0
+            For I = 0 To 99
+                If intFuncList(I) &lt;&gt; 0 Then
+                    With frmODBC.grdResults
+                        .Row = j
+                        .Col = 0: .text = j
+                        .Col = 1: .text = ODBCFuncs(0, I)
+                        .Col = 2: .text = ODBCFuncs(1, I)
+                    End With
+                    j = j + 1
+                End If
+            Next
+            `Move to the top row
+            frmODBC.grdResults.Row = 0
+            frmODBC.grdResults.Col = 1
+            `free the data source connection
+            intResult = ODBCDisconnectDS(glng_hEnv, glng_hDbc, _
+                        SQL_NULL_HSTMT)
+            Screen.MousePointer = vbDefault
+            frmODBC.grdResults.Visible = True
+        End If
+    Else
+        MsgBox &quot;Please select a data source name first.&quot;, _
+            vbCritical, &quot;ODBC Functions&quot;
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>7. </B>Put the following code in the cmdProperties_Click event subroutine.
+	After the program checks to make sure that a data source is selected, it attempts
+	to allocate a connection handle; then it loads the frmGetInfo form to continue obtaining
+	information.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdProperties_Click()
+    Dim intResult As Integer
+    If lstODBCdbs.ListIndex &lt; 0 Then
+        MsgBox &quot;Please select a data source name first.&quot;, _
+            vbCritical, &quot;ODBC Properties&quot;
+    Else
+        intResult = ODBCConnectDS(glng_hEnv, glng_hDbc, _
+            glng_hStmt, lstODBCdbs.text, &quot;&quot;, &quot;&quot;)
+        If intResult = SQL_SUCCESS Then Load frmGetInfo
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>8. </B>Enter the following two procedures to the code section of the form.
+	The first procedure establishes a command button to quit the application. The Unload
+	event then cleans up and releases the memory and handles that were necessary for
+	making calls to the ODBC API.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdQuit_Click()
+    End
+End Sub
+Private Sub Form_Unload(Cancel As Integer)
+    Dim intResult As Integer
+    intResult = ODBCDisconnectDS(glng_hEnv, glng_hDbc, glng_hStmt)
+    intResult = ODBCFreeEnv(glng_hEnv)
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>9. </B>Add the following code to the code section of the form. This function
+	provides a convenient way to convert some of the results of the properties to a more
+	user-friendly and understandable form.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function convCh(inChar As String, num As Variant)
+    inChar = LTrim$(Left$(inChar, num))
+    Select Case inChar
+        Case &quot;Y&quot;
+            convCh = &quot;Yes&quot;
+        Case &quot;N&quot;
+            convCh = &quot;No&quot;
+        Case Else
+            convCh = inChar
+    End Select
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>10. </B>Add a new form, frmGetInfo, and save the file as GETINFO.FRM. Add
+	the controls shown in Figure 6.10, setting the properties as shown in Table 6.9.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 6.9. Objects and properties for GETINFO.FRM.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmGetInfo</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Chapter 6.5 Example - Get Info</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtStatus</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Text</TD>
+		<TD ALIGN="LEFT">Select the options you want to include.</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdCancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Cancel</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdGetInfo</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Get Info</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdSelection</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Unselect All</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdSelection</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Select All</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">ListBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lstGetInfoData</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">MultiSelect</TD>
+		<TD ALIGN="LEFT">Extended</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Sorted</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblGetInfo</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>11. </B>Add the following line of code to the declarations section of the
+	GETINFO.FRM form. Option Explicit tells Visual Basic to make sure that you declare
+	all variables and objects before using them, to avoid naming problems.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>12. </B>Add the following code to the form's Load event. The main job of this
+	procedure is to load the lstGetInfoData list box with all the available ODBC functions.
+	All the function names are loaded into the ODBCGetInfo array in the LoadGetInfo Sub
+	procedure in ODBC API Declarations.BAS. That array is an array of GetInfo types,
+	defined in ODBC API as this:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Type GetInfo
+    InfoType As String
+    ReturnType As String
+End Type</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD>The array has SQL_INFO_LAST number of elements, as defined in ODBC API Declarations.BAS
+	in the declarations section:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    `Load the list box with the ODBCGetInfo array
+    Dim I As Integer
+    For I = 0 To SQL_INFO_LAST
+        If ODBCGetInfo(I).InfoType &lt;&gt; &quot;&quot; Then
+            lstGetInfoData.AddItem ODBCGetInfo(I).InfoType
+        End If
+    Next
+    frmGetInfo.Show
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>13. </B>Add the following code to the cmdGetInfo's Click event procedure.
+	Although this procedure looks foreboding, it is really doing only two main jobs:
+	getting a count and a list of the SQLGetInfo options that have been selected in the
+	list box and then looping through to get their current settings, populating the grid
+	control on the frmODBC form with the results. For more information on this procedure,
+	review the &quot;How It Works&quot; section later in this How-To.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdGetInfo_Click()
+    Dim intSelCount As Integer     `count of selected items
+    Dim I As Integer, j As Integer
+    Dim ri As Integer
+    Dim rs As String * 255
+    Dim rb As Long, rl As Long
+    Dim lngInfoValue As Long
+    Dim lngInfoValueMax As Integer, intInfoValue As Integer, _
+        intResult As Integer
+    Dim intConnIndex As Integer
+    Dim strTemp As String, strID As String, strErrMsg As String
+    Dim strRowData() As String
+    lngInfoValueMax = 255
+    `Get the number of rows selected and the type of data
+    intSelCount = 0
+    For I = 0 To lstGetInfoData.ListCount - 1
+        If lstGetInfoData.Selected(I) Then
+            ReDim Preserve strRowData(intSelCount + 1)
+            strRowData(intSelCount) = lstGetInfoData.List(I)
+            intSelCount = intSelCount + 1
+        End If
+    Next
+    If intSelCount = 0 Then
+        MsgBox &quot;No attributes were selected. Please select &quot; &amp; _
+            &quot;at least one and try again.&quot;, vbExclamation
+        Exit Sub
+    End If
+    `Start by clearing the frmODBC grid
+    With frmODBC.grdResults
+        .Rows = intSelCount + 1: .Cols = 3
+        .FixedCols = 1: .FixedRows = 1
+        .ColWidth(0) = 8
+        .ColWidth(1) = 0.45 * frmODBC.grdResults.Width
+        .ColWidth(2) = 0.55 * frmODBC.grdResults.Width
+        .Row = 0
+        .Col = 1: .text = &quot;Attribute Constant&quot;
+        .Col = 2: .text = &quot;Value&quot;
+    End With
+    frmODBC.lblGrid.Caption = frmODBC.lstODBCdbs.text &amp; &quot; &quot; &amp; _
+            &quot;Properties&quot;
+    For I = 0 To intSelCount - 1
+        With frmODBC.grdResults
+            .Row = I + 1
+            .Col = 0: .text = I + 1
+            .Col = 1: .text = strRowData(I)
+            .Col = 2
+        End With
+</PRE>
+	<P>
+	<PRE>        `Get the index of ODBConn - have to do it this way
+        `because there are gaps in the ODBC constants
+        For j = LBound(ODBCGetInfo) To UBound(ODBCGetInfo)
+            If strRowData(I) = ODBCGetInfo(j).InfoType Then Exit _
+               For
+        Next
+        `Format the data according the return type of
+        `ODBCGetInfo
+        Select Case Left$(ODBCGetInfo(j).ReturnType, 1)
+            Case &quot;S&quot;    `String
+                intResult = SQLGetInfo(glng_hDbc, j, ByVal rs, _
+                    Len(rs), intInfoValue)
+                If Len(Trim$(ODBCGetInfo(j).ReturnType)) &gt; 1 Then
+                    frmODBC.grdResults.text = _
+                       SpecialStr(strRowData(I), _
+                        Trim$(rs))
+                Else
+                    frmODBC.grdResults.text = Trim$(rs)
+                End If
+            Case &quot;B&quot;    `32-bit Bitmask
+                intResult = SQLGetInfo(glng_hDbc, j, rb, 255, _
+                            intInfoValue)
+                frmODBC.grdResults.text = BitMask(rb)
+            Case &quot;I&quot;    `Integer
+                intResult = SQLGetInfo(glng_hDbc, j, ri, 255, _
+                            intInfoValue)
+                If Len(Trim$(ODBCGetInfo(j).ReturnType)) &gt; 1 Then
+                    frmODBC.grdResults.text = _
+                       SpecialInt(strRowData(I), _
+                       Trim$(ri))
+                Else
+                    frmODBC.grdResults.text = ri
+                End If
+            Case &quot;L&quot;    `Long
+                intResult = SQLGetInfo(glng_hDbc, j, rl, 255, _
+                            intInfoValue)
+                If Len(Trim$(ODBCGetInfo(j).ReturnType)) &gt; 1 Then
+                    frmODBC.grdResults.text = _
+                       SpecialLong(strRowData(I), _
+                        Trim$(rl))
+                Else
+                    frmODBC.grdResults.text = rl
+                End If
+            Case Else
+                `Error in array
+                frmODBC.grdResults.text = &quot;Error processing _
+                   return value.&quot;
+        End Select
+        If intResult &lt;&gt; SQL_SUCCESS Then
+            frmODBC.grdResults.text = &quot;Error getting data.&quot;
+        End If
+    Next
+    frmODBC.grdResults.Visible = True
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>14. </B>Add the code for SpecialStr to the code section of the module. This
+	is the first of the &quot;special&quot; processing functions that make the results
+	of the call to SQLGetInfo more meaningful. Most of the Select Case options simply
+	convert a &quot;Y&quot; or &quot;N&quot; to &quot;Yes&quot; or &quot;No.&quot; Another
+	processing function, SQL_KEYWORDS, returns a long list of keywords you can use. To
+	keep things from getting too complex, this How-To just indicates that a list is available;
+	you could easily put the list into a TextBox or List control to allow closer examination,
+	or it could be used by the application.
+	<P>
+	<DT></DT>
+	<DD>The return value of the SpecialStr function is the string that is actually displayed
+	in the grid.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function SpecialStr(Opt As String, RetStr As String)
+    `Do any special processing required for a SQLGetInfo string
+    Select Case Opt
+        Case &quot;SQL_ODBC_SQL_OPT_IEF&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_COLUMN_ALIAS&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_KEYWORDS&quot;
+            SpecialStr = &quot;List of keywords.&quot;        `&amp;&amp;&amp;
+        Case &quot;SQL_ORDER_BY_COLUMNS_IN_SELECT&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_MAX_ROW_SIZE_INCLUDES_LONG&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_EXPRESSIONS_IN_ORDERBY&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_MULT_RESULT_SETS&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_OUTER_JOINS&quot;
+            Select Case RetStr
+                Case &quot;N&quot;
+                    SpecialStr = &quot;No outer joins.&quot;
+                Case &quot;Y&quot;
+                    SpecialStr = &quot;Yes, left-right segregation.&quot;
+                Case &quot;P&quot;
+                    SpecialStr = &quot;Partial outer joins.&quot;
+</PRE>
+	<P>Case &quot;F&quot;</P>
+	<P>
+	<PRE>                    SpecialStr = &quot;Full outer joins.&quot;
+                Case Else
+                    SpecialStr = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_NEED_LONG_DATA_LEN&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_LIKE_ESCAPE_CLAUSE&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_ACCESSIBLE_PROCEDURES&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_ACCESSIBLE_TABLES&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_DATA_SOURCE_READ_ONLY&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_PROCEDURES&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case &quot;SQL_ROW_UPDATES&quot;
+            SpecialStr = IIf(RetStr = &quot;Y&quot;, &quot;Yes&quot;, &quot;No&quot;)
+        Case Else
+            SpecialStr = &quot;Missing special processing.&quot;
+    End Select
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>15. </B>Add the code for the SpecialInt function to the code section of the
+	form. This function handles special integer return values from SQLGetInfo. In all
+	of these special cases, the return value is an index to a keyword defined in ODBCAPI.BAS.
+	Simply use a Select Case nested within the overall Select Case structure to translate
+	the value into a more meaningful string.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function SpecialInt(Opt As String, RetInt As Integer)
+    `Do any special processing required for a SQLGetInfo integer
+    Select Case Opt
+        Case &quot;SQL_CORRELATION_NAME&quot;
+            Select Case RetInt
+                Case SQL_CN_NONE
+                    SpecialInt = &quot;Not supported.&quot;
+                Case SQL_CN_DIFFERENT
+                    SpecialInt = &quot;Supported but names vary.&quot;
+                Case SQL_CN_ANY
+                    SpecialInt = &quot;Any valid user name.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_NON_NULLABLE_COLUMNS&quot;
+            Select Case RetInt
+                Case SQL_NNC_NULL
+                    SpecialInt = &quot;All columns nullable.&quot;
+                Case SQL_NNC_NON_NULL
+                    SpecialInt = &quot;May be non-nullable.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_FILE_USAGE&quot;
+            Select Case RetInt
+                Case SQL_FILE_NOT_SUPPORTED
+                    SpecialInt = &quot;Not a single tier driver.&quot;
+                Case SQL_FILE_TABLE
+                    SpecialInt = &quot;Treats data source as table.&quot;
+                Case SQL_FILE_QUALIFIER
+                    SpecialInt = &quot;Treats data source as&quot; _
+                                 &quot;qualifier.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_NULL_COLLATION&quot;
+            Select Case RetInt
+                Case SQL_NC_END
+                    SpecialInt = &quot;NULLs sorted to end.&quot;
+                Case SQL_NC_HIGH
+                    SpecialInt = &quot;NULLs sorted to high end.&quot;
+                Case SQL_NC_LOW
+                    SpecialInt = &quot;NULLs sorted to low end.&quot;
+                Case SQL_NC_START
+                    SpecialInt = &quot;NULLs sorted to start.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_GROUP_BY&quot;
+            Select Case RetInt
+                Case SQL_GB_NOT_SUPPORTED
+                    SpecialInt = &quot;Group By not supported.&quot;
+                Case SQL_GB_GROUP_BY_EQUALS_SELECT
+                    SpecialInt = _
+                       &quot;All non-aggregated columns, no others.&quot;
+                Case SQL_GB_GROUP_BY_CONTAINS_SELECT
+                    SpecialInt = _
+                       &quot;All non-aggregated columns, some others.&quot;
+                Case SQL_GB_NO_RELATION
+                    SpecialInt = &quot;Not related to select list.&quot; 
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_IDENTIFIER_CASE&quot;
+            Select Case RetInt
+                Case SQL_IC_UPPER
+                    SpecialInt = &quot;Upper case.&quot;
+                Case SQL_IC_LOWER
+                    SpecialInt = &quot;Lower case.&quot;
+                Case SQL_IC_SENSITIVE
+                    SpecialInt = &quot;Case sensitive.&quot;
+                Case SQL_IC_MIXED
+                    SpecialInt = &quot;Mixed case.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_QUOTED_IDENTIFIER_CASE&quot;
+            Select Case RetInt
+                Case SQL_IC_UPPER
+                    SpecialInt = &quot;Upper case.&quot;
+                Case SQL_IC_LOWER
+                    SpecialInt = &quot;Lower case.&quot;
+                Case SQL_IC_SENSITIVE
+                    SpecialInt = &quot;Case sensitive.&quot;
+                Case SQL_IC_MIXED
+                    SpecialInt = &quot;Mixed case.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_ODBC_API_CONFORMANCE&quot;
+            Select Case RetInt
+                Case SQL_OAC_NONE
+                    SpecialInt = &quot;No conformance.&quot;
+                Case SQL_OAC_LEVEL1
+                    SpecialInt = &quot;Level 1 supported.&quot;
+                Case SQL_OAC_LEVEL2
+                    SpecialInt = &quot;Level 2 supported.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_CURSOR_COMMIT_BEHAVIOR&quot;
+            Select Case RetInt
+                Case SQL_CB_DELETE
+                    SpecialInt = &quot;Close and delete statements.&quot;
+                Case SQL_CB_CLOSE
+                    SpecialInt = &quot;Close cursors.&quot;
+                Case SQL_CB_PRESERVE
+                    SpecialInt = &quot;Preserve cursors.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_CURSOR_ROLLBACK_BEHAVIOR&quot;
+            Select Case RetInt
+                Case SQL_CB_DELETE
+                    SpecialInt = &quot;Close and delete statements.&quot;
+                Case SQL_CB_CLOSE
+                    SpecialInt = &quot;Close cursors.&quot;
+                Case SQL_CB_PRESERVE
+                    SpecialInt = &quot;Preserve cursors.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_TXN_CAPABLE&quot;
+            Select Case RetInt
+                Case SQL_TC_NONE
+                    SpecialInt = &quot;Transactions not supported.&quot;
+                Case SQL_TC_DML
+                    SpecialInt = _
+                        &quot;DML statements only, DDL cause error.&quot;
+                Case SQL_TC_DDL_COMMIT
+                    SpecialInt = _
+                        &quot;DML statements, DDL commit transaction.&quot;
+                Case SQL_TC_DDL_IGNORE
+                    SpecialInt = &quot;DML statements, DDL ignored.&quot;
+                Case SQL_TC_ALL
+                    SpecialInt = &quot;Both DML and DDL statements.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_QUALIFIER_LOCATION&quot;
+            Select Case RetInt
+                Case SQL_QL_START
+                    SpecialInt = &quot;Start of name.&quot;
+                Case SQL_QL_END
+                    SpecialInt = &quot;End of name.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case &quot;SQL_CONCAT_NULL_BEHAVIOR&quot;
+            Select Case RetInt
+                Case SQL_CB_NULL
+                    SpecialInt = &quot;Result is NULL valued.&quot; 
+                Case SQL_CB_NON_NULL
+                    SpecialInt = _
+                        &quot;Result is non-NULL concatenation.&quot;
+                Case Else
+                    SpecialInt = &quot;Missing data.&quot;
+            End Select
+        Case Else
+            SpecialInt = &quot;Missing special integer processing.&quot;
+    End Select
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>16. </B>Add the code for the BitMask function to the code section of the form.
+	One form of return value from the SQLGetInfo function is a 32-bit bitmask. A <I>bitmask</I>
+	is a way of packing lots of information into a relatively compact variable because
+	each of the 32 bits can be &quot;on&quot; or &quot;off&quot; (1 or 0) to indicate
+	the value of some option. This function simply converts the bitmask into a string
+	of 32 1s and 0s to show their content. You could expand this function (in a way similar
+	to the nested Select Case SpecialInt function) to test for the various values of
+	the different options, and you could present a list or otherwise use the information
+	in your application.
+	<P>
+	<DT></DT>
+	<DD>In practical use in an application, you would be interested in checking for one
+	or two characteristics contained in the bitmask and would check for that condition
+	instead of just listing the contents of the bitmask.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function BitMask(RetBit As Long)
+    `Do processing required for a SQLGetInfo bit mask return
+      Dim i As Long, bin As String
+      Const maxpower = 30   ` Maximum number of binary digits 
+                            ` supported.
+      bin = &quot;&quot;  `Build the desired binary number in this string, 
+                `bin.
+      If RetBit &gt; 2 ^ maxpower Then
+         BitMask = &quot;Error converting data.&quot;
+         Exit Function
+      End If
+      ` Negative numbers have &quot;1&quot; in the 32nd left-most digit:
+      If RetBit &lt; 0 Then bin = bin + &quot;1&quot; Else bin = bin + &quot;0&quot;
+      For i = maxpower To 0 Step -1
+         If RetBit And (2 ^ i) Then   ` Use the logical &quot;AND&quot; 
+                                      ` operator.
+            bin = bin + &quot;1&quot;
+         Else
+            bin = bin + &quot;0&quot;
+         End If
+      Next
+      BitMask = bin ` The bin string contains the binary number.
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>17. </B>Add the code for SpecialLong to the code section of the form. This
+	is the last of the Special functions, and it is used with return type Long. The single
+	case that must be handled here is for the SQL_DEFAULT_TXN_ISOLATION attribute, and
+	it is handled similarly to the SpecialInt function. The same nested Select Case structure
+	has been used to allow easy expansion of this function for future versions of ODBC
+	and handle the error condition if an unexpected Long is sent to the function.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Function SpecialLong(Opt As String, RetInt As Integer)
+    `Do any special processing required for a SQLGetInfo long
+    Select Case Opt
+        Case &quot;SQL_DEFAULT_TXN_ISOLATION&quot;
+            Select Case RetInt
+                Case SQL_TXN_READ_UNCOMMITTED
+                    SpecialLong = _
+                        &quot;Dirty reads, nonrepeatable, phantoms.&quot;
+                Case SQL_TXN_READ_COMMITTED
+                    SpecialLong = _
+                        &quot;No dirty reads, but nonrepeatable &quot; &amp; _
+                        &quot;and phantoms.&quot;
+                Case SQL_TXN_REPEATABLE_READ
+                    SpecialLong = _
+                        &quot;No dirty or nonrepeatable reads.&quot; &amp; 
+                        &quot;Phantoms okay.&quot;
+                Case SQL_TXN_SERIALIZABLE
+                    SpecialLong = &quot;Serializable transactions.&quot;
+                Case SQL_TXN_VERSIONING
+                    SpecialLong = _
+                        &quot;Serializable transactions  with higher &quot; &amp;
+                        &quot;concurrency.&quot;
+                Case Else
+                    SpecialLong = &quot;Missing data.&quot;
+            End Select
+        Case Else
+            SpecialLong = &quot;Missing special Long processing.&quot;
+    End Select
+End Function</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>18. </B>Add the code for the cmdSelection control array Click event. The Select
+	All and Unselect All command buttons are provided for convenience in selecting items
+	in the list. This procedure simply loops through the lstGetInfoData list box, selecting
+	all items if the Index is 1 (Select All was clicked) and deselecting all items if
+	the Index is 0 (Unselect All was clicked).
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdSelection_Click(Index As Integer)
+    `Select all of the items in the list
+    Dim I As Integer
+    For I = 0 To lstGetInfoData.ListCount - 1
+        lstGetInfoData.Selected(I) = (Index &gt; -1)
+    Next
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DD><B><BR>
+	19. </B>Add the code for the cmdCancel Click event. Even though SQLGetInfo uses an
+	hDbc handle, the memory was allocated in the frmODBC form, so no special cleanup
+	is necessary in this form. Therefore, no form Unload procedure is required.
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdCancel_Click()
+    Unload Me
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The SQLGetInfo function is a versatile way to get lots of information about an
+ODBC data source. In a typical application, you would check for a small number of
+properties, or if a particular function is implemented, instead of retrieving bulk
+results as in this How-To, you would use the techniques shown here.</P>
+<P>Step 13 of this How-To performs and deciphers the SQLGetInfo through a procedure
+that appears daunting, but in fact is really doing only two main jobs: getting a
+count and a list of the SQLGetInfo options that have been selected in the list box
+and then looping through to get their current settings, populating the grid control
+on the frmODBC form with the results. Let's break this procedure down into more manageable
+chunks because this procedure is important for you to understand.</P>
+<P>After the variables used in the procedure are declared, the lstGetInfoData list
+box is looped through to find out what selections have been made by the user. For
+each selection, the RowData dynamic array is expanded by one element, and the name
+of the option is added. That way, the array will be fully populated with the names
+of the options selected. The variable selCount keeps a running count of how many
+options have been selected.</P>
+<P>After that process is complete, the options are checked to see whether any were
+selected. If not, the user is asked to make at least one selection and then try again.
+There is no reason to proceed if there is nothing to do.</P>
+<P>Next, the code clears the grdResults grid control in the frmODBC form, setting
+it up with three columns and rows equal to intSelCount + 1. One additional row is
+necessary for column headings.</P>
+<P>The real work of the procedure begins, looping through each of the options and
+actually making the call to the SQLGetInfo ODBC function. This function returns the
+current setting for the data source for a selected option. Two things make the code
+a bit more complex. First, an integer needs to be passed to SQLGetInfo representing
+an index into the attribute or option to be checked. To get that index, loop through
+the ODBCGetInfo array, comparing the InfoType member to the name in strRowData, until
+there is a match. Because the names in strRowData came from ODBCInfo in the first
+place, there will be a match somewhere.</P>
+<P>The second complexity arises from the types of values returned from SQLGetInfo.
+Table 6.10 lists the possible return types.</P>
+<P>
+<H4>Table 6.10. SQLGetInfo return types.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>TYPE</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>InfoType</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">String</TD>
+		<TD ALIGN="LEFT">S</TD>
+		<TD ALIGN="LEFT">C type NULL-terminated string</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Bitmask</TD>
+		<TD ALIGN="LEFT">B</TD>
+		<TD ALIGN="LEFT">32-bit, usually with multiple meanings</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Integer</TD>
+		<TD ALIGN="LEFT">I</TD>
+		<TD ALIGN="LEFT">Standard Visual Basic 16-bit number</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Long</TD>
+		<TD ALIGN="LEFT">L</TD>
+		<TD ALIGN="LEFT">Standard Visual Basic 32-bit number</TD>
+	</TR>
+</TABLE>
+</P>
+<P>The InfoType column refers to the InfoType member of the GetInfo structure defined
+in ODBCAPI.BAS. This is simply an arbitrarily chosen code for use in the Select Case
+in this procedure so that SQLGetInfo can be called with the right variable type to
+receive the results.</P>
+<P>The InfoType member can be either one or two characters long. The second character,
+if present, means that some special processing is necessary to make the result meaningful
+when it is put in the grid on the frmODBC form.</P>
+<P>The Select Case structure then puts the results directly into the frmODBC grid.</P>
+<P>Some of the property values returned might not be available, in which case the
+cmdGetInfo Click event procedure places a value of Error Getting Data in the results
+grid. You might get this result for many reasons, but the primary reason exposes
+one of the quirks of the ODBC system. Although ODBC has some rather specific demarcations
+between conformance levels (drivers must be at a Conformance Level 1 to be usable
+with Visual Basic), there is no guarantee that a driver will implement all the functionality
+of a given function. SQLGetInfo is no exception to this rule, unfortunately.</P>
+<P>One way to determine whether this is the case is to make a call to SQLError (or
+the ODBCError wrapper function) to obtain more information about the error. In any
+event, it is safe to assume in most cases that the particular attribute should not
+be used with the particular data source.</P>
+<P>As noted in step 13 of this How-To, the syntax of the SQLGetInfo function is this:</P>
+<P>
+<PRE>SQLGetInfo(<I>hDbc, fInfoType, rgbInfoValue, cbInfoValueMax, pcbInfoValue</I>)
+</PRE>
+<P>Table 6.11 shows the arguments to the function.</P>
+<P>
+<H4>Table 6.11. Arguments for the SQLGetInfo ODBC function.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>ARGUMENT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>hDbc</I></TD>
+		<TD ALIGN="LEFT">Connection handle</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>fInfoType</I></TD>
+		<TD ALIGN="LEFT">Type of information (in this How-To, from the ODBCGetInfo array)</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>rgbInfoValue</I></TD>
+		<TD ALIGN="LEFT">Variable of the proper type to store results</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>cbInfoValueMax</I></TD>
+		<TD ALIGN="LEFT">Maximum length of the <I>rgbInfoValue</I> buffer</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>pcbInfoValue</I></TD>
+		<TD ALIGN="LEFT">Total number of bytes available to return in <I>rgbInfoValue</I></TD>
+	</TR>
+</TABLE>
+</P>
+<P>The syntax of SQLGetFunctions is this:</P>
+<P>
+<PRE>SQLGetFunctions(<I>hDbc, fFunction, pfExists</I>)
+</PRE>
+<P>Table 6.12 shows the arguments to the function.</P>
+<P>
+<H4>Table 6.12. Arguments for the SQLGetFunctions ODBC function.</H4>
+<P>
+<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>ARGUMENT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Description</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>hDbc</I></TD>
+		<TD ALIGN="LEFT">Connection handle</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>fFunction</I></TD>
+		<TD ALIGN="LEFT">The particular function or, in this How-To, SQL_API_ALL_FUNCTIONS</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><I>pfExists</I></TD>
+		<TD ALIGN="LEFT">For SQL_API_ALL_FUNCTIONS, an array with 100 elements for output</TD>
+	</TR>
+</TABLE>
+</P>
+<P>If you look at the contents of the ODBCAPI.BAS file, you'll see two functions,
+LoadGetInfo and ODBCLoadFuncs, that load global arrays with information about the
+SQLGetInfo property options and the list of functions available in ODBC. These two
+arrays are used to provide selection lists for the program in this How-To and loop
+through to make the actual calls to SQLGetInfo. The SQLGetInfo function has many
+property options, too numerous to describe here--see the ODBC SDK for a more detailed
+description of the property options and in which ODBC version they first appeared.</P>
+<P>What if a driver is written only to the Core conformance level? Well, in a way,
+that isn't a problem because you won't be using that driver with Visual Basic anyway:
+Visual Basic counts on Level 1 conformance to interact with ODBC. Running the program
+in this How-To will provide an ODBC error, and you are finished. You can still use
+the driver, but only by making direct calls to the ODBC API from Visual Basic. In
+that situation, you'll need to consult the driver's documentation to find out what
+it can and cannot do. As a practical matter, by far and away most drivers are at
+least Level 1 conformance, so this will rarely be a problem.</P>
+<P>The nice thing about the SQLGetFunctions function is that, even though it is a
+conformance Level 1 function, it is implemented in the ODBC Driver Manager, which
+sits between all applications using ODBC and the ODBC driver. That way, if the driver
+doesn't implement SQLGetFunctions, the Driver Manager will still give a list. If
+the driver does implement the function, the Driver Manager passes the call to the
+driver.</P>
+<P><B>Comments</B></P>
+<P>Understanding the SQLGetInfo and SQLGetFunctions functions is an extremely important
+part of understanding the ODBC API. Before moving to another How-To, experiment with
+the use of these functions, especially between different ODBC drivers, to get a better
+understanding of how varied different drivers can be in terms of functionality.</P>
+<P>
+<H2>6.6 How do I...</H2>
+<H3><A NAME="Use ODBCDirect to connect ..."></A><B>Use ODBCDirect to connect to database
+servers?</B></H3>
+<P><B>Problem</B></P>
+<P>My large application has been recently converted from DAO to ODBC, and the design
+specifications call for direct ODBC access. How can I get the power of ODBC with
+the ease of DAO programming in Visual Basic?</P>
+<P><B>Technique</B></P>
+<P>Well, here's good news. An extension of the DAO, called ODBCDirect, allows direct
+ODBC connection capability, with most of the flexibility of the DAO objects intact.
+ODBCDirect provides a Connection object, analogous to the DAO's Database object.
+It even has a Database property to simulate the Database object for your needs. The
+Connection object is the most important piece of the ODBCDirect object hierarchy,
+so that will be the focus of this example.</P>
+<P><B>Steps</B></P>
+<P>Open and run the ODBCDirect.VBP Visual Basic project file. Click the Open DSN
+button, and choose an ODBC data source. The form then opens a Connection object and
+displays the object's properties for the data source, similar to those shown in Figure
+6.12.</P>
+<P><A HREF="javascript:popUp('06fig12.gif')"><B>Figure 6.12.</B></A><B> </B><I>Chapter
+6.6 example.</I></P>
+
+<DL>
+	<DT><I></I></DT>
+	<DD><B>1. </B>Create a new project, and save it as ODBCDirect.VBP.
+	<P>
+	<DT></DT>
+	<DD><B>2. </B>Name the default form Form1, and save the file as TRANS.FRM. Add the
+	controls shown in Figure 6.12, setting the properties as listed in Table 6.13.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<H4>Table 6.13. Objects and properties for the ODBCDirect form.</H4>
+	<P>
+	<TABLE BORDER="1">
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"><B><I>OBJECT</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Property</I></B></TD>
+		<TD ALIGN="LEFT"><B><I>Setting</I></B></TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Form</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">frmODBC</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">Chapter 6.6 Example</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">TextBox</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">txtProperties</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">ScrollBars</TD>
+		<TD ALIGN="LEFT">2 - Vertical</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">MultiLine</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Locked</TD>
+		<TD ALIGN="LEFT">True</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Font</TD>
+		<TD ALIGN="LEFT">Courier</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Font.Size</TD>
+		<TD ALIGN="LEFT">10</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdOpen</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;Open DSN</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">CommandButton</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">cmdClose</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">&amp;Close</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT">Label</TD>
+		<TD ALIGN="LEFT">Name</TD>
+		<TD ALIGN="LEFT">lblTables</TD>
+	</TR>
+	<TR ALIGN="LEFT" VALIGN="TOP">
+		<TD ALIGN="LEFT"></TD>
+		<TD ALIGN="LEFT">Caption</TD>
+		<TD ALIGN="LEFT">No information available</TD>
+	</TR>
+	</TABLE>
+</P>
+
+</BLOCKQUOTE>
+
+
+<DL>
+	<DT></DT>
+	<DD><B>3. </B>Add the following code to the declarations section of Form1:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Option Explicit
+Dim conTemp As Connection</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>4. </B>Add the following code to the form's Load event. The brevity of this
+	routine doesn't explain its importance--the DefaultType property determines whether
+	the DAO will construct a DAO or an ODBCDirect object. In this case, you are instructing
+	the DBEngine that all objects created under it are ODBCDirect objects. If you planned
+	to mix DAO and ODBCDirect access in the same application, you would perform this
+	step at the workspace or database level, depending on your needs.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub Form_Load()
+    `Notice the dbUseODBC parameter; this determines that DBEngine
+    `will create an ODBCDirect workspace by default.
+    DBEngine.DefaultType = dbUseODBC
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>5. </B>Add the following code to the Click event of cmdOpen. This routine
+	first attempts to open an ODBCDirect Connection object by forcing the user to select
+	an ODBC driver from the ODBC Data Sources dialog box. After it is selected, the Connection
+	object is created and its properties concatenated into the txtProperties text box
+	for display.
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdOpen_Click()
+    `Let's create a Connection object. This line will force
+    `the ODBC driver to prompt the user.
+    `The ODBCDirect Connection object is identical, in terms of
+    `DAO object hierarchy, to the Database object.
+    Set conTemp = Workspaces(0).OpenConnection(&quot;&quot;, , False, _
+        &quot;ODBC;&quot;)
+    `If open, let's get the TableDefs from the Database
+    `property of the Connection object.
+    If IsObject(conTemp) Then
+        `Since the Connection object does not support a
+        `Properties collection, we must iterate through
+        `each property manually.
+        lblTables = &quot;Information  - ODBCDirect connection to &quot; &amp; _
+            conTemp.Name &amp; &quot;:&quot;
+        With conTemp
+            txtProperties = &quot;Connect           &quot; &amp; .Connect
+            ` Property actually returns a Database object.
+            txtProperties = txtProperties &amp; vbCrLf &amp; _
+                &quot;Database[.Name]:  &quot; &amp; .Database.Name
+            txtProperties = txtProperties &amp; vbCrLf &amp; _
+                &quot;Name:             &quot; &amp; .Name
+            txtProperties = txtProperties &amp; vbCrLf &amp; _
+                &quot;QueryTimeout:     &quot; &amp; .QueryTimeout
+            txtProperties = txtProperties &amp; vbCrLf &amp; _
+                &quot;RecordsAffected:  &quot; &amp; .RecordsAffected
+            txtProperties = txtProperties &amp; vbCrLf &amp; _
+                &quot;StillExecuting:   &quot; &amp; .StillExecuting
+            txtProperties = txtProperties &amp; vbCrLf &amp; _
+                &quot;Transactions:     &quot; &amp; .Transactions
+            txtProperties = txtProperties &amp; vbCrLf &amp; _
+                &quot;Updatable:        &quot; &amp; .Updatable
+        End With
+    End If
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+
+<DL>
+	<DT></DT>
+	<DD><B>6. </B>Add the following code to the Click event of cmdClose:
+	<P>
+</DL>
+
+
+
+<BLOCKQUOTE>
+	<PRE>Private Sub cmdClose_Click()
+    End
+End Sub</PRE>
+
+</BLOCKQUOTE>
+
+<PRE></PRE>
+<P><B>How It Works</B></P>
+<P>The DBEngine is initialized with the dbUseODBC flag, which tells DAO that all
+the workspaces, connections, and so on will be generated via ODBCDirect, rather than
+through the DAO. Note that it's not an either-or situation; the same property exists
+on Workspace objects. A Workspace object can be created and then flagged for use
+with ODBCDirect, so DAO and ODBCDirect workspaces can exist together. This, by the
+way, proves very useful for projects involving data conversion or for communication
+with server and mainframe databases. After the DBEngine is initialized and the user
+presses the Open DSN button, the Connection object is created. After successful creation,
+the form prints each property of the Connection object (laboriously--the Connection
+object supports neither the Properties nor TableDefs collection) to the text box
+for your perusal.</P>
+<P>The lack of a TableDefs collection can make it difficult to maneuver around a
+database, but this can be surmounted by workarounds. For example, Microsoft SQL Server
+allows a user to query the SysTables table, which maintains a list of tables in the
+database. It might take some doing, but you can find workarounds for many database
+systems to supply this information.</P>
+<P><B>Comments</B></P>
+<P>One good use of ODBCDirect is in the scaling of an application--if you see the
+need to move your DAO-based workstation application into the client/server arena,
+you can do so with a minimum of recoding and still apply the flexibility of ODBC
+at the same time with the use of ODBCDirect.</P>
+<CENTER>
+<P>
+<HR>
+<A HREF="ch05.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch05/ch05.htm"><IMG SRC="previous.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/previous.gif" WIDTH="128" HEIGHT="28"
+ALIGN="BOTTOM" ALT="Previous chapter" BORDER="0"></A><A HREF="ch07.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/ch07/ch07.htm"><IMG
+SRC="next.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/next.gif" WIDTH="128" HEIGHT="28" ALIGN="BOTTOM" ALT="Next chapter"
+BORDER="0"></A><A HREF="index-21.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/index.htm"><IMG SRC="contents.gif" tppabs="http://pbs.mcp.com/ebooks/1571691529/button/contents.gif" WIDTH="128"
+HEIGHT="28" ALIGN="BOTTOM" ALT="Contents" BORDER="0"></A></P>
+
+<P>&copy; <A HREF="copy.htm" tppabs="http://pbs.mcp.com/ebooks/1571691529/copy.htm">Copyright</A>, Macmillan Computer Publishing. All
+rights reserved.
+</CENTER>
+
+</BODY>
+
+</HTML>
